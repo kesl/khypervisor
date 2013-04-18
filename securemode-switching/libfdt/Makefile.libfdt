@@ -1,0 +1,24 @@
+# Makefile.libfdt
+#
+# This is not a complete Makefile of itself.  Instead, it is designed to
+# be easily embeddable into other systems of Makefiles.
+#
+-include $(d)/*.d
+
+LIBFDT_CPPFLAGS += -I$(d)
+LIBFDT_OBJS :=					\
+	$(d)/fdt.o				\
+	$(d)/fdt_ro.o				\
+	$(d)/fdt_wip.o				\
+	$(d)/fdt_sw.o				\
+	$(d)/fdt_rw.o				\
+	$(d)/fdt_strerror.o
+
+CLEAN_SUBDIRS += $(d)
+
+OBJS-libfdt.a = $(LIBFDT_OBJS)
+libfdt.a: $(OBJS-libfdt.a)
+
+$(d)/%.o: $(d)/%.c
+	@echo "  CC[LIB] $<"
+	$(Q)$(CC) $(LIBFDT_CPPFLAGS) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
