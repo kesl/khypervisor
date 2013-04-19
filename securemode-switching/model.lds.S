@@ -57,6 +57,16 @@ SECTIONS
 /* Guest image between Kernel and Mon */
  . = GUEST_OFFSET;
  guest_start = .;
+ .text : { 
+	guest.o(.text)
+ }
+ .data : { 
+	guest.o(.data) 
+ }
+ .bss : {
+	guest.o(.bss) 
+ }
+
  . = GUEST_STACK;
  guest_stacktop = .;
  . = GUEST_STACK + 0x01000000; 
@@ -74,9 +84,18 @@ SECTIONS
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.
   */
- .text : { *(.text) }
- .data : { *(.data) }
- .bss : { *(.bss) }
+ .text : { 
+	boot.o(.text) 
+	monitor.o(.text) 
+ }
+ .data : { 
+	boot.o(.data) 
+	monitor.o(.data) 
+ }
+ .bss : { 
+	boot.o(.bss) 
+	monitor.o(.bss) 
+ }
 
  . = STACKTOP;
  stacktop = .;
