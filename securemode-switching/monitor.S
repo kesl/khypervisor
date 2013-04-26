@@ -117,18 +117,6 @@ monitor_init:
 .type monitor_init, %function
 
 	
-	@ Guest start code
-guest_start:
-	@ stack for guest
-	ldr     sp, =guest_stacktop
-
-	@ And call the C entrypoint
-	bl      nrm_loop
-
-	@ Hyp mode start code
-hyp_start:
-
-
 	@
 	@ Data
 	@

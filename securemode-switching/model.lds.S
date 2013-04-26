@@ -56,16 +56,7 @@ SECTIONS
 
 /* Guest image between Kernel and Mon */
  . = GUEST_OFFSET;
- guest_start = .;
- .text : { 
-	guest.o(.text)
- }
- .data : { 
-	guest.o(.data) 
- }
- .bss : {
-	guest.o(.bss) 
- }
+/* guest_start = .; */
 
  . = GUEST_STACK;
  guest_stacktop = .;
@@ -87,14 +78,17 @@ SECTIONS
  .text : { 
 	boot.o(.text) 
 	monitor.o(.text) 
+	guest.o(.text)
  }
  .data : { 
 	boot.o(.data) 
 	monitor.o(.data) 
+	guest.o(.data) 
  }
  .bss : { 
 	boot.o(.bss) 
 	monitor.o(.bss) 
+	guest.o(.bss) 
  }
 
  . = STACKTOP;
