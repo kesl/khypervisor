@@ -18,5 +18,9 @@ guest_start:
 	ldr     sp, =guest_stacktop
 
 	@ And call the C entrypoint
-	bl      nrm_loop
+#ifdef BAREMETAL_GUEST
+	b	guest_bin_start
+#else
+	b      nrm_loop
+#endif
 .type guest_start, %function

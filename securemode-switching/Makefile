@@ -16,13 +16,15 @@ endif
 LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
 BOOTLOADER	= boot.S
-OBJS 		= boot.o monitor.o guest.o c_start.o semihosting.o string.o semi_loader.o $(LIBFDTOBJS)
+OBJS 		= boot.o monitor.o guest.o c_start.o semihosting.o string.o semi_loader.o $(LIBFDTOBJS) 
 KERNEL		= uImage
+GUESTBIN	= bmguest.bin
 
 IMAGE		= linux-system.axf
 SEMIIMG 	= linux-system-semi.axf
 LD_SCRIPT	= model.lds.S
-
+CONFIG_FLAGS	= -DBAREMETAL_GUEST
+CPPFLAGS	+= $(CONFIG_FLAGS)
 
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
@@ -49,6 +51,14 @@ $(IMAGE): $(OBJS) model.lds $(KERNEL) $(FILESYSTEM) Makefile
 $(SEMIIMG): $(OBJS) modelsemi.lds
 	$(LD) -o $@ $(OBJS) --script=modelsemi.lds
 
+$(GUESTBIN): 
+	@echo "========================================"
+	@echo "ERROR: Copy $@ from bmguest/ after building it"
+	@echo "======================================="
+	# Our intention is to cause an error and abort Makefile processing
+	# Not actually removing the file
+	@rm $@ 
+
 boot.o: $(BOOTLOADER)
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
@@ -61,10 +71,10 @@ guest.o: guest.S
 %.o: %.c
 	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
 
-model.lds: $(LD_SCRIPT) Makefile
+model.lds: $(LD_SCRIPT) Makefile 
 	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<
 
-modelsemi.lds: $(LD_SCRIPT) Makefile
+modelsemi.lds: $(LD_SCRIPT) Makefile $(GUESTBIN)
 	$(CC) $(CPPFLAGS) -DSEMIHOSTING=1 -E -P -C -o $@ $<
 
 $(KERNEL_SRC)/arch/arm/boot/uImage: force
