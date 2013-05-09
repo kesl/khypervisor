@@ -29,9 +29,9 @@ void c_start(void)
 	semi_write0("[secure] Starting...\n");
 
 	/* Initialize Monitor by installing Secure Monitor Call Execption handler */
-	monitor_init();
+	mon_init();
 
-	monitor_enter_hyp();	// Secure -> NS.Hyp -> hyp_main()
+	mon_enter_hyp();	// Secure -> NS.Hyp -> hyp_main()
 
 	/* Begin with Secure world loop */
 	sec_loop();

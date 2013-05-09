@@ -1,8 +1,8 @@
 #ifndef __MONITOR_H__
 #define __MONITOR_H__
 
-void monitor_init(void);
-void monitor_smc(void);
-void monitor_enter_hyp(void);
+void mon_init(void);
+void mon_smc(void);
+void mon_enter_hyp(void);
 
 #endif

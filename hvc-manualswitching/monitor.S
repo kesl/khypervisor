@@ -22,11 +22,27 @@ monitor_vectors:
 	b	handler_monitor_smc /* smc */
 	.word 0 /* pabt */
 	.word 0 /* dabt */
-	.word 0 /* hvc */
+	b	handler_monitor_hvc /* hvc */
 	.word 0 /* irq */
 	.word 0 /* fiq */
 
 handler_monitor_smc:
+	mrc	p15, 0, r10, c1, c1, 0	@ SCR -> r10
+	bic	r10, r10, #0x07f	@ SCR.NS=1, IRQ,FIQ,EA=0, FW,AW=1, nET=0, SCD=1, HCE=1
+	ldr	r11, =0x1b1
+	orr	r10, r10, r11
+	mcr	p15, 0, r11, c1, c1, 0
+	isb
+	ldr	r11, =monitor_vectors
+	mcr	p15, 4, r11, c12, c0, 0
+	@ return in NS state
+	mvs	pc, lr
+
+handler_monitor_hvc:
+	mrs	lr, elr_hyp
+	mov	pc, lr
+
+switch_secure_mode:
 
 	@ World switch
 	@ -------------------------------
@@ -81,8 +97,8 @@ handler_monitor_smc:
  * - simon
  */
 
-.global monitor_init
-monitor_init:
+.global mon_init
+mon_init:
 	push {r0-r2, lr}
 	@ Setup Exception Vector
 	ldr	r1, =monitor_vectors
@@ -114,8 +130,22 @@ monitor_init:
 	@ regular return
 	pop {r0-r2, pc}
 	
-.type monitor_init, %function
+.type mon_init, %function
 
+.global mon_enter_hyp
+mon_enter_hyp:
+	ldr r10, =monitor_vectors
+	mcr	p15, 0, r10, c12, c0, 1	
+	smc #0
+	hvc #0
+
+	ldr	sp,=hyp_stacktop
+	bl	hyp_main
+
+	@ never come back
+1:	b 1b
+
+.type mon_enter_hyp, %function
 	
 	@
 	@ Data
