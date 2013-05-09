@@ -21,8 +21,6 @@
 #include "monitor.h"
 
 
-void sec_loop(void);
-void nrm_loop(void) ;
 
 void c_start(void)
 {
@@ -33,32 +31,18 @@ void c_start(void)
 
 	mon_enter_hyp();	// Secure -> NS.Hyp -> hyp_main()
 
-	/* Begin with Secure world loop */
-	sec_loop();
-
+	/* ___ DEAD END ___ */
 }
-
-void sec_loop(void)
-{
-	int i = 0;
-	for( i = 0; i < 10; i++ ) {
-		semi_write0("[sec] hello\n");
-		/* World Switch to Non-Secure through Secure Monitor Call Exception */
-		asm ("smc #0");		/* -> guest_start: or nrm_loop() */
-	}
-	semi_write0("[sec] done\n");
-
-	/* Give the last turn to nrm_loop() to execute it's the last line of the code */
-	asm ("smc #0");
-}
-
+#ifndef BAREMETAL_GUEST
 void nrm_loop(void) 
 {
 	int i = 0;
+	//semi_write0("[nrm] enter\n");
 	for( i = 0; i < 10; i++ ) {
-		semi_write0("[nrm] hello\n");
+		//semi_write0("[nrm] hello\n");
 		/* World Switch to Secure through Secure Monitor Call Exception */
-		asm ("smc #0");		/* -> sec_loop() */
+		asm ("hvc #0xFFFE");		/* -> sec_loop() */
 	}
-	semi_write0("[nrm] done\n");
+	//semi_write0("[nrm] done\n");
 }
+#endif

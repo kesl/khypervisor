@@ -23,6 +23,7 @@ CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY		= $(CROSS_COMPILE)objcopy
 
+GUESTCONFIGS	= -D__MONITOR_CALL_HVC__
 # These are needed by the underlying kernel make
 export CROSS_COMPILE ARCH
 
@@ -46,10 +47,10 @@ $(GUESTBIN): $(GUESTIMG)
 	$(OBJCOPY) -O binary -S $< $@
 
 guest.o: guest.S
-	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I.  -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -O2 -ffreestanding -I.  -c -o $@ $<
 
 model.lds: $(LD_SCRIPT) Makefile
 	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<

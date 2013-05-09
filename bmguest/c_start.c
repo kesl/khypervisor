@@ -24,15 +24,20 @@
 
 #include <stdint.h>
 #include "semihosting.h"
+#ifdef __MONITOR_CALL_HVC__
+#define SWITCH_MANUAL() asm("hvc #0xFFFE")
+#else
+#define SWITCH_MANUAL() asm("smc #0")
+#endif
 
 void nrm_loop(void) 
 {
-	semi_write0("[nrm] starting...\n");
+	semi_write0("[bmg] starting...\n");
 	int i = 0;
 	for( i = 0; i < 10; i++ ) {
-		semi_write0("[nrm] hello\n");
+		semi_write0("[bmg] hello\n");
 		/* World Switch to Secure through Secure Monitor Call Exception */
-		asm ("smc #0");		/* -> sec_loop() */
+		SWITCH_MANUAL();		/* -> sec_loop() */
 	}
-	semi_write0("[nrm] done\n");
+	semi_write0("[bmg] done\n");
 }

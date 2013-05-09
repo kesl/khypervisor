@@ -6,6 +6,8 @@
  */
 
 #define NS_BIT	0x1
+#define HSR_EC_OFFSET	26
+#define HSR_EC_HYPERCALL	0x12
 
 	.syntax	unified
 	.arch_extension sec
@@ -36,12 +38,35 @@ handler_monitor_smc:
 	ldr	r11, =monitor_vectors
 	mcr	p15, 4, r11, c12, c0, 0
 	@ return in NS state
-	mvs	pc, lr
+	movs	pc, lr
 
 handler_monitor_hvc:
+	@ hvc #imm:
+	@	0xFFFF: stay in Hyp mode and branch to elr_hyp
+	@	0xFFFE: [special] switch to Hyp ping
+	@	0xFFFD: [special] switch to a guest
+	mrc	p15, 4, r0, c5, c2, 0	@ HSR -> r0
+	LSR	r1, r0, #HSR_EC_OFFSET
+	
+	tst	r1, #HSR_EC_HYPERCALL
+	beq	1f			@skip if not HVC (EC==0x12)
+
+	ldr	r2, =0xffff0000
+	bic	r1, r0, r2		@ r1: HSR.ISS[15:0]
+
+	ldr	r2, =0xFFFF
+	teq	r1, r2			@ hvc #0xFFFF -> stay in Hyp mode and return
+	beq	2f
+
+	bl	_hyp_hvc_service	@ r0: HSR
+1:
+	@ exception return
+	eret
+	
+2:	
+	@ stay in Hyp mode
 	mrs	lr, elr_hyp
 	mov	pc, lr
-
 switch_secure_mode:
 
 	@ World switch
@@ -92,11 +117,70 @@ switch_secure_mode:
 	@ branch to LR: exception return from Security Monitor Call
 	movs	pc, lr
 
+.global __mon_switch_to_guest
+__mon_switch_to_guest:
+
+	@ Load Restoring Context Space Address
+	@ ------------------------------------
+	ldr	r1, =guest_context_sp
+	ldr	r3, [r1]			@ r3 = [restoring_context_sp] for loading
+
+	@ Load the saved context <- r3
+	ldmfd	r3!, {r0, lr}
+						@ First time smc called: S.SVC -> NS.SVC, Non Secure saved only lr
+	tst	r0, #0				@ if ( saved(CPSR) != 0 ) SPSR_CXSF = r0
+	msrne	spsr_cxsf, r0
+	ldmfd	r3!, {r4-r12}
+
+	str	r3, [r1]			@ [restoring_context_sp] = r3
+
+	@ Clear Exclusive Access Record since we are switching the context
+	@ ------------------------
+	clrex
+
+	@ branch to LR: exception return from HVC
+	# movs	pc, lr
+	msr	elr_hyp, lr
+	eret
+.type __mon_switch_to_guest, %function
+
+.global __mon_install_guest
+__mon_install_guest:
+	push {r0-r2, lr}
+	ldr	r0, =guest_context_stack_limit
+	stmfd	r0!, {r4, r12}
+
+	mov	r1, 0				@ Invalid CPSR, No need to load
+	ldr	r2, =guest_start
+	stmfd	r0!, {r1, r2}			@ CPSR, LR
+	
+	ldr 	r1, =guest_context_sp
+	str	r0, [r1]			@ [guest_context_sp] = stack pointer for next time load
+						@ [guest_context_sp] = guest_context_stack_limit - context_size
+
+	@ regular return
+	pop {r0-r2, pc}
+.type __mon_install_guest, %function
+
+__mon_install_hyp:
+	push {r0-r2, lr}
+	ldr	r0, =hyp_context_stack_limit
+	stmfd	r0!, {r4, r12}
+
+	mov	r1, 0				@ Invalid CPSR, No need to load
+	ldr	r2, =hyp_main
+	stmfd	r0!, {r1, r2}			@ CPSR, LR
+	
+	ldr 	r1, =hyp_context_sp
+	str	r0, [r1]			@ [hyp_context_sp] = stack pointer for next time load
+						@ [hyp_context_sp] = hyp_context_stack_limit - context_size
+
+	@ regular return
+	pop {r0-r2, pc}
 
 /* Initialize vector and stack pointers for modes: Secure SVC, Non-secure SVC, and Hyp mode
  * - simon
  */
-
 .global mon_init
 mon_init:
 	push {r0-r2, lr}
@@ -132,20 +216,23 @@ mon_init:
 	
 .type mon_init, %function
 
-.global mon_enter_hyp
-mon_enter_hyp:
+.global __mon_enter_hyp
+__mon_enter_hyp:
 	ldr r10, =monitor_vectors
 	mcr	p15, 0, r10, c12, c0, 1	
 	smc #0
-	hvc #0
+	hvc #0xFFFF
 
 	ldr	sp,=hyp_stacktop
+	bl	__mon_install_hyp
+
+	@TODO: load hyp context and brach instead of directly calling hyp_main
 	bl	hyp_main
 
 	@ never come back
 1:	b 1b
 
-.type mon_enter_hyp, %function
+.type __mon_enter_hyp, %function
 	
 	@
 	@ Data
