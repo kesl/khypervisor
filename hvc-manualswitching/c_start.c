@@ -17,14 +17,16 @@
  */
 
 #include <stdint.h>
-#include "semihosting.h"
 #include "monitor.h"
+#include "uart_print.h"
 
-
-
+#define read_cpsr()              ({ unsigned int rval; asm volatile(\
+                                " mrs     %0, cpsr\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
 void c_start(void)
 {
-	semi_write0("[secure] Starting...\n");
+	uart_print("[secure] Starting...\n\r");
+	uart_print_hex32( 0xF00DBEAF ); uart_print( "\n\r" );
 
 	/* Initialize Monitor by installing Secure Monitor Call Execption handler */
 	mon_init();
@@ -33,16 +35,26 @@ void c_start(void)
 
 	/* ___ DEAD END ___ */
 }
+
 #ifndef BAREMETAL_GUEST
 void nrm_loop(void) 
 {
 	int i = 0;
-	//semi_write0("[nrm] enter\n");
+	unsigned int cpsr;
+	
+	uart_print("[nrm] enter\n\r");
+
+	cpsr = read_cpsr();
+	uart_print("[nrm] cpsr:"); uart_print_hex32(cpsr); uart_print("\n\r");
+
 	for( i = 0; i < 10; i++ ) {
-		//semi_write0("[nrm] hello\n");
+		uart_print("[nrm] ping 1\n\r");
 		/* World Switch to Secure through Secure Monitor Call Exception */
 		asm ("hvc #0xFFFE");		/* -> sec_loop() */
+		uart_print("[nrm] yield 2\n\r");
+		asm ("hvc #0xFFFD");		/* -> sec_loop() */
+		uart_print("[nrm] back 3\n\r");
 	}
-	//semi_write0("[nrm] done\n");
+	uart_print("[nrm] done\n\r");
 }
 #endif

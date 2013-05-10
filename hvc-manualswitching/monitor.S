@@ -41,32 +41,48 @@ handler_monitor_smc:
 	movs	pc, lr
 
 handler_monitor_hvc:
+	@ Push registers
+	push	{sp, lr}
+	push	{r0-r12}
+	mrs	r0, spsr_hyp
+	mrs	r1, elr_hyp
+	push	{r0, r1}
+
 	@ hvc #imm:
 	@	0xFFFF: stay in Hyp mode and branch to elr_hyp
 	@	0xFFFE: [special] switch to Hyp ping
 	@	0xFFFD: [special] switch to a guest
-	mrc	p15, 4, r0, c5, c2, 0	@ HSR -> r0
-	LSR	r1, r0, #HSR_EC_OFFSET
+	@ mrc	p15, 4, r0, c5, c2, 0	@ HSR -> r0
+	@ LSR	r1, r0, #HSR_EC_OFFSET
 	
-	tst	r1, #HSR_EC_HYPERCALL
-	beq	1f			@skip if not HVC (EC==0x12)
-
-	ldr	r2, =0xffff0000
-	bic	r1, r0, r2		@ r1: HSR.ISS[15:0]
-
-	ldr	r2, =0xFFFF
-	teq	r1, r2			@ hvc #0xFFFF -> stay in Hyp mode and return
-	beq	2f
-
+	@ service other argument values -> _hyp_hvc_service(HSR)
+	mov	r0, sp
 	bl	_hyp_hvc_service	@ r0: HSR
-1:
-	@ exception return
+
+	@ if (return == HYP_RET_STAY) stay in Hyp mode and eturn
+	tst	r0, #1			
+	bne	1f			
+
+	@ else (HYP_RET_ERET)  Exception Return
+	
+	@ Pop registers
+	pop 	{r0-r1}
+	msr	spsr_hyp, r0
+	msr	elr_hyp, r1
+	ldm	sp, {r0-r14}
 	eret
 	
-2:	
+1:	
+	@ Pop registers
+	pop 	{r0-r1}
+	msr	spsr_hyp, r0
+	msr	elr_hyp, r1
+	ldm	sp, {r0-r14}
 	@ stay in Hyp mode
 	mrs	lr, elr_hyp
 	mov	pc, lr
+
+/*
 switch_secure_mode:
 
 	@ World switch
@@ -116,7 +132,9 @@ switch_secure_mode:
 
 	@ branch to LR: exception return from Security Monitor Call
 	movs	pc, lr
+*/
 
+/*
 .global __mon_switch_to_guest
 __mon_switch_to_guest:
 
@@ -143,7 +161,22 @@ __mon_switch_to_guest:
 	msr	elr_hyp, lr
 	eret
 .type __mon_switch_to_guest, %function
+*/
 
+.global __mon_switch_to_guest_context
+__mon_switch_to_guest_context:	@ struct arch_regs *r0
+	ldmfd	r0!, {r3, lr}
+	tst 	r3, #0
+	msrne	spsr_hyp, r3
+	msr	elr_hyp, lr
+	ldm	r0, {r0-r14}
+	clrex
+	eret
+
+
+.type __mon_switch_to_guest_context, %function
+
+/*
 .global __mon_install_guest
 __mon_install_guest:
 	push {r0-r2, lr}
@@ -151,7 +184,7 @@ __mon_install_guest:
 	stmfd	r0!, {r4, r12}
 
 	mov	r1, 0				@ Invalid CPSR, No need to load
-	ldr	r2, =guest_start
+	ldr	r2, =guest_bin_start
 	stmfd	r0!, {r1, r2}			@ CPSR, LR
 	
 	ldr 	r1, =guest_context_sp
@@ -161,6 +194,7 @@ __mon_install_guest:
 	@ regular return
 	pop {r0-r2, pc}
 .type __mon_install_guest, %function
+*/
 
 __mon_install_hyp:
 	push {r0-r2, lr}
@@ -187,7 +221,7 @@ mon_init:
 	@ Setup Exception Vector
 	ldr	r1, =monitor_vectors
 	mcr	p15, 0, r1, c12, c0, 1		@ Monitor vector base address
-
+/*
 	@ NS.SVC entry
 	@ -------------
 	@	[guest_context_stack_limit] = 
@@ -195,7 +229,7 @@ mon_init:
 	stmfd	r0!, {r4, r12}
 
 	mov	r1, 0				@ Invalid CPSR, No need to load
-	ldr	r2, =guest_start
+	ldr	r2, =guest_bin_start
 	stmfd	r0!, {r1, r2}			@ CPSR, LR
 	
 	ldr 	r1, =guest_context_sp
@@ -205,7 +239,7 @@ mon_init:
 	ldr	r0, =secure_context_stack_limit
 	ldr	r1, =secure_context_sp
 	str	r0, [r1]			@ [secure_context_sp] = secure_context_stack_limit
-
+*/
 
 	@ NS.HYP entry
 	@ ------------

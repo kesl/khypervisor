@@ -16,12 +16,12 @@ endif
 LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
 BOOTLOADER	= boot.S
-OBJS 		= boot.o monitor.o guest.o c_start.o semihosting.o string.o hyp_main.o monitor_imp.o
+OBJS 		= boot.o monitor.o c_start.o string.o hyp_main.o monitor_imp.o uart_print.o guest.o
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 LD_SCRIPT	= model.lds.S
-#CONFIG_FLAGS	= -DBAREMETAL_GUEST
+CONFIG_FLAGS	= -DBAREMETAL_GUEST
 CPPFLAGS	+= $(CONFIG_FLAGS)
 
 CC		= $(CROSS_COMPILE)gcc

@@ -23,21 +23,36 @@
  */
 
 #include <stdint.h>
-#include "semihosting.h"
+#include "uart_print.h"
+
 #ifdef __MONITOR_CALL_HVC__
-#define SWITCH_MANUAL() asm("hvc #0xFFFE")
+#define hsvc_ping()	asm("hvc #0xFFFE")
+#define hsvc_yield()	asm("hvc #0xFFFD")
 #else
 #define SWITCH_MANUAL() asm("smc #0")
 #endif
 
+
 void nrm_loop(void) 
 {
-	semi_write0("[bmg] starting...\n");
+	uart_print("[bmg] starting...\n\r");
 	int i = 0;
-	for( i = 0; i < 10; i++ ) {
-		semi_write0("[bmg] hello\n");
-		/* World Switch to Secure through Secure Monitor Call Exception */
-		SWITCH_MANUAL();		/* -> sec_loop() */
+	for( i = 0; i < 20; i++ ) {
+		uart_print("[bmg] iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
+
+#ifdef __MONITOR_CALL_HVC__
+		if (i & 0x1) {
+			uart_print( "[bmg] hsvc_ping()\n\r" );
+			hsvc_ping();		// hvc ping
+			uart_print( "[bmg] returned from hsvc_ping() \n\r" );
+		} else {
+			uart_print( "[bmg] hsvc_yield()\n\r" );
+			hsvc_yield();		// hvc manual switch
+			uart_print( "[bmg] returned from hsvc_yield() \n\r" );
+		}
+#else
+		SWITCH_MANUAL();	// -> sec_loop() in the monitor
+#endif
 	}
-	semi_write0("[bmg] done\n");
+	uart_print("[bmg] done\n\r");
 }

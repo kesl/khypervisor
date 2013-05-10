@@ -20,6 +20,7 @@ INPUT(./uImage)
 
 #ifdef BAREMETAL_GUEST
 	INPUT(./bmguest.bin)
+	INPUT(./bmguest2.bin)
 #endif
 
 PHYS_OFFSET = 0x80000000;
@@ -31,6 +32,9 @@ STACKTOP = 0xff000000;
  */
 GUEST_OFFSET  	= 0xE0000000;
 GUEST_STACK  	= 0xEF000000;
+
+GUEST2_OFFSET	= 0xC0000000;
+GUEST2_STACK	= 0xCF000000;
 
 HYP_OFFSET	= 0xD0000000;
 HYP_STACK	= 0xDF000000;
@@ -55,6 +59,19 @@ SECTIONS
  .filesystem : { ./filesystem.cpio.gz }
 #endif
  fs_end = .;
+
+/* Guest2 image */
+ . = GUEST2_OFFSET;
+#ifdef BAREMETAL_GUEST
+  guest2_bin_start = .; 
+  .guest2 : { ./bmguest2.bin }
+  guest2_bin_end = .; 
+#endif
+ . = GUEST2_STACK;
+ guest2_stacktop = .;
+ . = GUEST2_STACK + 0x01000000; 
+ guest2_stacklimit = .;
+
 
 /* Guest image between Kernel and Mon */
  . = GUEST_OFFSET;
@@ -84,17 +101,17 @@ SECTIONS
  .text : { 
 	boot.o(.text) 
 	monitor.o(.text) 
-	guest.o(.text)
+	/* guest.o(.text) */
  }
  .data : { 
 	boot.o(.data) 
 	monitor.o(.data) 
-	guest.o(.data) 
+	/* guest.o(.data)  */
  }
  .bss : { 
 	boot.o(.bss) 
 	monitor.o(.bss) 
-	guest.o(.bss) 
+	/* guest.o(.bss)  */
  }
 
  . = STACKTOP;

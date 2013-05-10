@@ -24,3 +24,18 @@ guest_start:
 	b      nrm_loop
 #endif
 .type guest_start, %function
+
+.global guest2_start
+guest2_start:
+	@ stack for guest
+	ldr     sp, =guest2_stacktop
+
+	@ And call the C entrypoint
+#ifdef BAREMETAL_GUEST
+	b	guest2_bin_start
+#else
+	b      nrm_loop
+#endif
+.type guest2_start, %function
+
+
