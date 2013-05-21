@@ -19,10 +19,8 @@
 #include <stdint.h>
 #include "monitor.h"
 #include "uart_print.h"
+#include "armv7_p15.h"
 
-#define read_cpsr()              ({ unsigned int rval; asm volatile(\
-                                " mrs     %0, cpsr\n\t" \
-                                : "=r" (rval) : : "memory", "cc"); rval;})
 void c_start(void)
 {
 	uart_print("[secure] Starting...\n\r");

@@ -32,27 +32,41 @@
 #define SWITCH_MANUAL() asm("smc #0")
 #endif
 
+#ifndef GUEST_LABEL	
+#define GUEST_LABEL	"[guest0] "
+#endif
+
+#ifndef NUM_ITERATIONS	
+#define NUM_ITERATIONS	10
+#endif
+
+void nrm_delay(void)
+{
+	volatile int i = 0;
+	for( i = 0; i < 0x00FFFFFF; i++);
+}
 
 void nrm_loop(void) 
 {
-	uart_print("[bmg] starting...\n\r");
+	uart_print(GUEST_LABEL); uart_print("starting...\n\r");
 	int i = 0;
-	for( i = 0; i < 20; i++ ) {
-		uart_print("[bmg] iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
+	for( i = 0; i < NUM_ITERATIONS; i++ ) {
+		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
 
 #ifdef __MONITOR_CALL_HVC__
 		if (i & 0x1) {
-			uart_print( "[bmg] hsvc_ping()\n\r" );
+			uart_print(GUEST_LABEL); uart_print( "hsvc_ping()\n\r" );
 			hsvc_ping();		// hvc ping
-			uart_print( "[bmg] returned from hsvc_ping() \n\r" );
+			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_ping() \n\r" );
 		} else {
-			uart_print( "[bmg] hsvc_yield()\n\r" );
+			uart_print(GUEST_LABEL); uart_print( "hsvc_yield()\n\r" );
 			hsvc_yield();		// hvc manual switch
-			uart_print( "[bmg] returned from hsvc_yield() \n\r" );
+			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_yield() \n\r" );
 		}
 #else
 		SWITCH_MANUAL();	// -> sec_loop() in the monitor
 #endif
+		nrm_delay();
 	}
-	uart_print("[bmg] done\n\r");
+	uart_print(GUEST_LABEL); uart_print("done\n\r");
 }

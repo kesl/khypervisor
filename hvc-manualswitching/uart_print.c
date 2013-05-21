@@ -1,3 +1,5 @@
+#include "arch_types.h"
+
 #ifdef MACH_MPS
 #define UART_BASE       0x1f005000
 #elif defined (VEXPRESS)
@@ -5,7 +7,6 @@
 #else
 #define UART_BASE       0x10009000
 #endif
-
 void uart_print(char *str)
 {
         char *pUART = (char *) UART_BASE;
@@ -36,4 +37,10 @@ void uart_print_hex32( unsigned int v )
 		}
 		uart_putc( (char) c );
 	}
+}
+
+void uart_print_hex64( uint64_t v )
+{
+	uart_print_hex32( v >> 32 );
+	uart_print_hex32( (uint32_t) (v & 0xFFFFFFFF) );
 }
