@@ -8,6 +8,8 @@
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
 
+#define __DISABLE_VMM__
+
 typedef enum {
 	HYP_RESULT_ERET	= 0,
 	HYP_RESULT_STAY = 1
@@ -133,10 +135,10 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	/*
 	 * We assume VTCR has been configured and initialized in the memory management module
 	 */
-
+#ifndef __DISABLE_VMM__
 	// Disable Stage 2 Translation: HCR.VM = 0
 	vmm_stage2_enable(0);
-
+#endif
 	if ( regs_current != 0 ) {
 		// store
 		context = &guest_contexts[current_guest];
@@ -159,9 +161,11 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	}
 	context = &guest_contexts[current_guest];
 
+#ifndef __DISABLE_VMM__
 	vmm_set_vmid_ttbl( context->vmid, context->ttbl );
 
 	vmm_stage2_enable(1);
+#endif
 	__mon_switch_to_guest_context( &context->regs );
 }
 
@@ -192,7 +196,9 @@ void hyp_main(void)
 {
 	uart_print("[hyp_main] Starting...\n\r");
 
+#ifndef __DISABLE_VMM__
 	mmu_init();
+#endif
 
 	hyp_init_guests();
 	hyp_switch_guest();

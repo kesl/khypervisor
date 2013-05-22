@@ -8,4 +8,3 @@ config.mk
 tags
 modelsemi.lds
 linux-system-semi.axf
-bmguest.bin
