@@ -27,6 +27,24 @@
 #define INITIAL_MAIR1VAL 0xff000004
 #define INITIAL_MAIRVAL (INITIAL_MAIR0VAL|INITIAL_MAIR1VAL<<32)
 
+/*
+ * Attribute Indexes.
+ *
+ * These are valid in the AttrIndx[2:0] field of an LPAE stage 1 page
+ * table entry. They are indexes into the bytes of the MAIR*
+ * registers, as defined above.
+ *
+ */
+#define UNCACHED      0x0
+#define BUFFERABLE    0x1
+#define WRITETHROUGH  0x2
+#define WRITEBACK     0x3
+#define DEV_SHARED    0x4
+#define WRITEALLOC    0x7
+#define DEV_NONSHARED DEV_SHARED
+#define DEV_WC        BUFFERABLE
+#define DEV_CACHED    WRITEBACK
+
 /* SCTLR System Control Register. */
 /* HSCTLR is a subset of this. */
 #define SCTLR_TE        (1<<30)
@@ -91,7 +109,6 @@ static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
 lpaed_t *vmm_vmid_ttbl(vmid_t vmid)
 {
-#warning "_vttbr_pte_guest0/1[] are not initialized"
 	lpaed_t *ttbl = 0;
 	if ( vmid < NUM_GUESTS_STATIC ) {
 		ttbl = _vmid_ttbl[vmid];
@@ -130,6 +147,38 @@ vmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 	return VMM_STATUS_SUCCESS;
 }
 
+#define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
+
+lpaed_t vmm_lpaed_l2_block( uint64_t pa )
+{
+	lpaed_t lpaed;
+
+	// Valid Block Entry
+	lpaed.pt.valid = 1;
+	lpaed.pt.table = 0;
+
+	lpaed.bits &= ~TTBL_L2_OUTADDR_MASK;
+	lpaed.bits |= pa & TTBL_L2_OUTADDR_MASK;
+	lpaed.p2m.sbz3 = 0;
+
+	// Lower block attributes
+	lpaed.p2m.mattr = 0xA;	// 0b0101: normal memory, outer non-cacheable, inner non-cacheable
+	lpaed.p2m.read = 1;		// Read/Write
+	lpaed.p2m.write = 1;		
+	lpaed.p2m.sh = 0;	// Non-shareable
+	lpaed.p2m.af = 1;	// Access Flag set to 1?
+	lpaed.p2m.sbz4 = 0;
+
+	// Upper block attributes
+	lpaed.p2m.hint = 0;
+	lpaed.p2m.sbz2 = 0;
+	lpaed.p2m.xn = 0;	// eXecute Never = 0
+
+	lpaed.p2m.sbz1 = 0;
+
+	return lpaed;
+}
+
 void _vmm_init(void)
 {
 	int i;
@@ -138,7 +187,26 @@ void _vmm_init(void)
 	}
 
 	_vmid_ttbl[0] = &_vttbr_pte_guest0[0];
-	_vmid_ttbl[1] = &_vttbr_pte_guest0[1];
+	_vmid_ttbl[1] = &_vttbr_pte_guest1[1];
+
+	// VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
+	// PA: 0xB0000000 ~ 0xEFFFFFFF
+	// PA: 0xC0000000 ~ 0xFFFFFFFF
+	{
+		uint64_t pa = 0xB0000000;
+		uint64_t pa_end = 0xF0000000;
+		lpaed_t lpaed;
+		uart_print( "pa:"); uart_print_hex64(pa); uart_print("\n\r");
+		uart_print( "pa_end:"); uart_print_hex64(pa_end); uart_print("\n\r");
+
+		for(i = 0; pa < pa_end; i++, pa += 0x200000 ) {
+			lpaed = vmm_lpaed_l2_block(pa);
+			uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
+			_vttbr_pte_guest0[i] = lpaed;
+			lpaed = vmm_lpaed_l2_block(pa + 0x10000000);
+			_vttbr_pte_guest1[i] = lpaed;
+		}
+	}
 }
 
 int mmu_init(void)

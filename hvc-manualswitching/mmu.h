@@ -1,9 +1,9 @@
 #ifndef __MMU_H__
 #define __MMU_H__
 #include "arch_types.h"
+#include "lpae.h"
 
 /* --- VMM.H --- */
-typedef uint64_t lpaed_t;
 typedef uint8_t vmid_t; 
 typedef enum {
 	VMM_STATUS_SUCCESS = 0,

@@ -3,3 +3,8 @@ Sub-projects
     - boot-wrapper based modification for TrstZone Secure/Non-Secure world switching example
  - bmguest/
     - Bare Metal Guest Application
+- hvc-manualswitching/
+	- Prototype 1
+	- 2 bare metal guests
+	- hvc call for manual guest switching
+	- LPAE stage 2 address translation

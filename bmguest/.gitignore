@@ -7,4 +7,5 @@ config.mk
 *.swp
 tags
 modelsemi.lds
-linux-system-semi.axf
+bmguest.bin
+*.axf

@@ -8,7 +8,7 @@
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
 
-#define __DISABLE_VMM__
+//#define __DISABLE_VMM__
 
 typedef enum {
 	HYP_RESULT_ERET	= 0,
@@ -34,7 +34,7 @@ extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int current_guest = 0;
-extern void *guest_start;
+extern void *guest_bin_start;
 extern void *guest2_start;
 
 
@@ -46,6 +46,11 @@ void uart_dump_regs( struct arch_regs *regs )
 	uart_print( "pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
 	uart_print( "sp:" ); uart_print_hex32( regs->sp ); uart_print( "\n\r" );
 	uart_print( "lr:" ); uart_print_hex32( regs->lr ); uart_print( "\n\r" );
+}
+
+void hyp_abort_infinite(void)
+{
+	while(1);
 }
 
 hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
@@ -74,10 +79,14 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 			hyp_switch_to_next_guest(regs);
 			break;
 		default:
-			uart_print("[hyp] _hyp_hvc_service:unknown iss=");
-			uart_print_hex32( iss );
-			uart_print("\n\r" );
+			uart_print("[hyp] _hyp_hvc_service:unknown hsr.iss="); uart_print_hex32( iss ); uart_print("\n\r" );
+			uart_print("[hyp] hsr.ec="); uart_print_hex32( ec ); uart_print("\n\r" );
+			uart_print("[hyp] hsr="); uart_print_hex32( hsr ); uart_print("\n\r" );
 			uart_dump_regs( regs );
+			if ( ec == 0x20 ) {
+				// Prefetch Abort routed to Hyp mode
+			}
+			hyp_abort_infinite();
 			break;
 	}
 	uart_print("[hyp] _hyp_hvc_service: done\n\r");
@@ -92,13 +101,14 @@ void hyp_init_guests(void)
 	
 	uart_print("[hyp] init_guests: enter\n\r");
 
-	uart_print("[hyp] init_guests: guest_start");
-	uart_print_hex32( (unsigned int) &guest_start); uart_print("\n\r");
+	uart_print("[hyp] init_guests: guest_bin_start");
+	uart_print_hex32( (unsigned int) &guest_bin_start); uart_print("\n\r");
 
 	// Guest 1 @guest_start
 	context = &guest_contexts[0];
 	regs = &context->regs;
-	regs->pc = (unsigned int) &guest_start;
+	//regs->pc = (unsigned int) &guest_bin_start;
+	regs->pc = 0x00000000;	// PA:0xB0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
 	regs->lr	= 0;	// uninitialized
@@ -112,7 +122,8 @@ void hyp_init_guests(void)
 	// Guest 2 @guest2_bin_start
 	context = &guest_contexts[1];
 	regs = &context->regs;
-	regs->pc = (unsigned int) &guest2_start;
+	//regs->pc = (unsigned int) &guest2_start;
+	regs->pc = 0x00000000;	// PA: 0xC0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
 	regs->lr	= 0;	// uninitialized
