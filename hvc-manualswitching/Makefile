@@ -16,7 +16,7 @@ endif
 LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
 BOOTLOADER	= boot.S
-OBJS 		= boot.o monitor.o c_start.o string.o hyp_main.o monitor_imp.o uart_print.o guest.o mmu.o
+OBJS 		= boot.o monitor.o c_start.o string.o hyp_main.o monitor_imp.o uart_print.o mmu.o
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
@@ -57,8 +57,8 @@ boot.o: $(BOOTLOADER)
 monitor.o: monitor.S
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
-guest.o: guest.S
-	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
+#guest.o: guest.S
+#	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
 	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<

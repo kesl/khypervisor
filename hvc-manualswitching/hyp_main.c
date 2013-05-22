@@ -34,8 +34,6 @@ extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int current_guest = 0;
-extern void *guest_bin_start;
-extern void *guest2_start;
 
 
 static void hyp_switch_to_next_guest(struct arch_regs *regs_current);
@@ -101,13 +99,10 @@ void hyp_init_guests(void)
 	
 	uart_print("[hyp] init_guests: enter\n\r");
 
-	uart_print("[hyp] init_guests: guest_bin_start");
-	uart_print_hex32( (unsigned int) &guest_bin_start); uart_print("\n\r");
 
-	// Guest 1 @guest_start
+	// Guest 1 @guest_bin_start
 	context = &guest_contexts[0];
 	regs = &context->regs;
-	//regs->pc = (unsigned int) &guest_bin_start;
 	regs->pc = 0x00000000;	// PA:0xB0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
@@ -116,13 +111,9 @@ void hyp_init_guests(void)
 	context->vmid = 0;
 	context->ttbl = vmm_vmid_ttbl(context->vmid);
 
-	uart_print("[hyp] init_guests: guest2_start");
-	uart_print_hex32( (unsigned int) &guest2_start); uart_print("\n\r");
-
 	// Guest 2 @guest2_bin_start
 	context = &guest_contexts[1];
 	regs = &context->regs;
-	//regs->pc = (unsigned int) &guest2_start;
 	regs->pc = 0x00000000;	// PA: 0xC0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized

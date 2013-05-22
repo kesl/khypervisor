@@ -60,20 +60,7 @@ SECTIONS
 #endif
  fs_end = .;
 
-/* Guest2 image */
- . = GUEST2_OFFSET;
-#ifdef BAREMETAL_GUEST
-  guest2_bin_start = .; 
-  .guest2 : { ./bmguest2.bin }
-  guest2_bin_end = .; 
-#endif
- . = GUEST2_STACK;
- guest2_stacktop = .;
- . = GUEST2_STACK + 0x01000000; 
- guest2_stacklimit = .;
-
-
-/* Guest image between Kernel and Mon */
+/* Guest 1 */
  . = GUEST_OFFSET;
 #ifdef BAREMETAL_GUEST
   guest_bin_start = .; 
@@ -86,7 +73,20 @@ SECTIONS
  . = GUEST_STACK + 0x01000000; 
  guest_stacklimit = .;
 
-/* Hyp image follows */
+/* Guest 2 */
+ . = GUEST2_OFFSET;
+#ifdef BAREMETAL_GUEST
+  guest2_bin_start = .; 
+  .guest2 : { ./bmguest2.bin }
+  guest2_bin_end = .; 
+#endif
+ . = GUEST2_STACK;
+ guest2_stacktop = .;
+ . = GUEST2_STACK + 0x01000000; 
+ guest2_stacklimit = .;
+
+
+/* Hyp image follows: UNUSED FOR NOW */
  . = HYP_OFFSET;
  hyp_start = .;
  . = HYP_STACK;
@@ -101,17 +101,14 @@ SECTIONS
  .text : { 
 	boot.o(.text) 
 	monitor.o(.text) 
-	/* guest.o(.text) */
  }
  .data : { 
 	boot.o(.data) 
 	monitor.o(.data) 
-	/* guest.o(.data)  */
  }
  .bss : { 
 	boot.o(.bss) 
 	monitor.o(.bss) 
-	/* guest.o(.bss)  */
  }
 
  . = STACKTOP;

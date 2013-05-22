@@ -190,20 +190,25 @@ void _vmm_init(void)
 	_vmid_ttbl[1] = &_vttbr_pte_guest1[1];
 
 	// VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
-	// PA: 0xB0000000 ~ 0xEFFFFFFF
-	// PA: 0xC0000000 ~ 0xFFFFFFFF
+	// PA: 0xB0000000 ~ 0xEFFFFFFF	guest_bin_start
+	// PA: 0xC0000000 ~ 0xFFFFFFFF	guest2_bin_start
 	{
-		uint64_t pa = 0xB0000000;
-		uint64_t pa_end = 0xF0000000;
+		extern uint32_t guest_bin_start;
+		extern uint32_t guest2_bin_start;
+		//uint64_t pa = 0xB0000000;
+		uint64_t pa1 = (uint32_t) &guest_bin_start;
+		uint64_t pa1_end = 0xF0000000;
+		uint64_t pa2 = (uint32_t) &guest2_bin_start;
 		lpaed_t lpaed;
-		uart_print( "pa:"); uart_print_hex64(pa); uart_print("\n\r");
-		uart_print( "pa_end:"); uart_print_hex64(pa_end); uart_print("\n\r");
+		uart_print( "pa:"); uart_print_hex64(pa1); uart_print("\n\r");
+		uart_print( "pa_end:"); uart_print_hex64(pa1_end); uart_print("\n\r");
 
-		for(i = 0; pa < pa_end; i++, pa += 0x200000 ) {
-			lpaed = vmm_lpaed_l2_block(pa);
+		for(i = 0; pa1 < pa1_end; i++, pa1 += 0x200000, pa2 += 0x200000 ) {
+			lpaed = vmm_lpaed_l2_block(pa1);
 			uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
 			_vttbr_pte_guest0[i] = lpaed;
-			lpaed = vmm_lpaed_l2_block(pa + 0x10000000);
+
+			lpaed = vmm_lpaed_l2_block(pa2);
 			_vttbr_pte_guest1[i] = lpaed;
 		}
 	}
