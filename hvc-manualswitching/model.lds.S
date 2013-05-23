@@ -20,7 +20,7 @@ INPUT(./uImage)
 
 #ifdef BAREMETAL_GUEST
 	INPUT(./bmguest.bin)
-	INPUT(./bmguest2.bin)
+/* INPUT(./bmguest2.bin) */
 #endif
 
 PHYS_OFFSET = 0x80000000;
@@ -77,7 +77,7 @@ SECTIONS
  . = GUEST2_OFFSET;
 #ifdef BAREMETAL_GUEST
   guest2_bin_start = .; 
-  .guest2 : { ./bmguest2.bin }
+  .guest2 : { ./bmguest.bin }
   guest2_bin_end = .; 
 #endif
  . = GUEST2_STACK;
