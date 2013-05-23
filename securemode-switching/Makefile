@@ -21,7 +21,7 @@ KERNEL		= uImage
 GUESTBIN	= bmguest.bin
 
 IMAGE		= linux-system.axf
-SEMIIMG 	= linux-system-semi.axf
+SEMIIMG 	= secmon.axf
 LD_SCRIPT	= model.lds.S
 CONFIG_FLAGS	= -DBAREMETAL_GUEST
 CPPFLAGS	+= $(CONFIG_FLAGS)

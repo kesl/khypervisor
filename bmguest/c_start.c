@@ -54,6 +54,7 @@ void nrm_loop(void)
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
 
 #ifdef __MONITOR_CALL_HVC__
+	// Hyp monitor guest run in Non-secure supervisor mode
 		if (i & 0x1) {
 			uart_print(GUEST_LABEL); uart_print( "hsvc_ping()\n\r" );
 			hsvc_ping();		// hvc ping
@@ -64,6 +65,7 @@ void nrm_loop(void)
 			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_yield() \n\r" );
 		}
 #else
+	// Secure monitor guest run in Non-secure supervisor mode
 		SWITCH_MANUAL();	// -> sec_loop() in the monitor
 #endif
 		nrm_delay();
