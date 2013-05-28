@@ -36,3 +36,10 @@ $ maxview &
 $ ./run_rtsm.sh
 </pre>
 - From Max View Debugger, connect to "the" model running, load securemode-switching/secmon.axf and run to start debugging
+
+
+Tool chain
+=============
+- ARM Toolchain Shipped with DS-5
+
+arm-linux-gnueabihf-

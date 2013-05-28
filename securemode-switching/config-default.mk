@@ -14,7 +14,7 @@
 ###########################################################################
 # Main options
 #
-CROSS_COMPILE	?= arm-unknown-linux-gnueabi-
+CROSS_COMPILE	?= arm-linux-gnueabihf-
 ARCH		?= arm
 KERNEL_SRC	?= ../linux-kvm-arm
 
@@ -86,7 +86,7 @@ ifeq ($(SYSTEM),vexpress)
 
 CPPFLAGS	+= -DSMP
 #CPPFLAGS	+= -march=armv7-a -marm
-CPPFLAGS	+= -mcpu=cortex-a15
+CPPFLAGS	+= -mcpu=cortex-a15 -marm
 #CPPFLAGS	+= -DTHUMB2_KERNEL
 CPPFLAGS	+= -DVEXPRESS -g
 
