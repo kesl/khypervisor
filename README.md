@@ -8,11 +8,14 @@ Sub-projects
     - entry: 0x00000000 
     - UART Print is not working due to the UART address is not reachable (PA@0x1???????)
 
-- hvc-manualswitching/
-	- Prototype 1
-	- 2 bare metal guests
-	- hvc call for manual guest switching
-	- LPAE stage 2 address translation
+- monitor/
+    - Prototype 1
+        - 2 bare metal guests
+        - hvc call for manual guest switching
+        - LPAE stage 2 address translation
+    - Prototype 2
+        - Implementation Should Begin Shortly
+        - Directory name changed from hvc-manualswitching/
 
 Testing Secure/Non-secure World Switching, Prototype 1 Phase 2
 ==============================================================

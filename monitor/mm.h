@@ -16,6 +16,6 @@ void vmm_stage2_enable(int enable);
 vmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl );
 
 
-int mmu_init(void);
+int mm_init(void);
 
 #endif

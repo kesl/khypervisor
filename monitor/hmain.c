@@ -1,7 +1,7 @@
 
 #include "hyp_config.h"
 #include "uart_print.h"
-#include "mmu.h"
+#include "mm.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
 
@@ -199,7 +199,7 @@ void hyp_main(void)
 	uart_print("[hyp_main] Starting...\n\r");
 
 #ifndef __DISABLE_VMM__
-	mmu_init();
+	mm_init();
 #endif
 
 	hyp_init_guests();

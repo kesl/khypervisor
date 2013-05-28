@@ -1,6 +1,6 @@
 
 #include "hyp_config.h"
-#include "mmu.h"
+#include "mm.h"
 #include "uart_print.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
@@ -214,7 +214,7 @@ void _vmm_init(void)
 	}
 }
 
-int mmu_init(void)
+int mm_init(void)
 {
 /*
  *	MAIR0, MAIR1
@@ -226,7 +226,7 @@ int mmu_init(void)
  */
 	uint32_t mair, htcr, hsctlr, vtcr, hcr;
 	uint64_t httbr, vttbr;
-	uart_print( "[mmu] mmu_init: enter\n\r" );
+	uart_print( "[mm] mm_init: enter\n\r" );
 	
 	_vmm_init();
 
@@ -307,6 +307,6 @@ int mmu_init(void)
 // HCR
 	hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
 
-	uart_print( "[mmu] mmu_init: exit\n\r" );
+	uart_print( "[mm] mm_init: exit\n\r" );
 	
 }
