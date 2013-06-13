@@ -6,9 +6,9 @@
  */
 #include "timer.h"
 
-timer_status_t timer_init(void)
+hvmm_status_t timer_init(void)
 {
 	/* Not implemented yet */
 
-	return TIMER_STATUS_SUCCESS;
+	return HVMM_STATUS_SUCCESS;
 }

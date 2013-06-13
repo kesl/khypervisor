@@ -107,7 +107,7 @@ static lpaed_t _vttbr_pte_guest0[LPAE_S2L2_ENTRIES] __attribute((__aligned__(409
 static lpaed_t _vttbr_pte_guest1[LPAE_S2L2_ENTRIES] __attribute((__aligned__(4096)));
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
-lpaed_t *vmm_vmid_ttbl(vmid_t vmid)
+lpaed_t *hvmm_mm_vmid_ttbl(vmid_t vmid)
 {
 	lpaed_t *ttbl = 0;
 	if ( vmid < NUM_GUESTS_STATIC ) {
@@ -116,7 +116,7 @@ lpaed_t *vmm_vmid_ttbl(vmid_t vmid)
 	return ttbl;
 }
 
-void vmm_stage2_enable(int enable)
+void hvmm_mm_stage2_enable(int enable)
 {
 	uint32_t hcr;
 
@@ -130,7 +130,7 @@ void vmm_stage2_enable(int enable)
 	write_hcr( hcr );
 }
 
-vmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
+hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 {
 	// VTTBR.VMID = vmid
 	// VTTBR.BADDR = ttbl
@@ -144,12 +144,12 @@ vmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 	vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
 	write_vttbr(vttbr);
 	vttbr = read_vttbr(); uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
-	return VMM_STATUS_SUCCESS;
+	return HVMM_STATUS_SUCCESS;
 }
 
 #define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
 
-lpaed_t vmm_lpaed_l2_block( uint64_t pa )
+lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa )
 {
 	lpaed_t lpaed;
 
@@ -181,6 +181,9 @@ lpaed_t vmm_lpaed_l2_block( uint64_t pa )
 
 void _vmm_init(void)
 {
+	/*
+	 * Initializes Translation Table for Guests
+	 */
 	int i;
 	for( i = 0; i < NUM_GUESTS_STATIC; i++ ) {
 		_vmid_ttbl[i] = 0;
@@ -204,17 +207,17 @@ void _vmm_init(void)
 		uart_print( "pa_end:"); uart_print_hex64(pa1_end); uart_print("\n\r");
 
 		for(i = 0; pa1 < pa1_end; i++, pa1 += 0x200000, pa2 += 0x200000 ) {
-			lpaed = vmm_lpaed_l2_block(pa1);
+			lpaed = hvmm_mm_lpaed_l2_block(pa1);
 			uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
 			_vttbr_pte_guest0[i] = lpaed;
 
-			lpaed = vmm_lpaed_l2_block(pa2);
+			lpaed = hvmm_mm_lpaed_l2_block(pa2);
 			_vttbr_pte_guest1[i] = lpaed;
 		}
 	}
 }
 
-int mm_init(void)
+int hvmm_mm_init(void)
 {
 /*
  *	MAIR0, MAIR1
