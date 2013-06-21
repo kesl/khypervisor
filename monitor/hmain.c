@@ -105,7 +105,7 @@ void hyp_init_guests(void)
 	/* Guest 1 @guest_bin_start */
 	context = &guest_contexts[0];
 	regs = &context->regs;
-	regs->pc = 0x00000000;	// PA:0xB0000000
+	regs->pc = 0x00000000;	// PA:0xA0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
 	regs->lr	= 0;	// uninitialized
@@ -117,7 +117,7 @@ void hyp_init_guests(void)
 	/* Guest 2 @guest2_bin_start */
 	context = &guest_contexts[1];
 	regs = &context->regs;
-	regs->pc = 0x00000000;	// PA: 0xC0000000
+	regs->pc = 0x00000000;	// PA: 0xB0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
 	regs->lr	= 0;	// uninitialized

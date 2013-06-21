@@ -200,8 +200,8 @@ void _vmm_init(void)
 
 	/*
 	 * VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
-	 * PA: 0xB0000000 ~ 0xEFFFFFFF	guest_bin_start
-	 * PA: 0xC0000000 ~ 0xFFFFFFFF	guest2_bin_start
+	 * PA: 0xA0000000 ~ 0xDFFFFFFF	guest_bin_start
+	 * PA: 0xB0000000 ~ 0xEFFFFFFF	guest2_bin_start
 	 */
 	{
 		extern uint32_t guest_bin_start;
