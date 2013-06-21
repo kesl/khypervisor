@@ -94,5 +94,6 @@
 #define write_hcr(val)          asm volatile(\
                                 " mcr     p15, 4, %0, c1, c1, 0\n\t" \
                                 :: "r" ((val)) : "memory", "cc")
+
 #endif
 

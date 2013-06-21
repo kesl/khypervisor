@@ -107,6 +107,7 @@ static lpaed_t _vttbr_pte_guest0[LPAE_S2L2_ENTRIES] __attribute((__aligned__(409
 static lpaed_t _vttbr_pte_guest1[LPAE_S2L2_ENTRIES] __attribute((__aligned__(4096)));
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
+/* Translation Table for the specified vmid */
 lpaed_t *hvmm_mm_vmid_ttbl(vmid_t vmid)
 {
 	lpaed_t *ttbl = 0;
@@ -116,6 +117,7 @@ lpaed_t *hvmm_mm_vmid_ttbl(vmid_t vmid)
 	return ttbl;
 }
 
+/* Enable/Disable Stage2 Translation */
 void hvmm_mm_stage2_enable(int enable)
 {
 	uint32_t hcr;
@@ -132,10 +134,12 @@ void hvmm_mm_stage2_enable(int enable)
 
 hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 {
-	// VTTBR.VMID = vmid
-	// VTTBR.BADDR = ttbl
 	uint64_t vttbr;
 
+	/* 
+	 * VTTBR.VMID = vmid
+	 * VTTBR.BADDR = ttbl
+	 */
 	vttbr = read_vttbr(); uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
 	vttbr &= ~(VTTBR_VMID_MASK);
 	vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
@@ -143,12 +147,14 @@ hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 	vttbr &= ~(VTTBR_BADDR_MASK);
 	vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
 	write_vttbr(vttbr);
+
 	vttbr = read_vttbr(); uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
 	return HVMM_STATUS_SUCCESS;
 }
 
 #define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
 
+/* Level 2 Block, 2MB, entry in LPAE Descriptor format for the given physical address */
 lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa )
 {
 	lpaed_t lpaed;
@@ -182,7 +188,7 @@ lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa )
 void _vmm_init(void)
 {
 	/*
-	 * Initializes Translation Table for Guests
+	 * Initializes Translation Table for Stage2 Translation (IPA -> PA)
 	 */
 	int i;
 	for( i = 0; i < NUM_GUESTS_STATIC; i++ ) {
@@ -192,25 +198,32 @@ void _vmm_init(void)
 	_vmid_ttbl[0] = &_vttbr_pte_guest0[0];
 	_vmid_ttbl[1] = &_vttbr_pte_guest1[1];
 
-	// VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
-	// PA: 0xB0000000 ~ 0xEFFFFFFF	guest_bin_start
-	// PA: 0xC0000000 ~ 0xFFFFFFFF	guest2_bin_start
+	/*
+	 * VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
+	 * PA: 0xB0000000 ~ 0xEFFFFFFF	guest_bin_start
+	 * PA: 0xC0000000 ~ 0xFFFFFFFF	guest2_bin_start
+	 */
 	{
 		extern uint32_t guest_bin_start;
 		extern uint32_t guest2_bin_start;
-		//uint64_t pa = 0xB0000000;
+
 		uint64_t pa1 = (uint32_t) &guest_bin_start;
 		uint64_t pa1_end = 0xF0000000;
 		uint64_t pa2 = (uint32_t) &guest2_bin_start;
 		lpaed_t lpaed;
+
 		uart_print( "pa:"); uart_print_hex64(pa1); uart_print("\n\r");
 		uart_print( "pa_end:"); uart_print_hex64(pa1_end); uart_print("\n\r");
 
 		for(i = 0; pa1 < pa1_end; i++, pa1 += 0x200000, pa2 += 0x200000 ) {
-			lpaed = hvmm_mm_lpaed_l2_block(pa1);
-			uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
-			_vttbr_pte_guest0[i] = lpaed;
+			/* 2MB blocks per each entry */
 
+			/* Guest 0 */
+			lpaed = hvmm_mm_lpaed_l2_block(pa1);
+			_vttbr_pte_guest0[i] = lpaed;
+			uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
+
+			/* Guest 1 */
 			lpaed = hvmm_mm_lpaed_l2_block(pa2);
 			_vttbr_pte_guest1[i] = lpaed;
 		}
