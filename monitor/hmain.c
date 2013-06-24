@@ -51,6 +51,15 @@ void hyp_abort_infinite(void)
 	while(1);
 }
 
+/* TODO:
+	- Move trap handlers to trap.c 
+ */
+hvmm_status_t _hyp_trap_dabort( struct arch_regs *regs )
+{
+
+	uart_dump_regs( regs );
+	hyp_abort_infinite();
+}
 /*
  * hvc #imm handler
  */

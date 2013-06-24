@@ -23,7 +23,7 @@ monitor_vectors:
 	.word 0	/* undef */
 	b	handler_monitor_smc /* smc */
 	.word 0 /* pabt */
-	.word 0 /* dabt */
+	b	handler_monitor_dabt	/* dabt */
 	b	handler_monitor_hvc /* hvc */
 	.word 0 /* irq */
 	.word 0 /* fiq */
@@ -55,7 +55,7 @@ handler_monitor_hvc:
 	@ mrc	p15, 4, r0, c5, c2, 0	@ HSR -> r0
 	@ LSR	r1, r0, #HSR_EC_OFFSET
 	
-	@ service other argument values -> _hyp_hvc_service(HSR)
+	@ service other argument values -> _hyp_hvc_service(sp)
 	mov	r0, sp
 	bl	_hyp_hvc_service	@ r0: HSR
 
@@ -81,6 +81,29 @@ handler_monitor_hvc:
 	@ stay in Hyp mode
 	mrs	lr, elr_hyp
 	mov	pc, lr
+
+handler_monitor_dabt:
+	@ Push registers
+	push	{sp, lr}
+	push	{r0-r12}
+	mrs	r0, spsr_hyp
+	mrs	r1, elr_hyp
+	push	{r0, r1}
+
+	@ service other argument values -> _hyp_trap_dabort(sp)
+	mov	r0, sp
+	bl	_hyp_trap_dabort	@ r0: HSR
+
+	@ if (return == 0) execute a conditional code
+	@ tst	r0, #1			
+	@ <conditional code>
+
+	@ Pop registers
+	pop 	{r0-r1}
+	msr	spsr_hyp, r0
+	msr	elr_hyp, r1
+	ldm	sp, {r0-r14}
+	eret
 
 /*
 switch_secure_mode:

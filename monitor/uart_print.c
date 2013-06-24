@@ -3,13 +3,14 @@
 #ifdef MACH_MPS
 #define UART_BASE       0x1f005000
 #elif defined (VEXPRESS)
-#define UART_BASE       0x1c095000
+#define UART_BASE       0x1c090000
 #else
 #define UART_BASE       0x10009000
 #endif
+
 void uart_print(char *str)
 {
-        char *pUART = (char *) UART_BASE;
+        volatile char *pUART = (char *) UART_BASE;
         while(*str) {
                 *pUART = *str++;
         }
