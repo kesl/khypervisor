@@ -13,8 +13,8 @@
 #define GIC_OFFSET_GICVI	0x6000
 
 #define GICD_CTLR	0x000
-#define GICD_TYPER	0x004
-#define GICD_IIDR	0x008
+#define GICD_TYPER	(0x004/4)
+#define GICD_IIDR	(0x008/4)
 
 void gic_dump_registers(void)
 {
