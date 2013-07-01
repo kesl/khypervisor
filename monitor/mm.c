@@ -257,6 +257,8 @@ void _vmm_init(void)
 	 * PA: 0xA0000000 ~ 0xDFFFFFFF	guest_bin_start
 	 * PA: 0xB0000000 ~ 0xEFFFFFFF	guest2_bin_start
 	 */
+
+#ifdef BAREMETAL_GUEST
 	{
 		extern uint32_t guest_bin_start;
 		extern uint32_t guest2_bin_start;
@@ -283,6 +285,7 @@ void _vmm_init(void)
 			_vttbr_pte_guest1[i] = lpaed;
 		}
 	}
+#endif
 }
 
 /* 
