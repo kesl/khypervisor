@@ -11,6 +11,7 @@ OUTPUT_FORMAT("elf32-littlearm")
 OUTPUT_ARCH(arm)
 TARGET(binary)
 ENTRY(start)
+
 #ifndef SEMIHOSTING
 INPUT(./uImage)
 #ifdef USE_INITRD
@@ -62,11 +63,13 @@ SECTIONS
 
 /* Guest 1 */
  . = GUEST_OFFSET;
-#ifdef BAREMETAL_GUEST
   guest_bin_start = .; 
+#ifdef BAREMETAL_GUEST
   .guest : { ./bmguest.bin }
-  guest_bin_end = .; 
+#else
+  . = 0xE0000000;
 #endif
+  guest_bin_end = .; 
 
  . = GUEST_STACK;
  guest_stacktop = .;
@@ -75,11 +78,15 @@ SECTIONS
 
 /* Guest 2 */
  . = GUEST2_OFFSET;
-#ifdef BAREMETAL_GUEST
   guest2_bin_start = .; 
+#ifdef BAREMETAL_GUEST
   .guest2 : { ./bmguest.bin }
-  guest2_bin_end = .; 
+#else
+  . = 0xF0000000;
 #endif
+  guest2_bin_end = .; 
+
+
  . = GUEST2_STACK;
  guest2_stacktop = .;
  . = GUEST2_STACK + 0x01000000; 
