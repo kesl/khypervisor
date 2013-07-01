@@ -67,7 +67,8 @@ SECTIONS
 #ifdef BAREMETAL_GUEST
   .guest : { ./bmguest.bin }
 #else
-  . = 0xE0000000;
+	/* dummy 16 bytes space in case no guest image to be embedded */
+ . = GUEST_OFFSET + 0x00000010; 
 #endif
   guest_bin_end = .; 
 
@@ -82,7 +83,8 @@ SECTIONS
 #ifdef BAREMETAL_GUEST
   .guest2 : { ./bmguest.bin }
 #else
-  . = 0xF0000000;
+	/* dummy 16 bytes space in case no guest image to be embedded */
+ . = GUEST2_OFFSET + 0x00000010; 
 #endif
   guest2_bin_end = .; 
 

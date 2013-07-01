@@ -19,17 +19,14 @@ BOOTLOADER	= boot.S
 OBJS 		= boot.o monitor.o c_start.o string.o hmain.o monitor_imp.o uart_print.o mm.o timer.o \
 		switching.o gic.o interrupt.o
 
-#magicyaba
-#GUESTBIN	= bmguest.bin
-GUESTBIN	= n
+GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 LD_SCRIPT	= model.lds.S
-ifeq	"$(GUESTBIN)" "bmguest.bin"
-CONFIG_FLAGS	= -DBAREMETAL_GUEST
-else
+
+# Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
+#CONFIG_FLAGS	= -DBAREMETAL_GUEST
 CONFIG_FLAGS	= 
-endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS)
 
@@ -51,7 +48,6 @@ clean distclean:
 
 $(SEMIIMG): $(OBJS) modelsemi.lds
 	$(LD) -o $@ $(OBJS) --script=modelsemi.lds
-ifeq "$(GUESTBIN)" "bmguest.bin"
 $(GUESTBIN): 
 	@echo "========================================"
 	@echo "ERROR: Copy $@ from bmguest/ after building it"
@@ -59,12 +55,6 @@ $(GUESTBIN):
 	# Our intention is to cause an error and abort Makefile processing
 	# Not actually removing the file
 	@rm $@ 
-else
-$(GUESTBIN): 
-	@echo "========================================"
-	@echo "DO NOT THING"
-	@echo "======================================="
-endif
 
 boot.o: $(BOOTLOADER)
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
@@ -78,19 +68,11 @@ monitor.o: monitor.S
 %.o: %.c
 	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
 
-#hyp_only.lds: $(LD_SCRIPT) Makefile 
-	#$(CC) $(CPPFLAGS) -E -P -C -o $@ $<
-
 model.lds: $(LD_SCRIPT) Makefile 
 	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<
 
-ifeq "$(GUESTBIN)" "bmguest.bin"
 modelsemi.lds: $(LD_SCRIPT) Makefile $(GUESTBIN)
 	$(CC) $(CPPFLAGS) -DSEMIHOSTING=1 -E -P -C -o $@ $<
-else
-modelsemi.lds: $(LD_SCRIPT) Makefile 
-	$(CC) $(CPPFLAGS) -DSEMIHOSTING=1 -E -P -C -o $@ $<
-endif
 
 # Pass any target we don't know about through to the kernel makefile.
 # This is a convenience rule so we can say 'make menuconfig' etc here.
