@@ -14,8 +14,11 @@ Sub-projects
         - hvc call for manual guest switching
         - LPAE stage 2 address translation
     - Prototype 2
-        - Implementation Should Begin Shortly
         - Directory name changed from hvc-manualswitching/
+        - Implementation On-going
+            - Interrupt Handling through GICv2
+            - Generic Timer and Scheduler (Round-robin)
+            - Boot loader
 
 Building Hypervisor (Monitor)
 -----------------------------

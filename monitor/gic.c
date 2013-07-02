@@ -136,6 +136,7 @@ hvmm_status_t gic_init_gicd(void)
 	uart_print( " cpus:"); uart_print_hex32(_gic.cpus);
 	uart_print( " IID:" ); uart_print_hex32(_gic.ba_gicd[GICD_IIDR]); uart_print("\n\r");
 
+	/* TODO: Continue further initialization of GIC Distributor immediately */
 
 
 	/* Enable Distributor */
@@ -159,6 +160,9 @@ hvmm_status_t gic_init(void)
 		gic_dump_registers();
 	}
 
+	/*
+	 * Initialize GIC Distributor
+	 */
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		result = gic_init_gicd();
 	}
