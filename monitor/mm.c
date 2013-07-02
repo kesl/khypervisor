@@ -119,9 +119,13 @@
 
 static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
 
-/* Statically allocated for now */
-static lpaed_t _vttbr_pte_guest0[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
-static lpaed_t _vttbr_pte_guest1[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+/*
+ * Stage 2 Translation Table, look up begins at second level
+ * VTTBR.BADDR[31:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range, VTCR.SL0 = 0(2nd), 16KB aligned base address
+ * Statically allocated for now
+ */
+static lpaed_t _vttbr_pte_guest0[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
+static lpaed_t _vttbr_pte_guest1[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
 /* Translation Table for the specified vmid */
