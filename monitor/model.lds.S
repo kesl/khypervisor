@@ -31,11 +31,12 @@ STACKTOP = 0xff000000;
 /* NS.SVC mode code space 
  * - simon
  */
+GUEST_SIZE_MAX	= 0x0F000000;
 GUEST_OFFSET  	= 0xA0000000;
-GUEST_STACK  	= 0xAF000000;
+GUEST_STACK  	= GUEST_OFFSET + GUEST_SIZE_MAX;
 
 GUEST2_OFFSET	= 0xB0000000;
-GUEST2_STACK	= 0xBF000000;
+GUEST2_STACK	= GUEST2_OFFSET + GUEST_SIZE_MAX;
 
 HYP_OFFSET	= 0xD0000000;
 HYP_STACK	= 0xDF000000;
@@ -67,8 +68,8 @@ SECTIONS
 #ifdef BAREMETAL_GUEST
   .guest : { ./bmguest.bin }
 #else
-	/* dummy 16 bytes space in case no guest image to be embedded */
- . = GUEST_OFFSET + 0x00000010; 
+	/* dummy space for guest */
+ . = GUEST_OFFSET + GUEST_SIZE_MAX;
 #endif
   guest_bin_end = .; 
 
@@ -83,8 +84,8 @@ SECTIONS
 #ifdef BAREMETAL_GUEST
   .guest2 : { ./bmguest.bin }
 #else
-	/* dummy 16 bytes space in case no guest image to be embedded */
- . = GUEST2_OFFSET + 0x00000010; 
+	/* dummy space for guest */
+ . = GUEST2_OFFSET + GUEST_SIZE_MAX; 
 #endif
   guest2_bin_end = .; 
 
