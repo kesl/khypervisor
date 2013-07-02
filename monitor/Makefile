@@ -32,22 +32,39 @@ CPPFLAGS	+= $(CONFIG_FLAGS)
 
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
+#magicyaba 
+#for armflash.bin
+OBJCOPY		= $(CROSS_COMPILE)objcopy
+DD		= dd
+HYPBIN		= hvc-man-switch.bin
+FLASHIMG	= armflash.bin
+#magicyaba
 
 # These are needed by the underlying kernel make
 export CROSS_COMPILE ARCH
 
 # Build all wrappers
-all: $(SEMIIMG)
+all: $(FLASHIMG)
 
 # Build just the semihosting wrapper
 semi: $(SEMIIMG)
 
 clean distclean:
-	rm -f $(SEMIIMG) \
+	rm -f $(SEMIIMG) $(HYPBIN) $(FLASHIMG) \
 	model.lds modelsemi.lds $(OBJS) 
 
 $(SEMIIMG): $(OBJS) modelsemi.lds
 	$(LD) -o $@ $(OBJS) --script=modelsemi.lds
+
+$(HYPBIN): $(SEMIIMG)
+	$(OBJCOPY) -O binary $(SEMIIMG) $(HYPBIN) 
+
+$(FLASHIMG): $(HYPBIN) $(GUESTBIN)
+	$(DD) if=/dev/zero of=$(FLASHIMG) bs=1 count=3M
+	$(DD) if=$(HYPBIN) of=$(FLASHIMG) conv=notrunc bs=1
+	$(DD) if=$(GUESTBIN) of=$(FLASHIMG) conv=notrunc bs=1 seek=1M
+	$(DD) if=$(GUESTBIN) of=$(FLASHIMG) conv=notrunc bs=1 seek=2M
+
 $(GUESTBIN): 
 	@echo "========================================"
 	@echo "ERROR: Copy $@ from bmguest/ after building it"
