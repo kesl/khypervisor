@@ -17,6 +17,18 @@ Sub-projects
         - Implementation Should Begin Shortly
         - Directory name changed from hvc-manualswitching/
 
+Building Hypervisor (Monitor)
+-----------------------------
+
+<code>
+$ cd monitor
+$ make UBOOT=y ; Build image for U-boot loading: armflash.bin
+or
+$ make UBOOT=n ; Build ELF image: hvc-man-switch.axf (can be loaded from FastModels as an application)
+
+$ make ; without UBOOT variable is equivalent as UBOOT=n
+</code>
+
 Testing Secure/Non-secure World Switching, Prototype 1 Phase 2
 ==============================================================
 1. Build bmguest/
@@ -63,14 +75,16 @@ make vexpress_ca15_tc2
 </pre>
 
 2. Build bmguest/
-<pre>
-same as 1. Build bmguest/ in Testing Secure/Non-secure World Switching
-</pre>
+<code>
+$ cd bmguest/
+$ make GUESTTYPE=GUEST_HYPMON
+$ cp bmguest.bin ../monitor
+</code>
 
 3. Build Hypervisor Prototype 2: armflash.bin
 <pre>
 $ cd monitor
-$ make
+$ make UBOOT=y
 </pre>
 
 4.Loading armflash.bin on FastModels MaxView + RTSM VE Cortex A15-A7

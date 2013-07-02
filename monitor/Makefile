@@ -5,6 +5,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.txt file.
 
+# Usage: make [UBOOT=y]
+# Example:
+# 	$ make UBOOT=y 	; # build for U-boot loading and armflash.bin generated
+#
+# 	$ make UBOOT=n 	; # build ELF image for FastModels loading: hvc-man-switch.axf
+#	$ make 		; same as UBOOT=n
 
 # Include config file (prefer config.mk, fall back to config-default.mk)
 ifneq ($(wildcard config.mk),)
@@ -25,8 +31,11 @@ SEMIIMG 	= hvc-man-switch.axf
 LD_SCRIPT	= model.lds.S
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
-#CONFIG_FLAGS	= -DBAREMETAL_GUEST
+ifeq ($(UBOOT),y)
 CONFIG_FLAGS	= 
+else
+CONFIG_FLAGS	= -DBAREMETAL_GUEST
+endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS)
 
@@ -44,8 +53,11 @@ FLASHIMG	= armflash.bin
 export CROSS_COMPILE ARCH
 
 # Build all wrappers
+ifeq ($(UBOOT),y)
 all: $(FLASHIMG)
-
+else
+all: semi
+endif
 # Build just the semihosting wrapper
 semi: $(SEMIIMG)
 
