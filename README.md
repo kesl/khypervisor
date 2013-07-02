@@ -16,9 +16,6 @@ Sub-projects
     - Prototype 2
         - Implementation Should Begin Shortly
         - Directory name changed from hvc-manualswitching/
-- test/
-    - Hvc_man_switch.axf binary is divide hypervisor and guest OSes
-    - U-boot support 
 
 Testing Secure/Non-secure World Switching, Prototype 1 Phase 2
 ==============================================================
@@ -35,7 +32,7 @@ $ cd securemode-switching
 $ make semi
 </pre>
 
-3. Run and Debug on DS-5 or FastModels MaxView + RTSM VE Cortext A15-A7
+3. Run and Debug on DS-5 or FastModels MaxView + RTSM VE Cortex A15-A7
 <pre>
 $ maxview &
 <i> Under securemode-switching/ directory </i>
@@ -45,6 +42,18 @@ $ ./run_rtsm.sh
 
 Testing Hypervisor Prototype 2 with u-boot
 ==========================================
+Project branch information: test
+u-boot version information
+- tag: v2013.07-rc2
+- commit hash: e6bf18dba2a21bebf2c421b1c2e188225f6485a1
+- target board: vexpress_ca15_tc2
+- compiler: Sourcery CodeBench Lite 2013.05-23(gcc version: 4.7.3)
+Directory infomation
+- HYP: project root directory
+- UBOOT: uboot root directory
+
+
+
 1. Build u-boot 
 <pre>
 $ git clone git://git.denx.de/u-boot.git
@@ -62,19 +71,26 @@ $ cd monitor
 $ make
 </pre>
 
-4.Loading armflash.bin on FastModels MaxView + RTSM VE Cortext A15-A7
+4.Loading armflash.bin on FastModels MaxView + RTSM VE Cortex A15-A7
 <pre>
+- Loading flash image with RTSM VE 
 $ RTSM_VE_Cortex-A15x1-A7x1 --cadi-server -C motherboard.flashloader0.fname=$(HYP)/monitor/armflash.bin &
-<i> $(HYP) is absolute path of hypervisor prototype 2 </i>
+- Loading u-boot on Maxview
 $ maxview &
+- From Maxview Debugger, connect to "the" model running, load u-boot and run to start debugging
+<i> how to load application code in maxview </i>
+Click the file tab-load application code 
+select '$(UBOOT)/u-boot'(without file extension; filetype: data)
+Click the run icon in toolbar
 </pre>
 
 5.Copy hypervisor prototype 2 flash image to main memory 
 <pre>
 <i> in u-boot prompt </i>
-VExpress# cp.b 0x8000000 0xf0000000 0x100000
-VExpress# cp.b 0x8100000 0xa0000000 0x100000
-VExpress# cp.b 0x8200000 0xb0000000 0x100000
+VExpress# cp.b 0x8000000 0xf0000000 0x100000; copy hypervisor from flash@0x800_0000 to DRAM@0xf000_0000
+VExpress# cp.b 0x8100000 0xa0000000 0x100000; copy guest os#1 from flash@0x810_0000 to DRAM@0xA000_0000
+VExpress# cp.b 0x8200000 0xb0000000 0x100000; copy guest os#2 from flash@0x820_0000 to DRAM@0xB000_0000
+VExpress# go 0xf000004c; this address is entry point of hypervisor
 </pre>
 
 
