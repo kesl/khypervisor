@@ -57,7 +57,9 @@ Directory infomation
 1. Build u-boot 
 <pre>
 $ git clone git://git.denx.de/u-boot.git
-$ make vexpress_ca15_tc2_config; make or make vexpress_ca15_tc2
+$ make vexpress_ca15_tc2_config; make 
+or 
+make vexpress_ca15_tc2
 </pre>
 
 2. Build bmguest/
