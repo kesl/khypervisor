@@ -1,6 +1,8 @@
 #include "gic.h"
+#include "armv7_p15.h"
 #include "a15_cp15_sysregs.h"
 #include "uart_print.h"
+#include "smp.h"
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -18,7 +20,10 @@
 #define GICD_CTLR	0x000
 #define GICD_TYPER	(0x004/4)
 #define GICD_IIDR	(0x008/4)
-
+#define GICD_IPRIORITYR	(0x400/4)
+#define GICD_ICFGR	(0xC00/4)
+#define GICD_ICENABLER	(0x180/4)
+#define GICD_ITARGETSR	(0x800/4) 
 
 #define GICD_CTLR_ENABLE	0x1
 #define GICD_TYPE_LINES_MASK	0x01f
@@ -123,6 +128,8 @@ hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 hvmm_status_t gic_init_gicd(void)
 {
 	uint32_t type;
+	int i;
+	uint32_t cpumask;
 
 	HVMM_TRACE_ENTER();
 
@@ -136,12 +143,32 @@ hvmm_status_t gic_init_gicd(void)
 	uart_print( " cpus:"); uart_print_hex32(_gic.cpus);
 	uart_print( " IID:" ); uart_print_hex32(_gic.ba_gicd[GICD_IIDR]); uart_print("\n\r");
 
-	/* TODO: Continue further initialization of GIC Distributor immediately */
+	/* Interrupt polarity for SPIs (Global Interrupts) active-low */
+	for( i = 32; i < _gic.lines; i += 16 ) {
+		_gic.ba_gicd[GICD_ICFGR + i / 16] = 0x0;
+	}
+
+	/* Default Priority for all Interrupts */
+	for( i = 0; i < _gic.lines; i+= 4 ) {
+		_gic.ba_gicd[GICD_IPRIORITYR + i / 4] = 0xa0a0a0a0;
+	}
+
+	/* Disable all interrupts */
+	for( i = 0; i < _gic.lines; i+= 32 ) {
+		_gic.ba_gicd[GICD_ICENABLER + i / 32] = 0xFFFFFFFF;
+	}
+
+	/* Route all global IRQs to this CPU */
+	cpumask = 1 << smp_processor_id();
+	cpumask |= cpumask << 8;
+	cpumask |= cpumask << 16;
+	for( i = 32; i < _gic.lines; i += 4 ) {
+		_gic.ba_gicd[GICD_ITARGETSR + i / 4] = cpumask;
+	}
 
 
 	/* Enable Distributor */
 	_gic.ba_gicd[GICD_CTLR] = GICD_CTLR_ENABLE;
-
 	HVMM_TRACE_EXIT();
 	return HVMM_STATUS_SUCCESS;
 }

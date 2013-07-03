@@ -392,14 +392,15 @@ int hvmm_mm_init(void)
 // HCR
 	hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
 
-	
-
 // HTCR
-	// Shareability - SH0[13:12] = 0 - Not shared
-	// Outer Cacheability - ORGN0[11:10] = 11b - Write Back no Write Allocate Cacheable
-	// Inner Cacheability - IRGN0[9:8] = 11b - Same
-	// T0SZ[2:0] = 0 - 2^32 Input Address 
-#if 0
+	/*
+	 * Shareability - SH0[13:12] = 0 - Not shared
+	 * Outer Cacheability - ORGN0[11:10] = 11b - Write Back no Write Allocate Cacheable
+	 * Inner Cacheability - IRGN0[9:8] = 11b - Same
+	 * T0SZ[2:0] = 0 - 2^32 Input Address 
+	 */
+	/* Untested code commented */
+/*
 	htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); uart_print("\n\r");
 	htcr &= ~HTCR_SH0_MASK;
 	htcr |= (0x0 << HTCR_SH0_SHIFT) & HTCR_SH0_MASK;
@@ -411,9 +412,9 @@ int hvmm_mm_init(void)
 	htcr |= (0x0 << HTCR_T0SZ_SHIFT) & HTCR_T0SZ_MASK;
 	write_htcr( htcr );
 	htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); uart_print("\n\r");
-#endif
+*/
 
-// HTTBR = &__hmm_pgtable
+	/* HTTBR = &__hmm_pgtable */
 	httbr = read_httbr(); uart_print( "httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
 	httbr &= 0xFFFFFFFF00000000ULL;
 	httbr |= (uint32_t) &_hmm_pgtable;
@@ -422,21 +423,23 @@ int hvmm_mm_init(void)
 	write_httbr( httbr );
 	httbr = read_httbr(); uart_print( "read back httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
 
-// TODO: Write PTE to __hmm_pgtable
-#if 1
 	/* Enable PL2 Stage 1 MMU */
-	// HSCTLR Enable MMU and D-cache
+
 	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
+
+		/* HSCTLR Enable MMU and D-cache */
 	// hsctlr |= (SCTLR_M |SCTLR_C);
 	hsctlr |= (SCTLR_M);
 	
-	// Flush PTE writes
+		/* Flush PTE writes */
 	asm("dsb");
+
 	write_hsctlr( hsctlr );
-	// Flush iCache
+
+		/* Flush iCache */
 	asm("isb");
+
 	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
-#endif
 
 	uart_print( "[mm] mm_init: exit\n\r" );
 	

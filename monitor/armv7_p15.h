@@ -95,5 +95,13 @@
                                 " mcr     p15, 4, %0, c1, c1, 0\n\t" \
                                 :: "r" ((val)) : "memory", "cc")
 
+#define read_midr()              ({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c0, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+
+#define read_mpidr()              ({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c0, c0, 5\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+
 #endif
 

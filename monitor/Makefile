@@ -23,7 +23,7 @@ LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
 BOOTLOADER	= boot.S
 OBJS 		= boot.o monitor.o c_start.o string.o hmain.o monitor_imp.o uart_print.o mm.o timer.o \
-		switching.o gic.o interrupt.o
+		switching.o gic.o interrupt.o smp.o
 
 GUESTBIN	= bmguest.bin
 
