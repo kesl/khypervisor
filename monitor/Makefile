@@ -91,9 +91,6 @@ boot.o: $(BOOTLOADER)
 monitor.o: monitor.S
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
-#guest.o: guest.S
-#	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
-
 %.o: %.c
 	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
 

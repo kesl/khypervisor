@@ -101,6 +101,30 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 	return HYP_RESULT_ERET;
 }
 
+void _hyp_fixup_unloaded_guest(void)
+{
+	extern uint32_t guest_bin_start;
+	extern uint32_t guest_bin_end;
+	extern uint32_t guest2_bin_start;
+
+	uint32_t *src = &guest_bin_start;
+        uint32_t *end = &guest_bin_end;
+	uint32_t *dst = &guest2_bin_start;
+
+	HVMM_TRACE_ENTER();
+
+	uart_print("Copying guest0 image to guest1\n\r");
+	uart_print(" src:");uart_print_hex32((uint32_t)src); 
+	uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
+	uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(uint32_t));uart_print("\n\r");
+
+	while(src < end ) {
+		*dst = *src++;
+	}
+	uart_print("=== done ===\n\r");
+	HVMM_TRACE_EXIT();
+}
+
 void hyp_init_guests(void)
 {
 	struct hyp_guest_context *context;
@@ -133,6 +157,10 @@ void hyp_init_guests(void)
 	context->vmid = 1;
 	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
 
+#ifdef BAREMETAL_GUEST
+	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
+	_hyp_fixup_unloaded_guest();
+#endif
 	uart_print("[hyp] init_guests: return\n\r");
 }
 

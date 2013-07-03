@@ -20,15 +20,23 @@
 #define GICD_CTLR	0x000
 #define GICD_TYPER	(0x004/4)
 #define GICD_IIDR	(0x008/4)
-#define GICD_IPRIORITYR	(0x400/4)
-#define GICD_ICFGR	(0xC00/4)
+#define GICD_ISENABLER	(0x100/4)
 #define GICD_ICENABLER	(0x180/4)
+#define GICD_IPRIORITYR	(0x400/4)
 #define GICD_ITARGETSR	(0x800/4) 
+#define GICD_ICFGR	(0xC00/4)
+
+#define GICC_CTLR	(0x0000/4)
+#define GICC_PMR	(0x0004/4)
+#define GICC_BPR	(0x0008/4)
 
 #define GICD_CTLR_ENABLE	0x1
 #define GICD_TYPE_LINES_MASK	0x01f
 #define GICD_TYPE_CPUS_MASK	0x0e0
 #define GICD_TYPE_CPUS_SHIFT	5
+
+#define GICC_CTL_ENABLE 	0x1
+#define GICC_CTL_EOI    	(0x1 << 9)
 
 struct gic {
 	uint32_t baseaddr;
@@ -125,7 +133,7 @@ hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 }
 
 
-hvmm_status_t gic_init_gicd(void)
+hvmm_status_t gic_init_dist(void)
 {
 	uint32_t type;
 	int i;
@@ -148,13 +156,17 @@ hvmm_status_t gic_init_gicd(void)
 		_gic.ba_gicd[GICD_ICFGR + i / 16] = 0x0;
 	}
 
-	/* Default Priority for all Interrupts */
-	for( i = 0; i < _gic.lines; i+= 4 ) {
+	/* Default Priority for all Interrupts
+	 * Private/Banked interrupts will be configured separately 
+	 */
+	for( i = 32; i < _gic.lines; i+= 4 ) {
 		_gic.ba_gicd[GICD_IPRIORITYR + i / 4] = 0xa0a0a0a0;
 	}
 
-	/* Disable all interrupts */
-	for( i = 0; i < _gic.lines; i+= 32 ) {
+	/* Disable all global interrupts. 
+	 * Private/Banked interrupts will be configured separately 
+	 */
+	for( i = 32; i < _gic.lines; i+= 32 ) {
 		_gic.ba_gicd[GICD_ICENABLER + i / 32] = 0xFFFFFFFF;
 	}
 
@@ -173,6 +185,32 @@ hvmm_status_t gic_init_gicd(void)
 	return HVMM_STATUS_SUCCESS;
 }
 
+/* Initializes GICv2 CPU Interface */
+hvmm_status_t gic_init_cpui(void)
+{
+	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+	int i;
+
+	/* Disable forwarding PPIs(ID16~31) */
+	_gic.ba_gicd[GICD_ICENABLER] = 0xFFFF0000;
+	/* Enable forwarding SGIs(ID0~15) */
+	_gic.ba_gicd[GICD_ISENABLER] = 0x0000FFFF;
+	
+	/* Default priority for SGIs and PPIs */
+	for( i = 0; i < 32; i += 4 ) {
+		_gic.ba_gicd[GICD_IPRIORITYR | i/4] = 0xa0a0a0a0;
+	}
+
+	/* No Priority Masking: the lowest value as the threshold : 255 */
+	_gic.ba_gicc[GICC_PMR] = 0xFF;
+	_gic.ba_gicc[GICC_BPR] = 0x0;
+
+	/* Enable signaling of interrupts and GICC_EOIR only drops priority */
+	_gic.ba_gicc[GICC_CTLR] = GICC_CTL_ENABLE | GICC_CTL_EOI;
+
+	return result;
+}
+
 hvmm_status_t gic_init(void)
 {
 	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -188,11 +226,74 @@ hvmm_status_t gic_init(void)
 	}
 
 	/*
-	 * Initialize GIC Distributor
+	 * Initialize and Enable GIC Distributor
 	 */
 	if ( result == HVMM_STATUS_SUCCESS ) {
-		result = gic_init_gicd();
+		result = gic_init_dist();
 	}
+
+	/*
+	 * Initialize and Enable GIC CPU Interface for this CPU
+	 */
+	if ( result == HVMM_STATUS_SUCCESS ) {
+		result = gic_init_cpui();
+	}
+
 	HVMM_TRACE_EXIT();
 	return result;
 }
+
+/*
+ * Note: Sequence of Routing and Requesting an IRQ
+
+1. Routing
+
+1.1 Disable Routing
+	GICD_ICENABLER[irq] = 1
+
+static void gic_irq_shutdown(struct irq_desc *desc)
+{
+    int irq = desc->irq;
+
+    // Disable forwarding 
+    GICD[GICD_ICENABLER + irq / 32] = (1u << (irq % 32));
+}
+
+1.2 Edge/Level
+	GICD_ICFGR[irq] = edge | level
+
+1.3 Routing: Target CPU
+	GICD_ITARGETSR[irq] = cpumask
+
+1.4 Priority
+	GICD_IPRIORITY[irq] = priority
+** Example
+
+// needs to be called with gic.lock held
+static void gic_set_irq_properties(unsigned int irq, bool_t level,
+        unsigned int cpu_mask, unsigned int priority)
+{
+    volatile unsigned char *bytereg;
+    uint32_t cfg, edgebit;
+
+    // Set edge / level 
+    cfg = GICD[GICD_ICFGR + irq / 16];
+    edgebit = 2u << (2 * (irq % 16));
+    if ( level )
+        cfg &= ~edgebit;
+    else
+        cfg |= edgebit;
+    GICD[GICD_ICFGR + irq / 16] = cfg;
+
+    // Set target CPU mask (RAZ/WI on uniprocessor) 
+    bytereg = (unsigned char *) (GICD + GICD_ITARGETSR);
+    bytereg[irq] = cpu_mask;
+
+    // Set priority 
+    bytereg = (unsigned char *) (GICD + GICD_IPRIORITYR);
+    bytereg[irq] = priority;
+}
+
+2. Enable Forwarding
+	GICD_ISENABLER[irq] = enable
+ */
