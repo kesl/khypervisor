@@ -1,10 +1,6 @@
-#ifdef MACH_MPS
-#define UART_BASE       0x1f005000
-#elif defined (VEXPRESS)
-#define UART_BASE       0x1c095000
-#else
-#define UART_BASE       0x10009000
-#endif
+#define UART_BASE       (&_dummy_byte)
+
+static char _dummy_byte;
 
 void uart_print(char *str)
 {
