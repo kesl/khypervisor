@@ -8,7 +8,7 @@
 #define UART_BASE       0x10009000
 #endif
 
-void uart_print(char *str)
+void uart_print(const char *str)
 {
         volatile char *pUART = (char *) UART_BASE;
         while(*str) {
@@ -16,13 +16,13 @@ void uart_print(char *str)
         }
 }
 
-void uart_putc( char c )
+void uart_putc( const char c )
 {
         volatile char *pUART = (char *) UART_BASE;
 	*pUART = c;
 }
 
-void uart_print_hex32( unsigned int v )
+void uart_print_hex32( uint32_t v )
 {
 	unsigned int mask8 = 0xF;
 	unsigned int c;

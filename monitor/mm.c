@@ -119,9 +119,13 @@
 
 static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
 
-/* Statically allocated for now */
-static lpaed_t _vttbr_pte_guest0[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
-static lpaed_t _vttbr_pte_guest1[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+/*
+ * Stage 2 Translation Table, look up begins at second level
+ * VTTBR.BADDR[31:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range, VTCR.SL0 = 0(2nd), 16KB aligned base address
+ * Statically allocated for now
+ */
+static lpaed_t _vttbr_pte_guest0[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
+static lpaed_t _vttbr_pte_guest1[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
 /* Translation Table for the specified vmid */
@@ -300,7 +304,7 @@ void _hmm_init(void)
 	 * Partition 2: 0x80000000 ~ 0xBFFFFFFF	- Guest	     - UNCACHED
 	 * Partition 3: 0xC0000000 ~ 0xEFFFFFFF	- Monitor    - WRITEBACK
 	 */
-	_hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+	_hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[0]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[0]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[0].bits); uart_print("\n\r");
 	_hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
@@ -309,7 +313,7 @@ void _hmm_init(void)
 	_hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[2]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[2]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[2].bits); uart_print("\n\r");
-	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_block(pa, WRITEBACK); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[3]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[3]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[3].bits); uart_print("\n\r");
 	for ( i = 4; i < HMM_L1_PAGETABLE_ENTRIES; i++ ) {

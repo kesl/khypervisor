@@ -5,6 +5,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.txt file.
 
+# Usage: make [UBOOT=y]
+# Example:
+# 	$ make UBOOT=y 	; # build for U-boot loading and armflash.bin generated
+#
+# 	$ make UBOOT=n 	; # build ELF image for FastModels loading: hvc-man-switch.axf
+#	$ make 		; same as UBOOT=n
 
 # Include config file (prefer config.mk, fall back to config-default.mk)
 ifneq ($(wildcard config.mk),)
@@ -18,31 +24,58 @@ LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 BOOTLOADER	= boot.S
 OBJS 		= boot.o monitor.o c_start.o string.o hmain.o monitor_imp.o uart_print.o mm.o timer.o \
 		switching.o gic.o interrupt.o
+
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 LD_SCRIPT	= model.lds.S
+
+# Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
+ifeq ($(UBOOT),y)
+CONFIG_FLAGS	= 
+else
 CONFIG_FLAGS	= -DBAREMETAL_GUEST
+endif
+
 CPPFLAGS	+= $(CONFIG_FLAGS)
 
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
+#magicyaba 
+#for armflash.bin
+OBJCOPY		= $(CROSS_COMPILE)objcopy
+DD		= dd
+HYPBIN		= hvc-man-switch.bin
+FLASHIMG	= armflash.bin
+#magicyaba
 
 # These are needed by the underlying kernel make
 export CROSS_COMPILE ARCH
 
 # Build all wrappers
-all: $(SEMIIMG)
-
+ifeq ($(UBOOT),y)
+all: $(FLASHIMG)
+else
+all: semi
+endif
 # Build just the semihosting wrapper
 semi: $(SEMIIMG)
 
 clean distclean:
-	rm -f $(SEMIIMG) \
+	rm -f $(SEMIIMG) $(HYPBIN) $(FLASHIMG) \
 	model.lds modelsemi.lds $(OBJS) 
 
 $(SEMIIMG): $(OBJS) modelsemi.lds
 	$(LD) -o $@ $(OBJS) --script=modelsemi.lds
+
+$(HYPBIN): $(SEMIIMG)
+	$(OBJCOPY) -O binary $(SEMIIMG) $(HYPBIN) 
+
+$(FLASHIMG): $(HYPBIN) $(GUESTBIN)
+	$(DD) if=/dev/zero of=$(FLASHIMG) bs=1 count=3M
+	$(DD) if=$(HYPBIN) of=$(FLASHIMG) conv=notrunc bs=1
+	$(DD) if=$(GUESTBIN) of=$(FLASHIMG) conv=notrunc bs=1 seek=1M
+	$(DD) if=$(GUESTBIN) of=$(FLASHIMG) conv=notrunc bs=1 seek=2M
 
 $(GUESTBIN): 
 	@echo "========================================"
