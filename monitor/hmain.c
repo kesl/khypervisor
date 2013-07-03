@@ -148,6 +148,7 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	 */
 	/* Disable Stage 2 Translation: HCR.VM = 0 */
 	hvmm_mm_stage2_enable(0);
+
 	if ( regs_current != 0 ) {
 		/* save the current guest's context if any */
 		context = &guest_contexts[current_guest];
