@@ -443,4 +443,5 @@ int hvmm_mm_init(void)
 
 	uart_print( "[mm] mm_init: exit\n\r" );
 	
+	return HVMM_STATUS_SUCCESS;
 }

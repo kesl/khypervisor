@@ -29,6 +29,9 @@
 #define GICC_CTLR	(0x0000/4)
 #define GICC_PMR	(0x0004/4)
 #define GICC_BPR	(0x0008/4)
+#define GICC_IAR	(0x000C/4)
+#define GICC_EOIR	(0x0010/4)
+#define GICC_DIR	(0x1000/4)
 
 #define GICD_CTLR_ENABLE	0x1
 #define GICD_TYPE_LINES_MASK	0x01f
@@ -37,6 +40,13 @@
 
 #define GICC_CTL_ENABLE 	0x1
 #define GICC_CTL_EOI    	(0x1 << 9)
+#define GICC_IAR_INTID_MASK	0x03ff
+
+#define GIC_INT_PRIORITY_DEFAULT_WORD	( (GIC_INT_PRIORITY_DEFAULT << 24 ) \
+										 |(GIC_INT_PRIORITY_DEFAULT << 16 ) \
+										 |(GIC_INT_PRIORITY_DEFAULT << 8 ) \
+										 |(GIC_INT_PRIORITY_DEFAULT ) )
+#define GIC_NUM_MAX_IRQS	1024
 
 struct gic {
 	uint32_t baseaddr;
@@ -47,11 +57,14 @@ struct gic {
 	volatile uint32_t *ba_gicvi;
 	uint32_t lines;
 	uint32_t cpus;
+	gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
 };
+
 
 static struct gic _gic;
 
-void gic_dump_registers(void)
+
+static void gic_dump_registers(void)
 {
 
 	uint32_t midr;
@@ -77,7 +90,7 @@ void gic_dump_registers(void)
 }
 
 
-uint64_t gic_periphbase_pa(void)
+static uint64_t gic_periphbase_pa(void)
 {
 // CBAR:   4,  c0,   0
 // MRC p15, 4, <Rt>, c15, c0, 0; Read Configuration Base Address Register
@@ -91,7 +104,7 @@ uint64_t gic_periphbase_pa(void)
 	return periphbase;
 }
 
-hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
+static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 {
 // MIDR[15:4], CRn:c0, Op1:0, CRm:c0, Op2:0  == 0xC0F (Cortex-A15)
 // Cortex-A15 C15 System Control, C15 Registers
@@ -133,7 +146,7 @@ hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 }
 
 
-hvmm_status_t gic_init_dist(void)
+static hvmm_status_t gic_init_dist(void)
 {
 	uint32_t type;
 	int i;
@@ -160,7 +173,7 @@ hvmm_status_t gic_init_dist(void)
 	 * Private/Banked interrupts will be configured separately 
 	 */
 	for( i = 32; i < _gic.lines; i+= 4 ) {
-		_gic.ba_gicd[GICD_IPRIORITYR + i / 4] = 0xa0a0a0a0;
+		_gic.ba_gicd[GICD_IPRIORITYR + i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
 	}
 
 	/* Disable all global interrupts. 
@@ -186,7 +199,7 @@ hvmm_status_t gic_init_dist(void)
 }
 
 /* Initializes GICv2 CPU Interface */
-hvmm_status_t gic_init_cpui(void)
+static hvmm_status_t gic_init_cpui(void)
 {
 	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 	int i;
@@ -198,7 +211,7 @@ hvmm_status_t gic_init_cpui(void)
 	
 	/* Default priority for SGIs and PPIs */
 	for( i = 0; i < 32; i += 4 ) {
-		_gic.ba_gicd[GICD_IPRIORITYR | i/4] = 0xa0a0a0a0;
+		_gic.ba_gicd[GICD_IPRIORITYR | i/4] = GIC_INT_PRIORITY_DEFAULT_WORD;
 	}
 
 	/* No Priority Masking: the lowest value as the threshold : 255 */
@@ -211,11 +224,40 @@ hvmm_status_t gic_init_cpui(void)
 	return result;
 }
 
+/* API functions */
+hvmm_status_t gic_enable_irq(uint32_t irq)
+{
+	_gic.ba_gicd[GICD_ISENABLER + irq / 32] = (1u << (irq % 32));
+	return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t gic_disable_irq(uint32_t irq)
+{
+	_gic.ba_gicd[GICD_ICENABLER + irq / 32] = (1u << (irq % 32));
+	return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler, void *pdata )
+{
+	hvmm_status_t result = HVMM_STATUS_BUSY;
+	if ( irq < GIC_NUM_MAX_IRQS ) {
+		_gic.handlers[irq] = handler;
+		result = HVMM_STATUS_SUCCESS;
+	}
+	return result;
+}
+
 hvmm_status_t gic_init(void)
 {
 	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+	int i;
 
 	HVMM_TRACE_ENTER();
+
+	for( i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+		_gic.handlers[i] = 0;
+	}
+	
 	/*
 	 * Determining VA of GIC base adddress has not been defined yet. Let is use the PA for the time being
 	 */
@@ -242,6 +284,7 @@ hvmm_status_t gic_init(void)
 	HVMM_TRACE_EXIT();
 	return result;
 }
+
 
 /*
  * Note: Sequence of Routing and Requesting an IRQ
@@ -297,3 +340,87 @@ static void gic_set_irq_properties(unsigned int irq, bool_t level,
 2. Enable Forwarding
 	GICD_ISENABLER[irq] = enable
  */
+
+/*
+ * example: gic_test_configure_irq( 26, 
+									GIC_INT_POLARITY_LEVEL, 
+									(1u << smp_processor_id()), 
+									GIC_INT_PRIORITY_DEFAULT );
+ */
+hvmm_status_t gic_test_configure_irq(uint32_t irq, gic_int_polarity_t polarity,  uint8_t cpumask, uint8_t priority)
+{
+	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+	HVMM_TRACE_ENTER();
+	if ( irq < _gic.lines ) {
+		uint32_t icfg;
+		volatile uint8_t *reg8;
+		/* disable forwarding */
+		result = gic_disable_irq( irq );
+
+		if ( result == HVMM_STATUS_SUCCESS ) {
+
+			/* polarity: level or edge */
+			icfg = _gic.ba_gicd[GICD_ICFGR + irq / 16];
+			if ( polarity == GIC_INT_POLARITY_LEVEL ) {
+				icfg &= ~( 2u << (2 * (irq % 16)) );
+			} else {
+				icfg |= ( 2u << (2 * (irq % 16)) );
+			}
+			_gic.ba_gicd[GICD_ICFGR + irq / 16] = icfg;
+
+			/* routing */
+		
+			reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ITARGETSR]);
+			reg8[irq] = cpumask;
+
+			/* priority */
+			reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_IPRIORITYR]);
+			reg8[irq] = priority;
+
+			/* enable forwarding */
+			result = gic_enable_irq( irq );
+		}
+	} else {
+		uart_print( "invalid irq:"); uart_print_hex32(irq); uart_print("\n\r");
+		result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+	}
+
+	HVMM_TRACE_EXIT();
+	return result;
+}
+
+void gic_interrupt(int fiq)
+{
+	/*
+	 *
+	 * 1. ACK - CPU Interface - GICC_IAR read
+	 * 2. Completion - CPU Interface - GICC_EOIR
+	 * 2.1 Deactivation - CPU Interface - GICC_DIR
+	 */
+	uint32_t iar;
+	uint32_t irq;
+
+	HVMM_TRACE_ENTER();
+	do {
+		/* ACK */
+		iar = _gic.ba_gicc[GICC_IAR];
+		irq = iar & GICC_IAR_INTID_MASK;
+		if ( irq < _gic.lines ) {
+
+			/* ISR */
+			uart_print( "ISR(irq):"); uart_print_hex32(irq); uart_print("\n\r");
+			if ( _gic.handlers[irq] ) {
+				_gic.handlers[irq]( irq, 0 );
+			}
+
+			/* Completion & Deactivation */
+			_gic.ba_gicc[GICC_EOIR] = irq;
+			_gic.ba_gicc[GICC_DIR] = irq;
+		} else {
+			uart_print( "last irq(no pending):"); uart_print_hex32(irq); uart_print("\n\r");
+			break;
+		}
+	} while(1);
+	HVMM_TRACE_EXIT();
+}

@@ -28,6 +28,7 @@ OBJS 		= boot.o monitor.o c_start.o string.o hmain.o monitor_imp.o uart_print.o 
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
+MONITORMAP	= monitor.map
 LD_SCRIPT	= model.lds.S
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
@@ -41,6 +42,7 @@ CPPFLAGS	+= $(CONFIG_FLAGS)
 
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
+NM		= $(CROSS_COMPILE)nm
 #magicyaba 
 #for armflash.bin
 OBJCOPY		= $(CROSS_COMPILE)objcopy
@@ -59,10 +61,13 @@ else
 all: semi
 endif
 # Build just the semihosting wrapper
-semi: $(SEMIIMG)
+semi: $(SEMIIMG) $(MONITORMAP)
 
+$(MONITORMAP): $(SEMIIMG)
+	$(NM) $< > $@
+	
 clean distclean:
-	rm -f $(SEMIIMG) $(HYPBIN) $(FLASHIMG) \
+	rm -f $(MONITORMAP) $(SEMIIMG) $(HYPBIN) $(FLASHIMG) \
 	model.lds modelsemi.lds $(OBJS) 
 
 $(SEMIIMG): $(OBJS) modelsemi.lds
@@ -92,7 +97,7 @@ monitor.o: monitor.S
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
+	$(CC) $(CPPFLAGS) -Wall -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
 
 model.lds: $(LD_SCRIPT) Makefile 
 	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<

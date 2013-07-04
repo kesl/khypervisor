@@ -4,6 +4,8 @@
 #include "mm.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
+#include "gic.h"
+#include "interrupt.h"
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
@@ -54,10 +56,33 @@ void hyp_abort_infinite(void)
  */
 hvmm_status_t _hyp_trap_dabort( struct arch_regs *regs )
 {
+	uart_dump_regs( regs );
+	hyp_abort_infinite();
+
+	return HVMM_STATUS_UNKNOWN_ERROR;
+}
+
+hvmm_status_t _hyp_trap_irq( struct arch_regs *regs )
+{
+
+	HVMM_TRACE_ENTER();
+
+	gic_interrupt(0);
+
+	HVMM_TRACE_EXIT();
+
+	return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t _hyp_trap_unhandled( struct arch_regs *regs )
+{
 
 	uart_dump_regs( regs );
 	hyp_abort_infinite();
+
+	return HVMM_STATUS_UNKNOWN_ERROR;
 }
+
 /*
  * hvc #imm handler
  */
@@ -119,7 +144,7 @@ void _hyp_fixup_unloaded_guest(void)
 	uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(uint32_t));uart_print("\n\r");
 
 	while(src < end ) {
-		*dst = *src++;
+		*dst++ = *src++;
 	}
 	uart_print("=== done ===\n\r");
 	HVMM_TRACE_EXIT();
@@ -169,7 +194,6 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	struct hyp_guest_context *context = 0;
 	struct arch_regs *regs = 0;
 	int i;
-	uint32_t hcr;
 	
 	/*
 	 * We assume VTCR has been configured and initialized in the memory management module
@@ -252,6 +276,9 @@ void hyp_main(void)
 
 	/* Initialize Guests */
 	hyp_init_guests();
+
+	/* Interrupt test */
+	hvmm_interrupt_test();
 
 	/* Switch to the first guest */
 	hyp_switch_guest();
