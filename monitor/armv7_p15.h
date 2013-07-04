@@ -231,10 +231,5 @@
 				:: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) \
 				: "memory", "cc")
 
-#define read_cntvct()		({ uint32_t v1, v2; asm volatile(\
-				" mrrc     p15, 1, %0, %1, c14\n\t" \
-				: "=r" (v1), "=r" (v2) : : "memory", "cc"); \
-				(((uint64_t)v2 << 32) + (uint64_t)v1);})
-
 #endif
 
