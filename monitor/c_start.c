@@ -33,26 +33,3 @@ void c_start(void)
 
 	/* ___ DEAD END ___ */
 }
-
-#ifndef BAREMETAL_GUEST
-void nrm_loop(void) 
-{
-	int i = 0;
-	unsigned int cpsr;
-	
-	uart_print("[nrm] enter\n\r");
-
-	cpsr = read_cpsr();
-	uart_print("[nrm] cpsr:"); uart_print_hex32(cpsr); uart_print("\n\r");
-
-	for( i = 0; i < 10; i++ ) {
-		uart_print("[nrm] ping 1\n\r");
-		/* World Switch to Secure through Secure Monitor Call Exception */
-		asm ("hvc #0xFFFE");		/* -> sec_loop() */
-		uart_print("[nrm] yield 2\n\r");
-		asm ("hvc #0xFFFD");		/* -> sec_loop() */
-		uart_print("[nrm] back 3\n\r");
-	}
-	uart_print("[nrm] done\n\r");
-}
-#endif
