@@ -1,6 +1,6 @@
 
 #include "hyp_config.h"
-#include "mmu.h"
+#include "mm.h"
 #include "uart_print.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
@@ -68,10 +68,22 @@
 #define SCTLR_M         (1<<0)
 #define SCTLR_BASE        0x00c50078
 #define HSCTLR_BASE       0x30c51878
+
 /* HTTBR */
 #define HTTBR_INITVAL                                   0x0000000000000000ULL
 #define HTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
 #define HTTBR_BADDR_SHIFT                               12
+
+/* HTCR */
+#define HTCR_INITVAL                                    0x80000000
+#define HTCR_SH0_MASK                                   0x00003000
+#define HTCR_SH0_SHIFT                                  12
+#define HTCR_ORGN0_MASK                                 0x00000C00
+#define HTCR_ORGN0_SHIFT                                10
+#define HTCR_IRGN0_MASK                                 0x00000300
+#define HTCR_IRGN0_SHIFT                                8
+#define HTCR_T0SZ_MASK                                  0x00000003
+#define HTCR_T0SZ_SHIFT                                 0
 
 /* VTTBR */ 
 #define VTTBR_INITVAL                                   0x0000000000000000ULL
@@ -95,19 +107,29 @@
 #define VTCR_T0SZ_MASK                                  0x00000003
 #define VTCR_T0SZ_SHIFT                                 0
 
+/* Long-descriptor translation table format */
+#define TTBL_L1_OUTADDR_MASK	0x000000FFEC000000ULL
+#define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
+
 /* Stage 2 Level 2 */
-#define LPAE_S2L2_SHIFT		9
-#define LPAE_S2L2_ENTRIES	(1 << LPAE_S2L2_SHIFT)
-#define MMU_NUM_PAGETABLE_ENTRIES		64
+#define VMM_L2_PAGETABLE_ENTRIES		512
 
-static lpaed_t _hyp_pgtables[MMU_NUM_PAGETABLE_ENTRIES];
+/* PL2 Stage 1 Level 1 */
+#define HMM_L1_PAGETABLE_ENTRIES		512
 
-/* Statically allocated for now */
-static lpaed_t _vttbr_pte_guest0[LPAE_S2L2_ENTRIES] __attribute((__aligned__(4096)));
-static lpaed_t _vttbr_pte_guest1[LPAE_S2L2_ENTRIES] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+
+/*
+ * Stage 2 Translation Table, look up begins at second level
+ * VTTBR.BADDR[31:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range, VTCR.SL0 = 0(2nd), 16KB aligned base address
+ * Statically allocated for now
+ */
+static lpaed_t _vttbr_pte_guest0[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
+static lpaed_t _vttbr_pte_guest1[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
-lpaed_t *vmm_vmid_ttbl(vmid_t vmid)
+/* Translation Table for the specified vmid */
+lpaed_t *hvmm_mm_vmid_ttbl(vmid_t vmid)
 {
 	lpaed_t *ttbl = 0;
 	if ( vmid < NUM_GUESTS_STATIC ) {
@@ -116,7 +138,8 @@ lpaed_t *vmm_vmid_ttbl(vmid_t vmid)
 	return ttbl;
 }
 
-void vmm_stage2_enable(int enable)
+/* Enable/Disable Stage2 Translation */
+void hvmm_mm_stage2_enable(int enable)
 {
 	uint32_t hcr;
 
@@ -130,12 +153,14 @@ void vmm_stage2_enable(int enable)
 	write_hcr( hcr );
 }
 
-vmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
+hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 {
-	// VTTBR.VMID = vmid
-	// VTTBR.BADDR = ttbl
 	uint64_t vttbr;
 
+	/* 
+	 * VTTBR.VMID = vmid
+	 * VTTBR.BADDR = ttbl
+	 */
 	vttbr = read_vttbr(); uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
 	vttbr &= ~(VTTBR_VMID_MASK);
 	vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
@@ -143,13 +168,14 @@ vmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 	vttbr &= ~(VTTBR_BADDR_MASK);
 	vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
 	write_vttbr(vttbr);
+
 	vttbr = read_vttbr(); uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
-	return VMM_STATUS_SUCCESS;
+	return HVMM_STATUS_SUCCESS;
 }
 
-#define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
 
-lpaed_t vmm_lpaed_l2_block( uint64_t pa )
+/* Level 2 Block, 2MB, entry in LPAE Descriptor format for the given physical address */
+lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa )
 {
 	lpaed_t lpaed;
 
@@ -179,8 +205,49 @@ lpaed_t vmm_lpaed_l2_block( uint64_t pa )
 	return lpaed;
 }
 
+/* Level 1 Block, 1GB, entry in LPAE Descriptor format for the given physical address */
+lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx )
+{
+	lpaed_t lpaed;
+
+	uart_print( "[mm] hvmm_mm_lpaed_l1_block:\n\r" );
+	uart_print( " pa:"); uart_print_hex64(pa); uart_print("\n\r");
+	uart_print( " attr_idx:"); uart_print_hex32((uint32_t) attr_idx); uart_print("\n\r");
+
+	// Valid Block Entry
+	lpaed.pt.valid = 1;
+	lpaed.pt.table = 0;
+
+	lpaed.bits &= ~TTBL_L1_OUTADDR_MASK;
+	lpaed.bits |= pa & TTBL_L1_OUTADDR_MASK;
+	lpaed.pt.sbz = 0;
+
+	// Lower block attributes
+	lpaed.pt.ai = attr_idx;
+	lpaed.pt.ns = 1;	// Allow Non-secure access
+	lpaed.pt.user = 1;
+	lpaed.pt.ro = 0;
+	lpaed.pt.sh = 2;	// Outher Shareable
+	lpaed.pt.af = 1;	// Access Flag set to 1?
+	lpaed.pt.ng = 1;
+
+	// Upper block attributes
+	lpaed.pt.hint = 0;
+	lpaed.pt.pxn = 0;
+	lpaed.pt.xn = 0;	// eXecute Never = 0
+	return lpaed;
+}
+
+
+/* 
+ * Initialization of Virtual Machine Memory Management 
+ * Stage 2 Translation
+ */
 void _vmm_init(void)
 {
+	/*
+	 * Initializes Translation Table for Stage2 Translation (IPA -> PA)
+	 */
 	int i;
 	for( i = 0; i < NUM_GUESTS_STATIC; i++ ) {
 		_vmid_ttbl[i] = 0;
@@ -189,32 +256,72 @@ void _vmm_init(void)
 	_vmid_ttbl[0] = &_vttbr_pte_guest0[0];
 	_vmid_ttbl[1] = &_vttbr_pte_guest1[1];
 
-	// VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
-	// PA: 0xB0000000 ~ 0xEFFFFFFF	guest_bin_start
-	// PA: 0xC0000000 ~ 0xFFFFFFFF	guest2_bin_start
+	/*
+	 * VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
+	 * PA: 0xA0000000 ~ 0xDFFFFFFF	guest_bin_start
+	 * PA: 0xB0000000 ~ 0xEFFFFFFF	guest2_bin_start
+	 */
 	{
 		extern uint32_t guest_bin_start;
 		extern uint32_t guest2_bin_start;
-		//uint64_t pa = 0xB0000000;
+
 		uint64_t pa1 = (uint32_t) &guest_bin_start;
-		uint64_t pa1_end = 0xF0000000;
+		uint64_t pa1_end = 0xE0000000;
 		uint64_t pa2 = (uint32_t) &guest2_bin_start;
 		lpaed_t lpaed;
+
 		uart_print( "pa:"); uart_print_hex64(pa1); uart_print("\n\r");
 		uart_print( "pa_end:"); uart_print_hex64(pa1_end); uart_print("\n\r");
+		uart_print( "_vmid_ttbl[0]:"); uart_print_hex32((uint32_t) _vmid_ttbl[0]); uart_print("\n\r");
 
 		for(i = 0; pa1 < pa1_end; i++, pa1 += 0x200000, pa2 += 0x200000 ) {
-			lpaed = vmm_lpaed_l2_block(pa1);
-			uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
-			_vttbr_pte_guest0[i] = lpaed;
+			/* 2MB blocks per each entry */
 
-			lpaed = vmm_lpaed_l2_block(pa2);
+			/* Guest 0 */
+			lpaed = hvmm_mm_lpaed_l2_block(pa1);
+			_vttbr_pte_guest0[i] = lpaed;
+			//uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
+
+			/* Guest 1 */
+			lpaed = hvmm_mm_lpaed_l2_block(pa2);
 			_vttbr_pte_guest1[i] = lpaed;
 		}
 	}
 }
 
-int mmu_init(void)
+/* 
+ * Initialization of Host Monitor Memory Management 
+ * PL2 Stage1 Translation
+ * VA32 -> PA
+ */
+void _hmm_init(void)
+{
+	int i;
+	uint64_t pa = 0x00000000ULL;
+	/*
+	 * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - DEV_SHARED
+	 * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - UNCACHED
+	 * Partition 2: 0x80000000 ~ 0xBFFFFFFF	- Guest	     - UNCACHED
+	 * Partition 3: 0xC0000000 ~ 0xEFFFFFFF	- Monitor    - WRITEBACK
+	 */
+	_hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED); pa += 0x40000000;
+	uart_print( "&_hmm_pgtable[0]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[0]); uart_print("\n\r");
+	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[0].bits); uart_print("\n\r");
+	_hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+	uart_print( "&_hmm_pgtable[1]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[1]); uart_print("\n\r");
+	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[1].bits); uart_print("\n\r");
+	_hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+	uart_print( "&_hmm_pgtable[2]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[2]); uart_print("\n\r");
+	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[2].bits); uart_print("\n\r");
+	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_block(pa, WRITEBACK); pa += 0x40000000;
+	uart_print( "&_hmm_pgtable[3]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[3]); uart_print("\n\r");
+	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[3].bits); uart_print("\n\r");
+	for ( i = 4; i < HMM_L1_PAGETABLE_ENTRIES; i++ ) {
+		_hmm_pgtable[i].pt.valid = 0;
+	}
+}
+
+int hvmm_mm_init(void)
 {
 /*
  *	MAIR0, MAIR1
@@ -226,9 +333,10 @@ int mmu_init(void)
  */
 	uint32_t mair, htcr, hsctlr, vtcr, hcr;
 	uint64_t httbr, vttbr;
-	uart_print( "[mmu] mmu_init: enter\n\r" );
+	uart_print( "[mm] mm_init: enter\n\r" );
 	
 	_vmm_init();
+	_hmm_init();
 
 	// MAIR/HMAIR
 	uart_print(" --- MAIR ----\n\r" );
@@ -260,29 +368,6 @@ int mmu_init(void)
 	hsctlr = HSCTLR_BASE | SCTLR_A;
 	write_hsctlr( hsctlr );
 	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
-	
-	// HTTBR = &_hyp_pgtables
-	httbr = read_httbr(); uart_print( "httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
-	httbr &= 0xFFFFFFFF00000000ULL;
-	httbr |= (uint32_t) &_hyp_pgtables;
-	httbr &= HTTBR_BADDR_MASK;
-	uart_print( "writing httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
-	write_httbr( httbr );
-	httbr = read_httbr(); uart_print( "read back httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
-
-// TODO: Write PTE to _hyp_pgtables
-#if 0
-	// HSCTLR Enable MMU and D-cache
-	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
-	hsctlr |= (SCTLR_M |SCTLR_C);
-	
-	// Flush PTE writes
-	asm("dsb");
-	write_hsctlr( hsctlr );
-	// Flush iCache
-	asm("isb");
-	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
-#endif
 
 // VTCR
 	vtcr = read_vtcr(); uart_print( "vtcr:"); uart_print_hex32(vtcr); uart_print("\n\r");
@@ -307,6 +392,56 @@ int mmu_init(void)
 // HCR
 	hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
 
-	uart_print( "[mmu] mmu_init: exit\n\r" );
+// HTCR
+	/*
+	 * Shareability - SH0[13:12] = 0 - Not shared
+	 * Outer Cacheability - ORGN0[11:10] = 11b - Write Back no Write Allocate Cacheable
+	 * Inner Cacheability - IRGN0[9:8] = 11b - Same
+	 * T0SZ[2:0] = 0 - 2^32 Input Address 
+	 */
+	/* Untested code commented */
+/*
+	htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); uart_print("\n\r");
+	htcr &= ~HTCR_SH0_MASK;
+	htcr |= (0x0 << HTCR_SH0_SHIFT) & HTCR_SH0_MASK;
+	htcr &= ~HTCR_ORGN0_MASK;
+	htcr |= (0x3 << HTCR_ORGN0_SHIFT) & HTCR_ORGN0_MASK;
+	htcr &= ~VTCR_IRGN0_MASK;
+	htcr |= (0x3 << HTCR_IRGN0_SHIFT) & HTCR_IRGN0_MASK;
+	htcr &= ~VTCR_T0SZ_MASK;
+	htcr |= (0x0 << HTCR_T0SZ_SHIFT) & HTCR_T0SZ_MASK;
+	write_htcr( htcr );
+	htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); uart_print("\n\r");
+*/
+
+	/* HTTBR = &__hmm_pgtable */
+	httbr = read_httbr(); uart_print( "httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
+	httbr &= 0xFFFFFFFF00000000ULL;
+	httbr |= (uint32_t) &_hmm_pgtable;
+	httbr &= HTTBR_BADDR_MASK;
+	uart_print( "writing httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
+	write_httbr( httbr );
+	httbr = read_httbr(); uart_print( "read back httbr:" ); uart_print_hex64(httbr); uart_print("\n\r");
+
+	/* Enable PL2 Stage 1 MMU */
+
+	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
+
+		/* HSCTLR Enable MMU and D-cache */
+	// hsctlr |= (SCTLR_M |SCTLR_C);
+	hsctlr |= (SCTLR_M);
 	
+		/* Flush PTE writes */
+	asm("dsb");
+
+	write_hsctlr( hsctlr );
+
+		/* Flush iCache */
+	asm("isb");
+
+	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
+
+	uart_print( "[mm] mm_init: exit\n\r" );
+	
+	return HVMM_STATUS_SUCCESS;
 }

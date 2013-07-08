@@ -11,6 +11,7 @@ OUTPUT_FORMAT("elf32-littlearm")
 OUTPUT_ARCH(arm)
 TARGET(binary)
 ENTRY(start)
+
 #ifndef SEMIHOSTING
 INPUT(./uImage)
 #ifdef USE_INITRD
@@ -30,11 +31,12 @@ STACKTOP = 0xff000000;
 /* NS.SVC mode code space 
  * - simon
  */
-GUEST_OFFSET  	= 0xB0000000;
-GUEST_STACK  	= 0xBF000000;
+GUEST_SIZE_MAX	= 0x0F000000;
+GUEST_OFFSET  	= 0xA0000000;
+GUEST_STACK  	= GUEST_OFFSET + GUEST_SIZE_MAX;
 
-GUEST2_OFFSET	= 0xC0000000;
-GUEST2_STACK	= 0xCF000000;
+GUEST2_OFFSET	= 0xB0000000;
+GUEST2_STACK	= GUEST2_OFFSET + GUEST_SIZE_MAX;
 
 HYP_OFFSET	= 0xD0000000;
 HYP_STACK	= 0xDF000000;
@@ -62,11 +64,14 @@ SECTIONS
 
 /* Guest 1 */
  . = GUEST_OFFSET;
-#ifdef BAREMETAL_GUEST
   guest_bin_start = .; 
+#ifdef BAREMETAL_GUEST
   .guest : { ./bmguest.bin }
-  guest_bin_end = .; 
+#else
+	/* dummy space for guest */
+ . = GUEST_OFFSET + GUEST_SIZE_MAX;
 #endif
+  guest_bin_end = .; 
 
  . = GUEST_STACK;
  guest_stacktop = .;
@@ -75,11 +80,16 @@ SECTIONS
 
 /* Guest 2 */
  . = GUEST2_OFFSET;
-#ifdef BAREMETAL_GUEST
   guest2_bin_start = .; 
+#ifdef BAREMETAL_GUEST
   .guest2 : { ./bmguest.bin }
-  guest2_bin_end = .; 
+#else
+	/* dummy space for guest */
+ . = GUEST2_OFFSET + GUEST_SIZE_MAX; 
 #endif
+  guest2_bin_end = .; 
+
+
  . = GUEST2_STACK;
  guest2_stacktop = .;
  . = GUEST2_STACK + 0x01000000; 

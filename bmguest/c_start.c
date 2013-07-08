@@ -71,4 +71,5 @@ void nrm_loop(void)
 		nrm_delay();
 	}
 	uart_print(GUEST_LABEL); uart_print("done\n\r");
+	while(1);
 }

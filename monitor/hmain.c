@@ -1,14 +1,14 @@
 
 #include "hyp_config.h"
 #include "uart_print.h"
-#include "mmu.h"
+#include "mm.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
+#include "gic.h"
+#include "interrupt.h"
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
-
-//#define __DISABLE_VMM__
 
 typedef enum {
 	HYP_RESULT_ERET	= 0,
@@ -51,6 +51,41 @@ void hyp_abort_infinite(void)
 	while(1);
 }
 
+/* TODO:
+	- Move trap handlers to trap.c 
+ */
+hvmm_status_t _hyp_trap_dabort( struct arch_regs *regs )
+{
+	uart_dump_regs( regs );
+	hyp_abort_infinite();
+
+	return HVMM_STATUS_UNKNOWN_ERROR;
+}
+
+hvmm_status_t _hyp_trap_irq( struct arch_regs *regs )
+{
+
+	HVMM_TRACE_ENTER();
+
+	gic_interrupt(0);
+
+	HVMM_TRACE_EXIT();
+
+	return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t _hyp_trap_unhandled( struct arch_regs *regs )
+{
+
+	uart_dump_regs( regs );
+	hyp_abort_infinite();
+
+	return HVMM_STATUS_UNKNOWN_ERROR;
+}
+
+/*
+ * hvc #imm handler
+ */
 hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 {
 	unsigned int hsr = read_hsr();
@@ -66,12 +101,12 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 
 	switch( iss ) {
 		case 0xFFFE:
-			// hyp_ping
+			/* hyp_ping */
 			uart_print("[hyp] _hyp_hvc_service:ping\n\r");
 			uart_dump_regs( regs );
 			break;
 		case 0xFFFD:
-			// hsvc_yield()
+			/* hsvc_yield() */
 			uart_print("[hyp] _hyp_hvc_service:yield\n\r");
 			uart_dump_regs( regs );
 			hyp_switch_to_next_guest(regs);
@@ -91,6 +126,29 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 	return HYP_RESULT_ERET;
 }
 
+void _hyp_fixup_unloaded_guest(void)
+{
+	extern uint32_t guest_bin_start;
+	extern uint32_t guest_bin_end;
+	extern uint32_t guest2_bin_start;
+
+	uint32_t *src = &guest_bin_start;
+        uint32_t *end = &guest_bin_end;
+	uint32_t *dst = &guest2_bin_start;
+
+	HVMM_TRACE_ENTER();
+
+	uart_print("Copying guest0 image to guest1\n\r");
+	uart_print(" src:");uart_print_hex32((uint32_t)src); 
+	uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
+	uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(uint32_t));uart_print("\n\r");
+
+	while(src < end ) {
+		*dst++ = *src++;
+	}
+	uart_print("=== done ===\n\r");
+	HVMM_TRACE_EXIT();
+}
 
 void hyp_init_guests(void)
 {
@@ -100,30 +158,34 @@ void hyp_init_guests(void)
 	uart_print("[hyp] init_guests: enter\n\r");
 
 
-	// Guest 1 @guest_bin_start
+	/* Guest 1 @guest_bin_start */
 	context = &guest_contexts[0];
 	regs = &context->regs;
-	regs->pc = 0x00000000;	// PA:0xB0000000
+	regs->pc = 0x00000000;	// PA:0xA0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
 	regs->lr	= 0;	// uninitialized
-	// regs->gpr[] = whatever
-	context->vmid = 0;
-	context->ttbl = vmm_vmid_ttbl(context->vmid);
 
-	// Guest 2 @guest2_bin_start
+	/* regs->gpr[] = whatever */
+	context->vmid = 0;
+	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
+
+	/* Guest 2 @guest2_bin_start */
 	context = &guest_contexts[1];
 	regs = &context->regs;
-	regs->pc = 0x00000000;	// PA: 0xC0000000
+	regs->pc = 0x00000000;	// PA: 0xB0000000
 	regs->cpsr 	= 0;	// uninitialized
 	regs->sp	= 0;	// uninitialized
 	regs->lr	= 0;	// uninitialized
-	// regs->gpr[] = whatever
+
+	/* regs->gpr[] = whatever */
 	context->vmid = 1;
-	context->ttbl = vmm_vmid_ttbl(context->vmid);
+	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
 
-
-	//__mon_install_guest();
+#ifdef BAREMETAL_GUEST
+	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
+	_hyp_fixup_unloaded_guest();
+#endif
 	uart_print("[hyp] init_guests: return\n\r");
 }
 
@@ -132,17 +194,15 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	struct hyp_guest_context *context = 0;
 	struct arch_regs *regs = 0;
 	int i;
-	uint32_t hcr;
 	
 	/*
 	 * We assume VTCR has been configured and initialized in the memory management module
 	 */
-#ifndef __DISABLE_VMM__
-	// Disable Stage 2 Translation: HCR.VM = 0
-	vmm_stage2_enable(0);
-#endif
+	/* Disable Stage 2 Translation: HCR.VM = 0 */
+	hvmm_mm_stage2_enable(0);
+
 	if ( regs_current != 0 ) {
-		// store
+		/* save the current guest's context if any */
 		context = &guest_contexts[current_guest];
 		regs = &context->regs;
 		regs->pc = regs_current->pc;
@@ -155,19 +215,23 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	}
 
 	if ( regs_current != 0 ) {
-		// load the next guest
+		/* load the next guest */
 		current_guest = (current_guest + 1) % NUM_GUEST_CONTEXTS;
 	} else {
-		// Initial guest
+		/* There is no current guest switching from. 
+		 * We choose the very first one as the initial guest to switch to 
+		 */
 		current_guest = 0;
 	}
+
+	/* The context of the chosen next guest */
 	context = &guest_contexts[current_guest];
 
-#ifndef __DISABLE_VMM__
-	vmm_set_vmid_ttbl( context->vmid, context->ttbl );
-
-	vmm_stage2_enable(1);
-#endif
+	/* Restore Translation Table for the next guest and Enable Stage 2 Translation */
+	hvmm_mm_set_vmid_ttbl( context->vmid, context->ttbl );
+	hvmm_mm_stage2_enable(1);
+	
+	/* The actual context switching (Hyp to Normal mode) handled in the asm code */
 	__mon_switch_to_guest_context( &context->regs );
 }
 
@@ -177,14 +241,16 @@ void hyp_switch_to_initial_guest(void)
 	struct arch_regs *regs = 0;
 
 	uart_print("[hyp] switch_to_initial_guest:\n\r");
+
+	/* Select the first guest context to switch to. */
 	current_guest = 0;
 	context = &guest_contexts[current_guest];
-	regs = &context->regs;
 
+	/* Dump the initial register values of the guest for debugging purpose */
+	regs = &context->regs;
 	uart_dump_regs( regs );
-	/*
-	__mon_switch_to_guest_context( regs );
-	*/
+
+	/* Context Switch with current context == none */
 	hyp_switch_to_next_guest( 0 );
 }
 
@@ -196,15 +262,29 @@ void hyp_switch_guest(void)
 
 void hyp_main(void)
 {
+	hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 	uart_print("[hyp_main] Starting...\n\r");
 
-#ifndef __DISABLE_VMM__
-	mmu_init();
-#endif
+	/* Initialize Memory Management */
+	ret = hvmm_mm_init();
 
+	/* Initialize Interrupt Management */
+	ret = hvmm_interrupt_init();
+	if ( ret != HVMM_STATUS_SUCCESS ) {
+		uart_print("[hyp_main] interrupt initialization failed...\n\r");
+	}
+
+	/* Initialize Guests */
 	hyp_init_guests();
+
+	/* Interrupt test */
+	hvmm_interrupt_test();
+
+	/* Switch to the first guest */
 	hyp_switch_guest();
 
+	/* The code flow must not reach here */
 	uart_print("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n\r");
+	hyp_abort_infinite();
 }
 

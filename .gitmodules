@@ -1,0 +1,3 @@
+[submodule "u-boot"]
+	path = u-boot
+	url = git://git.denx.de/u-boot.git
