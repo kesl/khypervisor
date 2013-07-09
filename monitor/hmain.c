@@ -31,7 +31,7 @@ hvmm_status_t _hyp_trap_irq( struct arch_regs *regs )
 
 	HVMM_TRACE_ENTER();
 
-	gic_interrupt(0);
+	gic_interrupt(0, regs);
 
 	HVMM_TRACE_EXIT();
 

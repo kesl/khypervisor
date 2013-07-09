@@ -7,7 +7,7 @@ extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int current_guest = 0;
 
-
+#ifdef BAREMETAL_GUEST
 static void _hyp_fixup_unloaded_guest(void)
 {
 	extern uint32_t guest_bin_start;
@@ -31,13 +31,24 @@ static void _hyp_fixup_unloaded_guest(void)
 	uart_print("=== done ===\n\r");
 	HVMM_TRACE_EXIT();
 }
+#endif
 
+static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *regs_src )
+{
+	int i;
+	regs_dst->pc = regs_src->pc;
+	regs_dst->cpsr = regs_src->cpsr;
+	regs_dst->sp = regs_src->sp;
+	regs_dst->lr = regs_src->lr;
+	for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+		regs_dst->gpr[i] = regs_src->gpr[i];
+	}
+}
 
 void context_switch_to_next_guest(struct arch_regs *regs_current)
 {
 	struct hyp_guest_context *context = 0;
 	struct arch_regs *regs = 0;
-	int i;
 	
 	/*
 	 * We assume VTCR has been configured and initialized in the memory management module
@@ -49,13 +60,7 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 		/* save the current guest's context if any */
 		context = &guest_contexts[current_guest];
 		regs = &context->regs;
-		regs->pc = regs_current->pc;
-		regs->cpsr = regs_current->cpsr;
-		regs->sp = regs_current->sp;
-		regs->lr = regs_current->lr;
-		for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
-			regs->gpr[i] = regs_current->gpr[i];
-		}
+		context_copy_regs( regs, regs_current );
 	}
 
 	if ( regs_current != 0 ) {
@@ -75,8 +80,14 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 	hvmm_mm_set_vmid_ttbl( context->vmid, context->ttbl );
 	hvmm_mm_stage2_enable(1);
 	
-	/* The actual context switching (Hyp to Normal mode) handled in the asm code */
-	__mon_switch_to_guest_context( &context->regs );
+	if ( regs_current == 0 ) {
+		/* init -> hyp mode -> guest */
+		/* The actual context switching (Hyp to Normal mode) handled in the asm code */
+		__mon_switch_to_guest_context( &context->regs );
+	} else {
+		/* guest -> hyp -> guest */
+		context_copy_regs( regs_current, &context->regs );
+	}
 }
 
 void context_dump_regs( struct arch_regs *regs )
