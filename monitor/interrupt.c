@@ -2,6 +2,7 @@
 #include "gic.h"
 #include "uart_print.h"
 #include "armv7_p15.h"
+#include "context.h"
 
 hvmm_status_t hvmm_interrupt_init(void)
 {
@@ -46,20 +47,29 @@ void interrupt_test_start_timer(void)
 	HVMM_TRACE_EXIT();
 }
 
-void interrupt_nsptimer(int irq, void *pdata )
+void interrupt_nsptimer(int irq, void *pregs, void *pdata )
 {
 	uint32_t ctl;
+	struct arch_regs *regs = pregs;
 
 	uart_print( "=======================================\n\r" );
 	HVMM_TRACE_ENTER();
 
+	/* Disable NS Physical Timer Interrupt */
 	ctl = read_cntp_ctl();
 	ctl &= ~(0x1);
 	write_cntp_ctl(ctl);
 	
 
-	/* for another interrupt */
+	/* Trigger another interrupt */
 	interrupt_test_start_timer();
+
+	/* Test guest context switch */
+	if ( (regs->cpsr & 0x1F) != 0x1A ) {
+		/* Not from Hyp, switch the guest context */
+		context_dump_regs( regs );
+		context_switch_to_next_guest( regs );
+	}
 
 	HVMM_TRACE_EXIT();
 	uart_print( "=======================================\n\r" );
@@ -68,6 +78,8 @@ void interrupt_nsptimer(int irq, void *pdata )
 hvmm_status_t hvmm_interrupt_test(void)
 {
 	/* Testing Non-secure Physical Timer Event (PPI2), Cortex-A15 
+	 * - Periodically triggers timer interrupt
+	 * - switches guest context at every timer interrupt
 	 */
 
 	HVMM_TRACE_ENTER();
