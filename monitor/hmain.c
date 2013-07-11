@@ -4,6 +4,8 @@
 #include "mm.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
+#include "gic.h"
+#include "interrupt.h"
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
@@ -54,10 +56,33 @@ void hyp_abort_infinite(void)
  */
 hvmm_status_t _hyp_trap_dabort( struct arch_regs *regs )
 {
+	uart_dump_regs( regs );
+	hyp_abort_infinite();
+
+	return HVMM_STATUS_UNKNOWN_ERROR;
+}
+
+hvmm_status_t _hyp_trap_irq( struct arch_regs *regs )
+{
+
+	HVMM_TRACE_ENTER();
+
+	gic_interrupt(0);
+
+	HVMM_TRACE_EXIT();
+
+	return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t _hyp_trap_unhandled( struct arch_regs *regs )
+{
 
 	uart_dump_regs( regs );
 	hyp_abort_infinite();
+
+	return HVMM_STATUS_UNKNOWN_ERROR;
 }
+
 /*
  * hvc #imm handler
  */
@@ -101,6 +126,30 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 	return HYP_RESULT_ERET;
 }
 
+void _hyp_fixup_unloaded_guest(void)
+{
+	extern uint32_t guest_bin_start;
+	extern uint32_t guest_bin_end;
+	extern uint32_t guest2_bin_start;
+
+	uint32_t *src = &guest_bin_start;
+        uint32_t *end = &guest_bin_end;
+	uint32_t *dst = &guest2_bin_start;
+
+	HVMM_TRACE_ENTER();
+
+	uart_print("Copying guest0 image to guest1\n\r");
+	uart_print(" src:");uart_print_hex32((uint32_t)src); 
+	uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
+	uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(uint32_t));uart_print("\n\r");
+
+	while(src < end ) {
+		*dst++ = *src++;
+	}
+	uart_print("=== done ===\n\r");
+	HVMM_TRACE_EXIT();
+}
+
 void hyp_init_guests(void)
 {
 	struct hyp_guest_context *context;
@@ -133,6 +182,10 @@ void hyp_init_guests(void)
 	context->vmid = 1;
 	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
 
+#ifdef BAREMETAL_GUEST
+	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
+	_hyp_fixup_unloaded_guest();
+#endif
 	uart_print("[hyp] init_guests: return\n\r");
 }
 
@@ -141,13 +194,13 @@ static void hyp_switch_to_next_guest(struct arch_regs *regs_current)
 	struct hyp_guest_context *context = 0;
 	struct arch_regs *regs = 0;
 	int i;
-	uint32_t hcr;
 	
 	/*
 	 * We assume VTCR has been configured and initialized in the memory management module
 	 */
 	/* Disable Stage 2 Translation: HCR.VM = 0 */
 	hvmm_mm_stage2_enable(0);
+
 	if ( regs_current != 0 ) {
 		/* save the current guest's context if any */
 		context = &guest_contexts[current_guest];
@@ -223,6 +276,9 @@ void hyp_main(void)
 
 	/* Initialize Guests */
 	hyp_init_guests();
+
+	/* Interrupt test */
+	hvmm_interrupt_test();
 
 	/* Switch to the first guest */
 	hyp_switch_guest();
