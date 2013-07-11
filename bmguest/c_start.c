@@ -40,7 +40,7 @@
 #define NUM_ITERATIONS	10
 #endif
 
-void nrm_delay(void)
+inline void nrm_delay(void)
 {
 	volatile int i = 0;
 	for( i = 0; i < 0x00FFFFFF; i++);
@@ -51,6 +51,7 @@ void nrm_loop(void)
 	uart_print(GUEST_LABEL); uart_print("starting...\n\r");
 	int i = 0;
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
+		nrm_delay();
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
 
 #ifdef __MONITOR_CALL_HVC__
@@ -61,7 +62,7 @@ void nrm_loop(void)
 			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_ping() \n\r" );
 		} else {
 			uart_print(GUEST_LABEL); uart_print( "hsvc_yield()\n\r" );
-			hsvc_yield();		// hvc manual switch
+			// hsvc_yield();		// hvc manual switch
 			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_yield() \n\r" );
 		}
 #else

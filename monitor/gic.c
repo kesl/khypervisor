@@ -3,6 +3,7 @@
 #include "a15_cp15_sysregs.h"
 #include "uart_print.h"
 #include "smp.h"
+#include "context.h"
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -390,7 +391,7 @@ hvmm_status_t gic_test_configure_irq(uint32_t irq, gic_int_polarity_t polarity, 
 	return result;
 }
 
-void gic_interrupt(int fiq)
+void gic_interrupt(int fiq, void *pregs)
 {
 	/*
 	 *
@@ -400,6 +401,7 @@ void gic_interrupt(int fiq)
 	 */
 	uint32_t iar;
 	uint32_t irq;
+	struct arch_regs *regs = pregs;
 
 	HVMM_TRACE_ENTER();
 	do {
@@ -411,7 +413,7 @@ void gic_interrupt(int fiq)
 			/* ISR */
 			uart_print( "ISR(irq):"); uart_print_hex32(irq); uart_print("\n\r");
 			if ( _gic.handlers[irq] ) {
-				_gic.handlers[irq]( irq, 0 );
+				_gic.handlers[irq]( irq, regs, 0 );
 			}
 
 			/* Completion & Deactivation */
