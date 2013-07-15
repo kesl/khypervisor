@@ -7,8 +7,6 @@
 #include "timer.h"
 #include "generic_timer.h"
 
-#include "context.h"
-
 //TODO modify list
 //struct timer_source timer_sources;
 static struct timer_channel _channels[TIMER_NUM_MAX_CHANNELS];
@@ -70,12 +68,11 @@ hvmm_status_t timer_start(timer_channel_t channel)
     	/* interval_ms -> count conversion */
     	generic_timer_set_tval(GENERIC_TIMER_HYP, _channels[channel].interval);
     
-    	/* Generic Timer: enable interupt */
-    	generic_timer_enable_int(GENERIC_TIMER_HYP);
-    
-
 		/* TODO: Firgure out how to avoid making redundant calls more than once */
     	generic_timer_enable_irq(GENERIC_TIMER_HYP);
+
+    	/* Generic Timer: enable interupt */
+    	generic_timer_enable_int(GENERIC_TIMER_HYP);
 	}
 
 	return HVMM_STATUS_SUCCESS;
@@ -95,8 +92,6 @@ hvmm_status_t timer_stop(timer_channel_t channel)
 hvmm_status_t timer_set_interval(timer_channel_t channel, uint32_t interval)
 {
 	_channels[channel].interval = interval;
-
-
 	return HVMM_STATUS_SUCCESS;
 }
 
@@ -140,30 +135,5 @@ void timer_get_time(struct timeval* timeval)
 /*
 	_channels[0].ts.get_time(timeval);
 */
-}
-
-
-void timer_test_scheduling(){
-	void timer_test_switch(void *pdata);
-
-	timer_init(timer_sched);
-	timer_set_interval(timer_sched, 0x8000000);
-	timer_add_callback(timer_sched, &timer_test_switch);
-	timer_start(timer_sched);
-}
-
-void timer_test_switch(void *pdata){
-	struct arch_regs *regs = pdata;
-
-	uint64_t pct = read_cntpct();
-	uint32_t tval = read_cnthp_tval();
-	uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
-	uart_print( "cnth_tval:"); uart_print_hex32(tval); uart_print("\n\r");
-
-    /* Test guest context switch */
-    if ( (regs->cpsr & 0x1F) != 0x1A ) {
-        /* Not from Hyp, switch the guest context */
-        context_switch_to_next_guest( regs );
-    }
 }
 

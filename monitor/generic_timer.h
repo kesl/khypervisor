@@ -1,11 +1,10 @@
 #ifndef __GENERIC_TIMER_H__
 #define __GENERIC_TIMER_H__
 
-#include "hvmm_types.h"
-#include "arch_types.h"
 #include "timer.h"
 #include "armv7_p15.h"
 #include "uart_print.h"
+#include "gic.h"
 enum {
 	GENERIC_TIMER_REG_FREQ,
 	GENERIC_TIMER_REG_HCTL,
@@ -38,22 +37,20 @@ typedef enum {
 
 typedef void (*generic_timer_callback_t)(void *pdata);
 
-/* Input timer information & register funtion pointer */
+/* Calling this function is required only once in the entire system. */
 hvmm_status_t generic_timer_init(struct timer_source *ts);
-/* Enable the timer. Timer output signal masking. */ 
+/* Enable the timer interrupt. Specified by timer type */ 
 hvmm_status_t generic_timer_enable_int(generic_timer_type_t type);
-/* Disable the timer. */
-hvmm_status_t generic_timer_disable_int(generic_timer_type_t typevoid);
-/* */
+/* Disable the timer. Specified by timer type */
+hvmm_status_t generic_timer_disable_int(generic_timer_type_t type);
+/* Sets time interval. Converts from millisecond to count and sets time interval.*/
 hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t interval);
-/* */
+/* Enables timer irq.  */
 hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type);
-/* TODO Add callback funtion. Called when occur timer interrupt */
+/* Adds callback funtion. Called when occur timer interrupt */
 hvmm_status_t generic_timer_set_callback(generic_timer_type_t type, generic_timer_callback_t callback);
 /* TODO Get System time. Not clear */
 void generic_timer_get_time(struct timeval* timeval);
-/* generic timer interrutp handler */
-//static void generic_timer_irq_handler(int irq, void *regs, void *pata);
 
 static inline void generic_timer_reg_write(int reg, uint32_t val)
 {

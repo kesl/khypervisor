@@ -1,8 +1,4 @@
 #include "generic_timer.h"
-#include "gic.h"
-
-
-
 /* Types */
 
 /* External Declarations */
@@ -13,8 +9,7 @@ static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata);
 /* Local Data */
 static uint32_t _timer_irqs[GENERIC_TIMER_NUM_TYPES];
 static uint32_t _tvals[GENERIC_TIMER_NUM_TYPES];
-
-static generic_timer_callback_t _callback;
+static generic_timer_callback_t _callback[GENERIC_TIMER_NUM_TYPES];
 
 hvmm_status_t generic_timer_init(struct timer_source *ts)
 {
@@ -28,7 +23,6 @@ hvmm_status_t generic_timer_init(struct timer_source *ts)
 */
 //	timer_register(&ts);	
 
-
 	_timer_irqs[GENERIC_TIMER_HYP] = 26;
 	_timer_irqs[GENERIC_TIMER_NSP] = 27;
 	_timer_irqs[GENERIC_TIMER_VIR] = 30;
@@ -36,8 +30,12 @@ hvmm_status_t generic_timer_init(struct timer_source *ts)
 	return HVMM_STATUS_SUCCESS;
 }
 
+
 hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
 {
+	/*
+		TODO : interval_ms -> count conversion
+	*/
 	hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
 	if ( type == GENERIC_TIMER_HYP) {
@@ -91,13 +89,8 @@ hvmm_status_t generic_timer_disable_int(generic_timer_type_t type)
 
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
 {
-//	generic_timer_disable_int(GENERIC_TIMER_HYP);
-
-	_callback(regs);
-
-//	generic_timer_set_tval(GENERIC_TIMER_HYP, _tvals[GENERIC_TIMER_HYP] );
-
-//	generic_timer_enable_int(GENERIC_TIMER_HYP);
+	/* ISR */
+	_callback[GENERIC_TIMER_HYP](regs);
 }
 
 hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type)
@@ -124,7 +117,7 @@ hvmm_status_t generic_timer_set_callback(generic_timer_type_t type, generic_time
 	HVMM_TRACE_ENTER();
 
 	/* TODO: set callback per Generic Timer Type */
-	_callback /* [type] */ = callback;
+	_callback[type] = callback;
 
 	HVMM_TRACE_EXIT();
 	return HVMM_STATUS_SUCCESS;
