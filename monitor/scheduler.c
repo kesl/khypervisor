@@ -24,10 +24,10 @@ void timer_switch_next_guest(void *pdata){
 	uint32_t tval = read_cnthp_tval();
 	timer_get_time(&timeval);
 	
-	uart_print( "timer_c2t:"); uart_print_hex64(timer_c2t(pct)); uart_print("\n\r");
-	uart_print( "oldertime:"); uart_print_hex64(oldertime); uart_print("\n\r");
-	uart_print( "newtime:"); uart_print_hex64(timeval.tv_sec); uart_print("\n\r");
-	uart_print( "compare timer:"); uart_print_hex64(timeval.tv_sec - oldertime); uart_print("\n\r");
+//	uart_print( "timer_c2t:"); uart_print_hex64(timer_c2t(pct)); uart_print("\n\r");
+//	uart_print( "oldertime:"); uart_print_hex64(oldertime); uart_print("\n\r");
+//	uart_print( "newtime:"); uart_print_hex64(timeval.tv_sec); uart_print("\n\r");
+	uart_print( "interval time:"); uart_print_hex64(timeval.tv_sec - oldertime); uart_print("\n\r");
 	oldertime = timeval.tv_sec;
 	
 	uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
