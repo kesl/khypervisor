@@ -22,8 +22,10 @@ endif
 LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
 BOOTLOADER	= boot.S
-OBJS 		= boot.o monitor.o c_start.o string.o hmain.o monitor_imp.o uart_print.o mm.o timer.o \
-		context.o gic.o interrupt.o smp.o vgic.o
+OBJS 		= boot.o c_start.o string.o hmain.o \
+              monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
+              uart_print.o mm.o timer.o \
+              context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o
 
 GUESTBIN	= bmguest.bin
 

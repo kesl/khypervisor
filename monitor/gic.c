@@ -192,6 +192,7 @@ static hvmm_status_t gic_init_cpui(void)
 	/* Enable signaling of interrupts and GICC_EOIR only drops priority */
 	_gic.ba_gicc[GICC_CTLR] = GICC_CTL_ENABLE | GICC_CTL_EOI;
 
+    result = HVMM_STATUS_SUCCESS;
 	return result;
 }
 

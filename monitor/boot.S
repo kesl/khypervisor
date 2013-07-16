@@ -174,7 +174,7 @@ start:
 
 	@ Now we've got rid of the secondary CPUs, set up a stack
 	@ for CPU 0 so we can write most of this in C.
-	ldr     sp, =stacktop
+	ldr     sp, =sec_stacklimit
 
 	@ And call the C entrypoint
 	bl      c_start
@@ -197,16 +197,3 @@ __semi_call:
 #endif
 	mov pc, lr
 
-@ removed __boot_kernel() - simon 
-
-	@
-	@ Data
-	@
-	/* The kernel boot command line for builtin kernels is defined in the Make system */
-	.globl kernel_cmd
-	.globl kernel_cmd_end
-kernel_cmd:
-#ifdef KCMD
-	.asciz KCMD
-#endif
-kernel_cmd_end:
