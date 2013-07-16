@@ -61,9 +61,7 @@ struct gic {
 	gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
 };
 
-
 static struct gic _gic;
-
 
 static void gic_dump_registers(void)
 {
@@ -222,6 +220,7 @@ static hvmm_status_t gic_init_cpui(void)
 	/* Enable signaling of interrupts and GICC_EOIR only drops priority */
 	_gic.ba_gicc[GICC_CTLR] = GICC_CTL_ENABLE | GICC_CTL_EOI;
 
+    result = HVMM_STATUS_SUCCESS;
 	return result;
 }
 
@@ -286,62 +285,6 @@ hvmm_status_t gic_init(void)
 	return result;
 }
 
-
-/*
- * Note: Sequence of Routing and Requesting an IRQ
-
-1. Routing
-
-1.1 Disable Routing
-	GICD_ICENABLER[irq] = 1
-
-static void gic_irq_shutdown(struct irq_desc *desc)
-{
-    int irq = desc->irq;
-
-    // Disable forwarding 
-    GICD[GICD_ICENABLER + irq / 32] = (1u << (irq % 32));
-}
-
-1.2 Edge/Level
-	GICD_ICFGR[irq] = edge | level
-
-1.3 Routing: Target CPU
-	GICD_ITARGETSR[irq] = cpumask
-
-1.4 Priority
-	GICD_IPRIORITY[irq] = priority
-** Example
-
-// needs to be called with gic.lock held
-static void gic_set_irq_properties(unsigned int irq, bool_t level,
-        unsigned int cpu_mask, unsigned int priority)
-{
-    volatile unsigned char *bytereg;
-    uint32_t cfg, edgebit;
-
-    // Set edge / level 
-    cfg = GICD[GICD_ICFGR + irq / 16];
-    edgebit = 2u << (2 * (irq % 16));
-    if ( level )
-        cfg &= ~edgebit;
-    else
-        cfg |= edgebit;
-    GICD[GICD_ICFGR + irq / 16] = cfg;
-
-    // Set target CPU mask (RAZ/WI on uniprocessor) 
-    bytereg = (unsigned char *) (GICD + GICD_ITARGETSR);
-    bytereg[irq] = cpu_mask;
-
-    // Set priority 
-    bytereg = (unsigned char *) (GICD + GICD_IPRIORITYR);
-    bytereg[irq] = priority;
-}
-
-2. Enable Forwarding
-	GICD_ISENABLER[irq] = enable
- */
-
 /*
  * example: gic_test_configure_irq( 26, 
 									GIC_INT_POLARITY_LEVEL, 
@@ -394,7 +337,6 @@ hvmm_status_t gic_test_configure_irq(uint32_t irq, gic_int_polarity_t polarity, 
 void gic_interrupt(int fiq, void *pregs)
 {
 	/*
-	 *
 	 * 1. ACK - CPU Interface - GICC_IAR read
 	 * 2. Completion - CPU Interface - GICC_EOIR
 	 * 2.1 Deactivation - CPU Interface - GICC_DIR
