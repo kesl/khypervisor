@@ -55,8 +55,6 @@ hvmm_status_t generic_timer_enable_int(generic_timer_type_t type )
 	uint32_t ctrl;
 	hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
-	uart_print("[generic_timer_start]\n\r");	
-
 	if ( type == GENERIC_TIMER_HYP ) {
 		ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
 		ctrl |= GENERIC_TIMER_CTRL_ENABLE;		
@@ -73,8 +71,6 @@ hvmm_status_t generic_timer_disable_int(generic_timer_type_t type)
 {
 	uint32_t ctrl;
 	hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
-
-	uart_print("[generic_timer_stop]\n\r");
 
 	if ( type == GENERIC_TIMER_HYP ) {
 		ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
