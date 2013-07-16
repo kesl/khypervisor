@@ -42,13 +42,13 @@ void timer_switch_next_guest(void *pdata){
 }
 
 void timer_test_scheduling(){
-    void timer_switch_next_guest(void *pdata);
-    timer_init(timer_sched);
+	void timer_switch_next_guest(void *pdata);
+	timer_init(timer_sched);
 	/* 100Mhz -> 1 count == 10ns */
 	/* 0x5F5E100 -> 1seconds */
 	/* 0x3B9ACA00 -> 10seconds */
 	/* 1000 milliseconds -> 1seconds */	
 	timer_set_interval(timer_sched, 1000);	
-    timer_add_callback(timer_sched, &timer_switch_next_guest);
-    timer_start(timer_sched);
+	timer_add_callback(timer_sched, &timer_switch_next_guest);
+	timer_start(timer_sched);
 }
