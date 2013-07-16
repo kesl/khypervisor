@@ -3,6 +3,7 @@
 #include "uart_print.h"
 #include "armv7_p15.h"
 #include "context.h"
+#include "hvmm_trace.h"
 
 hvmm_status_t hvmm_interrupt_init(void)
 {

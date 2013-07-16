@@ -1,9 +1,11 @@
 #include "gic.h"
+#include "gic_regs.h"
 #include "armv7_p15.h"
 #include "a15_cp15_sysregs.h"
 #include "uart_print.h"
 #include "smp.h"
 #include "context.h"
+#include "hvmm_trace.h"
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -12,36 +14,6 @@
 #define MIDR_MASK_PPN		(0x0FFF <<4)
 #define MIDR_PPN_CORTEXA15	(0xC0F << 4)
 
-#define GIC_OFFSET_GICD		0x1000
-#define GIC_OFFSET_GICC		0x2000
-#define GIC_OFFSET_GICH		0x4000
-#define GIC_OFFSET_GICV		0x5000
-#define GIC_OFFSET_GICVI	0x6000
-
-#define GICD_CTLR	0x000
-#define GICD_TYPER	(0x004/4)
-#define GICD_IIDR	(0x008/4)
-#define GICD_ISENABLER	(0x100/4)
-#define GICD_ICENABLER	(0x180/4)
-#define GICD_IPRIORITYR	(0x400/4)
-#define GICD_ITARGETSR	(0x800/4) 
-#define GICD_ICFGR	(0xC00/4)
-
-#define GICC_CTLR	(0x0000/4)
-#define GICC_PMR	(0x0004/4)
-#define GICC_BPR	(0x0008/4)
-#define GICC_IAR	(0x000C/4)
-#define GICC_EOIR	(0x0010/4)
-#define GICC_DIR	(0x1000/4)
-
-#define GICD_CTLR_ENABLE	0x1
-#define GICD_TYPE_LINES_MASK	0x01f
-#define GICD_TYPE_CPUS_MASK	0x0e0
-#define GICD_TYPE_CPUS_SHIFT	5
-
-#define GICC_CTL_ENABLE 	0x1
-#define GICC_CTL_EOI    	(0x1 << 9)
-#define GICC_IAR_INTID_MASK	0x03ff
 
 #define GIC_INT_PRIORITY_DEFAULT_WORD	( (GIC_INT_PRIORITY_DEFAULT << 24 ) \
 										 |(GIC_INT_PRIORITY_DEFAULT << 16 ) \
