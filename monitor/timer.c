@@ -6,6 +6,7 @@
  */
 #include "timer.h"
 #include "generic_timer.h"
+#include "mathlib.h"
 
 //TODO modify list
 //struct timer_source timer_sources;
@@ -41,7 +42,6 @@ hvmm_status_t timer_register(struct timer_source* ts)
 	timer_sources.stop = ts->stop;
 	timer_sources.add_callback = ts->add_callback;
 	timer_sources.remove_callback = ts->remove_callback;
-	timer_sources.get_time = ts->get_time;
 */
 	return HVMM_STATUS_SUCCESS;
 }
@@ -132,8 +132,19 @@ hvmm_status_t timer_remove_callback(timer_channel_t channel, timer_callback_t ca
 
 void timer_get_time(struct timeval* timeval)
 {
+	uint64_t cnt = read_cntpct();
+	timeval->tv_sec = udiv64(timer_c2t(cnt), 1000);
+	timeval->tv_usec = timer_c2t(cnt) *  1000;
 /*
 	_channels[0].ts.get_time(timeval);
 */
 }
 
+
+uint64_t timer_c2t(uint64_t count){
+	return udiv64(count, COUNT_PER_MSEC);
+} 
+
+uint64_t timer_t2c(uint64_t time){
+	return time * COUNT_PER_MSEC;
+}

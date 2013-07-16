@@ -43,14 +43,12 @@ hvmm_status_t generic_timer_init(struct timer_source *ts);
 hvmm_status_t generic_timer_enable_int(generic_timer_type_t type);
 /* Disable the timer. Specified by timer type */
 hvmm_status_t generic_timer_disable_int(generic_timer_type_t type);
-/* Sets time interval. Converts from millisecond to count and sets time interval.*/
+/* Sets time interval. Converts from milliseconds to count and sets time interval.*/
 hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t interval);
 /* Enables timer irq.  */
 hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type);
 /* Adds callback funtion. Called when occur timer interrupt */
 hvmm_status_t generic_timer_set_callback(generic_timer_type_t type, generic_timer_callback_t callback);
-/* TODO Get System time. Not clear */
-void generic_timer_get_time(struct timeval* timeval);
 
 static inline void generic_timer_reg_write(int reg, uint32_t val)
 {

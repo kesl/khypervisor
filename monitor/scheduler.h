@@ -12,4 +12,6 @@ void timer_switch_next_guest(void *pdata);
 
 hvmm_status_t scheduler_next_event(int irq, void *pdata);
 
+/* Test Code */
+void timer_test_scheduling(void);
 #endif

@@ -4,6 +4,16 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
+#if defined(ARCH_FAST_MODEL)
+    #define COUNT_PER_SEC 100000000
+    #define COUNT_PER_MSEC 100000
+    #define COUNT_PER_USEC 100
+#else
+    #define COUNT_PER_SEC 100000000
+    #define COUNT_PER_MSEC 100000
+    #define COUNT_PER_USEC 100
+#endif
+
 /**
  *  Implements Timer functionality such as,
  *
@@ -46,8 +56,8 @@ typedef enum{
 *   tv_usec : microseconds
 */
 struct timeval{
-    long tv_sec;
-    long tv_usec;
+    uint64_t tv_sec;
+    uint64_t tv_usec;
 };
 
 /*
@@ -68,7 +78,6 @@ struct timer_source{
 	hvmm_status_t (*stop) (void);
 	hvmm_status_t (*add_callback)(int, timer_callback_t);
 	hvmm_status_t (*remove_callback)(int, timer_callback_t);
-	void (*get_time)(struct timeval*);	
 //	uint32_t interval;
 };
 	
@@ -111,7 +120,7 @@ struct dlist{
 	hvmm_status_t timer_stop(timer_channel_t channel);
 
 /**
- * Sets time interval, in (TBD)seconds, for the timer channel. 
+ * Sets time interval, in milliseconds, for the timer channel. 
  * If the channel has been started and a callback function is set, it will be called 
  * in the next interval
  */
@@ -142,5 +151,10 @@ void timer_get_time(struct timeval* timeval);
  */
 hvmm_status_t timer_register(struct timer_source* ts);
 
-void timer_test_scheduling();
+/* Converts from system counter to milliseconds. */
+uint64_t timer_c2t(uint64_t count);
+
+/* Converts from milliseconds to system counter. */   
+uint64_t timer_t2c(uint64_t time);
+   
 #endif

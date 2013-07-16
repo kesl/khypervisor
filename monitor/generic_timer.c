@@ -19,7 +19,6 @@ hvmm_status_t generic_timer_init(struct timer_source *ts)
 	ts->stop = &generic_timer_stop;
 	ts->add_callback = &generic_timer_add_callback;
 	ts->remove_callback = &generic_timer_remove_callback;
-	ts->get_time = &generic_timer_get_time;
 */
 //	timer_register(&ts);	
 
@@ -36,6 +35,8 @@ hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
 	/*
 		TODO : interval_ms -> count conversion
 	*/
+	tval = timer_t2c(tval);		
+
 	hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
 	if ( type == GENERIC_TIMER_HYP) {
@@ -123,10 +124,5 @@ hvmm_status_t generic_timer_set_callback(generic_timer_type_t type, generic_time
 	return HVMM_STATUS_SUCCESS;
 }
 
-void generic_timer_get_time(struct timeval* timeval)
-{
-	timeval->tv_sec = generic_timer_pcounter_read(); 
-	timeval->tv_usec = generic_timer_vcounter_read();
-}
 
 
