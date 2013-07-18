@@ -5,7 +5,6 @@
 #include "context.h"
 #include "uart_print.h"
 #include "timer.h"
-hvmm_status_t scheduler_init(void);
 
 hvmm_status_t scheduler_next_event(int irq, void *pdata);
 

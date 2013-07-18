@@ -66,7 +66,6 @@ hvmm_status_t generic_timer_disable_int(generic_timer_type_t type)
 
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
 {
-	/* ISR */
 	_callback[GENERIC_TIMER_HYP](regs);
 }
 
@@ -79,7 +78,7 @@ hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type)
 
 		gic_test_set_irq_handler(irq, &_generic_timer_hyp_irq_handler, 0);
 
-	    gic_test_configure_irq(irq,
+		gic_test_configure_irq(irq,
         	GIC_INT_POLARITY_LEVEL, 
         	gic_cpumask_current(),
         	GIC_INT_PRIORITY_DEFAULT );
