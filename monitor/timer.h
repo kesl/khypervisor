@@ -31,18 +31,11 @@
  */
 
 
-/*
- * Timer channel
- * Have own's timer interrupt handler.
- */
 typedef enum{
     timer_sched = 0,
     TIMER_NUM_MAX_CHANNELS
 } timer_channel_t;
 
-/*
- * Timer_callback_t
- */
 typedef void(*timer_callback_t)(void *pdata);
 
 struct timer_channel{
