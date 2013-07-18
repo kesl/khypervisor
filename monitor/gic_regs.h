@@ -50,4 +50,37 @@
 #define GICC_CTL_EOI    	(0x1 << 9)
 #define GICC_IAR_INTID_MASK	0x03ff
 
+/* Virtual Interface Control */
+#define GICH_HCR_EN             0x1
+#define GICH_VTR_PRIBITS_SHIFT  29
+#define GICH_VTR_PRIBITS_MASK   (0x7 << GICH_VTR_PRIVITS_SHIFT)
+#define GICH_VTR_PREBITS_SHIFT  26
+#define GICH_VTR_PREBITS_MASK   (0x7 << GICH_VTR_PREVITS_SHIFT)
+#define GICH_VTR_LISTREGS_MASK  0x3f
+
+
+#define GICH_LR_VIRTUALID_SHIFT     0
+#define GICH_LR_VIRTUALID_MASK      (0x3ff << GICH_LR_VIRTUALID_SHIFT)
+#define GICH_LR_PHYSICALID_SHIFT    10
+#define GICH_LR_PHYSICALID_MASK     (0x3ff << GICH_LR_PHYSICALID_SHIFT)
+#define GICH_LR_CPUID_SHIFT         10
+#define GICH_LR_CPUID_MASK          (0x7 << GICH_LR_CPUID_SHIFT)
+#define GICH_LR_EOI_SHIFT           19
+#define GICH_LR_EOI_MASK            (0x1 << GICH_LR_EOI_SHIFT)
+#define GICH_LR_EOI                 (0x1 << GICH_LR_EOI_SHIFT)
+#define GICH_LR_PRIORITY_SHIFT      23
+#define GICH_LR_PRIORITY_MASK       (0x1f << GICH_LR_PRIORITY_SHIFT)
+#define GICH_LR_STATE_SHIFT     28
+#define GICH_LR_STATE_MASK      (0x3 << GICH_LR_STATE_SHIFT)
+#define GICH_LR_STATE_INACTIVE          ( 0x0 << GICH_LR_STATE_SHIFT )
+#define GICH_LR_STATE_PENDING           ( 0x1 << GICH_LR_STATE_SHIFT )
+#define GICH_LR_STATE_ACTIVE            ( 0x2 << GICH_LR_STATE_SHIFT )
+#define GICH_LR_STATE_PENDING_ACTIVE    ( 0x3 << GICH_LR_STATE_SHIFT )
+#define GICH_LR_GRP1_SHIFT      30
+#define GICH_LR_GRP1_MASK       (0x1 << GICH_LR_GRP1_SHIFT)
+#define GICH_LR_GRP1            (0x1 << GIC_LR_GRP1_SHIFT)
+#define GICH_LR_HW_SHIFT      31
+#define GICH_LR_HW_MASK       (0x1 << GICH_LR_HW_SHIFT)
+#define GICH_LR_HW            (0x1 << GIC_LR_HW_SHIFT)
+
 #endif

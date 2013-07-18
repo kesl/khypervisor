@@ -21,6 +21,8 @@
 										 |(GIC_INT_PRIORITY_DEFAULT ) )
 #define GIC_NUM_MAX_IRQS	1024
 
+#define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
+
 struct gic {
 	uint32_t baseaddr;
 	volatile uint32_t *ba_gicd;
@@ -31,6 +33,7 @@ struct gic {
 	uint32_t lines;
 	uint32_t cpus;
 	gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
+    uint32_t initialized;
 };
 
 static struct gic _gic;
@@ -219,6 +222,17 @@ hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler, void 
 	return result;
 }
 
+volatile uint32_t *gic_vgic_baseaddr(void)
+{
+    if ( _gic.initialized != GIC_SIGNATURE_INITIALIZED ) {
+        HVMM_TRACE_ENTER();
+        uart_print("gic: ERROR - not initialized\n\r");
+        HVMM_TRACE_EXIT();
+    }
+
+    return _gic.ba_gich;
+}
+
 hvmm_status_t gic_init(void)
 {
 	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -252,6 +266,9 @@ hvmm_status_t gic_init(void)
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		result = gic_init_cpui();
 	}
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        _gic.initialized = GIC_SIGNATURE_INITIALIZED;
+    }
 
 	HVMM_TRACE_EXIT();
 	return result;
