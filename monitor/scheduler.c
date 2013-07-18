@@ -1,18 +1,6 @@
 #include "scheduler.h"
 
 
-hvmm_status_t scheduler_init(void)
-{
-	/* Not Implement */
-	return HVMM_STATUS_SUCCESS;
-}
-
-hvmm_status_t scheduler_next_event(int irq, void *pdata)
-{
-	/* Not Implement */
-	return HVMM_STATUS_SUCCESS;
-}
-
 void scheduler_test_switch_to_next_guest(void *pdata){
 	struct arch_regs *regs = pdata;
 	uint64_t pct = read_cntpct();

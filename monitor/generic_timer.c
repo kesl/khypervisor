@@ -66,7 +66,6 @@ hvmm_status_t generic_timer_disable_int(generic_timer_type_t type)
 
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
 {
-	/* ISR */
 	_callback[GENERIC_TIMER_HYP](regs);
 }
 
