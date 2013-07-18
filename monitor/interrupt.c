@@ -3,6 +3,8 @@
 #include "uart_print.h"
 #include "armv7_p15.h"
 #include "context.h"
+#include "hvmm_trace.h"
+#include "vgic.h"
 
 hvmm_status_t hvmm_interrupt_init(void)
 {
@@ -17,7 +19,14 @@ hvmm_status_t hvmm_interrupt_init(void)
 		write_hcr( hcr );
 		hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
 	} 
+
+    /* Physical Interrupt: GIC Distributor & CPU Interface */
 	ret = gic_init();
+
+    /* Virtual Interrupt: GIC Virtual Interface Control */
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_init();
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_enable(1);
+
 	return ret;
 }
 
@@ -96,6 +105,14 @@ hvmm_status_t hvmm_interrupt_test(void)
 	/* start timer */
 	interrupt_test_start_timer();
 
+    /* VGIC test 
+     *  - Implementation Not Complete
+     *  - TODO: specify guest to receive the virtual IRQ
+     *  - Once the guest responds to the IRQ, Virtual Maintenance Interrupt service routine should be called
+     *      -> ISR implementation is empty for the moment
+     *      -> This should handle completion of deactivation and further injection if there is any pending virtual IRQ
+     */
+    vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1 );
 
 	HVMM_TRACE_EXIT();
 	return HVMM_STATUS_SUCCESS;
