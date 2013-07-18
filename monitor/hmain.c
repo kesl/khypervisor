@@ -7,6 +7,7 @@
 #include "gic.h"
 #include "interrupt.h"
 #include "context.h"
+#include "hvmm_trace.h"
 #include "scheduler.h"
 
 void hyp_abort_infinite(void)

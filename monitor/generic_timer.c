@@ -1,4 +1,5 @@
 #include "generic_timer.h"
+#include "hvmm_trace.h"
 
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata);
 
