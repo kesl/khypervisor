@@ -17,8 +17,6 @@ struct arch_regs {
         unsigned int cpsr; /* CPSR */
         unsigned int pc; /* Program Counter */
         unsigned int gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
-        unsigned int sp; /* Stack Pointer */
-        unsigned int lr; /* Link Register */
 } __attribute((packed));
 
 struct hyp_guest_context {

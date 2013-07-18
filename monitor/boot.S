@@ -80,9 +80,12 @@ start:
 	@
 	mrc	p15, 0, r0, c0, c1, 1		@ CPUID_EXT_PFR1
 	lsr	r0, r0, #16
-	and	r0, r0, #1			@ Check generic timer support
+	and	r0, r0, #1			        @ Check generic timer support
 	beq	1f
-	ldr	r0, =24000000			@ 24MHz timer frequency
+
+    @ Current guess is CNTFRQ is fixed at 100MHz
+    @ - simon
+	ldr	r0, =100000000			    @ 100MHz timer frequency
 	mcr	p15, 0, r0, c14, c0, 0		@ CNTFRQ
 1:
 #endif
@@ -171,7 +174,7 @@ start:
 
 	@ Now we've got rid of the secondary CPUs, set up a stack
 	@ for CPU 0 so we can write most of this in C.
-	ldr     sp, =stacktop
+	ldr     sp, =sec_stacklimit
 
 	@ And call the C entrypoint
 	bl      c_start
@@ -194,16 +197,3 @@ __semi_call:
 #endif
 	mov pc, lr
 
-@ removed __boot_kernel() - simon 
-
-	@
-	@ Data
-	@
-	/* The kernel boot command line for builtin kernels is defined in the Make system */
-	.globl kernel_cmd
-	.globl kernel_cmd_end
-kernel_cmd:
-#ifdef KCMD
-	.asciz KCMD
-#endif
-kernel_cmd_end:
