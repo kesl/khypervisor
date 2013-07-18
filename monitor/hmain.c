@@ -7,8 +7,7 @@
 #include "gic.h"
 #include "interrupt.h"
 #include "context.h"
-
-
+#include "scheduler.h"
 
 void hyp_abort_infinite(void)
 {
@@ -108,7 +107,9 @@ void hyp_main(void)
 	context_init_guests();
 
 	/* Interrupt test */
-	hvmm_interrupt_test();
+	//hvmm_interrupt_test();
+	scheduler_test_scheduling();
+	
 
 	/* Switch to the first guest */
 	context_switch_guest();
