@@ -5,43 +5,73 @@
  * Responsible: Inkyu Han
  */
 #include "timer.h"
+#include "generic_timer.h"
 
-hvmm_status_t timer_init(timer_channel_t timer_channel)
-{
-	return HVMM_STATUS_SUCCESS;
-}
-	
-hvmm_status_t timer_start(timer_channel_t timer_channel)
-{
-	return HVMM_STATUS_SUCCESS;
-}
+static struct timer_channel _channels[TIMER_NUM_MAX_CHANNELS];
 
-hvmm_status_t timer_stop(timer_channel_t timer_channel)
+static void _timer_hw_callback(void *pdata)
 {
-	return HVMM_STATUS_SUCCESS;
-}
+    generic_timer_disable_int(GENERIC_TIMER_HYP);
 
-hvmm_status_t timer_set_interval(timer_channel_t timer_channel, uint32_t interval)
-{
-	return HVMM_STATUS_SUCCESS;
+    _channels[timer_sched].callback(pdata);
+
+    generic_timer_set_tval(GENERIC_TIMER_HYP, _channels[timer_sched].interval_us);
+    
+    generic_timer_enable_int(GENERIC_TIMER_HYP);
 }
 
-hvmm_status_t timer_get_interval(timer_channel_t timer_channel)
+hvmm_status_t timer_init(timer_channel_t channel)
+{   
+    generic_timer_init();
+    return HVMM_STATUS_SUCCESS;
+}
+    
+hvmm_status_t timer_start(timer_channel_t channel)
 {
-	return HVMM_STATUS_SUCCESS;
+    if ( _channels[channel].callback != 0 ) {
+
+        generic_timer_set_callback(GENERIC_TIMER_HYP, &_timer_hw_callback );
+    
+        generic_timer_set_tval(GENERIC_TIMER_HYP, _channels[channel].interval_us);
+    
+        generic_timer_enable_irq(GENERIC_TIMER_HYP);
+
+        generic_timer_enable_int(GENERIC_TIMER_HYP);
+    }
+
+    return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t timer_add_callback(timer_channel_t timer_channel, gic_irq_handler_t handler)
+hvmm_status_t timer_stop(timer_channel_t channel)
 {
-	return HVMM_STATUS_SUCCESS;
+    generic_timer_disable_int(GENERIC_TIMER_HYP);
+    return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t timer_remove_callback(timer_channel_t timer_channel, gic_irq_handler_t handler)
+hvmm_status_t timer_set_interval(timer_channel_t channel, uint32_t interval_us)
 {
-	return HVMM_STATUS_SUCCESS;
+    _channels[channel].interval_us = timer_t2c(interval_us);
+    return HVMM_STATUS_SUCCESS;
 }
 
-void timer_get_time(struct timeval* timeval)
+uint32_t timer_get_interval(timer_channel_t channel)
 {
+    return _channels[channel].interval_us;
+}
 
+hvmm_status_t timer_add_callback(timer_channel_t channel, timer_callback_t callback)
+{
+    _channels[channel].callback = callback;
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t timer_remove_callback(timer_channel_t channel, timer_callback_t callback)
+{
+    _channels[channel].callback = 0;
+    return HVMM_STATUS_SUCCESS;
+}
+
+uint64_t timer_t2c(uint64_t time_us)
+{
+    return time_us * COUNT_PER_USEC;
 }
