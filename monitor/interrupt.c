@@ -31,8 +31,8 @@ void interrupt_test_start_timer(void)
 	HVMM_TRACE_ENTER();
 
 
-	/* just sometime later */
-	tval = 0x8000000;
+	/* every second */
+	tval = read_cntfrq();
 	write_cntp_tval(tval);
 
 	pct = read_cntpct();

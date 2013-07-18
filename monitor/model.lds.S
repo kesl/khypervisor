@@ -24,38 +24,33 @@ INPUT(./uImage)
 /* INPUT(./bmguest2.bin) */
 #endif
 
-PHYS_OFFSET = 0x80000000;
-MON_OFFSET  = 0xf0000000;
-STACKTOP = 0xff000000;
+PHYS_OFFSET = 0x80000000;       /* Customize */
+MON_OFFSET  = 0xF0000000;       /* Customize */
+
+MON_SIZE    = 0x0F000000;
+MON_STACK	= MON_OFFSET + MON_SIZE;
+MON_STACK_SIZE  = 0x00c00000;
+
+SEC_STACKTOP = MON_STACK + MON_STACK_SIZE;
+SEC_STACK_SIZE  = 0x00400000;
 
 /* NS.SVC mode code space 
  * - simon
  */
+GUEST_OFFSET  	= 0xA0000000;   /* Customize */
 GUEST_SIZE_MAX	= 0x0F000000;
-GUEST_OFFSET  	= 0xA0000000;
 GUEST_STACK  	= GUEST_OFFSET + GUEST_SIZE_MAX;
 
-GUEST2_OFFSET	= 0xB0000000;
+GUEST2_OFFSET	= 0xB0000000;   /* Customize */
 GUEST2_STACK	= GUEST2_OFFSET + GUEST_SIZE_MAX;
 
-HYP_OFFSET	= 0xD0000000;
-HYP_STACK	= 0xDF000000;
 
 SECTIONS
 {
  . = PHYS_OFFSET;
-
  . = PHYS_OFFSET + 0x8000 - 0x40;
-
- kernel_start = .;
- kernel_entry = . + 0x40;
-#ifndef SEMIHOSTING
- .kernel : { ./uImage }
-#endif
- kernel_end = .;
-
-
  . = PHYS_OFFSET + 0x00d00000;
+
  fs_start = .;
 #if defined(USE_INITRD) && !defined(SEMIHOSTING)
  .filesystem : { ./filesystem.cpio.gz }
@@ -95,15 +90,6 @@ SECTIONS
  . = GUEST2_STACK + 0x01000000; 
  guest2_stacklimit = .;
 
-
-/* Hyp image follows: UNUSED FOR NOW */
- . = HYP_OFFSET;
- hyp_start = .;
- . = HYP_STACK;
- hyp_stacktop = .;
- . = HYP_STACK + 0x01000000;
- hyp_stacklimit = .;
-
  . = MON_OFFSET;
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.
@@ -120,7 +106,13 @@ SECTIONS
 	boot.o(.bss) 
 	monitor.o(.bss) 
  }
+ . = MON_STACK;
+ mon_stacktop = .;
+ . = MON_STACK + MON_STACK_SIZE;
+ mon_stacklimit = .;
 
- . = STACKTOP;
- stacktop = .;
+ . = SEC_STACKTOP;
+ sec_stacktop = .;
+ . = SEC_STACKTOP + SEC_STACK_SIZE;
+ sec_stacklimit = .;
 }
