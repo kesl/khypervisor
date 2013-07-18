@@ -1,6 +1,6 @@
 #include "context.h"
 #include "uart_print.h"
-
+#include "hvmm_trace.h"
 
 extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 
