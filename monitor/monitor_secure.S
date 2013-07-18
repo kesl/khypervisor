@@ -52,7 +52,6 @@ trap_hyp_entry:
 
 trap_secure_unhandled:
 	@ Push registers
-	push	{sp, lr}
 	push	{r0-r12}
 	mrs	r0, spsr_mon
 	mov	r1, #0
@@ -64,7 +63,7 @@ trap_secure_unhandled:
 	@ Pop registers
 	pop 	{r0-r1}
 	msr	spsr_mon, r0
-	ldm	sp, {r0-r14}
+	ldm	sp, {r0-r12}
 	eret
 
 /* 

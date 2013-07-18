@@ -38,8 +38,6 @@ static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *reg
 	int i;
 	regs_dst->pc = regs_src->pc;
 	regs_dst->cpsr = regs_src->cpsr;
-	regs_dst->sp = regs_src->sp;
-	regs_dst->lr = regs_src->lr;
 	for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
 		regs_dst->gpr[i] = regs_src->gpr[i];
 	}
@@ -94,8 +92,6 @@ void context_dump_regs( struct arch_regs *regs )
 {
         uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" );
         uart_print( "pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
-        uart_print( "sp:" ); uart_print_hex32( regs->sp ); uart_print( "\n\r" );
-        uart_print( "lr:" ); uart_print_hex32( regs->lr ); uart_print( "\n\r" );
 }
 
 static void context_switch_to_initial_guest(void)
@@ -136,8 +132,6 @@ void context_init_guests(void)
 	regs = &context->regs;
 	regs->pc = 0x00000000;	// PA:0xA0000000
 	regs->cpsr 	= 0;	// uninitialized
-	regs->sp	= 0;	// uninitialized
-	regs->lr	= 0;	// uninitialized
 
 	/* regs->gpr[] = whatever */
 	context->vmid = 0;
@@ -148,8 +142,6 @@ void context_init_guests(void)
 	regs = &context->regs;
 	regs->pc = 0x00000000;	// PA: 0xB0000000
 	regs->cpsr 	= 0;	// uninitialized
-	regs->sp	= 0;	// uninitialized
-	regs->lr	= 0;	// uninitialized
 
 	/* regs->gpr[] = whatever */
 	context->vmid = 1;

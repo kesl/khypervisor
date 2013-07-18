@@ -29,7 +29,6 @@ monitor_hyp_vectors:
 
 trap_hvc:
 	@ Push registers
-	push	{sp, lr}
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
@@ -49,7 +48,7 @@ trap_hvc:
 	tst 	r0, #0
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r14}
+	ldm	sp, {r0-r12}
 	
 
 	@ else if return == HYP_RET_ERET -> Exception Return
@@ -61,14 +60,13 @@ trap_hvc:
 	tst 	r0, #0
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r14}
+	ldm	sp, {r0-r12}
 	@ stay in Hyp mode
 	mrs	lr, elr_hyp
 	mov	pc, lr
 
 trap_dabt:
 	@ Push registers
-	push	{sp, lr}
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
@@ -86,12 +84,11 @@ trap_dabt:
 	pop 	{r0-r1}
 	msr	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r14}
+	ldm	sp, {r0-r12}
 	eret
 
 trap_irq:
 	@ Push registers
-	push	{sp, lr}
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
@@ -106,12 +103,11 @@ trap_irq:
 	tst 	r0, #0
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r14}
+	ldm	sp, {r0-r12}
 	eret
 
 trap_unhandled:
 	@ Push registers
-	push	{sp, lr}
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
@@ -125,7 +121,7 @@ trap_unhandled:
 	pop 	{r0-r1}
 	msr	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r14}
+	ldm	sp, {r0-r12}
 	eret
 
 .global __mon_switch_to_guest_context
@@ -134,7 +130,7 @@ __mon_switch_to_guest_context:	@ struct arch_regs *r0
 	tst 	r3, #0
 	msrne	spsr_hyp, r3
 	msr	elr_hyp, lr
-	ldm	r0, {r0-r14}
+	ldm	r0, {r0-r12}
 	clrex
 	eret
 .type __mon_switch_to_guest_context, %function
