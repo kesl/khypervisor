@@ -108,7 +108,7 @@ void hyp_main(void)
 
 	/* Interrupt test */
 	//hvmm_interrupt_test();
-	timer_test_scheduling();
+	scheduler_test_scheduling();
 	
 
 	/* Switch to the first guest */

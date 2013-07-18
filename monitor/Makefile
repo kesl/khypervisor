@@ -23,7 +23,7 @@ LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
 BOOTLOADER	= boot.S
 OBJS 		= boot.o monitor.o c_start.o string.o hmain.o monitor_imp.o uart_print.o mm.o timer.o \
-		context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o mathlib.o
+		context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o
 
 GUESTBIN	= bmguest.bin
 
@@ -35,7 +35,7 @@ LD_SCRIPT	= model.lds.S
 ifeq ($(UBOOT),y)
 CONFIG_FLAGS	= 
 else
-CONFIG_FLAGS	= -DBAREMETAL_GUEST -ARCH_FAST_MODEL=1
+CONFIG_FLAGS	= -DBAREMETAL_GUEST -DBOARD_RTSMVE_CA15
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS)

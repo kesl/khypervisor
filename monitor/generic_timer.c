@@ -1,27 +1,13 @@
 #include "generic_timer.h"
-/* Types */
 
-/* External Declarations */
-
-/* Local Declarations */
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata);
 
-/* Local Data */
 static uint32_t _timer_irqs[GENERIC_TIMER_NUM_TYPES];
 static uint32_t _tvals[GENERIC_TIMER_NUM_TYPES];
 static generic_timer_callback_t _callback[GENERIC_TIMER_NUM_TYPES];
 
-hvmm_status_t generic_timer_init(struct timer_source *ts)
+hvmm_status_t generic_timer_init()
 {
-/*
-	ts->name = "gen-timer";
-	ts->start = &generic_timer_start;
-	ts->stop = &generic_timer_stop;
-	ts->add_callback = &generic_timer_add_callback;
-	ts->remove_callback = &generic_timer_remove_callback;
-*/
-//	timer_register(&ts);	
-
 	_timer_irqs[GENERIC_TIMER_HYP] = 26;
 	_timer_irqs[GENERIC_TIMER_NSP] = 27;
 	_timer_irqs[GENERIC_TIMER_VIR] = 30;
@@ -32,11 +18,6 @@ hvmm_status_t generic_timer_init(struct timer_source *ts)
 
 hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
 {
-	/*
-		TODO : interval_ms -> count conversion
-	*/
-	tval = timer_t2c(tval);		
-
 	hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
 	if ( type == GENERIC_TIMER_HYP) {
@@ -44,7 +25,6 @@ hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
 		generic_timer_reg_write(GENERIC_TIMER_REG_HYP_TVAL, tval);
 		result = HVMM_STATUS_SUCCESS;
 	} else {
-		/* DIY */
 	}
 
 	return result;
@@ -113,7 +93,6 @@ hvmm_status_t generic_timer_set_callback(generic_timer_type_t type, generic_time
 {
 	HVMM_TRACE_ENTER();
 
-	/* TODO: set callback per Generic Timer Type */
 	_callback[type] = callback;
 
 	HVMM_TRACE_EXIT();
