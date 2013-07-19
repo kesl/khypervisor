@@ -112,6 +112,23 @@ VExpress# cp.b 0x8200000 0xb0000000 0x100000; copy guest os#2 from flash@0x820_0
 VExpress# go 0xf000004c; this address is entry point of hypervisor
 </pre>
 
+Testing Hypervisor Prototype 2 for arndale
+==========================================
+1. configure SYSTEM variable in config-default.mk
+<pre>
+SYSTEM ?= arndale
+</pre>
+2. Build Hypervisor Prototype 2
+<pre>
+$ cd monitor
+$ make UBOOT=y
+</pre>
+3. Loading Image using Codevisor debugger 
+<pre>
+Bootloader will be supported.
+</pre>
+
+
 
 Tool chain
 =============

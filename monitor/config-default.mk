@@ -22,7 +22,8 @@ KERNEL_SRC	?= ../linux-kvm-arm
 # mps:		MPS (Cortex-M3)
 # realview_eb:	RealViewPB, EB, etc.
 # vexpress:	Versatile Express
-SYSTEM ?= vexpress
+# arndale:	arndale board
+SYSTEM ?= arndale
 
 ###########################################################################
 # Turn this on to use an initrd whose contents are in filesystem.cpio.gz
@@ -79,6 +80,16 @@ endif
 endif # SYSTEM = realvire_eb
 
 
+###########################################################################
+# Versatile Express
+#
+ifeq ($(SYSTEM),arndale)
+
+CPPFLAGS	+= -DSMP
+CPPFLAGS	+= -mcpu=cortex-a15 -marm
+CPPFLAGS	+= -DARNDALE -g
+
+endif
 ###########################################################################
 # Versatile Express
 #
