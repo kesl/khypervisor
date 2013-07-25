@@ -101,5 +101,14 @@ typedef union {
     lpae_walk_t walk;
 } lpaed_t;
 
-
+typedef enum {
+    LPAED_STAGE2_MEMATTR_SO = 0x0,   /* Strongly Ordered */
+    LPAED_STAGE2_MEMATTR_DM = 0x1,   /* Device memory */
+    LPAED_STAGE2_MEMATTR_NORMAL_ONC = 0x4,  /* Outer Non-cacheable */
+    LPAED_STAGE2_MEMATTR_NORMAL_OWT = 0x8,
+    LPAED_STAGE2_MEMATTR_NORMAL_OWB = 0xC,
+    LPAED_STAGE2_MEMATTR_NORMAL_INC = 0x1,
+    LPAED_STAGE2_MEMATTR_NORMAL_IWT = 0x2,
+    LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,
+} lpaed_stage2_memattr_t;
 #endif

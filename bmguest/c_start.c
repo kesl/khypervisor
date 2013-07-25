@@ -23,7 +23,9 @@
  */
 
 #include <stdint.h>
+#include <asm-arm_inline.h>
 #include "uart_print.h"
+#include "gic.h"
 
 #ifdef __MONITOR_CALL_HVC__
 #define hsvc_ping()	asm("hvc #0xFFFE")
@@ -46,28 +48,42 @@ inline void nrm_delay(void)
 	for( i = 0; i < 0x00FFFFFF; i++);
 }
 
+
 void nrm_loop(void) 
 {
-	uart_print(GUEST_LABEL); uart_print("starting...\n\r");
 	int i = 0;
+
+    uart_init();
+	uart_print(GUEST_LABEL); uart_print("starting...\n\r");
+
+    gic_init();
+
+    /* We are ready to accept irqs with GIC. Enable it now */
+
+    irq_enable();
+
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		nrm_delay();
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
 
 #ifdef __MONITOR_CALL_HVC__
-	// Hyp monitor guest run in Non-secure supervisor mode
+	    /* Hyp monitor guest run in Non-secure supervisor mode. 
+           Request test hvc ping and yield one after another 
+         */
 		if (i & 0x1) {
 			uart_print(GUEST_LABEL); uart_print( "hsvc_ping()\n\r" );
-			hsvc_ping();		// hvc ping
+			hsvc_ping();
 			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_ping() \n\r" );
 		} else {
 			uart_print(GUEST_LABEL); uart_print( "hsvc_yield()\n\r" );
-			// hsvc_yield();		// hvc manual switch
+			hsvc_yield();
 			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_yield() \n\r" );
 		}
 #else
-	// Secure monitor guest run in Non-secure supervisor mode
-		SWITCH_MANUAL();	// -> sec_loop() in the monitor
+        /* Secure monitor guest run in Non-secure supervisor mode
+           Request for switch to Secure mode (sec_loop() in the monitor)
+         */
+		SWITCH_MANUAL();	
 #endif
 		nrm_delay();
 	}

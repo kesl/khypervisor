@@ -1,6 +1,19 @@
-#define UART_BASE       (&_dummy_byte)
+
+/* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
+#define UART_BASE       ((volatile unsigned int *) 0x3FCA0000)
 
 static char _dummy_byte;
+
+void uart_init(void)
+{
+    /* TODO:
+       Figure out how to initialize the UART.
+       Currently, intialized by Hypervisor for FastModels RTSM_VE, as a workaround
+     */
+    /* ibrd 0x24 */
+    //UART_BASE[9] = 0x10;
+    //UART_BASE[12] = 0xc300;
+}
 
 void uart_print(char *str)
 {
