@@ -23,6 +23,12 @@
 
 #define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
 
+#if defined(ARNDALE)
+    #define GIC_BASEADDR    0x10480000 
+#else
+    #define GIC_BASEADDR    0
+#endif
+
 struct gic {
 	uint32_t baseaddr;
 	volatile uint32_t *ba_gicd;
@@ -247,7 +253,7 @@ hvmm_status_t gic_init(void)
 	/*
 	 * Determining VA of GIC base adddress has not been defined yet. Let is use the PA for the time being
 	 */
-	result = gic_init_baseaddr(0);
+    result = gic_init_baseaddr((void*)GIC_BASEADDR);
 
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		gic_dump_registers();
