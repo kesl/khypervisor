@@ -1,0 +1,38 @@
+diff -urN u-boot/include/configs/vexpress_common.h u-boot-fastmodel/include/configs/vexpress_common.h
+--- u-boot/include/configs/vexpress_common.h	2013-08-08 11:10:47.240870957 +0900
++++ u-boot-fastmodel/include/configs/vexpress_common.h	2013-08-08 11:00:30.899948400 +0900
+@@ -235,13 +235,14 @@
+ 		"kernel_addr_r=0x80008000\0"
+ #elif defined(CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP)
+ #define CONFIG_PLATFORM_ENV_SETTINGS \
+-		"loadaddr=0xa0008000\0" \
+-		"ramdisk_addr_r=0x81000000\0" \
+-		"kernel_addr=0x0c100000\0" \
+-		"ramdisk_addr=0x0c800000\0" \
+-		"maxramdisk=0x1800000\0" \
+-		"pxefile_addr_r=0xa8000000\0" \
+-		"kernel_addr_r=0xa0008000\0"
++		"hypervisor_addr=0x00000000\0" \
++		"bmguest_0_addr=0x01000000\0" \
++		"bmguest_1_addr=0x02000000\0" \
++		"hypervisor_addr_r=0xf0000000\0" \
++		"bmguest_0_addr_r=0xa0000000\0" \
++		"bmguest_1_addr_r=0xb0000000\0" \
++		"entry_addr=0xf000004c\0" \
++		"size=0x100000\0"
+ #endif
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 		CONFIG_PLATFORM_ENV_SETTINGS \
+@@ -254,8 +255,10 @@
+ 			"mem=${dram} mtdparts=${mtd} mmci.fmax=190000 " \
+ 			"devtmpfs.mount=0  vmalloc=256M\0" \
+ 		"bootflash=run flashargs; " \
+-			"cp ${ramdisk_addr} ${ramdisk_addr_r} ${maxramdisk}; " \
+-			"bootm ${kernel_addr} ${ramdisk_addr_r}\0"
++			"cp ${hypervisor_addr} ${hypervisor_addr_r} ${size}; "\
++			"cp ${bmguest_0_addr} ${bmguest_0_addr_r} ${size}; "\
++			"cp ${bmguest_1_addr} ${bmguest_1_addr_r} ${size}; "\
++			"go ${entry_addr}"
+ 
+ /* FLASH and environment organization */
+ #define PHYS_FLASH_SIZE			0x04000000	/* 64MB */
