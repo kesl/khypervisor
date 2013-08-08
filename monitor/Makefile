@@ -21,24 +21,39 @@ endif
 
 LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
+#BOOTLOADER	= boot.S
+#magicyaba
+ifeq ($(SYSTEM), arndale)
+BOOTLOADER	= ./boards/arndale/boot.S
+OBJS 		= ./boards/arndale/boot.o c_start.o string.o hmain.o \
+              monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
+              ./boards/arndale/uart_print.o mm.o timer.o \
+              context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o mct.o\
+			  vgic.o
+LD_SCRIPT	= ./boards/arndale/model.lds.S
+else # For VEXPRESS CA15
 BOOTLOADER	= boot.S
 OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               uart_print.o mm.o timer.o \
-              context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o \
+              context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o mct.o\
               vgic.o
+LD_SCRIPT	= model.lds.S
+endif
+
+
 
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 MONITORMAP	= monitor.map
-LD_SCRIPT	= model.lds.S
+#end of magicyaba
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
 ifeq ($(UBOOT),y)
 CONFIG_FLAGS	= 
 else
-CONFIG_FLAGS	= -DBAREMETAL_GUEST -DBOARD_RTSMVE_CA15
+CONFIG_FLAGS	= -DBAREMETAL_GUEST 
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS)
