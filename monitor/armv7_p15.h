@@ -9,8 +9,9 @@
                                 : "=r" (rval) : : "memory", "cc"); rval;})
 
 /* ARMv7 Registers */
-#define HCR_FMO	0x8
-#define HCR_IMO 0x10
+#define HCR_FMO	    0x8
+#define HCR_IMO     0x10
+#define HCR_VI      (0x1 << 7)
 
 #define read_mair0()           ({ uint32_t rval; asm volatile(\
                                 " mrc     p15, 4, %0, c10, c2, 0\n\t" \
