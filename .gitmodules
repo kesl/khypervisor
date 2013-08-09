@@ -1,3 +1,3 @@
-[submodule "u-boot"]
-	path = u-boot
-	url = git://git.denx.de/u-boot.git
+[submodule "u-boot-arndale"]
+	path = u-boot-arndale
+	url = git://git.linaro.org/people/ronynandy/u-boot-arndale.git
