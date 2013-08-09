@@ -83,15 +83,9 @@ start:
 	and	r0, r0, #1			        @ Check generic timer support
 	beq	1f
 
-<<<<<<< HEAD
     @ Current guess is CNTFRQ is fixed at 24MHz on Arndale board
     @ - inkyu
 	ldr	r0, =24000000			    @ 24MHz timer frequency
-=======
-    @ Current guess is CNTFRQ is fixed at 100MHz
-    @ - simon
-	ldr	r0, =100000000			    @ 100MHz timer frequency
->>>>>>> wonseok-remote/arndale
 	mcr	p15, 0, r0, c14, c0, 0		@ CNTFRQ
 1:
 #endif
