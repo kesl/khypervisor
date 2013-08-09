@@ -74,7 +74,7 @@ vectors:
 	.globl	start
 start:
 #ifdef SMP
-#ifdef ARNDALE
+#ifdef VEXPRESS
 	@
 	@ Program architected timer frequency
 	@
@@ -83,15 +83,9 @@ start:
 	and	r0, r0, #1			        @ Check generic timer support
 	beq	1f
 
-<<<<<<< HEAD
-    @ Current guess is CNTFRQ is fixed at 24MHz on Arndale board
-    @ - inkyu
-	ldr	r0, =24000000			    @ 24MHz timer frequency
-=======
     @ Current guess is CNTFRQ is fixed at 100MHz
     @ - simon
 	ldr	r0, =100000000			    @ 100MHz timer frequency
->>>>>>> wonseok-remote/arndale
 	mcr	p15, 0, r0, c14, c0, 0		@ CNTFRQ
 1:
 #endif
@@ -147,9 +141,14 @@ start:
 	adr	r2, 1f
 	ldmia	r2, {r3 - r7}			@ move the code to a location
 	stmia	r1, {r3 - r7}			@ less likely to be overridden
+#ifdef VEXPRESS
+	@ldr	r0, =0x1c010030			@ VE SYS_FLAGS register
+#else
+	ldr	r0, =0x10000030			@ RealView SYS_FLAGS register
+#endif
 	mov	pc, r1				@ branch to the relocated code
 1:
-#ifdef ARNDALE
+#ifdef VEXPRESS
 	wfe
 #endif
 	ldr	r1, [r0]
@@ -164,7 +163,8 @@ start:
 	@
 #ifdef MACH_MPS
 	ldr	r0, =0x1f005000			@ UART3 base (MPS)
-#elif defined (ARNDALE)
+#elif defined (VEXPRESS)
+	@ldr	r0, =0x1c090000			@ UART base (Versatile Express)
 	ldr	r0, =0x12c00000			@ UART base (ARNDALE)
 #else
 	ldr	r0, =0x10009000			@ UART base (RealView/EB)

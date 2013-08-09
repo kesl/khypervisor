@@ -23,7 +23,11 @@ KERNEL_SRC	?= ../linux-kvm-arm
 # realview_eb:	RealViewPB, EB, etc.
 # vexpress:	Versatile Express
 # arndale:	arndale board
+<<<<<<< HEAD
 SYSTEM ?= vexpress
+=======
+SYSTEM ?= arndale
+>>>>>>> wonseok-remote/arndale
 
 ###########################################################################
 # Turn this on to use an initrd whose contents are in filesystem.cpio.gz
