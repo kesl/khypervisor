@@ -4,7 +4,11 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
-#if defined(BOARD_RTSMVE_CA15)
+#if defined(VEXPRESS)
+    #define COUNT_PER_USEC 100
+#elif defined(ARNDALE)
+    #define COUNT_PER_USEC 24
+#else
     #define COUNT_PER_USEC 100
 #endif
 
