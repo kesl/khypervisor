@@ -52,9 +52,6 @@
 
 /* Virtual Interface Control */
 #define GICH_HCR_EN             0x1
-#define GICH_HCR_NPIE           (0x1 << 3)
-#define GICH_HCR_LRENPIE        (0x1 << 2)
-#define GICH_HCR_UIE            (0x1 << 1)
 #define GICH_VTR_PRIBITS_SHIFT  29
 #define GICH_VTR_PRIBITS_MASK   (0x7 << GICH_VTR_PRIVITS_SHIFT)
 #define GICH_VTR_PREBITS_SHIFT  26
@@ -81,10 +78,19 @@
 #define GICH_LR_STATE_PENDING_ACTIVE    ( 0x3 << GICH_LR_STATE_SHIFT )
 #define GICH_LR_GRP1_SHIFT      30
 #define GICH_LR_GRP1_MASK       (0x1 << GICH_LR_GRP1_SHIFT)
-#define GICH_LR_GRP1            (0x1 << GICH_LR_GRP1_SHIFT)
+#define GICH_LR_GRP1            (0x1 << GIC_LR_GRP1_SHIFT)
 #define GICH_LR_HW_SHIFT      31
 #define GICH_LR_HW_MASK       (0x1 << GICH_LR_HW_SHIFT)
-#define GICH_LR_HW            (0x1 << GICH_LR_HW_SHIFT)
+#define GICH_LR_HW            (0x1 << GIC_LR_HW_SHIFT)
 
-#define GICH_MISR_EOI           (1)
+/* Virtual CPU Interface */
+#define GICV_CTLR	(0x0000/4)
+#define GICV_PMR	(0x0004/4)
+#define GICV_BPR	(0x0008/4)
+#define GICV_IAR	(0x000C/4)
+#define GICV_EOIR	(0x0010/4)
+#define GICV_DIR	(0x1000/4)
+#define GICV_AIAR	(0x0020/4)
+#define GICV_AEOIR	(0x0024/4)
+
 #endif
