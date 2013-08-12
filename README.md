@@ -55,8 +55,48 @@ $ ./run_rtsm.sh
 </pre>
 - From Max View Debugger, connect to "the" model running, load securemode-switching/secmon.axf and run to start debugging
 
-Testing Hypervisor Prototype 2 with u-boot
-==========================================
+Download CodeBendch Lite Compiler for u-boot
+============================================
+Compiler version: Sourcery CodeBench Lite 2013.05-23(gcc version: 4.7.3)
+
+1. Access CodeBench page in Mentor Graphics(R) site
+	http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/
+2. Find ARM Processor part in the page and Click Download the EABI Release
+	http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/request?id=e023fac2-e611-476b-a702-90eabb2aeca8&downloadlite=scblite2012&fmpath=/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/form
+3. Fill the form about your information(name, email, etc), then you will receive the download URL of your email
+
+Testing Hypervisor Prototype 2 automatically with u-boot
+========================================================
+branch infomation: proto2
+commit hash: f1513c60a63e96fbd2ee60864f5b38d65631191e
+compiler: Sourcery CodeBench Lite 2013.05-23(gcc version: 4.7.3)
+patch location: $(ROOT)/patch/u-boot_fastmodel.patch
+
+1. Download u-boot as git submodule
+<pre>
+$ git submodule init
+$ git submodule update
+</pre>
+
+2. Apply patch file in u-boot root directory
+<pre>
+$ patch -p1 < ../patch/u-boot_fastmodel.patch
+then you can see the message as below
+patching file boards.cfg
+patching file include/configs/vexpress_rtsm_ca15.h
+patching file include/configs/vexpress_rtsm_common.h
+</pre>
+
+3. Build the u-boot 
+<pre>
+$ make vexpress_rtsm_ca15
+</pre>
+
+4. If you want to loading the u-boot with khypervisor proto 2, you can see chapter "Testing Hypervisor Prototype 2 Manually with u-boot" in this README.md
+
+
+Testing Hypervisor Prototype 2 Manually with u-boot
+===================================================
 Project branch information: test
 u-boot version information
 - tag: v2013.07-rc2
@@ -66,7 +106,6 @@ u-boot version information
 Directory infomation
 - HYP: project root directory
 - UBOOT: uboot root directory
-
 
 
 1. Build u-boot 
