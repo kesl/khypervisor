@@ -36,7 +36,7 @@ LD_SCRIPT	= model.lds.S
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
 ifeq ($(UBOOT),y)
-CONFIG_FLAGS	= 
+CONFIG_FLAGS	= -DBOARD_RTSMVE_CA15
 else
 CONFIG_FLAGS	= -DBAREMETAL_GUEST -DBOARD_RTSMVE_CA15
 endif
