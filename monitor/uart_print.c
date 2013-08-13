@@ -1,8 +1,9 @@
 #include "arch_types.h"
+#include "cfg_platform.h"
 
 #ifdef MACH_MPS
 #define UART_BASE       0x1f005000
-#elif defined (VEXPRESS)
+#elif defined (CFG_GENERIC_CA15)
 #define UART_BASE       0x1c090000
 #else
 #define UART_BASE       0x10009000

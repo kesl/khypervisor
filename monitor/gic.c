@@ -6,6 +6,7 @@
 #include "smp.h"
 #include "context.h"
 #include "hvmm_trace.h"
+#include "cfg_platform.h"
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -22,12 +23,6 @@
 #define GIC_NUM_MAX_IRQS	1024
 
 #define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
-
-#if defined(ARNDALE)
-    #define GIC_BASEADDR    0x10480000 
-#else
-    #define GIC_BASEADDR    0
-#endif
 
 struct gic {
 	uint32_t baseaddr;
@@ -253,7 +248,7 @@ hvmm_status_t gic_init(void)
 	/*
 	 * Determining VA of GIC base adddress has not been defined yet. Let is use the PA for the time being
 	 */
-    result = gic_init_baseaddr((void*)GIC_BASEADDR);
+    result = gic_init_baseaddr((void*)CFG_GIC_BASE_PA);
 
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		gic_dump_registers();

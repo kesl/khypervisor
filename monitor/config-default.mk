@@ -24,6 +24,7 @@ KERNEL_SRC	?= ../linux-kvm-arm
 # vexpress:	Versatile Express
 # arndale:	arndale board
 SYSTEM ?= arndale
+#SYSTEM ?= vexpress
 
 ###########################################################################
 # Turn this on to use an initrd whose contents are in filesystem.cpio.gz
@@ -87,7 +88,8 @@ ifeq ($(SYSTEM),arndale)
 
 CPPFLAGS	+= -DSMP
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
-CPPFLAGS	+= -DARNDALE -g
+#CPPFLAGS	+= -DARNDALE -g
+CPPFLAGS	+= -g
 
 endif
 ###########################################################################
@@ -99,7 +101,8 @@ CPPFLAGS	+= -DSMP
 #CPPFLAGS	+= -march=armv7-a -marm
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
 #CPPFLAGS	+= -DTHUMB2_KERNEL
-CPPFLAGS	+= -DVEXPRESS -g
+CPPFLAGS	+= -g
+#CPPFLAGS	+= -g
 
 # Default kernel command line, using initrd:
 ifeq ($(USE_INITRD),yes)

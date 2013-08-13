@@ -1,9 +1,10 @@
 #include "arch_types.h"
 #include "exynos-uart.h"
+#include "cfg_platform.h"
 
 #ifdef MACH_MPS
 #define UART_BASE       0x1f005000
-#elif defined (ARNDALE)
+#elif defined (CFG_EXYNOS5250)
 #define UART0       	0x12c20000
 #define UTXH		0x20
 #define UFSTAT		0x18

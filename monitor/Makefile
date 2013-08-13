@@ -21,24 +21,25 @@ endif
 
 LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 		  libfdt/fdt_sw.o libfdt/fdt_rw.o libfdt/fdt_strerror.o
-#BOOTLOADER	= boot.S
+BOOTLOADER	= boot.S
 #magicyaba
 ifeq ($(SYSTEM), arndale)
-BOOTLOADER	= ./boards/arndale/boot.S
-OBJS 		= ./boards/arndale/boot.o c_start.o string.o hmain.o \
+OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               ./boards/arndale/uart_print.o mm.o timer.o \
               context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o mct.o\
 			  vgic.o
-LD_SCRIPT	= ./boards/arndale/model.lds.S
+#LD_SCRIPT	= ./boards/arndale/model.lds.S
+LD_SCRIPT	= model.lds.S
+INC_DIRS =  -I ./plat/exynos5250/arndale/
 else # For VEXPRESS CA15
-BOOTLOADER	= boot.S
 OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               uart_print.o mm.o timer.o \
               context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o mct.o\
               vgic.o
 LD_SCRIPT	= model.lds.S
+INC_DIRS = -I ./plat/generic_ca15/rtsmve_ca15/
 endif
 
 
@@ -109,19 +110,19 @@ $(GUESTBIN):
 	@rm $@ 
 
 boot.o: $(BOOTLOADER)
-	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(INC_DIRS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 monitor.o: monitor.S
-	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
+	$(CC) $(CPPFLAGS)  -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -Wall -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(INC_DIRS) -Wall -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
 
 model.lds: $(LD_SCRIPT) Makefile 
-	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<
+	$(CC) $(CPPFLAGS) $(INC_DIRS) -E -P -C -o $@ $<
 
 modelsemi.lds: $(LD_SCRIPT) Makefile $(GUESTBIN)
-	$(CC) $(CPPFLAGS) -DSEMIHOSTING=1 -E -P -C -o $@ $<
+	$(CC) $(CPPFLAGS) $(INC_DIRS) -DSEMIHOSTING=1 -E -P -C -o $@ $<
 
 # Pass any target we don't know about through to the kernel makefile.
 # This is a convenience rule so we can say 'make menuconfig' etc here.

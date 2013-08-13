@@ -12,6 +12,8 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 ENTRY(start)
 
+#include "offsets.cfg"
+
 #ifndef SEMIHOSTING
 INPUT(./uImage)
 #ifdef USE_INITRD
@@ -24,11 +26,9 @@ INPUT(./uImage)
 /* INPUT(./bmguest2.bin) */
 #endif
 
-PHYS_OFFSET = 0x80000000;       /* Customize */
-MON_OFFSET  = 0xF0000000;       /* Customize */
 
 MON_SIZE    = 0x0F000000;
-MON_STACK	= MON_OFFSET + MON_SIZE;
+MON_STACK	= CFG_MEMMAP_MON_OFFSET + MON_SIZE;
 MON_STACK_SIZE  = 0x00c00000;
 
 SEC_STACKTOP = MON_STACK + MON_STACK_SIZE;
@@ -37,19 +37,17 @@ SEC_STACK_SIZE  = 0x00400000;
 /* NS.SVC mode code space 
  * - simon
  */
-GUEST_OFFSET  	= 0xA0000000;   /* Customize */
 GUEST_SIZE_MAX	= 0x0F000000;
-GUEST_STACK  	= GUEST_OFFSET + GUEST_SIZE_MAX;
+GUEST_STACK  	= CFG_MEMMAP_GUEST_OFFSET + GUEST_SIZE_MAX;
 
-GUEST2_OFFSET	= 0xB0000000;   /* Customize */
-GUEST2_STACK	= GUEST2_OFFSET + GUEST_SIZE_MAX;
+GUEST2_STACK	= CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX;
 
 
 SECTIONS
 {
- . = PHYS_OFFSET;
- . = PHYS_OFFSET + 0x8000 - 0x40;
- . = PHYS_OFFSET + 0x00d00000;
+ . = CFG_MEMMAP_PHYS_OFFSET;
+ . = CFG_MEMMAP_PHYS_OFFSET + 0x8000 - 0x40;
+ . = CFG_MEMMAP_PHYS_OFFSET + 0x00d00000;
 
  fs_start = .;
 #if defined(USE_INITRD) && !defined(SEMIHOSTING)
@@ -58,13 +56,13 @@ SECTIONS
  fs_end = .;
 
 /* Guest 1 */
- . = GUEST_OFFSET;
+ . = CFG_MEMMAP_GUEST_OFFSET;
   guest_bin_start = .; 
 #ifdef BAREMETAL_GUEST
   .guest : { ./bmguest.bin }
 #else
 	/* dummy space for guest */
- . = GUEST_OFFSET + GUEST_SIZE_MAX;
+ . = CFG_MEMMAP_GUEST_OFFSET + GUEST_SIZE_MAX;
 #endif
   guest_bin_end = .; 
 
@@ -74,13 +72,13 @@ SECTIONS
  guest_stacklimit = .;
 
 /* Guest 2 */
- . = GUEST2_OFFSET;
+ . = CFG_MEMMAP_GUEST2_OFFSET;
   guest2_bin_start = .; 
 #ifdef BAREMETAL_GUEST
   .guest2 : { ./bmguest.bin }
 #else
 	/* dummy space for guest */
- . = GUEST2_OFFSET + GUEST_SIZE_MAX; 
+ . = CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX; 
 #endif
   guest2_bin_end = .; 
 
@@ -90,7 +88,7 @@ SECTIONS
  . = GUEST2_STACK + 0x01000000; 
  guest2_stacklimit = .;
 
- . = MON_OFFSET;
+ . = CFG_MEMMAP_MON_OFFSET;
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.
   */
