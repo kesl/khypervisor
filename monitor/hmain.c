@@ -9,6 +9,7 @@
 #include "context.h"
 #include "hvmm_trace.h"
 #include "scheduler.h"
+#include "tests.h"
 
 void hyp_abort_infinite(void)
 {
@@ -107,10 +108,11 @@ void hyp_main(void)
 	/* Initialize Guests */
 	context_init_guests();
 
-	/* Interrupt test */
-	//hvmm_interrupt_test();
+    /* Start Scheduling */
 	scheduler_test_scheduling();
-	
+
+    /* Begin running test code for newly implemented features*/
+    hvmm_tests_main();
 
 	/* Switch to the first guest */
 	context_switch_guest();

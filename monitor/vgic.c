@@ -56,6 +56,8 @@ struct vgic {
     uint64_t valid_lr_mask;
 };
 
+hvmm_status_t vgic_injection_enable(uint8_t enable);
+
 static struct vgic _vgic;
 
 static uint32_t vgic_find_free_slot(void)
@@ -173,6 +175,28 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
 {
     HVMM_TRACE_ENTER();
 
+    if ( _vgic.base[GICH_MISR] & GICH_MISR_EOI ) {
+        /* clean up invalid entries from List Registers */
+        uint32_t eisr = _vgic.base[GICH_EISR0];
+        uint32_t slot;
+
+        while(eisr) {
+            slot = (31 - asm_clz(eisr));
+            eisr &= ~(1 << slot);
+            _vgic.base[GICH_LR + slot] = 0;
+	        uart_print( " slot:"); uart_print_hex32(slot); uart_print("\n\r");
+        }
+
+        eisr = _vgic.base[GICH_EISR1];
+        while(eisr) {
+            slot = (31 - asm_clz(eisr));
+            eisr &= ~(1 << slot);
+            _vgic.base[GICH_LR + slot + 32] = 0;
+	        uart_print( " slot:"); uart_print_hex32(slot); uart_print("\n\r");
+        }
+    }
+
+    vgic_injection_enable(0);
     _vgic_dump_regs();
 
     HVMM_TRACE_EXIT();
@@ -185,10 +209,16 @@ hvmm_status_t vgic_enable(uint8_t enable)
 
     if ( VGIC_READY() ) {
 
-        if ( enable ) 
-            _vgic.base[GICH_HCR] |= GICH_HCR_EN;
-        else
+        if ( enable ) {
+            uint32_t hcr = _vgic.base[GICH_HCR];
+
+            hcr |= GICH_HCR_EN;
+            // hcr |= GICH_HCR_NPIE | GICH_HCR_LRENPIE;
+
+            _vgic.base[GICH_HCR] = hcr;
+        } else {
             _vgic.base[GICH_HCR] &= ~(GICH_HCR_EN);
+        }
 
         result = HVMM_STATUS_SUCCESS;
     } 
@@ -246,6 +276,7 @@ hvmm_status_t vgic_inject_virq(
 
 
     lr_desc = (GICH_LR_HW_MASK & (hw << GICH_LR_HW_SHIFT) ) |
+        /* (GICH_LR_GRP1_MASK & (1 << GICH_LR_GRP1_SHIFT) )| */
         (GICH_LR_STATE_MASK & (state << GICH_LR_STATE_SHIFT) ) |
         (GICH_LR_PRIORITY_MASK & ( (priority >> 3)  << GICH_LR_PRIORITY_SHIFT) ) |
         physicalid |
@@ -257,8 +288,8 @@ hvmm_status_t vgic_inject_virq(
     HVMM_TRACE_HEX32("free slot:", slot);
 
     if ( slot != VGIC_SLOT_NOTFOUND ) {
-        vgic_injection_enable(1);
         _vgic.base[GICH_LR + slot] = lr_desc;
+        vgic_injection_enable(1);
         result = HVMM_STATUS_SUCCESS;
     }
     _vgic_dump_regs();

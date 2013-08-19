@@ -175,7 +175,7 @@ hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 
 
 /* Level 2 Block, 2MB, entry in LPAE Descriptor format for the given physical address */
-lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa )
+lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr )
 {
 	lpaed_t lpaed;
 
@@ -188,7 +188,7 @@ lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa )
 	lpaed.p2m.sbz3 = 0;
 
 	// Lower block attributes
-	lpaed.p2m.mattr = 0xA;	// 0b0101: normal memory, outer non-cacheable, inner non-cacheable
+	lpaed.p2m.mattr = mattr & 0x0F;	
 	lpaed.p2m.read = 1;		// Read/Write
 	lpaed.p2m.write = 1;		
 	lpaed.p2m.sh = 0;	// Non-shareable
@@ -266,7 +266,7 @@ void _vmm_init(void)
 		extern uint32_t guest2_bin_start;
 
 		uint64_t pa1 = (uint32_t) &guest_bin_start;
-		uint64_t pa1_end = 0xE0000000;
+		uint64_t pa1_end = pa1 + 0x40000000;
 		uint64_t pa2 = (uint32_t) &guest2_bin_start;
 		lpaed_t lpaed;
 
@@ -274,17 +274,32 @@ void _vmm_init(void)
 		uart_print( "pa_end:"); uart_print_hex64(pa1_end); uart_print("\n\r");
 		uart_print( "_vmid_ttbl[0]:"); uart_print_hex32((uint32_t) _vmid_ttbl[0]); uart_print("\n\r");
 
+		/* 2MB blocks per each entry */
 		for(i = 0; pa1 < pa1_end; i++, pa1 += 0x200000, pa2 += 0x200000 ) {
-			/* 2MB blocks per each entry */
+		    uart_print( "pa_end-pa1:"); uart_print_hex64(pa1_end-pa1); uart_print("\n\r");
+            if ( (pa1_end - pa1) == 0x200000 ) {
+                /* GIC_BASEADDR_GUEST: 0x3FE00000 */
+                /* Enable access from guest to GIC Virtual CPU Interface */
+			    lpaed = hvmm_mm_lpaed_l2_block(0x2C000000, LPAED_STAGE2_MEMATTR_DM);
+			    _vttbr_pte_guest0[i] = lpaed;
 
-			/* Guest 0 */
-			lpaed = hvmm_mm_lpaed_l2_block(pa1);
-			_vttbr_pte_guest0[i] = lpaed;
-			//uart_print( "lpaed:"); uart_print_hex64(lpaed.bits); uart_print("\n\r");
+			    lpaed = hvmm_mm_lpaed_l2_block(0x2C000000, LPAED_STAGE2_MEMATTR_DM);
+			    _vttbr_pte_guest1[i] = lpaed;
+            } else if ( (pa1_end - pa1) == 0x400000 ) {
+                /* UART: 0x3FCA0000 */
+			    lpaed = hvmm_mm_lpaed_l2_block(0x1C000000, LPAED_STAGE2_MEMATTR_DM);
+			    _vttbr_pte_guest0[i] = lpaed;
+			    lpaed = hvmm_mm_lpaed_l2_block(0x1C000000, LPAED_STAGE2_MEMATTR_DM);
+			    _vttbr_pte_guest1[i] = lpaed;
+            } else {
+			    /* Guest 0 */
+			    lpaed = hvmm_mm_lpaed_l2_block(pa1, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT);
+			    _vttbr_pte_guest0[i] = lpaed;
 
-			/* Guest 1 */
-			lpaed = hvmm_mm_lpaed_l2_block(pa2);
-			_vttbr_pte_guest1[i] = lpaed;
+			    /* Guest 1 */
+			    lpaed = hvmm_mm_lpaed_l2_block(pa2, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT);
+			    _vttbr_pte_guest1[i] = lpaed;
+            }
 		}
 	}
 }

@@ -26,13 +26,14 @@ OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               uart_print.o mm.o timer.o \
               context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o \
-              vgic.o
+              vgic.o tests.o tests_gic_timer.o
 
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 MONITORMAP	= monitor.map
 LD_SCRIPT	= model.lds.S
+INCLUDES    = -I. -I../common/include
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
 ifeq ($(UBOOT),y)
@@ -41,7 +42,7 @@ else
 CONFIG_FLAGS	= -DBAREMETAL_GUEST -DBOARD_RTSMVE_CA15
 endif
 
-CPPFLAGS	+= $(CONFIG_FLAGS)
+CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)
 
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
