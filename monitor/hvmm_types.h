@@ -7,6 +7,7 @@ typedef enum {
 	HVMM_STATUS_UNSUPPORTED_FEATURE = -2,
 	HVMM_STATUS_BUSY = -3,
     HVMM_STATUS_BAD_ACCESS = -4,
+    HVMM_STATUS_NOT_FOUND = - 5,
 } hvmm_status_t;
 
 #endif
