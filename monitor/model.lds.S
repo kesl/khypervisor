@@ -12,7 +12,7 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 ENTRY(start)
 
-#include "offsets.cfg"
+#include <memmap.cfg>
 
 #ifndef SEMIHOSTING
 INPUT(./uImage)
@@ -45,9 +45,9 @@ GUEST2_STACK	= CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX;
 
 SECTIONS
 {
- . = CFG_MEMMAP_PHYS_OFFSET;
- . = CFG_MEMMAP_PHYS_OFFSET + 0x8000 - 0x40;
- . = CFG_MEMMAP_PHYS_OFFSET + 0x00d00000;
+ . = CFG_MEMMAP_PHYS_START;
+ . = CFG_MEMMAP_PHYS_START + 0x8000 - 0x40;
+ . = CFG_MEMMAP_PHYS_START + 0x00d00000;
 
  fs_start = .;
 #if defined(USE_INITRD) && !defined(SEMIHOSTING)

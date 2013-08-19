@@ -8,7 +8,7 @@
  */
 
 #define NS_BIT	0x1
-#include "cfg_platform.h"
+#include <cfg_platform.h>
 	.syntax	unified
 	.arch_extension sec
 	.arch_extension virt
@@ -138,6 +138,7 @@ start:
 #ifdef CFG_BOARD_RTSM_VE_CA15
 	ldr	r0, =0x1c010030			@ VE SYS_FLAGS register
 #elif defined(CFG_BOARD_ARNDALE)
+#else
 	ldr	r0, =0x10000030			@ RealView SYS_FLAGS register
 #endif
 	mov	pc, r1				@ branch to the relocated code
@@ -159,19 +160,19 @@ start:
 	@
 #ifdef MACH_MPS
 	ldr	r0, =0x1f005000			@ UART3 base (MPS)
-#elif defined (CFG_GENERIC_CA15)
+#elif defined (CFG_BOARD_RTSM_VE_CA15)
 	ldr	r0, =0x1c090000			@ UART base (Versatile Express)
-#elif defined (CFG_EXYNOS5250)
-    ldr r0, =0x12c00000         @ UART base (ARNDALE)
 #else
 	ldr	r0, =0x10009000			@ UART base (RealView/EB)
 #endif
+#ifdef CFG_BOARD_ARNDALE        @ Do nothing for ARNDALE
+#else
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
-
+#endif
 	@ Now we've got rid of the secondary CPUs, set up a stack
 	@ for CPU 0 so we can write most of this in C.
 	ldr     sp, =sec_stacklimit

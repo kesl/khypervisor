@@ -1,33 +1,18 @@
 #include "arch_types.h"
 #include "exynos-uart.h"
-#include "cfg_platform.h"
+#include <cfg_platform.h>
 
-#ifdef MACH_MPS
-#define UART_BASE       0x1f005000
-#elif defined (CFG_EXYNOS5250)
+#ifdef CFG_EXYNOS5250
+#ifdef CFG_BOARD_ARNDALE
 #define UART0       	0x12c20000
+#else
+#error "Configuration for board is not specified! Exynos5250 but board is unknow."
+#endif
+
+/* Exynos 5250 UART register macros */
 #define UTXH		0x20
 #define UFSTAT		0x18
 #define UART_BASE 	(UART0 + UTXH)
-#else
-#define UART_BASE       0x10009000
-#endif
-
-#if 0
-void uart_print(const char *str)
-{
-        volatile char *pUART = (char *) UART_BASE;
-        while(*str) {
-                *pUART = *str++;
-        }
-}
-
-void uart_putc( const char c )
-{
-        volatile char *pUART = (char *) UART_BASE;
-	*pUART = c;
-}
-#endif
 
 #define TX_FIFO_FULL_MASK       (1 << 24)
 #define	readl(a)		 (*(volatile unsigned int *)(a))
@@ -94,3 +79,4 @@ void uart_print_hex64( uint64_t v )
 	uart_print_hex32( v >> 32 );
 	uart_print_hex32( (uint32_t) (v & 0xFFFFFFFF) );
 }
+#endif

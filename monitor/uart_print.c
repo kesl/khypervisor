@@ -1,13 +1,14 @@
 #include "arch_types.h"
-#include "cfg_platform.h"
+#include <cfg_platform.h>
 
-#ifdef MACH_MPS
-#define UART_BASE       0x1f005000
-#elif defined (CFG_GENERIC_CA15)
+
+#ifdef CFG_GENERIC_CA15
+#ifdef CFG_BOARD_RTSM_VE_CA15
 #define UART_BASE       0x1c090000
 #else
-#define UART_BASE       0x10009000
+#error "Configuration for board is not specified! GENERIC_CA15 but board is unknown."
 #endif
+
 
 void uart_print(const char *str)
 {
@@ -46,3 +47,5 @@ void uart_print_hex64( uint64_t v )
 	uart_print_hex32( v >> 32 );
 	uart_print_hex32( (uint32_t) (v & 0xFFFFFFFF) );
 }
+
+#endif

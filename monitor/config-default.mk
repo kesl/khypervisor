@@ -88,7 +88,6 @@ ifeq ($(SYSTEM),arndale)
 
 CPPFLAGS	+= -DSMP
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
-#CPPFLAGS	+= -DARNDALE -g
 CPPFLAGS	+= -g
 
 endif
@@ -98,11 +97,8 @@ endif
 ifeq ($(SYSTEM),vexpress)
 
 CPPFLAGS	+= -DSMP
-#CPPFLAGS	+= -march=armv7-a -marm
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
-#CPPFLAGS	+= -DTHUMB2_KERNEL
 CPPFLAGS	+= -g
-#CPPFLAGS	+= -g
 
 # Default kernel command line, using initrd:
 ifeq ($(USE_INITRD),yes)

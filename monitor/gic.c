@@ -6,7 +6,7 @@
 #include "smp.h"
 #include "context.h"
 #include "hvmm_trace.h"
-#include "cfg_platform.h"
+#include <cfg_platform.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
