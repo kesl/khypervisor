@@ -3,6 +3,7 @@
 #include "context.h"
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
+#include "timer.h"
 
 static void test_start_timer(void)
 {
@@ -81,6 +82,13 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 	return HVMM_STATUS_SUCCESS;
 }
 
+void callback_timer(void *pdata)
+{
+    HVMM_TRACE_ENTER();
+    vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+    HVMM_TRACE_EXIT();
+}
+
 hvmm_status_t hvmm_tests_vgic(void)
 {
     /* VGIC test 
@@ -90,6 +98,6 @@ hvmm_status_t hvmm_tests_vgic(void)
      *      -> ISR implementation is empty for the moment
      *      -> This should handle completion of deactivation and further injection if there is any pending virtual IRQ
      */
-    vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+    timer_add_callback(timer_sched, &callback_timer);
     return HVMM_STATUS_SUCCESS;
 }

@@ -1,5 +1,5 @@
 #include "scheduler.h"
-
+#include "hvmm_trace.h"
 
 void scheduler_test_switch_to_next_guest(void *pdata){
     struct arch_regs *regs = pdata;
@@ -14,6 +14,14 @@ void scheduler_test_switch_to_next_guest(void *pdata){
     }
 }
 
+void extra_timer_callback(void *pdata)
+{
+    HVMM_TRACE_ENTER();
+
+
+    HVMM_TRACE_EXIT();
+}
+
 void scheduler_test_scheduling(){
     void scheduler_test_switch_to_next_guest(void *pdata);
     timer_init(timer_sched);
@@ -21,4 +29,7 @@ void scheduler_test_scheduling(){
     timer_set_interval(timer_sched, 1000000);   
     timer_add_callback(timer_sched, &scheduler_test_switch_to_next_guest);
     timer_start(timer_sched);
+
+
+    timer_add_callback(timer_sched, &extra_timer_callback);
 }
