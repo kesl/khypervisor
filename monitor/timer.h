@@ -30,6 +30,7 @@
  *  timer_start( timer_sched );
  */
 
+#define TIMER_MAX_CHANNEL_CALLBACKS 8
 
 typedef enum{
     timer_sched = 0,
@@ -40,7 +41,7 @@ typedef void(*timer_callback_t)(void *pdata);
 
 struct timer_channel{
     uint32_t interval_us;
-    timer_callback_t callback;
+    timer_callback_t callbacks[TIMER_MAX_CHANNEL_CALLBACKS];
 };
 
 /*
