@@ -11,8 +11,18 @@ typedef enum {
     VIRQ_STATE_PENDING_ACTIVE = 0x03,
 } virq_state_t;
 
+struct vgic_status {
+    uint32_t saved_once;    /* restore only if saved once to avoid dealing with corrupted data */
+    uint32_t lr[64];
+    uint32_t hcr;
+    uint32_t apr;
+    uint32_t vmcr;
+};
+
 hvmm_status_t vgic_enable(uint8_t enable);
 hvmm_status_t vgic_init(void);
+hvmm_status_t vgic_save_status( struct vgic_status *status );
+hvmm_status_t vgic_restore_status( struct vgic_status *status );
 hvmm_status_t vgic_inject_virq_sw( uint32_t virq, virq_state_t state, uint32_t priority, 
                                     uint32_t cpuid, uint8_t maintenance);
 hvmm_status_t vgic_inject_virq_hw( uint32_t virq, virq_state_t state, uint32_t priority, uint32_t pirq);

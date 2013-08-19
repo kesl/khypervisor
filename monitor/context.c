@@ -55,14 +55,13 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 	hvmm_mm_stage2_enable(0);
 
 	if ( regs_current != 0 ) {
-		/* save the current guest's context if any */
+		/* save the current guest's context */
 		context = &guest_contexts[current_guest];
 		regs = &context->regs;
 		context_copy_regs( regs, regs_current );
-	}
+        vgic_save_status( &context->vgic_status );
 
-	if ( regs_current != 0 ) {
-		/* load the next guest */
+		/* choose the next guest to load*/
 		current_guest = (current_guest + 1) % NUM_GUEST_CONTEXTS;
 	} else {
 		/* There is no current guest switching from. 
@@ -77,7 +76,8 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 	/* Restore Translation Table for the next guest and Enable Stage 2 Translation */
 	hvmm_mm_set_vmid_ttbl( context->vmid, context->ttbl );
 	hvmm_mm_stage2_enable(1);
-	
+    vgic_restore_status( &context->vgic_status );
+
 	if ( regs_current == 0 ) {
 		/* init -> hyp mode -> guest */
 		/* The actual context switching (Hyp to Normal mode) handled in the asm code */
@@ -86,6 +86,7 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 		/* guest -> hyp -> guest */
 		context_copy_regs( regs_current, &context->regs );
 	}
+
 }
 
 void context_dump_regs( struct arch_regs *regs )
