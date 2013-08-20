@@ -34,16 +34,19 @@
  *      - vgic_inject_virq_hw( virq, state, priority, pirq)
  *      - vgic_inject_virq_sw( virq, state, priority, cpuid, maintenance )
  *
- *  - [ ] ISR: Maintenance IRQ
+ *  - [*] ISR: Maintenance IRQ
  *      Check VICH_MISR
- *          EOI - At least one VIRQ EOI
- *          U - Underflow
- *          ...
- *  - [ ] Context Switch:
+ *          [V] EOI - At least one VIRQ EOI
+ *          [ ] U - Underflow - Non or one valid interrupt in LRs
+ *          [ ] LRENP - LI Entry Not Present (no valid interrupt for an EOI request)
+ *          [ ] NP - No Pending Interrupt
+ *          [ ] VGrp[0/1][E/D] 
+ *  - [V] Context Switch:
  *  Saved/Restored Registers:
  *      - GICH_LR
  *      - GICH_APR
  *      - GICH_HCR
+ *      - GICH_VMCR
  *  Saved/Restored Data:
  *      - Free Interrupts
  *
@@ -381,6 +384,50 @@ hvmm_status_t vgic_init(void)
     _vgic_dump_regs();
 
     HVMM_TRACE_EXIT();
+    return result;
+}
+
+hvmm_status_t vgic_save_status( struct vgic_status *status )
+{
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
+    int i;
+
+    HVMM_TRACE_ENTER();
+    _vgic_dump_regs();
+
+    for( i = 0; i < _vgic.num_lr; i++ ) {
+        status->lr[i] = _vgic.base[GICH_LR + i];
+    }
+    status->hcr = _vgic.base[GICH_HCR];
+    status->apr = _vgic.base[GICH_APR];
+    status->vmcr = _vgic.base[GICH_VMCR];
+    status->saved_once = VGIC_SIGNATURE_INITIALIZED;
+
+    vgic_enable(0);
+    HVMM_TRACE_EXIT();
+    return result;
+}
+
+hvmm_status_t vgic_restore_status( struct vgic_status *status )
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    int i;
+    HVMM_TRACE_ENTER();
+    if ( status->saved_once == VGIC_SIGNATURE_INITIALIZED ) {
+        /* TODO: restore vgic configurations from 'status' */
+        for( i = 0; i < _vgic.num_lr; i++) {
+            _vgic.base[GICH_LR + i] = status->lr[i];
+        }
+        _vgic.base[GICH_APR] = status->apr;
+        _vgic.base[GICH_VMCR] = status->vmcr;
+        _vgic.base[GICH_HCR] = status->hcr;
+
+        vgic_enable(1);
+        _vgic_dump_regs();
+        result = HVMM_STATUS_SUCCESS;
+    }
+    HVMM_TRACE_EXIT();
+    
     return result;
 }
 
