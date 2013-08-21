@@ -55,6 +55,30 @@ $ ./run_rtsm.sh
 </pre>
 - From Max View Debugger, connect to "the" model running, load securemode-switching/secmon.axf and run to start debugging
 
+Testing u-boot on ARNDALE board using git submodule
+==========================================
+1. Download u-boot-arndale
+<pre>
+$ git checkout arndale
+$ git submodule init
+$ git submodule update
+$ cd u-boot-arndale
+</pre>
+2. Building u-boot-arndale
+<pre>
+$ git checkout lue_arndale_13.1
+$ make arndale5250
+</pre>
+3. refusing SD card for arndale(X is number of SD card parition)
+<pre>
+$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
+$ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
+</pre>
+4. Loading khypervisor to arndale board using CODEVISOR debugger
+- You can use "load memory from file" menu in CVD tool 
+- Loading khypervisor execution file to proper memory address
+
+
 Testing Hypervisor Prototype 2 with u-boot
 ==========================================
 Project branch information: test

@@ -6,6 +6,16 @@
  */
 #include "timer.h"
 #include "generic_timer.h"
+#include <cfg_platform.h>
+
+#define USEC 1000000
+
+#if defined(CFG_BOARD_RTSM_VE_CA15)
+    #define COUNT_PER_USEC (CFG_CNTFRQ/USEC)
+#elif defined(CFG_BOARD_ARNDALE)
+    #define COUNT_PER_USEC (CFG_CNTFRQ/USEC)
+#endif
+
 
 static struct timer_channel _channels[TIMER_NUM_MAX_CHANNELS];
 
