@@ -1,11 +1,15 @@
 #include "context.h"
 #include "uart_print.h"
 #include "hvmm_trace.h"
+#include "trap.h"
+
+#define _valid_vmid(vmid)   ( context_first_vmid() <= vmid && context_last_vmid() >= vmid )
 
 extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
-static int current_guest = 0;
+static int _current_guest_vmid = VMID_INVALID;
+static int _next_guest_vmid = VMID_INVALID;
 
 #ifdef BAREMETAL_GUEST
 static void _hyp_fixup_unloaded_guest(void)
@@ -33,6 +37,20 @@ static void _hyp_fixup_unloaded_guest(void)
 }
 #endif
 
+void context_dump_regs( struct arch_regs *regs )
+{
+    int i;
+    uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" );
+    uart_print( "  pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
+
+#ifdef __CONTEXT_TRACE_VERBOSE__
+    uart_print( " gpr:\n\r" );
+	for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+        uart_print( "     " ); uart_print_hex32( regs->gpr[i] ); uart_print( "\n\r" );
+	}
+#endif
+}
+
 static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *regs_src )
 {
 	int i;
@@ -43,11 +61,25 @@ static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *reg
 	}
 }
 
-void context_switch_to_next_guest(struct arch_regs *regs_current)
+/* DEPRECATED: use context_switchto(vmid) and context_perform_switch() 
+    void context_switch_to_next_guest(struct arch_regs *regs_current)
+ */
+
+static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs_current, vmid_t next_vmid)
 {
+    /* _curreng_guest_vmid -> next_vmid */
+
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 	struct hyp_guest_context *context = 0;
 	struct arch_regs *regs = 0;
 	
+    HVMM_TRACE_ENTER();
+
+    if ( _current_guest_vmid == next_vmid ) {
+        /* the same guest? WTF? */
+        return HVMM_STATUS_IGNORED;
+    }
+
 	/*
 	 * We assume VTCR has been configured and initialized in the memory management module
 	 */
@@ -56,28 +88,22 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 
 	if ( regs_current != 0 ) {
 		/* save the current guest's context */
-		context = &guest_contexts[current_guest];
+		context = &guest_contexts[_current_guest_vmid];
 		regs = &context->regs;
 		context_copy_regs( regs, regs_current );
         vgic_save_status( &context->vgic_status );
-
-		/* choose the next guest to load*/
-		current_guest = (current_guest + 1) % NUM_GUEST_CONTEXTS;
-	} else {
-		/* There is no current guest switching from. 
-		 * We choose the very first one as the initial guest to switch to 
-		 */
-		current_guest = 0;
 	}
 
-	/* The context of the chosen next guest */
-	context = &guest_contexts[current_guest];
+	/* The context of the next guest */
+	context = &guest_contexts[next_vmid];
 
 	/* Restore Translation Table for the next guest and Enable Stage 2 Translation */
 	hvmm_mm_set_vmid_ttbl( context->vmid, context->ttbl );
 	hvmm_mm_stage2_enable(1);
     vgic_restore_status( &context->vgic_status );
 
+    /* The next becomes the current */
+    _current_guest_vmid = next_vmid;
 	if ( regs_current == 0 ) {
 		/* init -> hyp mode -> guest */
 		/* The actual context switching (Hyp to Normal mode) handled in the asm code */
@@ -87,15 +113,38 @@ void context_switch_to_next_guest(struct arch_regs *regs_current)
 		context_copy_regs( regs_current, &context->regs );
 	}
 
+    result = HVMM_STATUS_SUCCESS;
+    HVMM_TRACE_EXIT();
+    return result;
 }
 
-void context_dump_regs( struct arch_regs *regs )
+hvmm_status_t context_perform_switch(void)
 {
-        uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" );
-        uart_print( "pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+
+    HVMM_TRACE_ENTER();
+
+    uart_print( "curr:" ); uart_print_hex32( _current_guest_vmid ); uart_print( "\n\r" );
+    uart_print( "next:" ); uart_print_hex32( _next_guest_vmid ); uart_print( "\n\r" );
+
+    if ( _current_guest_vmid == VMID_INVALID ) {
+        /* very first time, to the default first guest */
+        result = context_perform_switch_to_guest_regs( 0, _next_guest_vmid );
+        /* DOES NOT COME BACK HERE */
+    } else if ( _next_guest_vmid != VMID_INVALID && _current_guest_vmid != _next_guest_vmid ) {
+        struct arch_regs *regs = trap_saved_regs();
+        if ( (regs->cpsr & 0x1F) != 0x1A ) {
+            /* Only if not from Hyp */
+            result = context_perform_switch_to_guest_regs( regs, _next_guest_vmid );
+            _next_guest_vmid = VMID_INVALID;
+        }
+    }
+    HVMM_TRACE_EXIT();
+    return result;
 }
 
-static void context_switch_to_initial_guest(void)
+
+void context_switch_to_initial_guest(void)
 {
 	struct hyp_guest_context *context = 0;
 	struct arch_regs *regs = 0;
@@ -103,21 +152,16 @@ static void context_switch_to_initial_guest(void)
 	uart_print("[hyp] switch_to_initial_guest:\n\r");
 
 	/* Select the first guest context to switch to. */
-	current_guest = 0;
-	context = &guest_contexts[current_guest];
+	_current_guest_vmid = VMID_INVALID;
+	context = &guest_contexts[0];
 
 	/* Dump the initial register values of the guest for debugging purpose */
 	regs = &context->regs;
 	context_dump_regs( regs );
 
 	/* Context Switch with current context == none */
-	context_switch_to_next_guest( 0 );
-}
-
-void context_switch_guest(void)
-{
-	uart_print("[hyp] switch_guest: enter, not coming back\n\r");
-	context_switch_to_initial_guest();
+    context_switchto(0);
+    context_perform_switch();
 }
 
 void context_init_guests(void)
@@ -153,4 +197,60 @@ void context_init_guests(void)
 	_hyp_fixup_unloaded_guest();
 #endif
 	uart_print("[hyp] init_guests: return\n\r");
+}
+
+vmid_t context_first_vmid(void)
+{
+    /* FIXME:Hardcoded for now */
+    return 0;
+}
+
+vmid_t context_last_vmid(void)
+{
+    /* FIXME:Hardcoded for now */
+    return 1;
+}
+
+vmid_t context_next_vmid(vmid_t ofvmid)
+{
+    vmid_t next = VMID_INVALID;
+    if ( ofvmid == VMID_INVALID ) {
+        next = context_first_vmid();
+    } else if ( ofvmid < context_last_vmid() ) {
+        /* FIXME:Hardcoded */
+        next = ofvmid + 1;
+    }
+    return next;
+}
+
+vmid_t context_current_vmid(void)
+{
+    return _current_guest_vmid;
+}
+
+vmid_t context_waiting_vmid(void)
+{
+    return _next_guest_vmid;
+}
+
+hvmm_status_t context_switchto(vmid_t vmid)
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+
+    HVMM_TRACE_ENTER();
+
+    /* valid and not current vmid, switch */
+    if ( vmid != context_current_vmid() ) {
+        if ( !_valid_vmid(vmid) ) {
+            result = HVMM_STATUS_BAD_ACCESS;
+        } else {
+            _next_guest_vmid = vmid;
+            result = HVMM_STATUS_SUCCESS;
+
+            uart_print("switching to vmid:"); uart_print_hex32((uint32_t) vmid ); uart_print("\n\r");
+        }
+    }
+
+    HVMM_TRACE_EXIT();
+    return result;
 }

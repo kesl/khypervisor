@@ -1,5 +1,12 @@
 #include "scheduler.h"
 #include "hvmm_trace.h"
+#include "sched_policy.h"
+
+void scheduler_schedule(void)
+{
+    /* Switch request, actually performed at trap exit */
+    context_switchto(sched_policy_determ_next());
+}
 
 void scheduler_test_switch_to_next_guest(void *pdata){
     struct arch_regs *regs = pdata;
@@ -7,10 +14,14 @@ void scheduler_test_switch_to_next_guest(void *pdata){
     uint32_t tval = read_cnthp_tval();
     uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
     uart_print( "cnth_tval:"); uart_print_hex32(tval); uart_print("\n\r");
+
+    /* Note: As of context_switchto() and context_perform_switch() are available,
+       no need to test if trapped from Hyp mode.
+       context_perform_switch() takes care of it
+     */
     /* Test guest context switch */
     if ( (regs->cpsr & 0x1F) != 0x1A ) {
-        /* Not from Hyp, switch the guest context */
-        context_switch_to_next_guest( regs );
+        scheduler_schedule();
     }
 }
 

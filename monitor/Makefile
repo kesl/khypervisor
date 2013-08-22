@@ -26,7 +26,7 @@ OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               uart_print.o mm.o timer.o \
               context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o \
-              vgic.o tests.o tests_gic_timer.o
+              vgic.o tests.o tests_gic_timer.o trap.o sched_policy.o
 
 GUESTBIN	= bmguest.bin
 
