@@ -25,16 +25,17 @@ BOOTLOADER	= boot.S
 OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               mm.o timer.o \
-              context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o \
-              vgic.o
+              context.o devices/gic/gic.o interrupt.o smp.o scheduler.o devices/generic_timer/generic_timer.o \
+              devices/gic/vgic.o
 LD_SCRIPT	= model.lds.S
+INCLUDES    = -I./include
 
 ifeq ($(SYSTEM), arndale)
-OBJS 		+= ./boards/arndale/uart_print.o mct.o
-INCLUDES =  -I ./plat/exynos5250/arndale/
+OBJS 		+= devices/uart-exynos5250/uart_print.o devices/mct/mct.o
+INCLUDES    +=  -I ./plat/exynos5250/arndale/
 else # For VEXPRESS CA15
-OBJS 		+= uart_print.o
-INCLUDES = -I ./plat/generic_ca15/rtsmve_ca15/
+OBJS 		+= ./devices/uart-pl011/uart_print.o
+INCLUDES    += -I ./plat/generic_ca15/rtsmve_ca15/
 endif
 
 

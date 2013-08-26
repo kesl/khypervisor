@@ -1,5 +1,5 @@
-#ifndef __IO_H__
-#define __IO_H_
+#ifndef __IO_EXYNOS_H__
+#define __IO_EXYNOS_H_
 /*
  * For write data on physical address.
  */
