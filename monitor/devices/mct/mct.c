@@ -1,4 +1,5 @@
-#include "mct.h"
+#include "mct_priv.h"
+#include "io-exynos.h"
 #define likely(x)   __builtin_expect(!!(x), 1)
 static void *exynos5_sys_timer;
 static inline uint32_t exynos5_mct_read(uint32_t offset)

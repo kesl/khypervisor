@@ -138,7 +138,7 @@ VExpress# go 0xf000004c; this address is entry point of hypervisor
 
 Testing Hypervisor Prototype 2 for arndale
 ==========================================
-1. configure SYSTEM variable in config-default.mk
+1. configure SYSTEM variable in monitor/config-default.mk
 <pre>
 SYSTEM ?= arndale
 </pre>
