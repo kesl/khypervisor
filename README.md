@@ -94,9 +94,32 @@ $ make vexpress_rtsm_ca15
 
 4. If you want to loading the u-boot with khypervisor proto 2, you can see chapter "Testing Hypervisor Prototype 2 Manually with u-boot" in this README.md
 
+Testing u-boot on ARNDALE board using git submodule
+==========================================
+1. Download u-boot-arndale
+<pre>
+$ git checkout arndale
+$ git submodule init
+$ git submodule update
+$ cd u-boot-arndale
+</pre>
+2. Building u-boot-arndale
+<pre>
+$ git checkout lue_arndale_13.1
+$ make arndale5250
+</pre>
+3. refusing SD card for arndale(X is number of SD card parition)
+<pre>
+$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
+$ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
+</pre>
+4. Loading khypervisor to arndale board using CODEVISOR debugger
+- You can use "load memory from file" menu in CVD tool 
+- Loading khypervisor execution file to proper memory address
 
-Testing Hypervisor Prototype 2 Manually with u-boot
-===================================================
+
+Testing Hypervisor Prototype 2 with u-boot
+==========================================
 Project branch information: test
 u-boot version information
 - tag: v2013.07-rc2
@@ -150,6 +173,23 @@ VExpress# cp.b 0x8100000 0xa0000000 0x100000; copy guest os#1 from flash@0x810_0
 VExpress# cp.b 0x8200000 0xb0000000 0x100000; copy guest os#2 from flash@0x820_0000 to DRAM@0xB000_0000
 VExpress# go 0xf000004c; this address is entry point of hypervisor
 </pre>
+
+Testing Hypervisor Prototype 2 for arndale
+==========================================
+1. configure SYSTEM variable in monitor/config-default.mk
+<pre>
+SYSTEM ?= arndale
+</pre>
+2. Build Hypervisor Prototype 2
+<pre>
+$ cd monitor
+$ make UBOOT=y
+</pre>
+3. Loading Image using Codevisor debugger 
+<pre>
+Bootloader will be supported.
+</pre>
+
 
 
 Tool chain

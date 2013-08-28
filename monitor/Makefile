@@ -24,22 +24,33 @@ LIBFDTOBJS      = libfdt/fdt.o libfdt/fdt_ro.o libfdt/fdt_wip.o \
 BOOTLOADER	= boot.S
 OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
-              uart_print.o mm.o timer.o \
-              context.o gic.o interrupt.o smp.o scheduler.o generic_timer.o \
-              vgic.o tests.o tests_gic_timer.o
+              mm.o timer.o \
+              context.o devices/gic/gic.o interrupt.o smp.o scheduler.o devices/generic_timer/generic_timer.o \
+              devices/gic/vgic.o tests.o tests_gic_timer.o
+LD_SCRIPT	= model.lds.S
+INCLUDES    = -I./include
+
+ifeq ($(SYSTEM), arndale)
+OBJS 		+= devices/uart-exynos5250/uart_print.o devices/mct/mct.o
+INCLUDES    +=  -I ./plat/exynos5250/arndale/
+else # For VEXPRESS CA15
+OBJS 		+= ./devices/uart-pl011/uart_print.o
+INCLUDES    += -I ./plat/generic_ca15/rtsmve_ca15/
+endif
+
+
 
 GUESTBIN	= bmguest.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 MONITORMAP	= monitor.map
-LD_SCRIPT	= model.lds.S
-INCLUDES    = -I. -I../common/include
+INCLUDES    += -I. -I../common/include
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
 ifeq ($(UBOOT),y)
 CONFIG_FLAGS	= -DBOARD_RTSMVE_CA15
 else
-CONFIG_FLAGS	= -DBAREMETAL_GUEST -DBOARD_RTSMVE_CA15
+CONFIG_FLAGS	= -DBAREMETAL_GUEST 
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)

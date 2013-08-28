@@ -6,6 +6,7 @@
 #include "smp.h"
 #include "context.h"
 #include "hvmm_trace.h"
+#include <cfg_platform.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -247,7 +248,7 @@ hvmm_status_t gic_init(void)
 	/*
 	 * Determining VA of GIC base adddress has not been defined yet. Let is use the PA for the time being
 	 */
-	result = gic_init_baseaddr(0);
+    result = gic_init_baseaddr((void*)CFG_GIC_BASE_PA);
 
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		gic_dump_registers();

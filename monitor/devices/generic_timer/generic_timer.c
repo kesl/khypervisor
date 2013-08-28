@@ -1,5 +1,10 @@
-#include "generic_timer.h"
-#include "hvmm_trace.h"
+#include <cfg_platform.h>
+#include <generic_timer.h>
+#include <hvmm_trace.h>
+#include "generic_timer_regs.h"
+#if defined(CFG_BOARD_ARNDALE)
+    #include "mct.h"
+#endif
 
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata);
 
@@ -9,6 +14,9 @@ static generic_timer_callback_t _callback[GENERIC_TIMER_NUM_TYPES];
 
 hvmm_status_t generic_timer_init()
 {
+    #if defined(CFG_BOARD_ARNDALE)
+        mct_init(); 
+    #endif
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
     _timer_irqs[GENERIC_TIMER_NSP] = 27;
     _timer_irqs[GENERIC_TIMER_VIR] = 30;
