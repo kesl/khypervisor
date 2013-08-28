@@ -1,6 +1,7 @@
-#include "generic_timer.h"
-#include "hvmm_trace.h"
 #include <cfg_platform.h>
+#include <generic_timer.h>
+#include <hvmm_trace.h>
+#include "generic_timer_regs.h"
 #if defined(CFG_BOARD_ARNDALE)
     #include "mct.h"
 #endif

@@ -4,7 +4,6 @@
 #include "armv7_p15.h"
 #include "uart_print.h"
 #include "gic.h"
-#include "generic_timer_regs.h"
 
 typedef enum {
     GENERIC_TIMER_HYP,      /* IRQ 26 */
