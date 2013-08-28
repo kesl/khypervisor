@@ -4,6 +4,7 @@
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
+#include "sched_policy.h"
 
 static void test_start_timer(void)
 {
@@ -51,7 +52,7 @@ void interrupt_nsptimer(int irq, void *pregs, void *pdata )
 	if ( (regs->cpsr & 0x1F) != 0x1A ) {
 		/* Not from Hyp, switch the guest context */
 		context_dump_regs( regs );
-		context_switch_to_next_guest( regs );
+        context_switchto(sched_policy_determ_next());
 	}
 
 	HVMM_TRACE_EXIT();
