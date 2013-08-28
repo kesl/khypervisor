@@ -8,7 +8,7 @@
  */
 
 #define NS_BIT	0x1
-
+#include <cfg_platform.h>
 	.syntax	unified
 	.arch_extension sec
 	.arch_extension virt
@@ -74,7 +74,6 @@ vectors:
 	.globl	start
 start:
 #ifdef SMP
-#ifdef VEXPRESS
 	@
 	@ Program architected timer frequency
 	@
@@ -83,12 +82,9 @@ start:
 	and	r0, r0, #1			        @ Check generic timer support
 	beq	1f
 
-    @ Current guess is CNTFRQ is fixed at 100MHz
-    @ - simon
-	ldr	r0, =100000000			    @ 100MHz timer frequency
+	ldr	r0, = CFG_CNTFRQ			
 	mcr	p15, 0, r0, c14, c0, 0		@ CNTFRQ
 1:
-#endif
 	@
 	@ CPU initialisation
 	@
@@ -100,7 +96,7 @@ start:
 	@
 
 	@ Set all interrupts to be non-secure
-	ldr	r0, =0x2c001000			@ Dist GIC base
+	ldr	r0, = CFG_GIC_BASE_PA+0x1000	@ Dist GIC base
 	ldr	r1, [r0, #0x04]			@ Type Register
 	cmp	r4, #0
 	andeq	r1, r1, #0x1f
@@ -114,7 +110,7 @@ start:
 	bne	2b
 
 	@ Set GIC priority mask bit [7] = 1
-	ldr	r0, =0x2c002000			@ CPU GIC base
+	ldr	r0, = CFG_GIC_BASE_PA+0x2000	@ CPU GIC base
 	mov	r1, #0x80
 	str	r1, [r0, #0x4]			@ GIC ICCPMR
 
@@ -139,15 +135,18 @@ start:
 	adr	r2, 1f
 	ldmia	r2, {r3 - r7}			@ move the code to a location
 	stmia	r1, {r3 - r7}			@ less likely to be overridden
-#ifdef VEXPRESS
+#ifdef CFG_BOARD_RTSM_VE_CA15
 	ldr	r0, =0x1c010030			@ VE SYS_FLAGS register
+#elif defined(CFG_BOARD_ARNDALE)
 #else
 	ldr	r0, =0x10000030			@ RealView SYS_FLAGS register
 #endif
 	mov	pc, r1				@ branch to the relocated code
 1:
-#ifdef VEXPRESS
+#ifdef CFG_BOARD_RTSM_VE_CA15
 	wfe
+#elif defined(CFG_BOARD_ARNDALE)
+    wfe
 #endif
 	ldr	r1, [r0]
 	cmp	r1, #0
@@ -161,17 +160,21 @@ start:
 	@
 #ifdef MACH_MPS
 	ldr	r0, =0x1f005000			@ UART3 base (MPS)
-#elif defined (VEXPRESS)
+#elif defined (CFG_BOARD_RTSM_VE_CA15)
 	ldr	r0, =0x1c090000			@ UART base (Versatile Express)
 #else
 	ldr	r0, =0x10009000			@ UART base (RealView/EB)
 #endif
+#ifdef CFG_BOARD_ARNDALE        @ Do nothing for ARNDALE
+#else
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
+#endif
 
+#if defined (CFG_BOARD_RTSM_VE_CA15)
     /* Initialize UART1 and UART2 for access from guests, as a workaround, 
        since initialization sequence in C, in guest, is not clear a the moment */
 	ldr	r0, =0x1c0A0000			@ UART base (Versatile Express)
@@ -187,7 +190,7 @@ start:
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
-
+#endif
 	@ Now we've got rid of the secondary CPUs, set up a stack
 	@ for CPU 0 so we can write most of this in C.
 	ldr     sp, =sec_stacklimit

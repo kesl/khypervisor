@@ -4,11 +4,6 @@
 #include "armv7_p15.h"
 #include "arch_types.h"
 
-#ifndef isb
-#define isb() asm volatile("isb" : : : "memory")   
-#warning "isb() not defined somewhere else!"
-#endif
-
 #define GENERIC_TIMER_CTRL_ENABLE       (1 << 0)
 #define GENERIC_TIMER_CTRL_IMASK        (1 << 1)
 #define GENERIC_TIMER_CTRL_ISTATUS      (1 << 2)
