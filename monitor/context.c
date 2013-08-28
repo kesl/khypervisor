@@ -1,6 +1,7 @@
+#include <armv7_p15.h>
+#include <uart_print.h>
+#include <hvmm_trace.h>
 #include "context.h"
-#include "uart_print.h"
-#include "hvmm_trace.h"
 #include "trap.h"
 
 #define _valid_vmid(vmid)   ( context_first_vmid() <= vmid && context_last_vmid() >= vmid )
@@ -39,15 +40,17 @@ static void _hyp_fixup_unloaded_guest(void)
 
 void context_dump_regs( struct arch_regs *regs )
 {
-    int i;
     uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" );
     uart_print( "  pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
 
 #ifdef __CONTEXT_TRACE_VERBOSE__
-    uart_print( " gpr:\n\r" );
-	for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
-        uart_print( "     " ); uart_print_hex32( regs->gpr[i] ); uart_print( "\n\r" );
-	}
+    {
+        int i;
+        uart_print( " gpr:\n\r" );
+	    for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+            uart_print( "     " ); uart_print_hex32( regs->gpr[i] ); uart_print( "\n\r" );
+	    }
+    }
 #endif
 }
 
@@ -59,6 +62,22 @@ static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *reg
 	for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
 		regs_dst->gpr[i] = regs_src->gpr[i];
 	}
+}
+
+/* Co-processor state management: init/save/restore */
+void context_init_cops(struct arch_regs_cop *regs_cop)
+{
+    regs_cop->vbar = 0;
+}
+
+void context_save_cops(struct arch_regs_cop *regs_cop)
+{
+    regs_cop->vbar = read_vbar();
+}
+
+void context_restore_cops(struct arch_regs_cop *regs_cop)
+{
+    write_vbar(regs_cop->vbar);
 }
 
 /* DEPRECATED: use context_switchto(vmid) and context_perform_switch() 
@@ -91,6 +110,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 		context = &guest_contexts[_current_guest_vmid];
 		regs = &context->regs;
 		context_copy_regs( regs, regs_current );
+        context_save_cops( &context->regs_cop );
         vgic_save_status( &context->vgic_status );
 	}
 
@@ -111,6 +131,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 	} else {
 		/* guest -> hyp -> guest */
 		context_copy_regs( regs_current, &context->regs );
+        context_restore_cops( &context->regs_cop );
 	}
 
     result = HVMM_STATUS_SUCCESS;
@@ -181,6 +202,7 @@ void context_init_guests(void)
 	/* regs->gpr[] = whatever */
 	context->vmid = 0;
 	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
+    context_init_cops( &context->regs_cop );
 
 	/* Guest 2 @guest2_bin_start */
 	context = &guest_contexts[1];
@@ -191,6 +213,7 @@ void context_init_guests(void)
 	/* regs->gpr[] = whatever */
 	context->vmid = 1;
 	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
+    context_init_cops( &context->regs_cop );
 
 #ifdef BAREMETAL_GUEST
 	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */

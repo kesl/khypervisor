@@ -20,11 +20,17 @@ struct arch_regs {
         unsigned int gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
 } __attribute((packed));
 
+/* co-processor registers: cp15 */
+struct arch_regs_cop {
+    uint32_t vbar;
+};
+
 struct hyp_guest_context {
         struct arch_regs regs;
         lpaed_t *ttbl;
         vmid_t vmid;
         struct vgic_status vgic_status;
+        struct arch_regs_cop regs_cop;
 };
 
 void context_dump_regs( struct arch_regs *regs );
