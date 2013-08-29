@@ -88,7 +88,7 @@ int print(const char *format, va_list ap)
     return 0;
 }
 
-void printf(const char *format, ...)
+void printh(const char *format, ...)
 {
     va_list ap;
     va_start(ap, format);
