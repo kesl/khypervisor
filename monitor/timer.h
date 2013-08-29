@@ -4,10 +4,6 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
-#if defined(BOARD_RTSMVE_CA15)
-    #define COUNT_PER_USEC 100
-#endif
-
 /*
  * Implements Timer functionality such as,
  *

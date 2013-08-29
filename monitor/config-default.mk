@@ -22,6 +22,8 @@ KERNEL_SRC	?= ../linux-kvm-arm
 # mps:		MPS (Cortex-M3)
 # realview_eb:	RealViewPB, EB, etc.
 # vexpress:	Versatile Express
+# arndale:	arndale board
+#SYSTEM ?= arndale
 SYSTEM ?= vexpress
 
 ###########################################################################
@@ -82,13 +84,21 @@ endif # SYSTEM = realvire_eb
 ###########################################################################
 # Versatile Express
 #
+ifeq ($(SYSTEM),arndale)
+
+CPPFLAGS	+= -DSMP
+CPPFLAGS	+= -mcpu=cortex-a15 -marm
+CPPFLAGS	+= -g
+
+endif
+###########################################################################
+# Versatile Express
+#
 ifeq ($(SYSTEM),vexpress)
 
 CPPFLAGS	+= -DSMP
-#CPPFLAGS	+= -march=armv7-a -marm
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
-#CPPFLAGS	+= -DTHUMB2_KERNEL
-CPPFLAGS	+= -DVEXPRESS -g
+CPPFLAGS	+= -g
 
 # Default kernel command line, using initrd:
 ifeq ($(USE_INITRD),yes)

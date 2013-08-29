@@ -4,6 +4,7 @@
 #include "hyp_config.h"
 #include "arch_types.h"
 #include "mm.h"
+#include "vgic.h"
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
@@ -23,6 +24,7 @@ struct hyp_guest_context {
         struct arch_regs regs;
         lpaed_t *ttbl;
         vmid_t vmid;
+        struct vgic_status vgic_status;
 };
 
 void context_dump_regs( struct arch_regs *regs );
