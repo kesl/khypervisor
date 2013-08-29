@@ -10,7 +10,7 @@
 #include "hvmm_trace.h"
 #include "scheduler.h"
 #include "tests.h"
-
+#include "stdio.h"
 void hyp_abort_infinite(void)
 {
 	while(1);
@@ -104,7 +104,6 @@ void hyp_main(void)
 	if ( ret != HVMM_STATUS_SUCCESS ) {
 		uart_print("[hyp_main] interrupt initialization failed...\n\r");
 	}
-
 	/* Initialize Guests */
 	context_init_guests();
 
