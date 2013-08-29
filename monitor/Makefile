@@ -25,7 +25,7 @@ BOOTLOADER	= boot.S
 OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               mm.o timer.o \
-              context.o devices/gic/gic.o interrupt.o smp.o scheduler.o devices/generic_timer/generic_timer.o \
+              context.o devices/gic/gic.o interrupt.o smp.o scheduler.o devices/generic_timer/generic_timer.o stdio.o\
               devices/gic/vgic.o
 LD_SCRIPT	= model.lds.S
 INCLUDES    = -I./include
