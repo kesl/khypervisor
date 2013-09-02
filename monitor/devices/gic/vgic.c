@@ -414,7 +414,6 @@ hvmm_status_t vgic_restore_status( struct vgic_status *status )
     int i;
     HVMM_TRACE_ENTER();
     if ( status->saved_once == VGIC_SIGNATURE_INITIALIZED ) {
-        /* TODO: restore vgic configurations from 'status' */
         for( i = 0; i < _vgic.num_lr; i++) {
             _vgic.base[GICH_LR + i] = status->lr[i];
         }
@@ -422,10 +421,19 @@ hvmm_status_t vgic_restore_status( struct vgic_status *status )
         _vgic.base[GICH_VMCR] = status->vmcr;
         _vgic.base[GICH_HCR] = status->hcr;
 
-        vgic_enable(1);
         _vgic_dump_regs();
         result = HVMM_STATUS_SUCCESS;
+    } else {
+        /* Initialize VGIC state for the guest if it's about to launch for the first time */
+        for( i = 0; i < _vgic.num_lr; i++) {
+            _vgic.base[GICH_LR + i] = 0;
+        }
+        _vgic.base[GICH_APR] = 0;
+        _vgic.base[GICH_VMCR] = 0;
+        _vgic.base[GICH_HCR] = 0;
     }
+
+    vgic_enable(1);
     HVMM_TRACE_EXIT();
     
     return result;
