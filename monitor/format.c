@@ -1,17 +1,14 @@
 #include "format.h"
 #include "arch_types.h"
-#define va_start(v,l)       __builtin_va_start((v),l)
-#define va_end              __builtin_va_end
-#define va_arg              __builtin_va_arg
+
 #define PRINT_BUF_LEN   12
 
-typedef __builtin_va_list   va_list;
 typedef enum {
     DECIMAL = 10,
     HEXADECIMAL = 16
 } numerical_t;
 
-static void printi( uint32_t v, numerical_t numerical, char base)
+static void format_printi( uint32_t v, numerical_t numerical, char base)
 {
     char print_buf[PRINT_BUF_LEN];
     char *s;
@@ -26,7 +23,7 @@ static void printi( uint32_t v, numerical_t numerical, char base)
             *--s = ((v % 10) + '0');
             v /= 10;
         }
-        puts(s);
+        format_puts(s);
         break;
     case HEXADECIMAL:
         for ( i = 7; i >= 0; i-- ) {
@@ -36,58 +33,54 @@ static void printi( uint32_t v, numerical_t numerical, char base)
             } else {             
                 c += base - 10;
             }
-            putc( (char) c );
+            format_putc( (char) c );
         }
         break;
     }
 }
 
-static int print(const char *format, va_list ap)
+int format_print(const char *format, va_list ap)
 {
     const char *p;
     for(p = format; *p != '\0'; p++){
         if(*p == '%'){
             ++p;
             if (*p == 'd'){
-                printi(va_arg(ap, int), DECIMAL, 0);
+                format_printi(va_arg(ap, int), DECIMAL, 0);
             } 
             if (*p == 's'){
-                puts(va_arg(ap, char*));
+                format_puts(va_arg(ap, char*));
             }
             if (*p == 'c'){
-                putc(va_arg(ap, int));
+                format_putc(va_arg(ap, int));
             }
             if (*p == 'x'){
-                printi(va_arg(ap, unsigned int), HEXADECIMAL, 'a'); 
+                format_printi(va_arg(ap, unsigned int), HEXADECIMAL, 'a'); 
             }
             if (*p == 'X'){
-                printi(va_arg(ap, unsigned int), HEXADECIMAL, 'A'); 
+                format_printi(va_arg(ap, unsigned int), HEXADECIMAL, 'A'); 
             }
         } else {
             if (*p == '\n'){
-                putc(*p);
-                putc('\r');
+                format_putc(*p);
+                format_putc('\r');
             }
             else if (*p == '\r'){
                
             }else{
-                putc(*p);
+                format_putc(*p);
             }
         }        
     }
     return 0;
 }
 
-void printh(const char *format, ...)
+void format_reg_puts(puts_t s)
 {
-    va_list ap;
-    va_start(ap, format);
-    print(format, ap);
-    va_end(ap);
+    format_puts = s;
 }
 
-void reg_print(puts_t s, putc_t c)
+void format_reg_putc(putc_t c)
 {
-    puts = s;
-    putc = c;
+    format_putc = c;
 }

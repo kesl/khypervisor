@@ -9,12 +9,12 @@
 #include "context.h"
 #include "scheduler.h"
 #include "tests.h"
-#include "format.h"
+#include "print.h"
 #include "hvmm_trace.h"
 
 void hyp_main(void)
 {
-    init_uart();
+    init_print();
 	hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
     printh("[%s : %d] Starting...\n", __FUNCTION__, __LINE__);
 	/* Initialize Memory Management */
