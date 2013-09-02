@@ -8,6 +8,13 @@
                                 " mrs     %0, cpsr\n\t" \
                                 : "=r" (rval) : : "memory", "cc"); rval;})
 
+#define read_vbar()              ({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c12, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+#define write_vbar(val)       asm volatile(\
+                                " mcr     p15, 0, %0, c12, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+
 /* ARMv7 Registers */
 #define HCR_FMO	    0x8
 #define HCR_IMO     0x10
