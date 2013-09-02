@@ -10,7 +10,7 @@
 #include "hvmm_trace.h"
 #include "scheduler.h"
 #include "tests.h"
-#include "stdio.h"
+#include "format.h"
 void hyp_abort_infinite(void)
 {
 	while(1);
@@ -93,9 +93,9 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 
 void hyp_main(void)
 {
+    init_uart();
 	hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
-	uart_print("[hyp_main] Starting...\n\r");
-
+    printh("[%s : %d] Starting...\n", __FUNCTION__, __LINE__);
 	/* Initialize Memory Management */
 	ret = hvmm_mm_init();
 

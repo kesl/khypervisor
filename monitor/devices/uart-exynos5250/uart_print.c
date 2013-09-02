@@ -1,6 +1,7 @@
 #include "arch_types.h"
 #include "exynos-uart.h"
 #include <cfg_platform.h>
+#include "format.h"
 
 #ifdef CFG_EXYNOS5250
 #ifdef CFG_BOARD_ARNDALE
@@ -78,5 +79,10 @@ void uart_print_hex64( uint64_t v )
 {
 	uart_print_hex32( v >> 32 );
 	uart_print_hex32( (uint32_t) (v & 0xFFFFFFFF) );
+}
+
+void uart_init()
+{
+    reg_print(&uart_print, &uart_putc);
 }
 #endif
