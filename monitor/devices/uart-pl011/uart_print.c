@@ -1,6 +1,7 @@
 #include "arch_types.h"
 #include <cfg_platform.h>
 
+
 #ifdef CFG_GENERIC_CA15
 #ifdef CFG_BOARD_RTSM_VE_CA15
 #define UART_BASE       0x1c090000
@@ -46,4 +47,5 @@ void uart_print_hex64( uint64_t v )
 	uart_print_hex32( v >> 32 );
 	uart_print_hex32( (uint32_t) (v & 0xFFFFFFFF) );
 }
+
 #endif

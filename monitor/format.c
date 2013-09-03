@@ -8,8 +8,8 @@ typedef enum {
     HEXADECIMAL = 16
 } numerical_t;
 
-static puts_t format_puts;
-static putc_t format_putc;
+static format_puts_t format_puts;
+static format_putc_t format_putc;
 
 static void format_printi( uint32_t v, numerical_t numerical, char base)
 {
@@ -78,12 +78,12 @@ int format_print(const char *format, va_list ap)
     return 0;
 }
 
-void format_reg_puts(puts_t s)
+void format_reg_puts(format_puts_t s)
 {
     format_puts = s;
 }
 
-void format_reg_putc(putc_t c)
+void format_reg_putc(format_putc_t c)
 {
     format_putc = c;
 }
