@@ -5,6 +5,10 @@
 #include "armv7_p15.h"
 #include "timer.h"
 #include "sched_policy.h"
+#include <cfg_platform.h>
+#if defined(CFG_BOARD_ARNDALE)
+#include "pwm.h"
+#endif
 
 static void test_start_timer(void)
 {
@@ -58,6 +62,29 @@ void interrupt_nsptimer(int irq, void *pregs, void *pdata )
 	HVMM_TRACE_EXIT();
 	uart_print( "=======================================\n\r" );
 }
+#if defined(CFG_BOARD_ARNDALE)
+void test_pwm_timer()
+{
+	HVMM_TRACE_ENTER();
+    pwm_timer_enable_int();
+	HVMM_TRACE_EXIT();
+}
+void interrupt_pwmtimer(int irq, void *pregs, void *pdata)
+{
+    uint32_t tcstat;
+    uint32_t tcon;
+
+    pwm_timer_disable_int();
+
+    uart_print( "=======================================\n\r" );
+    HVMM_TRACE_ENTER();
+
+    HVMM_TRACE_EXIT();
+    uart_print( "=======================================\n\r" );
+
+    test_pwm_timer();
+}
+#endif
 
 hvmm_status_t hvmm_tests_gic_timer(void)
 {
@@ -75,6 +102,12 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 		GIC_INT_POLARITY_LEVEL, 
 		gic_cpumask_current(), 
 		GIC_INT_PRIORITY_DEFAULT );
+ 
+#if defined(CFG_BOARD_ARNDALE)
+    pwm_timer_init();
+    pwm_timer_set_callback(&interrupt_pwmtimer);
+    test_pwm_timer();
+#endif
 
 	/* start timer */
 	test_start_timer();
