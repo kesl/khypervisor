@@ -15,12 +15,4 @@ void printh(const char *format, ...)
     format_print(format, ap);
     va_end(ap);
 }
-void puts(const char* str)
-{
-    format_puts(str);
-}
-void putc(const char character)
-{
-    format_putc(character);
-}
 
