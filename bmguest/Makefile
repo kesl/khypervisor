@@ -13,12 +13,14 @@ else
 include config-default.mk
 endif
 
-OBJS 		= guest.o c_start.o string.o uart_print.o
+OBJS 		= guest.o c_start.o string.o exception.o gic.o uart_print.o
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin
 LD_SCRIPT	= model.lds.S
+INCLUDES    = -I. -I../common/include
 
+CPPFLAGS    += $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY		= $(CROSS_COMPILE)objcopy
@@ -41,7 +43,7 @@ else
 #	"smc #0" will be used to switch instead of hvc #??
 GUESTCONFIGS	= -DLDS_PHYS_OFFSET='0xE0000000' -DLDS_GUEST_OFFSET='0xE0000000' -DLDS_GUEST_STACK='0xEF000000'
 endif
-GUESTCONFIGS += -DNUM_ITERATIONS=3 -DGUEST_LABEL='"[guest0] "'
+GUESTCONFIGS += -DNUM_ITERATIONS=300 -DGUEST_LABEL='"[guest0] "'
 GUESTCONFIGS += -DLDS_$(GUESTTYPE)=1
 
 

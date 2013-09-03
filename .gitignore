@@ -8,3 +8,5 @@ config.mk
 tags
 modelsemi.lds
 linux-system-semi.axf
+TAGS
+cscope.out

@@ -1,0 +1,87 @@
+diff -urN origin/boards.cfg modified/boards.cfg
+--- origin/boards.cfg	2013-08-09 11:48:08.878578784 +0900
++++ modified/boards.cfg	2013-08-08 16:09:44.119994493 +0900
+@@ -238,6 +238,7 @@
+ versatileqemu                arm         arm926ejs   versatile           armltd         versatile   versatile:ARCH_VERSATILE_QEMU,ARCH_VERSATILE_PB
+ integratorap_cm946es         arm         arm946es    integrator          armltd         -               integratorap:CM946ES
+ integratorcp_cm946es         arm         arm946es    integrator          armltd         -               integratorcp:CM946ES
++vexpress_rtsm_ca15           arm         armv7       vexpress            armltd
+ vexpress_ca15_tc2            arm         armv7       vexpress            armltd
+ vexpress_ca5x2               arm         armv7       vexpress            armltd
+ vexpress_ca9x4               arm         armv7       vexpress            armltd
+diff -urN origin/include/configs/vexpress_rtsm_ca15.h modified/include/configs/vexpress_rtsm_ca15.h
+--- origin/include/configs/vexpress_rtsm_ca15.h	1970-01-01 09:00:00.000000000 +0900
++++ modified/include/configs/vexpress_rtsm_ca15.h	2013-08-09 11:31:05.775463483 +0900
+@@ -0,0 +1,72 @@
++/*
++ * Author: Wonseok Ko(magicyaba@gmail.com)
++ * This file originated from Linaro
++ * BOOT COMMAND part is modified for khypervisor to support autoboot mode
++ *
++ * (C) Copyright 2013 Linaro
++ * Andre Przywara, <andre.przywara@linaro.org>
++ *
++ * Configuration for Versatile Express. Parts were derived from other ARM
++ *   configurations.
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#ifndef __VEXPRESS_RTSM_CA15_h
++#define __VEXPRESS_RTSM_CA15_h
++
++#define CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP
++#include "vexpress_common.h"
++#define CONFIG_BOOTP_VCI_STRING     "U-boot.armv7.vexpress_ca15x2_tc2"
++
++#define CONFIG_SYS_CLK_FREQ 24000000
++
++//undefine macros for redefine
++#undef CONFIG_PLATFORM_ENV_SETTINGS 
++#undef CONFIG_EXTRA_ENV_SETTINGS 
++
++//#define CONFIG_BOOTCOMMAND		"run bootflash;"
++/* magicyaba */
++#define CONFIG_PLATFORM_ENV_SETTINGS \
++		"hypervisor_addr=0x8000000\0" \
++		"bmguest_0_addr=0x8100000\0" \
++		"bmguest_1_addr=0x8200000\0" \
++		"hypervisor_addr_r=0xf0000000\0" \
++		"bmguest_0_addr_r=0xa0000000\0" \
++		"bmguest_1_addr_r=0xb0000000\0" \
++		"entry_addr=0xf000004c\0" \
++		"size=0x100000\0"
++#define CONFIG_EXTRA_ENV_SETTINGS \
++		CONFIG_PLATFORM_ENV_SETTINGS \
++		"console=ttyAMA0,38400n8\0" \
++		"dram=1024M\0" \
++		"root=/dev/sda1 rw\0" \
++		"mtd=armflash:1M@0x800000(uboot),7M@0x1000000(kernel)," \
++			"24M@0x2000000(initrd)\0" \
++		"flashargs=setenv bootargs root=${root} console=${console} " \
++			"mem=${dram} mtdparts=${mtd} mmci.fmax=190000 " \
++			"devtmpfs.mount=0  vmalloc=256M\0" \
++		"bootflash=run flashargs; " \
++			"cp ${hypervisor_addr} ${hypervisor_addr_r} ${size}; "\
++			"cp ${bmguest_0_addr} ${bmguest_0_addr_r} ${size}; "\
++			"cp ${bmguest_1_addr} ${bmguest_1_addr_r} ${size}; "\
++			"go ${entry_addr}"
++/* magicyaba */
++
++#endif
