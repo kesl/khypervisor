@@ -9,14 +9,14 @@
 #include "context.h"
 #include "scheduler.h"
 #include "tests.h"
-
+#include "print.h"
 #include "hvmm_trace.h"
 
 void hyp_main(void)
 {
+    init_print();
 	hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
-	uart_print("[hyp_main] Starting...\n\r");
-
+    printh("[%s : %d] Starting...\n", __FUNCTION__, __LINE__);
 	/* Initialize Memory Management */
 	ret = hvmm_mm_init();
 
@@ -25,7 +25,6 @@ void hyp_main(void)
 	if ( ret != HVMM_STATUS_SUCCESS ) {
 		uart_print("[hyp_main] interrupt initialization failed...\n\r");
 	}
-
 	/* Initialize Guests */
 	context_init_guests();
 
