@@ -1,10 +1,6 @@
 #ifndef __PWM_PRIV_H__
 #define __PWM_PRIV_H__
-/*
-#include "arch_types.h"
-#include "hvmm_trace.h"
-#include "hvmm_types.h"
-*/
+
 #define PWMBASE (void*)0x12DD0000
 #define PWM_TIMERREG(x) (PWMBASE + (x))
 #define TCFG0   PWM_TIMERREG(0x00)
@@ -28,18 +24,5 @@
 #define TCON_T1START        (1<<8)
 #define TCON_T1RELOAD       (1<<11)
 
-#if 0
-typedef void (*pwm_timer_callback_t)(void *pdata);
-/* enable the timer.   */
-hvmm_status_t pwm_timer_enable_int();
-/* Disable the timer.  */
-hvmm_status_t pwm_timer_disable_int();
-/* Sets time interval. Converts from microseconds to count and sets time interval.*/
-hvmm_status_t pwm_timer_set_interval(uint32_t tval);
-/* Enables timer irq.  */
-hvmm_status_t pwm_timer_enable_irq();
-/* Adds callback funtion. Called when occur timer interrupt */
-hvmm_status_t pwm_timer_set_callback(pwm_timer_callback_t callback);
-#endif
 #endif
            
