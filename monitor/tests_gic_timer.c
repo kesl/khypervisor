@@ -63,12 +63,6 @@ void interrupt_nsptimer(int irq, void *pregs, void *pdata )
 	uart_print( "=======================================\n\r" );
 }
 #if defined(CFG_BOARD_ARNDALE)
-void test_pwm_timer()
-{
-	HVMM_TRACE_ENTER();
-    pwm_timer_enable_int();
-	HVMM_TRACE_EXIT();
-}
 void interrupt_pwmtimer(int irq, void *pregs, void *pdata)
 {
     uint32_t tcstat;
@@ -82,7 +76,7 @@ void interrupt_pwmtimer(int irq, void *pregs, void *pdata)
     HVMM_TRACE_EXIT();
     uart_print( "=======================================\n\r" );
 
-    test_pwm_timer();
+    pwm_timer_enable_int();
 }
 #endif
 
@@ -106,7 +100,7 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 #if defined(CFG_BOARD_ARNDALE)
     pwm_timer_init();
     pwm_timer_set_callback(&interrupt_pwmtimer);
-    test_pwm_timer();
+    pwm_timer_enable_int();
 #endif
 
 	/* start timer */
