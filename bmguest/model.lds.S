@@ -61,6 +61,12 @@ SECTIONS
  }
 
  . = GUEST_STACK;
+ guest_stacktop_svc = .;
+ . = GUEST_STACK + 0x00400000; 
+ guest_stacklimit_svc = .;
+ guest_stacktop_irq = .;
+ . = GUEST_STACK + 0x00800000; 
+ guest_stacklimit_irq = .;
  guest_stacktop = .;
  . = GUEST_STACK + 0x01000000; 
  guest_stacklimit = .;

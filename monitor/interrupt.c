@@ -2,6 +2,9 @@
 #include "gic.h"
 #include "uart_print.h"
 #include "armv7_p15.h"
+#include "context.h"
+#include "hvmm_trace.h"
+#include "vgic.h"
 
 hvmm_status_t hvmm_interrupt_init(void)
 {
@@ -16,75 +19,13 @@ hvmm_status_t hvmm_interrupt_init(void)
 		write_hcr( hcr );
 		hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
 	} 
+
+    /* Physical Interrupt: GIC Distributor & CPU Interface */
 	ret = gic_init();
+
+    /* Virtual Interrupt: GIC Virtual Interface Control */
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_init();
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_enable(1);
+
 	return ret;
-}
-
-
-void interrupt_test_start_timer(void)
-{
-	uint32_t ctl;
-	uint32_t tval;
-	uint64_t pct;
-
-	HVMM_TRACE_ENTER();
-
-
-	/* just sometime later */
-	tval = 0x8000000;
-	write_cntp_tval(tval);
-
-	pct = read_cntpct();
-	uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
-	uart_print( "cntp_tval:"); uart_print_hex32(tval); uart_print("\n\r");
-
-	/* enable timer */
-	ctl = read_cntp_ctl();
-	ctl |= 0x1;
-	write_cntp_ctl(ctl);
-
-	HVMM_TRACE_EXIT();
-}
-
-void interrupt_nsptimer(int irq, void *pdata )
-{
-	uint32_t ctl;
-
-	uart_print( "=======================================\n\r" );
-	HVMM_TRACE_ENTER();
-
-	ctl = read_cntp_ctl();
-	ctl &= ~(0x1);
-	write_cntp_ctl(ctl);
-	
-
-	/* for another interrupt */
-	interrupt_test_start_timer();
-
-	HVMM_TRACE_EXIT();
-	uart_print( "=======================================\n\r" );
-}
-
-hvmm_status_t hvmm_interrupt_test(void)
-{
-	/* Testing Non-secure Physical Timer Event (PPI2), Cortex-A15 
-	 */
-
-	HVMM_TRACE_ENTER();
-
-	/* handler */
-	gic_test_set_irq_handler( 30, &interrupt_nsptimer, 0 );
-
-	/* configure and enable interrupt */
-	gic_test_configure_irq(30, 
-		GIC_INT_POLARITY_LEVEL, 
-		gic_cpumask_current(), 
-		GIC_INT_PRIORITY_DEFAULT );
-
-	/* start timer */
-	interrupt_test_start_timer();
-
-
-	HVMM_TRACE_EXIT();
-	return HVMM_STATUS_SUCCESS;
 }

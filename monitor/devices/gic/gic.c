@@ -1,8 +1,12 @@
 #include "gic.h"
+#include "gic_regs.h"
 #include "armv7_p15.h"
 #include "a15_cp15_sysregs.h"
 #include "uart_print.h"
 #include "smp.h"
+#include "context.h"
+#include "hvmm_trace.h"
+#include <cfg_platform.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -11,42 +15,14 @@
 #define MIDR_MASK_PPN		(0x0FFF <<4)
 #define MIDR_PPN_CORTEXA15	(0xC0F << 4)
 
-#define GIC_OFFSET_GICD		0x1000
-#define GIC_OFFSET_GICC		0x2000
-#define GIC_OFFSET_GICH		0x4000
-#define GIC_OFFSET_GICV		0x5000
-#define GIC_OFFSET_GICVI	0x6000
-
-#define GICD_CTLR	0x000
-#define GICD_TYPER	(0x004/4)
-#define GICD_IIDR	(0x008/4)
-#define GICD_ISENABLER	(0x100/4)
-#define GICD_ICENABLER	(0x180/4)
-#define GICD_IPRIORITYR	(0x400/4)
-#define GICD_ITARGETSR	(0x800/4) 
-#define GICD_ICFGR	(0xC00/4)
-
-#define GICC_CTLR	(0x0000/4)
-#define GICC_PMR	(0x0004/4)
-#define GICC_BPR	(0x0008/4)
-#define GICC_IAR	(0x000C/4)
-#define GICC_EOIR	(0x0010/4)
-#define GICC_DIR	(0x1000/4)
-
-#define GICD_CTLR_ENABLE	0x1
-#define GICD_TYPE_LINES_MASK	0x01f
-#define GICD_TYPE_CPUS_MASK	0x0e0
-#define GICD_TYPE_CPUS_SHIFT	5
-
-#define GICC_CTL_ENABLE 	0x1
-#define GICC_CTL_EOI    	(0x1 << 9)
-#define GICC_IAR_INTID_MASK	0x03ff
 
 #define GIC_INT_PRIORITY_DEFAULT_WORD	( (GIC_INT_PRIORITY_DEFAULT << 24 ) \
 										 |(GIC_INT_PRIORITY_DEFAULT << 16 ) \
 										 |(GIC_INT_PRIORITY_DEFAULT << 8 ) \
 										 |(GIC_INT_PRIORITY_DEFAULT ) )
 #define GIC_NUM_MAX_IRQS	1024
+
+#define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
 
 struct gic {
 	uint32_t baseaddr;
@@ -58,11 +34,10 @@ struct gic {
 	uint32_t lines;
 	uint32_t cpus;
 	gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
+    uint32_t initialized;
 };
 
-
 static struct gic _gic;
-
 
 static void gic_dump_registers(void)
 {
@@ -221,6 +196,7 @@ static hvmm_status_t gic_init_cpui(void)
 	/* Enable signaling of interrupts and GICC_EOIR only drops priority */
 	_gic.ba_gicc[GICC_CTLR] = GICC_CTL_ENABLE | GICC_CTL_EOI;
 
+    result = HVMM_STATUS_SUCCESS;
 	return result;
 }
 
@@ -247,6 +223,17 @@ hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler, void 
 	return result;
 }
 
+volatile uint32_t *gic_vgic_baseaddr(void)
+{
+    if ( _gic.initialized != GIC_SIGNATURE_INITIALIZED ) {
+        HVMM_TRACE_ENTER();
+        uart_print("gic: ERROR - not initialized\n\r");
+        HVMM_TRACE_EXIT();
+    }
+
+    return _gic.ba_gich;
+}
+
 hvmm_status_t gic_init(void)
 {
 	hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -261,7 +248,7 @@ hvmm_status_t gic_init(void)
 	/*
 	 * Determining VA of GIC base adddress has not been defined yet. Let is use the PA for the time being
 	 */
-	result = gic_init_baseaddr(0);
+    result = gic_init_baseaddr((void*)CFG_GIC_BASE_PA);
 
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		gic_dump_registers();
@@ -280,66 +267,13 @@ hvmm_status_t gic_init(void)
 	if ( result == HVMM_STATUS_SUCCESS ) {
 		result = gic_init_cpui();
 	}
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        _gic.initialized = GIC_SIGNATURE_INITIALIZED;
+    }
 
 	HVMM_TRACE_EXIT();
 	return result;
 }
-
-
-/*
- * Note: Sequence of Routing and Requesting an IRQ
-
-1. Routing
-
-1.1 Disable Routing
-	GICD_ICENABLER[irq] = 1
-
-static void gic_irq_shutdown(struct irq_desc *desc)
-{
-    int irq = desc->irq;
-
-    // Disable forwarding 
-    GICD[GICD_ICENABLER + irq / 32] = (1u << (irq % 32));
-}
-
-1.2 Edge/Level
-	GICD_ICFGR[irq] = edge | level
-
-1.3 Routing: Target CPU
-	GICD_ITARGETSR[irq] = cpumask
-
-1.4 Priority
-	GICD_IPRIORITY[irq] = priority
-** Example
-
-// needs to be called with gic.lock held
-static void gic_set_irq_properties(unsigned int irq, bool_t level,
-        unsigned int cpu_mask, unsigned int priority)
-{
-    volatile unsigned char *bytereg;
-    uint32_t cfg, edgebit;
-
-    // Set edge / level 
-    cfg = GICD[GICD_ICFGR + irq / 16];
-    edgebit = 2u << (2 * (irq % 16));
-    if ( level )
-        cfg &= ~edgebit;
-    else
-        cfg |= edgebit;
-    GICD[GICD_ICFGR + irq / 16] = cfg;
-
-    // Set target CPU mask (RAZ/WI on uniprocessor) 
-    bytereg = (unsigned char *) (GICD + GICD_ITARGETSR);
-    bytereg[irq] = cpu_mask;
-
-    // Set priority 
-    bytereg = (unsigned char *) (GICD + GICD_IPRIORITYR);
-    bytereg[irq] = priority;
-}
-
-2. Enable Forwarding
-	GICD_ISENABLER[irq] = enable
- */
 
 /*
  * example: gic_test_configure_irq( 26, 
@@ -390,16 +324,16 @@ hvmm_status_t gic_test_configure_irq(uint32_t irq, gic_int_polarity_t polarity, 
 	return result;
 }
 
-void gic_interrupt(int fiq)
+void gic_interrupt(int fiq, void *pregs)
 {
 	/*
-	 *
 	 * 1. ACK - CPU Interface - GICC_IAR read
 	 * 2. Completion - CPU Interface - GICC_EOIR
 	 * 2.1 Deactivation - CPU Interface - GICC_DIR
 	 */
 	uint32_t iar;
 	uint32_t irq;
+	struct arch_regs *regs = pregs;
 
 	HVMM_TRACE_ENTER();
 	do {
@@ -411,7 +345,7 @@ void gic_interrupt(int fiq)
 			/* ISR */
 			uart_print( "ISR(irq):"); uart_print_hex32(irq); uart_print("\n\r");
 			if ( _gic.handlers[irq] ) {
-				_gic.handlers[irq]( irq, 0 );
+				_gic.handlers[irq]( irq, regs, 0 );
 			}
 
 			/* Completion & Deactivation */

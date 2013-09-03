@@ -13,12 +13,13 @@ typedef enum {
     GIC_INT_POLARITY_EDGE = 1
 } gic_int_polarity_t;
 
-typedef void (*gic_irq_handler_t)(int irq, void *pdata);
+typedef void (*gic_irq_handler_t)(int irq, void *regs, void *pdata);
 
-void gic_interrupt(int fiq);
+void gic_interrupt(int fiq, void *regs);
 hvmm_status_t gic_enable_irq(uint32_t irq);
 hvmm_status_t gic_disable_irq(uint32_t irq);
 hvmm_status_t gic_init(void);
+volatile uint32_t *gic_vgic_baseaddr(void);
 
 /*
  * example: 
