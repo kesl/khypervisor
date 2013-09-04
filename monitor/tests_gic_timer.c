@@ -107,7 +107,6 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 		GIC_INT_POLARITY_LEVEL, 
 		gic_cpumask_current(), 
 		GIC_INT_PRIORITY_DEFAULT );
- 
 	/* start timer */
 	test_start_timer();
 
