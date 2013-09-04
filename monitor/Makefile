@@ -26,12 +26,12 @@ OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               mm.o timer.o \
               context.o devices/gic/gic.o interrupt.o smp.o scheduler.o devices/generic_timer/generic_timer.o \
-              devices/gic/vgic.o tests.o tests_gic_timer.o trap.o sched_policy.o
+              devices/gic/vgic.o tests.o tests_gic_timer.o trap.o sched_policy.o format.o print.o
 LD_SCRIPT	= model.lds.S
 INCLUDES    = -I./include
 
 ifeq ($(SYSTEM), arndale)
-OBJS 		+= devices/uart-exynos5250/uart_print.o devices/mct/mct.o
+OBJS 		+= devices/uart-exynos5250/uart_print.o devices/mct/mct.o devices/pwm/pwm.o
 INCLUDES    +=  -I ./plat/exynos5250/arndale/
 else # For VEXPRESS CA15
 OBJS 		+= ./devices/uart-pl011/uart_print.o
