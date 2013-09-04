@@ -1,5 +1,6 @@
 #ifndef __LPAE_H__
 #define __LPAE_H__
+#include <arch_types.h>
 
 /******************************************************************************
  * ARMv7-A LPAE pagetables: 3-level trie, mapping 40-bit input to

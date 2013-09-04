@@ -107,9 +107,6 @@
 #define VTCR_T0SZ_MASK                                  0x00000003
 #define VTCR_T0SZ_SHIFT                                 0
 
-/* Long-descriptor translation table format */
-#define TTBL_L1_OUTADDR_MASK	0x000000FFEC000000ULL
-#define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
 
 /* Stage 2 Level 2 */
 #define VMM_L2_PAGETABLE_ENTRIES		512

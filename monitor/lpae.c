@@ -1,6 +1,10 @@
+#include <uart_print.h>
 #include "lpae.h"
 #include "print.h"
-#include <uart_print.h>
+
+/* Long-descriptor translation table format */
+#define TTBL_L1_OUTADDR_MASK	0x000000FFEC000000ULL
+#define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
 
 /* Level 2 Block, 2MB, entry in LPAE Descriptor format for the given physical address */
 lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr )
