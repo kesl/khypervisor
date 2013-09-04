@@ -111,4 +111,8 @@ typedef enum {
     LPAED_STAGE2_MEMATTR_NORMAL_IWT = 0x2,
     LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,
 } lpaed_stage2_memattr_t;
+
+lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx );
+lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr );
+
 #endif

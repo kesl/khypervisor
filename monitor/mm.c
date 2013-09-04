@@ -128,122 +128,11 @@ static lpaed_t _vttbr_pte_guest0[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligne
 static lpaed_t _vttbr_pte_guest1[VMM_L2_PAGETABLE_ENTRIES] __attribute((__aligned__(16384)));
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 
-/* Translation Table for the specified vmid */
-lpaed_t *hvmm_mm_vmid_ttbl(vmid_t vmid)
-{
-	lpaed_t *ttbl = 0;
-	if ( vmid < NUM_GUESTS_STATIC ) {
-		ttbl = _vmid_ttbl[vmid];
-	}
-	return ttbl;
-}
-
-/* Enable/Disable Stage2 Translation */
-void hvmm_mm_stage2_enable(int enable)
-{
-	uint32_t hcr;
-
-	// HCR.VM[0] = enable
-	hcr = read_hcr(); //uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
-	if ( enable ) {
-		hcr |= (0x1);
-	} else {
-		hcr &= ~(0x1);
-	}
-	write_hcr( hcr );
-}
-
-hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
-{
-	uint64_t vttbr;
-
-	/* 
-	 * VTTBR.VMID = vmid
-	 * VTTBR.BADDR = ttbl
-	 */
-	vttbr = read_vttbr(); uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
-	vttbr &= ~(VTTBR_VMID_MASK);
-	vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
-
-	vttbr &= ~(VTTBR_BADDR_MASK);
-	vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
-	write_vttbr(vttbr);
-
-	vttbr = read_vttbr(); uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
-	return HVMM_STATUS_SUCCESS;
-}
-
-
-/* Level 2 Block, 2MB, entry in LPAE Descriptor format for the given physical address */
-lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr )
-{
-	lpaed_t lpaed;
-
-	// Valid Block Entry
-	lpaed.pt.valid = 1;
-	lpaed.pt.table = 0;
-
-	lpaed.bits &= ~TTBL_L2_OUTADDR_MASK;
-	lpaed.bits |= pa & TTBL_L2_OUTADDR_MASK;
-	lpaed.p2m.sbz3 = 0;
-
-	// Lower block attributes
-	lpaed.p2m.mattr = mattr & 0x0F;	
-	lpaed.p2m.read = 1;		// Read/Write
-	lpaed.p2m.write = 1;		
-	lpaed.p2m.sh = 0;	// Non-shareable
-	lpaed.p2m.af = 1;	// Access Flag set to 1?
-	lpaed.p2m.sbz4 = 0;
-
-	// Upper block attributes
-	lpaed.p2m.hint = 0;
-	lpaed.p2m.sbz2 = 0;
-	lpaed.p2m.xn = 0;	// eXecute Never = 0
-
-	lpaed.p2m.sbz1 = 0;
-
-	return lpaed;
-}
-
-/* Level 1 Block, 1GB, entry in LPAE Descriptor format for the given physical address */
-lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx )
-{
-	lpaed_t lpaed;
-
-	uart_print( "[mm] hvmm_mm_lpaed_l1_block:\n\r" );
-	uart_print( " pa:"); uart_print_hex64(pa); uart_print("\n\r");
-	uart_print( " attr_idx:"); uart_print_hex32((uint32_t) attr_idx); uart_print("\n\r");
-
-	// Valid Block Entry
-	lpaed.pt.valid = 1;
-	lpaed.pt.table = 0;
-
-	lpaed.bits &= ~TTBL_L1_OUTADDR_MASK;
-	lpaed.bits |= pa & TTBL_L1_OUTADDR_MASK;
-	lpaed.pt.sbz = 0;
-
-	// Lower block attributes
-	lpaed.pt.ai = attr_idx;
-	lpaed.pt.ns = 1;	// Allow Non-secure access
-	lpaed.pt.user = 1;
-	lpaed.pt.ro = 0;
-	lpaed.pt.sh = 2;	// Outher Shareable
-	lpaed.pt.af = 1;	// Access Flag set to 1?
-	lpaed.pt.ng = 1;
-
-	// Upper block attributes
-	lpaed.pt.hint = 0;
-	lpaed.pt.pxn = 0;
-	lpaed.pt.xn = 0;	// eXecute Never = 0
-	return lpaed;
-}
-
-
 /* 
  * Initialization of Virtual Machine Memory Management 
  * Stage 2 Translation
  */
-void _vmm_init(void)
+static void _vmm_init(void)
 {
 	/*
 	 * Initializes Translation Table for Stage2 Translation (IPA -> PA)
@@ -309,7 +198,7 @@ void _vmm_init(void)
  * PL2 Stage1 Translation
  * VA32 -> PA
  */
-void _hmm_init(void)
+static void _hmm_init(void)
 {
 	int i;
 	uint64_t pa = 0x00000000ULL;
@@ -334,6 +223,51 @@ void _hmm_init(void)
 	for ( i = 4; i < HMM_L1_PAGETABLE_ENTRIES; i++ ) {
 		_hmm_pgtable[i].pt.valid = 0;
 	}
+}
+
+/* Translation Table for the specified vmid */
+lpaed_t *hvmm_mm_vmid_ttbl(vmid_t vmid)
+{
+	lpaed_t *ttbl = 0;
+	if ( vmid < NUM_GUESTS_STATIC ) {
+		ttbl = _vmid_ttbl[vmid];
+	}
+	return ttbl;
+}
+
+/* Enable/Disable Stage2 Translation */
+void hvmm_mm_stage2_enable(int enable)
+{
+	uint32_t hcr;
+
+	// HCR.VM[0] = enable
+	hcr = read_hcr(); //uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
+	if ( enable ) {
+		hcr |= (0x1);
+	} else {
+		hcr &= ~(0x1);
+	}
+	write_hcr( hcr );
+}
+
+hvmm_status_t hvmm_mm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
+{
+	uint64_t vttbr;
+
+	/* 
+	 * VTTBR.VMID = vmid
+	 * VTTBR.BADDR = ttbl
+	 */
+	vttbr = read_vttbr(); uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+	vttbr &= ~(VTTBR_VMID_MASK);
+	vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
+
+	vttbr &= ~(VTTBR_BADDR_MASK);
+	vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
+	write_vttbr(vttbr);
+
+	vttbr = read_vttbr(); uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+	return HVMM_STATUS_SUCCESS;
 }
 
 int hvmm_mm_init(void)
