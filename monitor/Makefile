@@ -31,7 +31,7 @@ LD_SCRIPT	= model.lds.S
 INCLUDES    = -I./include
 
 ifeq ($(SYSTEM), arndale)
-OBJS 		+= devices/uart-exynos5250/uart_print.o devices/mct/mct.o
+OBJS 		+= devices/uart-exynos5250/uart_print.o devices/mct/mct.o devices/pwm/pwm.o
 INCLUDES    +=  -I ./plat/exynos5250/arndale/
 else # For VEXPRESS CA15
 OBJS 		+= ./devices/uart-pl011/uart_print.o
