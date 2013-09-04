@@ -3,6 +3,9 @@
 #include "arch_types.h"
 #include "hvmm_types.h"
 typedef void (*pwm_timer_callback_t)(void *pdata);
+
+/* Initialize pwm timer 1 */
+void pwm_timer_init();
 /* enable the timer.   */
 hvmm_status_t pwm_timer_enable_int();
 /* Disable the timer.  */
