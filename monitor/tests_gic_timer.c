@@ -5,6 +5,10 @@
 #include "armv7_p15.h"
 #include "timer.h"
 #include "sched_policy.h"
+#include <cfg_platform.h>
+#if defined(CFG_BOARD_ARNDALE)
+#include "pwm.h"
+#endif
 
 static void test_start_timer(void)
 {
@@ -58,6 +62,34 @@ void interrupt_nsptimer(int irq, void *pregs, void *pdata )
 	HVMM_TRACE_EXIT();
 	uart_print( "=======================================\n\r" );
 }
+#if defined(CFG_BOARD_ARNDALE)
+void interrupt_pwmtimer(void *pdata)
+{
+    pwm_timer_disable_int();
+
+    uart_print( "=======================================\n\r" );
+    HVMM_TRACE_ENTER();
+
+    HVMM_TRACE_EXIT();
+    uart_print( "=======================================\n\r" );
+
+    pwm_timer_enable_int();
+}
+
+hvmm_status_t hvmm_tests_gic_pwm_timer(void)
+{
+    /* Testing pwm timer event (timer1, Interrupt ID : 69), Cortex-A15 exynos5250
+	 * - Periodically triggers timer interrupt
+     * - Just print uart_print
+     */
+	HVMM_TRACE_ENTER();
+    pwm_timer_init();
+    pwm_timer_set_callback(&interrupt_pwmtimer);
+    pwm_timer_enable_int();
+	HVMM_TRACE_EXIT();
+	return HVMM_STATUS_SUCCESS;
+}
+#endif
 
 hvmm_status_t hvmm_tests_gic_timer(void)
 {
