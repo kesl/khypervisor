@@ -3,7 +3,9 @@
 #include <hvmm_trace.h>
 #include "context.h"
 #include "trap.h"
+#include "vmm.h"
 
+#define __CONTEXT_TRACE_VERBOSE__
 #define _valid_vmid(vmid)   ( context_first_vmid() <= vmid && context_last_vmid() >= vmid )
 
 extern void __mon_switch_to_guest_context( struct arch_regs *regs );
@@ -103,7 +105,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 	 * We assume VTCR has been configured and initialized in the memory management module
 	 */
 	/* Disable Stage 2 Translation: HCR.VM = 0 */
-	hvmm_mm_stage2_enable(0);
+	vmm_stage2_enable(0);
 
 	if ( regs_current != 0 ) {
 		/* save the current guest's context */
@@ -118,8 +120,8 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 	context = &guest_contexts[next_vmid];
 
 	/* Restore Translation Table for the next guest and Enable Stage 2 Translation */
-	hvmm_mm_set_vmid_ttbl( context->vmid, context->ttbl );
-	hvmm_mm_stage2_enable(1);
+	vmm_set_vmid_ttbl( context->vmid, context->ttbl );
+	vmm_stage2_enable(1);
     vgic_restore_status( &context->vgic_status );
 
     /* The next becomes the current */
@@ -201,7 +203,7 @@ void context_init_guests(void)
 
 	/* regs->gpr[] = whatever */
 	context->vmid = 0;
-	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
+	context->ttbl = vmm_vmid_ttbl(context->vmid);
     context_init_cops( &context->regs_cop );
 
 	/* Guest 2 @guest2_bin_start */
@@ -212,7 +214,7 @@ void context_init_guests(void)
 
 	/* regs->gpr[] = whatever */
 	context->vmid = 1;
-	context->ttbl = hvmm_mm_vmid_ttbl(context->vmid);
+	context->ttbl = vmm_vmid_ttbl(context->vmid);
     context_init_cops( &context->regs_cop );
 
 #ifdef BAREMETAL_GUEST

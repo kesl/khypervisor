@@ -3,8 +3,8 @@
 
 #include "hyp_config.h"
 #include "arch_types.h"
-#include "mm.h"
 #include "vgic.h"
+#include "lpae.h"
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13

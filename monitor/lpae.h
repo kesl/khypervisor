@@ -1,5 +1,32 @@
 #ifndef __LPAE_H__
 #define __LPAE_H__
+#include <arch_types.h>
+
+#define LPAE_PAGE_SHIFT    12
+#define LPAE_PAGE_SIZE      (1<<LPAE_PAGE_SHIFT)
+#define LPAE_PAGE_MASK      (0xFFF)
+
+#define LPAE_BLOCK_L2_SHIFT 21
+#define LPAE_BLOCK_L2_SIZE  (1<<LPAE_BLOCK_L2_SHIFT)
+#define LPAE_BLOCK_L2_MASK  (0x1FFFFF)
+
+/*
+ * Attribute Indexes.
+ *
+ * These are valid in the AttrIndx[2:0] field of an LPAE stage 1 page
+ * table entry. They are indexes into the bytes of the MAIR*
+ * registers, as defined above.
+ *
+ */
+#define ATTR_IDX_UNCACHED      0x0
+#define ATTR_IDX_BUFFERABLE    0x1
+#define ATTR_IDX_WRITETHROUGH  0x2
+#define ATTR_IDX_WRITEBACK     0x3
+#define ATTR_IDX_DEV_SHARED    0x4
+#define ATTR_IDX_WRITEALLOC    0x7
+#define ATTR_IDX_DEV_NONSHARED DEV_SHARED
+#define ATTR_IDX_DEV_WC        BUFFERABLE
+#define ATTR_IDX_DEV_CACHED    WRITEBACK
 
 /******************************************************************************
  * ARMv7-A LPAE pagetables: 3-level trie, mapping 40-bit input to
@@ -111,4 +138,12 @@ typedef enum {
     LPAED_STAGE2_MEMATTR_NORMAL_IWT = 0x2,
     LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,
 } lpaed_stage2_memattr_t;
+
+lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx );
+lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr );
+void lpaed_stage2_map_page( lpaed_t *pte, uint64_t pa, lpaed_stage2_memattr_t mattr );
+void lpaed_stage2_conf_l2_table( lpaed_t *ttbl2, uint64_t baddr, uint8_t valid );
+void lpaed_stage2_enable_l2_table( lpaed_t *ttbl2 );
+void lpaed_stage2_disable_l2_table( lpaed_t *ttbl2 );
+
 #endif
