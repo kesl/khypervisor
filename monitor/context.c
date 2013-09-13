@@ -5,6 +5,7 @@
 #include "trap.h"
 #include "vmm.h"
 
+#define __CONTEXT_TRACE_VERBOSE__
 #define _valid_vmid(vmid)   ( context_first_vmid() <= vmid && context_last_vmid() >= vmid )
 
 extern void __mon_switch_to_guest_context( struct arch_regs *regs );
