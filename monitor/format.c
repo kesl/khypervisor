@@ -22,9 +22,14 @@ static void format_printi( uint32_t v, numerical_t numerical, char base)
     case DECIMAL:
         s = print_buf + PRINT_BUF_LEN - 1;
         *s = '\0';
-        for(;v != 0UL;){
-            *--s = ((v % 10) + '0');
-            v /= 10;
+        if( v == 0UL ){ 
+            *--s = '0';
+        }
+        else{
+            for(;v != 0UL;){
+                *--s = ((v % 10) + '0');
+                v /= 10;
+            }
         }
         format_puts(s);
         break;
