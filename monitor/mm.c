@@ -5,6 +5,7 @@
 #include "uart_print.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
+#include "print.h"
 
 /* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
  * Indexed by the AttrIndex bits of a LPAE entry;
@@ -89,7 +90,15 @@
 /* PL2 Stage 1 Level 1 */
 #define HMM_L1_PAGETABLE_ENTRIES		512
 
+/* PL2 Stage 1 Level 2 */
+#define HMM_L2_PAGETABLE_ENTRIES		512
+
+/* PL2 Stage 1 Level 3 */
+#define HMM_L3_PAGETABLE_ENTRIES		512
+
 static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable_l2[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable_l3[HMM_L3_PAGETABLE_ENTRIES][HMM_L3_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
 
 /* 
  * Initialization of Host Monitor Memory Management 
@@ -98,13 +107,13 @@ static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4
  */
 static void _hmm_init(void)
 {
-	int i;
+	int i, j;
 	uint64_t pa = 0x00000000ULL;
 	/*
 	 * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - DEV_SHARED
 	 * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - UNCACHED
 	 * Partition 2: 0x80000000 ~ 0xBFFFFFFF	- Guest	     - UNCACHED
-	 * Partition 3: 0xC0000000 ~ 0xEFFFFFFF	- Monitor    - WRITEBACK
+	 * Partition 3: 0xC0000000 ~ 0xFFFFFFFF	- Monitor    - LV2 translation table address
 	 */
 	_hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[0]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[0]); uart_print("\n\r");
@@ -115,12 +124,35 @@ static void _hmm_init(void)
 	_hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[2]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[2]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[2].bits); uart_print("\n\r");
-	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_block(pa, WRITEBACK); pa += 0x40000000;
+    // _hmm_pgtable[3] refers Lv2 page table address.
+	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_l2_table((uint32_t) _hmm_pgtable_l2); 
 	uart_print( "&_hmm_pgtable[3]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[3]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[3].bits); uart_print("\n\r");
+
+    //pa 0xc0000000 ~ 0xffffffff 
+    for( i = 0; i <HMM_L2_PAGETABLE_ENTRIES; i++){
+        // _hvmm_pgtable_lv2[i] refers Lv3 page table address. each element correspond 2MB
+        _hmm_pgtable_l2[i] = hvmm_mm_lpaed_l1_l2_table((uint32_t) _hmm_pgtable_l3[i]); 
+        // _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB
+        for(j = 0; j < HMM_L3_PAGETABLE_ENTRIES; pa += 0x1000 ,j++){
+            // 0xF0200000 ~ 0xFF000000 - Heap memory 238MB
+            if(pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE){
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, WRITEALLOC);
+            }
+            //uart test FF000000
+            else if( (pa == 0xff000000) ){
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(0x1c090000, DEV_SHARED);
+            }
+            else{
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, UNCACHED);
+            }
+        }
+    }
+
 	for ( i = 4; i < HMM_L1_PAGETABLE_ENTRIES; i++ ) {
 		_hmm_pgtable[i].pt.valid = 0;
 	}
+    
 }
 
 int hvmm_mm_init(void)
@@ -225,6 +257,31 @@ int hvmm_mm_init(void)
 	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
 
 	uart_print( "[mm] mm_init: exit\n\r" );
-	
+
 	return HVMM_STATUS_SUCCESS;
 }
+
+lpaed_t* mm_get_l3_table_heap(void)
+{
+    return _hmm_pgtable_l3[385];
+}
+
+unsigned int heapcursoraddr;
+
+void mm_umap(unsigned long virt)
+{
+
+}
+void mm_map(unsigned long phys, unsigned long virt, unsigned long npages)
+{
+        
+}
+void* malloc(unsigned long size)
+{
+    return 0;
+}
+void free(void* addr)
+{
+    mm_umap(&addr);
+}
+
