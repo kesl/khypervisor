@@ -165,7 +165,8 @@ start:
 #else
 	ldr	r0, =0x10009000			@ UART base (RealView/EB)
 #endif
-#ifdef CFG_BOARD_ARNDALE        @ Do nothing for ARNDALE
+#ifdef CFG_BOARD_ARNDALE        
+    @ Do nothing for ARNDALE
 #else
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]

@@ -7,11 +7,15 @@
 #include <hvmm_trace.h>
 #include "print.h"
 
+/* Stage 2 Level 1 */
+#define VMM_L1_PTE_NUM          4
+#define VMM_L1_PADDING_PTE_NUM   (512 - VMM_L1_PTE_NUM)
 /* Stage 2 Level 2 */
 #define VMM_L2_PTE_NUM          512
 #define VMM_L3_PTE_NUM          512
 #define VMM_L2L3_PTE_NUM_TOTAL  (VMM_L2_PTE_NUM * VMM_L3_PTE_NUM + VMM_L2_PTE_NUM)
-
+#define VMM_PTE_NUM_TOTAL  (VMM_L1_PTE_NUM + VMM_L1_PADDING_PTE_NUM + VMM_L2L3_PTE_NUM_TOTAL \
+                             * VMM_L1_PTE_NUM)
 /* VTTBR */ 
 #define VTTBR_INITVAL                                   0x0000000000000000ULL
 #define VTTBR_VMID_MASK                                 0x00FF000000000000ULL
@@ -42,9 +46,11 @@ extern uint32_t guest2_bin_start;
  * VTTBR.BADDR[31:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range, VTCR.SL0 = 0(2nd), 16KB aligned base address
  * Statically allocated for now
  */
-static lpaed_t _ttbl_l2l3_guest0[VMM_L2L3_PTE_NUM_TOTAL] __attribute((__aligned__(16384)));
-static lpaed_t _ttbl_l2l3_guest1[VMM_L2L3_PTE_NUM_TOTAL] __attribute((__aligned__(16384)));
+
 static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
+
+static lpaed_t _ttbl_guest0[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
+static lpaed_t _ttbl_guest1[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 
 struct memmap_desc {
     char *label;
@@ -54,30 +60,57 @@ struct memmap_desc {
     lpaed_stage2_memattr_t attr;
 };
 
-static struct memmap_desc guest_md0[6] = {
-    { "start", 0x00000000,          0, 0x3FE00000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
+static struct memmap_desc guest_md_empty[] = {
+    {       0, 0, 0, 0,  0},
+};
+
+static struct memmap_desc guest_device_md0[] = {
     {  "uart", 0x3FCA0000, 0x1C0A0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "mem", 0x3FCA1000,          0, 0x0015F000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
     {   "gic", 0x3FE00000, 0x2C000000,     0x8000, LPAED_STAGE2_MEMATTR_DM },
-    {   "mem", 0x3FE08000,          0, 0x001F8000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
     {       0, 0, 0, 0,  0},
 };
 
-static struct memmap_desc guest_md1[6] = {
-    { "start", 0x00000000,          0, 0x3FE00000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
+static struct memmap_desc guest_memory_md0[] = {
+    /* 756MB */
+    { "start", 0x00000000,          0, 0x30000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
+    {       0, 0, 0, 0,  0},
+};
+
+static struct memmap_desc guest_device_md1[] = {
     {  "uart", 0x3FCA0000, 0x1C0B0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "mem", 0x3FCA1000,          0, 0x0015F000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
     {   "gic", 0x3FE00000, 0x2C000000,     0x8000, LPAED_STAGE2_MEMATTR_DM },
-    {   "mem", 0x3FE08000,          0, 0x001F8000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
     {       0, 0, 0, 0,  0},
 };
 
+static struct memmap_desc guest_memory_md1[] = {
+    /* 256MB */
+    { "start", 0x00000000,          0, 0x10000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
+    {       0, 0, 0, 0,  0},
+};
+
+/* Memory Map for Guest 0 */
+static struct memmap_desc *guest_mdlist0[] = {
+    &guest_device_md0[0],
+    &guest_md_empty[0],
+    &guest_memory_md0[0],
+    &guest_md_empty[0],
+    0
+};
+
+/* Memory Map for Guest 0 */
+static struct memmap_desc *guest_mdlist1[] = {
+    &guest_device_md1[0],
+    &guest_md_empty[0],
+    &guest_memory_md1[0],
+    &guest_md_empty[0],
+    0
+};
 
 /* Returns address of L3 TTBL at 'l2index' entry of L2 
     lpaed_t *TTBL_L3(lpaed_t *ttbl_l2, uint32_t index_l2);
  */
 #define TTBL_L3(ttbl_l2, index_l2) (&ttbl_l2[VMM_L2_PTE_NUM + (VMM_L3_PTE_NUM * (index_l2))])
-
+#define TTBL_L2(ttbl_l1, index_l1) (&ttbl_l1[(VMM_L1_PTE_NUM + VMM_L1_PADDING_PTE_NUM) + (VMM_L2L3_PTE_NUM_TOTAL * (index_l1))])
 
 
 static void vmm_ttbl3_map( lpaed_t *ttbl3, uint64_t offset, uint32_t pages, uint64_t pa,
@@ -231,6 +264,9 @@ static void vmm_init_ttbl2(lpaed_t *ttbl2, struct memmap_desc *md)
     int i = 0;
     HVMM_TRACE_ENTER();
     printh( " - ttbl2:%x\n", (uint32_t) ttbl2 );
+    if ( ((uint64_t) ( (uint32_t) ttbl2) ) & 0x0FFFULL ) {
+        printh( " - error: invalid ttbl2 address alignment\n" );
+    }
 
     /* construct l2-l3 table hirerachy with invalid pages */
     vmm_ttbl2_init_entries(ttbl2);
@@ -244,6 +280,26 @@ static void vmm_init_ttbl2(lpaed_t *ttbl2, struct memmap_desc *md)
     HVMM_TRACE_EXIT();
 }
 
+static void vmm_init_ttbl(lpaed_t *ttbl, struct memmap_desc *mdlist[])
+{
+    int i = 0;
+    HVMM_TRACE_ENTER();
+
+    while(mdlist[i]) {
+        struct memmap_desc *md = mdlist[i];
+
+        if ( md[0].label == 0 ) {
+            lpaed_stage2_conf_l1_table(&ttbl[i], 0, 0);
+        } else {
+            lpaed_stage2_conf_l1_table(&ttbl[i], (uint64_t) ((uint32_t) TTBL_L2(ttbl, i)), 1);
+            vmm_init_ttbl2(TTBL_L2(ttbl, i), md);
+        }
+        i++;
+    }
+
+    HVMM_TRACE_EXIT();
+}
+
 
 static void vmm_init_mmu(void)
 {
@@ -253,9 +309,9 @@ static void vmm_init_mmu(void)
 
     vtcr = read_vtcr(); uart_print( "vtcr:"); uart_print_hex32(vtcr); uart_print("\n\r");
 
-    // start lookup at level 2 table
+    // start lookup at level 1 table
     vtcr &= ~VTCR_SL0_MASK;
-    vtcr |= (0x0 << VTCR_SL0_SHIFT) & VTCR_SL0_MASK;
+    vtcr |= (0x01 << VTCR_SL0_SHIFT) & VTCR_SL0_MASK;
     vtcr &= ~VTCR_ORGN0_MASK;
     vtcr |= (0x3 << VTCR_ORGN0_SHIFT) & VTCR_ORGN0_MASK;
     vtcr &= ~VTCR_IRGN0_MASK;
@@ -290,26 +346,21 @@ void vmm_init(void)
         _vmid_ttbl[i] = 0;
     }
 
-    _vmid_ttbl[0] = &_ttbl_l2l3_guest0[0];
-    _vmid_ttbl[1] = &_ttbl_l2l3_guest1[0];
+    _vmid_ttbl[0] = &_ttbl_guest0[0];
+    _vmid_ttbl[1] = &_ttbl_guest1[0];
 
 
     /*
-     * VA: 0x00000000 ~ 0x3FFFFFFF, 1GB
+     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
      * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
      */
 
-    guest_md0[0].pa = (uint64_t) ((uint32_t) &guest_bin_start);
-    guest_md0[2].pa = guest_md0[0].pa + 0x3FCA1000;
-    guest_md0[4].pa = guest_md0[0].pa + 0x3FE08000;
+    guest_memory_md0[0].pa = (uint64_t) ((uint32_t) &guest_bin_start);
+    guest_memory_md1[0].pa = (uint64_t) ((uint32_t) &guest2_bin_start);
 
-    guest_md1[0].pa = (uint64_t) ((uint32_t) &guest2_bin_start);
-    guest_md1[2].pa = guest_md1[0].pa + 0x3FCA1000;
-    guest_md1[4].pa = guest_md1[0].pa + 0x3FE08000;
-
-    vmm_init_ttbl2(_vmid_ttbl[0], guest_md0);
-    vmm_init_ttbl2(_vmid_ttbl[1], guest_md1);
+    vmm_init_ttbl(&_ttbl_guest0[0], &guest_mdlist0[0]);
+    vmm_init_ttbl(&_ttbl_guest1[0], &guest_mdlist1[0]);
    
     vmm_init_mmu();
 
