@@ -25,12 +25,41 @@ struct arch_regs_cop {
     uint32_t vbar;
 };
 
+/* banked registers */
+struct arch_regs_banked {
+    uint32_t spsr_usr;
+    uint32_t sp_usr;
+    uint32_t lr_usr;
+    uint32_t spsr_svc;
+    uint32_t sp_svc;
+    uint32_t lr_svc;
+    uint32_t spsr_abt;
+    uint32_t sp_abt;
+    uint32_t lr_abt;
+    uint32_t spsr_und;
+    uint32_t sp_und;
+    uint32_t lr_und;
+    uint32_t spsr_irq;
+    uint32_t sp_irq;
+    uint32_t lr_irq;
+
+    uint32_t spsr_fiq;
+    uint32_t sp_fiq;
+    uint32_t lr_fiq;
+    uint32_t r8_fiq;
+    uint32_t r9_fiq;
+    uint32_t r10_fiq;
+    uint32_t r11_fiq;
+    uint32_t r12_fiq;
+};
+
 struct hyp_guest_context {
         struct arch_regs regs;
         lpaed_t *ttbl;
         vmid_t vmid;
         struct vgic_status vgic_status;
         struct arch_regs_cop regs_cop;
+        struct arch_regs_banked regs_banked;
 };
 
 void context_dump_regs( struct arch_regs *regs );
