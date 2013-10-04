@@ -4,6 +4,20 @@
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 
+/* for test, surpress traces */
+#define __VGIC_DISABLE_TRACE__
+
+#ifdef __VGIC_DISABLE_TRACE__
+#ifdef HVMM_TRACE_ENTER
+#undef HVMM_TRACE_ENTER
+#undef HVMM_TRACE_EXIT
+#undef HVMM_TRACE_HEX32
+#define HVMM_TRACE_ENTER()
+#define HVMM_TRACE_EXIT()
+#define HVMM_TRACE_HEX32(a,b)
+#endif
+#endif
+
 /* Cortex-A15: 25 (PPI6) */
 #define VGIC_MAINTENANCE_INTERRUPT_IRQ  25
 
@@ -147,6 +161,7 @@ static void _vgic_dump_status(void)
 
 static void _vgic_dump_regs(void)
 {
+#ifndef __VGIC_DISABLE_TRACE__
     /*
      * HCR * VTR * VMCR * MISR * EISR0 * EISR1 * ELSR0 * ELSR1 * APR * LR0~n
      */
@@ -171,6 +186,7 @@ static void _vgic_dump_regs(void)
     }
 
     HVMM_TRACE_EXIT();
+#endif
 }
 
 

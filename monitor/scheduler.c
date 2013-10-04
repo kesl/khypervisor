@@ -27,10 +27,7 @@ void scheduler_test_switch_to_next_guest(void *pdata){
 
 void extra_timer_callback(void *pdata)
 {
-    HVMM_TRACE_ENTER();
 
-
-    HVMM_TRACE_EXIT();
 }
 
 void scheduler_test_scheduling(){
