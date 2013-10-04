@@ -45,11 +45,9 @@ trap_hvc:
 	
 	@ Pop registers
 	pop 	{r0-r1}
-	tst 	r0, #0
-	msrne	spsr_hyp, r0
-	msr	elr_hyp, r1
-	ldm	sp, {r0-r12}
-	
+	msr	    spsr_hyp, r0
+	msr	    elr_hyp, r1
+	ldm	    sp, {r0-r12}
 
 	@ else if return == HYP_RET_ERET -> Exception Return
 	eret
@@ -57,7 +55,7 @@ trap_hvc:
 1:	
 	@ Pop registers
 	pop 	{r0-r1}
-	tst 	r0, #0
+	tst 	r0, #0x1f
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
 	ldm	sp, {r0-r12}
@@ -100,17 +98,16 @@ trap_irq:
 
 	@ Pop registers
 	pop 	{r0-r1}
-	tst 	r0, #0
-	msrne	spsr_hyp, r0
-	msr	elr_hyp, r1
-	ldm	sp, {r0-r12}
+	msr	    spsr_hyp, r0
+	msr	    elr_hyp, r1
+	ldm	    sp, {r0-r12}
 	eret
 
 trap_unhandled:
 	@ Push registers
 	push	{r0-r12}
-	mrs	r0, spsr_hyp
-	mrs	r1, elr_hyp
+	mrs     r0, spsr_hyp
+	mrs     r1, elr_hyp
 	push	{r0, r1}
 
 	@ service other argument values -> _hyp_trap_unhandled(sp)
@@ -119,18 +116,17 @@ trap_unhandled:
 
 	@ Pop registers
 	pop 	{r0-r1}
-	msr	spsr_hyp, r0
-	msr	elr_hyp, r1
-	ldm	sp, {r0-r12}
+	msr     spsr_hyp, r0
+	msr     elr_hyp, r1
+	ldm     sp, {r0-r12}
 	eret
 
 .global __mon_switch_to_guest_context
 __mon_switch_to_guest_context:	@ struct arch_regs *r0
 	ldmfd	r0!, {r3, lr}
-	tst 	r3, #0
-	msrne	spsr_hyp, r3
-	msr	elr_hyp, lr
-	ldm	r0, {r0-r12}
+    msr     spsr_hyp, r3
+    msr     elr_hyp, lr
+    ldm     r0, {r0-r12}
 	clrex
 	eret
 .type __mon_switch_to_guest_context, %function

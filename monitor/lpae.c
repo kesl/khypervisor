@@ -7,6 +7,7 @@
 #define TTBL_L2_OUTADDR_MASK	0x000000FFFFE00000ULL
 #define TTBL_L3_OUTADDR_MASK	0x000000FFFFFFF000ULL
 
+#define TTBL_L1_TABADDR_MASK	0x000000FFFFFFF000ULL
 #define TTBL_L2_TABADDR_MASK	0x000000FFFFFFF000ULL
 #define TTBL_L1_L2_TABLEADDR_MASK   0x000000FFFFFFF000ULL
 #define TTBL_L3_TABLEADDR_MASK      0x000000FFFFFFF000ULL
@@ -78,6 +79,14 @@ lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx )
 	return lpaed;
 }
 
+
+void lpaed_stage2_conf_l1_table( lpaed_t *ttbl1, uint64_t baddr, uint8_t valid )
+{
+    ttbl1->pt.valid = valid ? 1 : 0;
+    ttbl1->pt.table = valid ? 1 : 0;
+    ttbl1->bits &= ~TTBL_L1_TABADDR_MASK;
+    ttbl1->bits |= baddr & TTBL_L1_TABADDR_MASK;
+}
 
 void lpaed_stage2_conf_l2_table( lpaed_t *ttbl2, uint64_t baddr, uint8_t valid )
 {
