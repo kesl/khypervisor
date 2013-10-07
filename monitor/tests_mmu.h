@@ -3,6 +3,6 @@
 
 #include <hvmm_types.h>
 
-hvmm_status_t hvmm_tests_l2_table(void);
+hvmm_status_t hvmm_tests_mmu(void);
 
 #endif

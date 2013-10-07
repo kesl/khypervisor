@@ -88,23 +88,34 @@
 #define HTCR_T0SZ_SHIFT                                 0
 
 /* PL2 Stage 1 Level 1 */
-#define HMM_L1_PAGETABLE_ENTRIES		512
+#define HMM_L1_PTE_NUM  512
 
 /* PL2 Stage 1 Level 2 */
-#define HMM_L2_PAGETABLE_ENTRIES		512
+#define HMM_L2_PTE_NUM  512
 
 /* PL2 Stage 1 Level 3 */
-#define HMM_L3_PAGETABLE_ENTRIES		512
+#define HMM_L3_PTE_NUM  512
 
-static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
-static lpaed_t _hmm_pgtable_l2[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
-static lpaed_t _hmm_pgtable_l3[HMM_L3_PAGETABLE_ENTRIES][HMM_L3_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+#define HEAP_ADDR 0xF2000000
+#define HEAP_SIZE 0xD000000
+
+#define L2_ENTRY_MASK 0x1FF
+#define L2_SHIFT 21
+
+#define L3_ENTRY_MASK 0x1FF
+#define L3_SHIFT 12
+
+static lpaed_t _hmm_pgtable[HMM_L1_PTE_NUM] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable_l2[HMM_L2_PTE_NUM] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable_l3[HMM_L2_PTE_NUM][HMM_L3_PTE_NUM] __attribute((__aligned__(4096)));
+
 
 /* 
  * Initialization of Host Monitor Memory Management 
  * PL2 Stage1 Translation
  * VA32 -> PA
  */
+
 static void _hmm_init(void)
 {
 	int i, j;
@@ -124,35 +135,27 @@ static void _hmm_init(void)
 	_hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[2]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[2]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[2].bits); uart_print("\n\r");
-    // _hmm_pgtable[3] refers Lv2 page table address.
-	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_l2_table((uint32_t) _hmm_pgtable_l2); 
+    /* _hmm_pgtable[3] refers Lv2 page table address. */
+	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_table((uint32_t) _hmm_pgtable_l2); 
 	uart_print( "&_hmm_pgtable[3]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[3]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[3].bits); uart_print("\n\r");
-
-    //pa 0xc0000000 ~ 0xffffffff 
-    for( i = 0; i <HMM_L2_PAGETABLE_ENTRIES; i++){
-        // _hvmm_pgtable_lv2[i] refers Lv3 page table address. each element correspond 2MB
-        _hmm_pgtable_l2[i] = hvmm_mm_lpaed_l1_l2_table((uint32_t) _hmm_pgtable_l3[i]); 
-        // _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB
-        for(j = 0; j < HMM_L3_PAGETABLE_ENTRIES; pa += 0x1000 ,j++){
-            // 0xF0200000 ~ 0xFF000000 - Heap memory 238MB
+    for( i = 0; i <HMM_L2_PTE_NUM; i++){
+        /* _hvmm_pgtable_lv2[i] refers Lv3 page table address. each element correspond 2MB */
+        _hmm_pgtable_l2[i] = hvmm_mm_lpaed_l2_table((uint32_t) _hmm_pgtable_l3[i]); 
+        /* _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB */
+        for(j = 0; j < HMM_L3_PTE_NUM; pa += 0x1000 ,j++){
+            /* 0xF2000000 ~ 0xFF000000 - Heap memory 208MB */
             if(pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE){
-                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, WRITEALLOC);
-            }
-            //uart test FF000000
-            else if( (pa == 0xff000000) ){
-                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(0x1c090000, DEV_SHARED);
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, WRITEALLOC, 0);
             }
             else{
-                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, UNCACHED);
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, UNCACHED, 1);
             }
         }
     }
-
-	for ( i = 4; i < HMM_L1_PAGETABLE_ENTRIES; i++ ) {
+	for ( i = 4; i < HMM_L1_PTE_NUM; i++ ) {
 		_hmm_pgtable[i].pt.valid = 0;
 	}
-    
 }
 
 int hvmm_mm_init(void)
@@ -261,27 +264,63 @@ int hvmm_mm_init(void)
 	return HVMM_STATUS_SUCCESS;
 }
 
-lpaed_t* mm_get_l3_table_heap(void)
+void hmm_flushTLB(void)
 {
-    return _hmm_pgtable_l3[385];
+    /* Invalidate entire unified TLB */
+    invalidate_unified_tlb(0);
+    asm volatile("dsb");
+    asm volatile("isb");
 }
 
-unsigned int heapcursoraddr;
-
-void mm_umap(unsigned long virt)
+lpaed_t* hmm_get_l3_table_entry(int l2_index, int l3_index, int npages)
 {
-
+    int maxsize = ((HMM_L2_PTE_NUM * HMM_L3_PTE_NUM) - ( (l2_index + 1) * (l3_index + 1) ) + 1);
+    if( maxsize < npages ) {
+        printh("%s[%d] : Map size \"pages\" is exceeded memory size\n", __FUNCTION__, __LINE__);
+        if(maxsize > 0){
+            printh("%s[%d] : Available pages are %d\n", maxsize); 
+        }
+        else{
+            printh("%s[%d] : Do not have available pages for map\n");
+        }
+        return 0;
+    }
+    return &_hmm_pgtable_l3[l2_index][l3_index];
 }
-void mm_map(unsigned long phys, unsigned long virt, unsigned long npages)
-{
-        
+
+void hmm_umap(unsigned long virt, unsigned long npages)
+{ 
+    int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
+    int l3_index = (virt >> L3_SHIFT) & L3_ENTRY_MASK;
+    int  i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry(l2_index, l3_index, npages);
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_disable_l3_table( &map_table_p[i] );
+    }
+    hmm_flushTLB();
 }
-void* malloc(unsigned long size)
+
+void hmm_map(unsigned long phys, unsigned long virt, unsigned long npages)
 {
+    int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
+    int l3_index = (virt >> L3_SHIFT) & L3_ENTRY_MASK;
+    int i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( l2_index, l3_index, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_conf_l3_table( &map_table_p[i], (uint64_t)phys, 1 );
+    }
+    hmm_flushTLB();
+}
+
+void* hmm_malloc(unsigned long size)
+{
+    /* not yet implement */
+    hmm_map(0, 0xf2000000, 1);
     return 0;
 }
-void free(void* addr)
-{
-    mm_umap(&addr);
-}
 
+void hmm_free(void* addr)
+{
+    /* not yet implement */
+    hmm_umap((uint32_t)&addr, 1);
+}

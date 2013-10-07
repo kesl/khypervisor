@@ -16,7 +16,7 @@ hvmm_status_t hvmm_tests_main(void)
 
     /* Entry point for sequence of test code */
 #ifdef TESTS_ENABLE_L2_TABLE
-    result = hvmm_tests_l2_table();
+    result = hvmm_tests_mmu();
 #endif
 #ifdef TESTS_ENABLE_GIC_TIMER
     result = hvmm_tests_gic_timer();
