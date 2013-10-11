@@ -5,6 +5,7 @@
 #include "uart_print.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
+#include "print.h"
 
 /* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
  * Indexed by the AttrIndex bits of a LPAE entry;
@@ -87,24 +88,73 @@
 #define HTCR_T0SZ_SHIFT                                 0
 
 /* PL2 Stage 1 Level 1 */
-#define HMM_L1_PAGETABLE_ENTRIES		512
+#define HMM_L1_PTE_NUM  512
 
-static lpaed_t _hmm_pgtable[HMM_L1_PAGETABLE_ENTRIES] __attribute((__aligned__(4096)));
+/* PL2 Stage 1 Level 2 */
+#define HMM_L2_PTE_NUM  512
+
+/* PL2 Stage 1 Level 3 */
+#define HMM_L3_PTE_NUM  512
+
+#define HEAP_ADDR 0xF2000000
+#define HEAP_SIZE 0xD000000
+
+#define L2_ENTRY_MASK 0x1FF
+#define L2_SHIFT 21
+
+#define L3_ENTRY_MASK 0x1FF
+#define L3_SHIFT 12
+
+#define HEAP_END_ADDR HEAP_ADDR + HEAP_SIZE
+#define NALLOC 1024
+
+static lpaed_t _hmm_pgtable[HMM_L1_PTE_NUM] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable_l2[HMM_L2_PTE_NUM] __attribute((__aligned__(4096)));
+static lpaed_t _hmm_pgtable_l3[HMM_L2_PTE_NUM][HMM_L3_PTE_NUM] __attribute((__aligned__(4096)));
+
+/* used malloc, free, sbrk */
+typedef long Align;
+union header {
+    struct {
+        union header *ptr; /* next block if on free list */
+        unsigned int size; /* size of this block */
+    } s;
+    /* force align of blocks */
+    Align x;
+};
+/* free list block header */
+typedef union header fl_bheader;
+
+uint32_t mm_break; /* break point for sbrk()  */
+uint32_t mm_prev_break; /* old break point for sbrk() */
+uint32_t last_valid_address; /* last mapping address */
+static fl_bheader freep_base; /* empty list to get started */
+static fl_bheader *freep; /* start of free list */
+
+/* malloc init */
+void hmm_heap_init(void)
+{
+    mm_break = HEAP_ADDR;
+    mm_prev_break = HEAP_ADDR;
+    last_valid_address = HEAP_ADDR;
+    freep = 0;
+} 
 
 /* 
  * Initialization of Host Monitor Memory Management 
  * PL2 Stage1 Translation
  * VA32 -> PA
  */
+
 static void _hmm_init(void)
 {
-	int i;
+	int i, j;
 	uint64_t pa = 0x00000000ULL;
 	/*
 	 * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - DEV_SHARED
 	 * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - UNCACHED
 	 * Partition 2: 0x80000000 ~ 0xBFFFFFFF	- Guest	     - UNCACHED
-	 * Partition 3: 0xC0000000 ~ 0xEFFFFFFF	- Monitor    - WRITEBACK
+	 * Partition 3: 0xC0000000 ~ 0xFFFFFFFF	- Monitor    - LV2 translation table address
 	 */
 	_hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[0]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[0]); uart_print("\n\r");
@@ -115,10 +165,25 @@ static void _hmm_init(void)
 	_hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
 	uart_print( "&_hmm_pgtable[2]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[2]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[2].bits); uart_print("\n\r");
-	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_block(pa, WRITEBACK); pa += 0x40000000;
+    /* _hmm_pgtable[3] refers Lv2 page table address. */
+	_hmm_pgtable[3] = hvmm_mm_lpaed_l1_table((uint32_t) _hmm_pgtable_l2); 
 	uart_print( "&_hmm_pgtable[3]:"); uart_print_hex32((uint32_t) &_hmm_pgtable[3]); uart_print("\n\r");
 	uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[3].bits); uart_print("\n\r");
-	for ( i = 4; i < HMM_L1_PAGETABLE_ENTRIES; i++ ) {
+    for( i = 0; i <HMM_L2_PTE_NUM; i++){
+        /* _hvmm_pgtable_lv2[i] refers Lv3 page table address. each element correspond 2MB */
+        _hmm_pgtable_l2[i] = hvmm_mm_lpaed_l2_table((uint32_t) _hmm_pgtable_l3[i]); 
+        /* _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB */
+        for(j = 0; j < HMM_L3_PTE_NUM; pa += 0x1000 ,j++){
+            /* 0xF2000000 ~ 0xFF000000 - Heap memory 208MB */
+            if(pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE){
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, WRITEALLOC, 0);
+            }
+            else{
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, UNCACHED, 1);
+            }
+        }
+    }
+	for ( i = 4; i < HMM_L1_PTE_NUM; i++ ) {
 		_hmm_pgtable[i].pt.valid = 0;
 	}
 }
@@ -224,7 +289,151 @@ int hvmm_mm_init(void)
 
 	hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); uart_print("\n\r");
 
+    hmm_heap_init();
+
 	uart_print( "[mm] mm_init: exit\n\r" );
-	
+
 	return HVMM_STATUS_SUCCESS;
 }
+
+void hmm_flushTLB(void)
+{
+    /* Invalidate entire unified TLB */
+    invalidate_unified_tlb(0);
+    asm volatile("dsb");
+    asm volatile("isb");
+}
+
+lpaed_t* hmm_get_l3_table_entry(unsigned long virt, unsigned long npages)
+{
+    int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
+    int l3_index = (virt >> L3_SHIFT) & L3_ENTRY_MASK;
+    int maxsize = ((HMM_L2_PTE_NUM * HMM_L3_PTE_NUM) - ( (l2_index + 1) * (l3_index + 1) ) + 1);
+    if( maxsize < npages ) {
+        printh("%s[%d] : Map size \"pages\" is exceeded memory size\n", __FUNCTION__, __LINE__);
+        if(maxsize > 0){
+            printh("%s[%d] : Available pages are %d\n", maxsize); 
+        }
+        else{
+            printh("%s[%d] : Do not have available pages for map\n");
+        }
+        return 0;
+    }
+    return &_hmm_pgtable_l3[l2_index][l3_index];
+}
+
+void hmm_umap(unsigned long virt, unsigned long npages)
+{ 
+    int  i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( virt, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_disable_l3_table( &map_table_p[i] );
+    }
+    hmm_flushTLB();
+}
+
+void hmm_map(unsigned long phys, unsigned long virt, unsigned long npages)
+{
+    int i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( virt, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_conf_l3_table( &map_table_p[i], (uint64_t)phys, 1 );
+    }
+    hmm_flushTLB();
+}
+
+/* General-purpose sbrk, basic memory management system calls 
+ * Returns -1 if there was no space.
+*/
+void *hmm_sbrk(unsigned int incr)
+{
+    unsigned int required_addr;
+    unsigned int virt;
+    unsigned int required_pages = 0;
+
+    mm_prev_break = mm_break;
+    virt = mm_break;
+    mm_break += incr;
+    if( mm_break > last_valid_address ){
+        required_addr = mm_break - last_valid_address;
+        for( ;required_addr > 0x0; required_addr -= 0x1000){
+            if( last_valid_address + 0x1000 > HEAP_END_ADDR ){
+                printh("%s[%d] required address is exceeded heap memory size\n", __FUNCTION__, __LINE__);
+                return -1;
+            }
+            last_valid_address += 0x1000;
+            required_pages++;
+        }
+        hmm_map(virt, virt, required_pages);
+    }
+    return (void *)mm_prev_break;
+}
+
+void hmm_free(void* ap)
+{
+    fl_bheader *bp, *p;
+    bp = (fl_bheader *)ap - 1; /* point to block header */
+    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr){
+        if(p >= p->s.ptr && (bp > p || bp < p->s.ptr)){
+            break; /* freed block at start or end of arena */
+        }
+    }
+    if(bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
+        bp->s.size += p->s.ptr->s.size;
+        bp->s.ptr = p->s.ptr->s.ptr;
+    } else
+        bp->s.ptr = p->s.ptr;
+    if (p + p->s.size == bp) {      /* join to lower nbr */
+        p->s.size += bp->s.size;
+        p->s.ptr = bp->s.ptr;
+    } else
+        p->s.ptr = bp;
+    freep = p;
+}
+
+static fl_bheader *morecore(unsigned int nu)
+{
+    char *cp;
+    fl_bheader *up;
+    if ( nu < NALLOC )
+        nu = NALLOC;
+    cp = hmm_sbrk(nu * sizeof(fl_bheader));
+    if ( cp == (char *) -1 ) /* no space at all */
+        return 0;
+    up = (fl_bheader *)cp;
+    up->s.size = nu;
+    hmm_free((void*)(up+1));
+    return freep;
+}
+
+void* hmm_malloc(unsigned long size)
+{
+    fl_bheader *p, *prevp;
+    unsigned int nunits; 
+    nunits = (size + sizeof(fl_bheader) - 1)/sizeof(fl_bheader) + 1;
+    if(nunits < 2){
+        return 0;
+    }
+    
+    if ((prevp = freep) == 0 ) { /* no free list yet */
+        freep_base.s.ptr = freep = prevp = &freep_base;
+        freep_base.s.size = 0;
+    }
+    for ( p = prevp->s.ptr; ; prevp = p, p = p->s.ptr) {
+        if ( p->s.size >= nunits ) { /* big enough */
+            if ( p->s.size == nunits ) /* exactly */
+                prevp->s.ptr = p->s.ptr;
+            else {                    /* allocate tail end */
+                p->s.size -= nunits;
+                p += p->s.size;
+                p->s.size = nunits;
+            }
+            freep = prevp;
+            return (void *)(p+1);
+    }
+    if ( p == freep )   /* wrapped around free list */
+        if (( p = morecore(nunits)) == 0 )
+                return 0;  /* none avaliable memory left */
+    }
+}
+
