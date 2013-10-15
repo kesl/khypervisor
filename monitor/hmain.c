@@ -10,7 +10,6 @@
 #include "tests.h"
 #include "print.h"
 #include "hvmm_trace.h"
-#include "abort_trap_handler.h"
 
 void hyp_main(void)
 {
@@ -32,7 +31,7 @@ void hyp_main(void)
 	context_init_guests();
 
 	/* Initialize Virtual Devices */
-	init_vdev();
+	vdev_init();
 
     /* Start Scheduling */
 	scheduler_test_scheduling();

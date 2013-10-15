@@ -1,5 +1,10 @@
-#ifndef _ABORT_TRAP_HANDLER_H_
-#define _ABORT_TRAP_HANDLER_H_
+#include <arch_types.h>
+#include <armv7_p15.h>
+#include <vdev.h>
+#include <hvmm_trace.h>
+#include "print.h"
+#include "context.h"
+#include "trap_dabort.h"
 
 /*
  * ISS encoding for Data Abort exceptions taken to Hyp mode as beloww
@@ -27,7 +32,7 @@
 #define ISS_VALID						0x01000000
 
 #define ISS_FSR_MASK              		0x0000003F
-#define TRANS_FAULT_LEVEL0				0x04
+#define ISS_TRANS_FAULT_MASK			0x07
 #define TRANS_FAULT_LEVEL1				0x05
 #define TRANS_FAULT_LEVEL2				0x06
 #define TRANS_FAULT_LEVEL3				0x07
@@ -59,6 +64,49 @@
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
 
-void abort_trap_handler(unsigned int iss, struct arch_regs *regs);
+/*
+   Handles data abort case trapped into hvc, not dabort
+ */
+void trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
+{
+	//far, fipa, il
+	uint32_t far = read_hdfar();
+	uint32_t fipa;
+	uint32_t sas, srt, wnr;
 
-#endif
+    HVMM_TRACE_ENTER();
+
+    printh( "trap_hvc_dabort: hdfar:%x hpfar:%x\n", far, read_hpfar() );
+	fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
+	fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
+	fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
+	sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
+	srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
+	wnr = (iss & ISS_WNR) ? 1 : 0;
+
+    if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) ) {
+        /*
+           vdev emulates read/write, update pc, update destination register
+         */
+        vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs );
+    }
+
+	switch (iss & ISS_FSR_MASK) {
+		case TRANS_FAULT_LEVEL1:
+		case TRANS_FAULT_LEVEL2:
+		case TRANS_FAULT_LEVEL3:
+		    break;
+
+		case ACCESS_FAULT_LEVEL1:
+		case ACCESS_FAULT_LEVEL2:
+		case ACCESS_FAULT_LEVEL3:
+            {
+			    printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
+            }
+		    break;
+		default:
+		break;
+	}
+    HVMM_TRACE_EXIT();
+
+}

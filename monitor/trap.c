@@ -4,7 +4,8 @@
 #include "context.h"
 #include "gic.h"
 #include "sched_policy.h"
-#include "abort_trap_handler.h"
+#include "trap_dabort.h"
+#include "print.h"
 
 /* By holding the address to the saved regs struct, 
    context or other modules can access to this structure
@@ -69,47 +70,46 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 
 		uart_print("[hvc] _hyp_hvc_service: enter\n\r");
 
-    if ( ec == 0x12 && iss == 0xFFFF ) {
+    if ( ec == 0x12 && ((iss & 0xFFFF) == 0xFFFF) ) {
+        /* Internal request to stay in hyp mode */
         uart_print("[hvc] enter hyp\n\r");
         context_dump_regs( regs );
         return HYP_RESULT_STAY;
     }
 
-    switch( iss ) {
-        case 0xFFFE:
-            /* hyp_ping */
-            uart_print("[hyp] _hyp_hvc_service:ping\n\r");
-            context_dump_regs( regs );
-            break;
-        case 0xFFFD:
-            {
-                /* hsvc_yield() */
-                uart_print("[hyp] _hyp_hvc_service:yield\n\r");
+    if ( ec == 0x24) {
+        /* Handle data abort at the priority */
+        printh("[hyp] data abort handler: hsr.iss=%x\n", iss);
+		trap_hvc_dabort(iss, regs);
+    } else {
+        /* Handle the other cases */
+        switch( iss ) {
+            case 0xFFFE:
+                /* hyp_ping */
+                uart_print("[hyp] _hyp_hvc_service:ping\n\r");
                 context_dump_regs( regs );
-                context_switchto(sched_policy_determ_next());
-            }
-            break;
-        default:
-            if ( ec == 0x20 ) {
-                // Prefetch Abort routed to Hyp mode
-            }
-            if ( ec == 0x24)
-            {
-				uart_print("[hyp] data abort handler: hsr.iss="); uart_print_hex32(iss); uart_print("\n\r");
-				abort_trap_handler(iss, regs);
-
-				return HYP_RESULT_ERET;
-
-				break;
-            }
-
-            uart_print("[hyp] _hyp_hvc_service:unknown hsr.iss="); uart_print_hex32( iss ); uart_print("\n\r" );
-            uart_print("[hyp] hsr.ec="); uart_print_hex32( ec ); uart_print("\n\r" );
-            uart_print("[hyp] hsr="); uart_print_hex32( hsr ); uart_print("\n\r" );
-            context_dump_regs( regs );
-
-            hyp_abort_infinite();
-            break;
+                break;
+            case 0xFFFD:
+                {
+                    /* hsvc_yield() */
+                    uart_print("[hyp] _hyp_hvc_service:yield\n\r");
+                    context_dump_regs( regs );
+                    context_switchto(sched_policy_determ_next());
+                }
+                break;
+            default:
+                if ( ec == 0x20 ) {
+                    // Prefetch Abort routed to Hyp mode
+                }
+    
+                uart_print("[hyp] _hyp_hvc_service:unknown hsr.iss="); uart_print_hex32( iss ); uart_print("\n\r" );
+                uart_print("[hyp] hsr.ec="); uart_print_hex32( ec ); uart_print("\n\r" );
+                uart_print("[hyp] hsr="); uart_print_hex32( hsr ); uart_print("\n\r" );
+                context_dump_regs( regs );
+    
+                hyp_abort_infinite();
+                break;
+        }
     }
     uart_print("[hyp] _hyp_hvc_service: done\n\r");
 

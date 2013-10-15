@@ -90,8 +90,6 @@ void context_dump_regs( struct arch_regs *regs )
 {
     uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" );
     uart_print( "  pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
-    uart_print( "  sp:" ); uart_print_hex32( regs->sp ); uart_print( "\n\r" );
-    uart_print( "  lr:" ); uart_print_hex32( regs->lr ); uart_print( "\n\r" );
 
 #ifdef __CONTEXT_TRACE_VERBOSE__
     {

@@ -26,8 +26,8 @@ OBJS 		= boot.o c_start.o string.o hmain.o \
               monitor.o monitor_secure.o monitor_imp.o monitor_imp_secure.o \
               mm.o vmm.o lpae.o timer.o \
               context.o devices/gic/gic.o interrupt.o smp.o scheduler.o devices/generic_timer/generic_timer.o \
-              devices/gic/vgic.o tests.o tests_gic_timer.o trap.o sched_policy.o format.o print.o abort_trap_handler.o \
-			  vdev/vdev_init.o vdev/vtouch.o vdev/vlcd.o
+              devices/gic/vgic.o tests.o tests_gic_timer.o tests_vdev.o trap.o sched_policy.o format.o print.o trap_dabort.o \
+			  vdev/vdev.o vdev/vdev_sample.o 
 LD_SCRIPT	= model.lds.S
 INCLUDES    = -I./include
 
