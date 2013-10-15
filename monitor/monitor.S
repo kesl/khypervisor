@@ -29,6 +29,7 @@ monitor_hyp_vectors:
 
 trap_hvc:
 	@ Push registers
+	push 	{sp, lr}
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
@@ -41,13 +42,13 @@ trap_hvc:
 	@ r0 = return
 	tst	r0, #1			
 	@ if return == HYP_RET_STAY -> stay in Hyp mode 
-	bne	1f			
-	
+	bne	1f	
+
 	@ Pop registers
 	pop 	{r0-r1}
 	msr	    spsr_hyp, r0
 	msr	    elr_hyp, r1
-	ldm	    sp, {r0-r12}
+	ldm	    sp, {r0-r14}
 
 	@ else if return == HYP_RET_ERET -> Exception Return
 	eret
@@ -58,7 +59,7 @@ trap_hvc:
 	tst 	r0, #0x1f
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r12}
+	ldm	sp, {r0-r14}
 	@ stay in Hyp mode
 	mrs	lr, elr_hyp
 	mov	pc, lr

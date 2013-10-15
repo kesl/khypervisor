@@ -11,13 +11,16 @@
 
 typedef enum {
         HYP_RESULT_ERET = 0,
-        HYP_RESULT_STAY = 1
+        HYP_RESULT_STAY = 1,
+		HYP_RESULT_DABT = 2
 } hyp_hvc_result_t;
 
 struct arch_regs {
         unsigned int cpsr; /* CPSR */
-        unsigned int pc; /* Program Counter */
-        unsigned int gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
+        unsigned int pc; /* R15: Program Counter */
+        unsigned int gpr[ARCH_REGS_NUM_GPR]; /* R0 - R14 */
+		unsigned int sp; /* Stack pointer */
+		unsigned int lr; /* Link register  */
 } __attribute((packed));
 
 /* co-processor registers: cp15 */

@@ -13,7 +13,7 @@ else
 include config-default.mk
 endif
 
-OBJS 		= guest.o c_start.o string.o exception.o gic.o uart_print.o
+OBJS 		= guest.o c_start.o string.o exception.o gic.o uart_print.o io_emulation_exam.o
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin

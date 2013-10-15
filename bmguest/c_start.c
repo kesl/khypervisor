@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <asm-arm_inline.h>
+#include <io_emul.h>
 #include "uart_print.h"
 #include "gic.h"
 
@@ -65,6 +66,15 @@ void nrm_loop(void)
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		nrm_delay();
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
+
+		uart_print("1. write regA\n\r"); writeA(); 
+		uart_print("2. read  regA\n\r"); readA(); uart_print("\n\r");
+
+		uart_print("3. write regB\n\r"); writeB(); 
+		uart_print("4. read  regB\n\r"); readB(); uart_print("\n\r");
+
+		uart_print("5. write regC\n\r"); writeC(); 
+		uart_print("6. read  regC\n\r"); readC(); uart_print("\n\r");
 
 #ifdef __MONITOR_CALL_HVC__
 	    /* Hyp monitor guest run in Non-secure supervisor mode. 
