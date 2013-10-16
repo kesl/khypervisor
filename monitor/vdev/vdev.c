@@ -3,23 +3,21 @@
 #include <vdev.h>
 #include <hvmm_trace.h>
 
-#define MAX_VDEV	5
-#define VDEV_SIZE	0x1000
-#define VUART_BASE	0x3FFFD000
+#define MAX_VDEV    5
+#define VDEV_SIZE   0x1000
+#define VUART_BASE  0x3FFFD000
 
 static vdev_info_t vdev_list[MAX_VDEV];
 
 void vdev_init(void)
 {
-	int i = 0;
-	for (i = 0; i < MAX_VDEV; i++) {
-        /* funcking tabs! */
-        vdev_list[i].name = 0;
+    int i = 0;
+    for (i = 0; i < MAX_VDEV; i++) {
+    vdev_list[i].name = 0;
         vdev_list[i].base = 0;
         vdev_list[i].size = 0;
-        vdev_list[i].handler	= 0x0 ;
-	}
-
+        vdev_list[i].handler = 0x0 ;
+    }
 }
 
 hvmm_status_t vdev_reg_device(vdev_info_t *new_vdev)
@@ -38,21 +36,19 @@ hvmm_status_t vdev_reg_device(vdev_info_t *new_vdev)
             result = HVMM_STATUS_SUCCESS;
             break;
         }
-	}
-
+    }
     if ( result != HVMM_STATUS_SUCCESS ) {
         printh("vdev:Failed registering vdev '%s', max %d full \n", new_vdev->name, MAX_VDEV);
     }
 
-	return result;
+    return result;
 }
 
 hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t access_size, uint32_t srt, struct arch_regs *regs) 
 {
-
     hvmm_status_t result = HVMM_STATUS_NOT_FOUND;
-	int i = 0;
-	uint32_t offset;
+    int i = 0;
+    uint32_t offset;
     uint8_t isize = 4;
 
     HVMM_TRACE_ENTER();
@@ -61,14 +57,14 @@ hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t acces
         isize = 2;
     }
 
-	for (i = 0; i < MAX_VDEV; i++){
+    for (i = 0; i < MAX_VDEV; i++){
         if ( vdev_list[i].base == 0 ) break;
 
         offset = fipa - vdev_list[i].base;
         if ( fipa >= vdev_list[i].base && offset < vdev_list[i].size && vdev_list[i].handler != 0) {
             /* fipa is in the rage: base ~ base + size */
             printh("vdev: found %s for fipa %x srt:%x gpr[srt]:%x write:%d\n", vdev_list[i].name, fipa, srt, regs->gpr[srt], wnr );
-			result = vdev_list[i].handler(wnr, offset, &(regs->gpr[srt]), access_size);
+            result = vdev_list[i].handler(wnr, offset, &(regs->gpr[srt]), access_size);
             if ( result == HVMM_STATUS_SUCCESS ) {
                 if ( wnr == 0 ) {
                     printh("vdev: result:%x\n", regs->gpr[srt] );
@@ -76,11 +72,11 @@ hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t acces
                 regs->pc += isize;
             }
             break;
-		} else {
+        } else {
             printh("vdev: fipa %x base %x not matched\n", fipa, vdev_list[i].base );
         }
-	}
+    }
     HVMM_TRACE_EXIT();
 
-	return result;
+    return result;
 }
