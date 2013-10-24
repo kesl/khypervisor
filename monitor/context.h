@@ -20,9 +20,12 @@ struct arch_regs {
         unsigned int gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
 } __attribute((packed));
 
-/* co-processor registers: cp15 */
+/* co-processor registers: cp15, cp2 */
 struct arch_regs_cop {
     uint32_t vbar;
+	uint32_t ttbr0;
+	uint32_t ttbr1;
+	uint32_t ttbcr;
 };
 
 /* banked registers */
@@ -44,7 +47,8 @@ struct arch_regs_banked {
     uint32_t lr_irq;
 
     uint32_t spsr_fiq;
-    uint32_t sp_fiq;
+	//Cortex-A15 processor does not support sp_fiq
+    //uint32_t sp_fiq;
     uint32_t lr_fiq;
     uint32_t r8_fiq;
     uint32_t r9_fiq;

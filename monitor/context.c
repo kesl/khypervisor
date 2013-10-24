@@ -116,36 +116,58 @@ static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *reg
 
 void context_init_banked(struct arch_regs_banked *regs_banked)
 {
+    regs_banked->spsr_usr = 0;
+    regs_banked->sp_usr = 0;
+    regs_banked->lr_usr = 0;
+    regs_banked->spsr_svc = 0;
+    regs_banked->sp_svc = 0;
+    regs_banked->lr_svc = 0;
+    regs_banked->spsr_abt = 0;
+    regs_banked->sp_abt = 0;
+    regs_banked->lr_abt = 0;
+    regs_banked->spsr_und = 0;
+    regs_banked->sp_und = 0;
+    regs_banked->lr_und = 0;
     regs_banked->spsr_irq = 0;
     regs_banked->sp_irq = 0;
     regs_banked->lr_irq = 0;
+    regs_banked->spsr_fiq = 0;
+    regs_banked->lr_fiq = 0;
+    regs_banked->r8_fiq = 0;
+    regs_banked->r9_fiq = 0;
+    regs_banked->r10_fiq = 0;
+    regs_banked->r11_fiq = 0;
+    regs_banked->r12_fiq = 0;
+	//Cortex-A15 processor does not support sp_fiq
 }
 
 void context_save_banked(struct arch_regs_banked *regs_banked)
 {
-    /*
-       Banked registers
-       SPSR_svc
-       SP_svc
-       LR_svc
+	/* SVC banked register */
+    asm volatile (" mrs     %0, spsr_svc\n\t"
+                          :"=r" (regs_banked->spsr_svc)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_svc\n\t"
+                          :"=r" (regs_banked->sp_svc)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_svc\n\t"
+                          :"=r" (regs_banked->lr_svc)::"memory", "cc");
 
-       SPSR_abt
-       SP_abt
-       LR_abt
+	/* ABT banked register */
+    asm volatile (" mrs     %0, spsr_abt\n\t"
+                          :"=r" (regs_banked->spsr_abt)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_abt\n\t"
+                          :"=r" (regs_banked->sp_abt)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_abt\n\t"
+                          :"=r" (regs_banked->lr_abt)::"memory", "cc");
 
-       SPSR_und
-       SP_und
-       LR_und
+	/* UND banked register */
+    asm volatile (" mrs     %0, spsr_und\n\t"
+                          :"=r" (regs_banked->spsr_und)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_und\n\t"
+                          :"=r" (regs_banked->sp_und)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_und\n\t"
+                          :"=r" (regs_banked->lr_und)::"memory", "cc");
 
-       SPSR_irq
-       SP_irq
-       LR_irq
-
-       SPSR_fiq
-       SP_fiq
-       R8_fiq ~ R12_fiq
-
-     */
+    /* IRQ banked register */
     asm volatile (" mrs     %0, spsr_irq\n\t"
                           :"=r" (regs_banked->spsr_irq)::"memory", "cc");
     asm volatile (" mrs     %0, sp_irq\n\t"
@@ -153,32 +175,98 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
     asm volatile (" mrs     %0, lr_irq\n\t"
                           :"=r" (regs_banked->lr_irq)::"memory", "cc");
 
+	/* FIQ banked register  R8_fiq ~ R12_fiq, LR and SPSR */
+    asm volatile (" mrs     %0, spsr_fiq\n\t"
+                          :"=r" (regs_banked->spsr_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_fiq\n\t"
+                          :"=r" (regs_banked->lr_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r8_fiq\n\t"
+                          :"=r" (regs_banked->r8_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r9_fiq\n\t"
+                          :"=r" (regs_banked->r9_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r10_fiq\n\t"
+                          :"=r" (regs_banked->r10_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r11_fiq\n\t"
+                          :"=r" (regs_banked->r11_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r12_fiq\n\t"
+                          :"=r" (regs_banked->r12_fiq)::"memory", "cc");
+
 }
 
 void context_restore_banked(struct arch_regs_banked *regs_banked)
 {
+	/* SVC banked register */
+    asm volatile (" msr    spsr_svc, %0\n\t"
+                          ::"r" (regs_banked->spsr_svc) :"memory", "cc");
+    asm volatile (" msr    sp_svc, %0\n\t"
+                          ::"r" (regs_banked->sp_svc) :"memory", "cc");
+    asm volatile (" msr    lr_svc, %0\n\t"
+                          ::"r" (regs_banked->lr_svc) :"memory", "cc");
+
+	/* ABT banked register */
+    asm volatile (" msr    spsr_abt, %0\n\t"
+                          ::"r" (regs_banked->spsr_abt) :"memory", "cc");
+    asm volatile (" msr    sp_abt, %0\n\t"
+                          ::"r" (regs_banked->sp_abt) :"memory", "cc");
+    asm volatile (" msr    lr_abt, %0\n\t"
+                          ::"r" (regs_banked->lr_abt) :"memory", "cc");
+
+	/* UND banked register */
+    asm volatile (" msr    spsr_und, %0\n\t"
+                          ::"r" (regs_banked->spsr_und) :"memory", "cc");
+    asm volatile (" msr    sp_und, %0\n\t"
+                          ::"r" (regs_banked->sp_und) :"memory", "cc");
+    asm volatile (" msr    lr_und, %0\n\t"
+                          ::"r" (regs_banked->lr_und) :"memory", "cc");
+
+	/* IRQ banked register */
     asm volatile (" msr     spsr_irq, %0\n\t"
                           ::"r" (regs_banked->spsr_irq) :"memory", "cc");
     asm volatile (" msr     sp_irq, %0\n\t"
                           ::"r" (regs_banked->sp_irq) :"memory", "cc");
     asm volatile (" msr     lr_irq, %0\n\t"
                           ::"r" (regs_banked->lr_irq) :"memory", "cc");
+
+	/* FIQ banked register */
+    asm volatile (" msr     spsr_fiq, %0\n\t"
+                          ::"r" (regs_banked->spsr_fiq) :"memory", "cc");
+    asm volatile (" msr     lr_fiq, %0\n\t"
+                          ::"r" (regs_banked->lr_fiq) :"memory", "cc");
+    asm volatile (" msr    r8_fiq, %0\n\t"
+                          ::"r" (regs_banked->r8_fiq) :"memory", "cc");
+    asm volatile (" msr    r9_fiq, %0\n\t"
+                          ::"r" (regs_banked->r9_fiq) :"memory", "cc");
+    asm volatile (" msr    r10_fiq, %0\n\t"
+                          ::"r" (regs_banked->r10_fiq) :"memory", "cc");
+    asm volatile (" msr    r11_fiq, %0\n\t"
+                          ::"r" (regs_banked->r11_fiq) :"memory", "cc");
+    asm volatile (" msr    r12_fiq, %0\n\t"
+                          ::"r" (regs_banked->r12_fiq) :"memory", "cc");
 }
 
 /* Co-processor state management: init/save/restore */
 void context_init_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = 0;
+    regs_cop->ttbr0 = 0;
+    regs_cop->ttbr1 = 0;
+    regs_cop->ttbcr = 0;
 }
 
 void context_save_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = read_vbar();
+    regs_cop->ttbr0 = read_ttbr0();
+    regs_cop->ttbr1 = read_ttbr1();
+    regs_cop->ttbcr = read_ttbcr();
 }
 
 void context_restore_cops(struct arch_regs_cop *regs_cop)
 {
     write_vbar(regs_cop->vbar);
+	write_ttbr0(regs_cop->ttbr0);
+	write_ttbr1(regs_cop->ttbr1);
+	write_ttbcr(regs_cop->ttbcr);
 }
 
 

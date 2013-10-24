@@ -26,6 +26,7 @@
 #include <asm-arm_inline.h>
 #include "uart_print.h"
 #include "gic.h"
+#include "tests.h"
 
 #ifdef __MONITOR_CALL_HVC__
 #define hsvc_ping()	asm("hvc #0xFFFE")
@@ -65,6 +66,8 @@ void nrm_loop(void)
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		nrm_delay();
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
+
+        test_vdev_sample();
 
 #ifdef __MONITOR_CALL_HVC__
 	    /* Hyp monitor guest run in Non-secure supervisor mode. 

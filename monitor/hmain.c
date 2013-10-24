@@ -1,4 +1,3 @@
-
 #include "hyp_config.h"
 #include "uart_print.h"
 #include "mm.h"
@@ -30,6 +29,9 @@ void hyp_main(void)
 
 	/* Initialize Guests */
 	context_init_guests();
+
+	/* Initialize Virtual Devices */
+	vdev_init();
 
     /* Start Scheduling */
 	scheduler_test_scheduling();
