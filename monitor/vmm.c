@@ -5,6 +5,8 @@
 #include "vmm.h"
 #include <armv7_p15.h>
 #include <hvmm_trace.h>
+#include <cfg_platform.h>
+#include <gic_regs.h>
 #include "print.h"
 
 /* Stage 2 Level 1 */
@@ -65,8 +67,10 @@ static struct memmap_desc guest_md_empty[] = {
 };
 
 static struct memmap_desc guest_device_md0[] = {
+    /*  label, ipa       , pa        ,       size, attr */
     {  "uart", 0x3FCA0000, 0x1C0A0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "gic", 0x3FE00000, 0x2C000000,     0x8000, LPAED_STAGE2_MEMATTR_DM },
+    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
+    {  "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},
 };
 
@@ -78,7 +82,8 @@ static struct memmap_desc guest_memory_md0[] = {
 
 static struct memmap_desc guest_device_md1[] = {
     {  "uart", 0x3FCA0000, 0x1C0B0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "gic", 0x3FE00000, 0x2C000000,     0x8000, LPAED_STAGE2_MEMATTR_DM },
+    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
+    {  "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},
 };
 

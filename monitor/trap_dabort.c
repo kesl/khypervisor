@@ -85,10 +85,17 @@ void trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 	wnr = (iss & ISS_WNR) ? 1 : 0;
 
     if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) ) {
+        hvmm_status_t result;
         /*
            vdev emulates read/write, update pc, update destination register
          */
-        vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs );
+        result = vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs );
+        if ( result != HVMM_STATUS_SUCCESS ) {
+            printh( "trap_dabort: emulation failed guest pc:%x\n", regs->pc );
+
+            /* Let the guest continue by increasing pc */
+            regs->pc += 4;
+        }
     }
 
 	switch (iss & ISS_FSR_MASK) {

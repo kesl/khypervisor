@@ -1,8 +1,8 @@
-#include "vgic.h"
-#include "gic.h"
-#include "gic_regs.h"
-#include "hvmm_trace.h"
-#include "armv7_p15.h"
+#include <vgic.h>
+#include <hvmm_trace.h>
+#include <armv7_p15.h>
+#include <gic.h>
+#include <gic_regs.h>
 
 /* for test, surpress traces */
 #define __VGIC_DISABLE_TRACE__

@@ -34,11 +34,12 @@
  */
 
 /* Determined by Hypervisor's Stage2 Address Translation Table */
-#define GIC_BASEADDR_GUEST                (0x3FE00000)
+#define GIC_BASEADDR_GUEST                (0x2C000000)
 
 struct gic {
     uint32_t baseaddr;
-    volatile uint32_t *ba_gicv;
+    volatile uint32_t *ba_gicd;
+    volatile uint32_t *ba_gicc;
     uint32_t lines;
     uint32_t cpus;
     gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
@@ -60,13 +61,15 @@ static void gic_dump_registers(void)
     if ( (midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
         uint32_t value;
         uart_print( "gic baseaddr:"); uart_print_hex32(_gic.baseaddr); uart_print("\n\r");
-        uart_print( "ba_gicv:"); uart_print_hex32((uint32_t)_gic.ba_gicv); uart_print("\n\r");
-        uart_print( "GICV_CTLR:"); uart_print_hex32(_gic.ba_gicv[GICC_CTLR]); uart_print("\n\r");
-        uart_print( " GICV_PMR:"); uart_print_hex32(_gic.ba_gicv[GICC_PMR]); uart_print("\n\r");
-        uart_print( " GICV_BPR:"); uart_print_hex32(_gic.ba_gicv[GICC_BPR]); uart_print("\n\r");
-        uart_print( " GICV_RPR:"); uart_print_hex32(_gic.ba_gicv[(0x0014/4)]); uart_print("\n\r");
-        uart_print( "GICV_HPPIR:"); uart_print_hex32(_gic.ba_gicv[(0x0018/4)]); uart_print("\n\r");
-        uart_print( "GICV_IIDR:"); uart_print_hex32(_gic.ba_gicv[(0x00FC/4)]); uart_print("\n\r");
+        uart_print( "ba_gicd:"); uart_print_hex32((uint32_t)_gic.ba_gicd); uart_print("\n\r");
+        uart_print( "GICD_TYPER:"); uart_print_hex32(_gic.ba_gicd[GICD_TYPER]); uart_print("\n\r");
+        uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
+        uart_print( "GICC_CTLR:"); uart_print_hex32(_gic.ba_gicc[GICC_CTLR]); uart_print("\n\r");
+        uart_print( " GICC_PMR:"); uart_print_hex32(_gic.ba_gicc[GICC_PMR]); uart_print("\n\r");
+        uart_print( " GICC_BPR:"); uart_print_hex32(_gic.ba_gicc[GICC_BPR]); uart_print("\n\r");
+        uart_print( " GICC_RPR:"); uart_print_hex32(_gic.ba_gicc[(0x0014/4)]); uart_print("\n\r");
+        uart_print( "GICC_HPPIR:"); uart_print_hex32(_gic.ba_gicc[(0x0018/4)]); uart_print("\n\r");
+        uart_print( "GICC_IIDR:"); uart_print_hex32(_gic.ba_gicc[(0x00FC/4)]); uart_print("\n\r");
     }
     HVMM_TRACE_EXIT();
 }
@@ -88,7 +91,8 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
      */
     if ( (midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
         _gic.baseaddr = (uint32_t) va_base;
-        _gic.ba_gicv = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICVI);
+        _gic.ba_gicd = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICD);
+        _gic.ba_gicc = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICC);
 
         result = HVMM_STATUS_SUCCESS;
     } else {
@@ -140,10 +144,10 @@ hvmm_status_t gic_init(void)
     result = gic_init_baseaddr((uint32_t *) GIC_BASEADDR_GUEST);
 
     /* enable group0 and group1 interrupts */
-    _gic.ba_gicv[GICV_CTLR] |= 0x213;
+    _gic.ba_gicc[GICC_CTLR] |= 0x213;
 
     /* no priority masking */
-    _gic.ba_gicv[GICV_PMR] = 0xFF;
+    _gic.ba_gicc[GICC_PMR] = 0xFF;
 
     if ( result == HVMM_STATUS_SUCCESS ) {
         gic_dump_registers();
@@ -169,15 +173,21 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t iar;
     uint32_t irq;
     struct arch_regs *regs = pregs;
+    uint8_t did_isr = 0;
 
-    HVMM_TRACE_ENTER();
 
+        uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
     do {
         /* ACK */
-        iar = _gic.ba_gicv[GICV_IAR];
+        iar = _gic.ba_gicc[GICC_IAR];
         irq = iar & GICC_IAR_INTID_MASK;
         if ( irq < _gic.lines ) {
             uart_print( "irq:"); uart_print_hex32(irq); uart_print("\n\r");
+            if ( irq == 0 ) {
+                uart_print( "ba_gicd:"); uart_print_hex32((uint32_t) _gic.ba_gicd); uart_print("\n\r");
+                uart_print( "ba_gicc:"); uart_print_hex32((uint32_t) _gic.ba_gicc); uart_print("\n\r");
+                
+            }
 
             /* ISR */
             if ( _gic.handlers[irq] ) {
@@ -185,12 +195,14 @@ void gic_interrupt(int fiq, void *pregs)
             }
 
             /* Completion & Deactivation */
-            _gic.ba_gicv[GICC_EOIR] = irq;
-            _gic.ba_gicv[GICC_DIR] = irq;
+            _gic.ba_gicc[GICC_EOIR] = irq;
+            _gic.ba_gicc[GICC_DIR] = irq;
+            did_isr = 1;
         } else {
-            uart_print( "end of irq(no pending):"); uart_print_hex32(irq); uart_print("\n\r");
+            if ( did_isr ) {
+                uart_print( "end of irq(no pending):"); uart_print_hex32(irq); uart_print("\n\r");
+            }
             break;
         }
     } while(1);
-    HVMM_TRACE_EXIT();
 }

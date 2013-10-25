@@ -12,6 +12,7 @@
 #define GICD_CTLR	0x000
 #define GICD_TYPER	(0x004/4)
 #define GICD_IIDR	(0x008/4)
+#define GICD_IGROUPR    (0x080/4)
 #define GICD_ISENABLER	(0x100/4)
 #define GICD_ICENABLER	(0x180/4)
 #define GICD_IPRIORITYR	(0x400/4)
