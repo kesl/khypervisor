@@ -65,7 +65,8 @@ static struct memmap_desc guest_md_empty[] = {
 };
 
 static struct memmap_desc guest_device_md0[] = {
-    {  "uart", 0x3FCA0000, 0x1C0A0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    //{  "uart", 0x3FCA0000, 0x1C090000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {  "uart", 0x1C090000, 0x1C090000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
     {   "gic", 0x3FE00000, 0x2C000000,     0x8000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},
 };
