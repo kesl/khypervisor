@@ -10,7 +10,23 @@
 #define VGICD_NUM_IGROUPR   (VGICD_ITLINESNUM/32)
 #define VGICD_NUM_IENABLER  (VGICD_ITLINESNUM/32)
 
+/*
+    1. High Priority Registers to be implemented first for test with linux
+    2. access size support: 8/16/32bit 
+    3. notifying enable status changed interrupts to outside
+    4. API for interrupt enable status change callback registeration
+   */
+
 /* Virtual GIC Distributor */
+/* Priority of implementation
+   - [V] CTLR, TYPER
+   - [V] ICFGR
+   - [V] ITARGETSR
+   - [V] IPRIORITYR
+   - [V] ISCENABLER
+   -----------------------
+   - [ ] 
+ */
 struct gicd_regs{
     uint32_t CTLR;              /*0x000 RW*/
     uint32_t TYPER;             /*      RO*/
@@ -144,18 +160,36 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset, uint32_t *pval
     return result;
 }
 
+#if 0
+void vgicd_check....()
+{
+    /*
+        1. find newly enabled interrupt list: from vold and vnew values 
+        2. find newly disabled interrupt list: from vold and vnew values
+        3. notify outside list of enabled and disabled interrupts
+            -> if registered callback is present: callback( enabled_int_list, disabled_int_list )
+     */
+    enabled_int = (vold & vnew );
+    if ( callback ) {
+        callback(enabled_int, disabled_int);
+    }
+}
+#endif
+
 static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
     vmid_t vmid = context_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
 
+    /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
     if ( offset < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
         /* ISENABLER */
         if ( write ) {
             regs->ISCENABLER[offset - GICD_ISENABLER] |= *pvalue;
+            /* TODO: check interrupt enable status change: vmid, vold, vnew */
+            //vgicd_check_istatus_change(vmid, vold, vnew);
         } else {
             *pvalue = regs->ISCENABLER[offset - GICD_ISENABLER];
         }
@@ -164,6 +198,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
         /* ICENABLER */
         if ( write ) {
             regs->ISCENABLER[offset - GICD_ICENABLER] &= ~(*pvalue);
+            /* TODO: check interrupt enable status change: vmid, vold, vnew */
+            //vgicd_check_istatus_change(vmid, vold, vnew);
         } else {
             *pvalue = regs->ISCENABLER[offset - GICD_ICENABLER];
         }
@@ -189,21 +225,91 @@ static hvmm_status_t handler_ISCACTIVER(uint32_t write, uint32_t offset, uint32_
 static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t *preg;
+
+    vmid = context_current_vmid();
+    regs = &_regs[vmid];
+
+    /* FIXME: Support 8/16/32bit access */
+    offset >>= 2;
+    preg = &(regs->ICFGR[offset - GICD_IPRIORITYR]);
+    if ( write ) {
+        *preg = *pvalue;
+    } else {
+        *pvalue = *preg;
+    }
+
+    result = HVMM_STATUS_SUCCESS;
     return result;
 }
 
 static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t *preg;
+
+    vmid = context_current_vmid();
+    regs = &_regs[vmid];
+
+    preg = &(regs->ITARGETSR[(offset >>2) - GICD_ITARGETSR]);
+    if ( access_size == VDEV_ACCESS_WORD ) {
+        offset >>= 2;
+        if ( write ) {
+            if ( offset > (GICD_ITARGETSR + 7) ) {
+                /* RO: ITARGETSR0 ~ 7 */
+                *preg = *pvalue;
+            }
+        } else {
+            *pvalue = *preg;
+        }
+    } else if ( access_size == VDEV_ACCESS_HWORD ) {
+        uint16_t *preg16 = (uint16_t *) preg;
+        preg16 += (offset & 0x3) >> 1;
+        if ( write ) {
+            if ( (offset >>2) > (GICD_ITARGETSR + 7) )
+                *preg16 = (uint16_t) (*pvalue & 0xFFFF);
+        } else {
+            *pvalue = (uint32_t) *preg16;
+        }
+    } else if ( access_size == VDEV_ACCESS_BYTE ) {
+        uint8_t *preg8 = (uint8_t *) preg;
+        preg8 += (offset & 0x3);
+        if ( write ) {
+            if ( (offset >>2) > (GICD_ITARGETSR + 7) )
+                *preg8 = (uint8_t) (*pvalue & 0xFF);
+        } else {
+            *pvalue = (uint32_t) *preg8;
+        }
+    }
+
+    result = HVMM_STATUS_SUCCESS;
     return result;
 }
 
 static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t *preg;
+
+    vmid = context_current_vmid();
+    regs = &_regs[vmid];
+
+    /* FIXME: Support 8/16/32bit access */
+    offset >>= 2;
+    preg = &(regs->ICFGR[offset - GICD_ICFGR]);
+    if ( write ) {
+        *preg = *pvalue;
+    } else {
+        *pvalue = *preg;
+    }
+
+    result = HVMM_STATUS_SUCCESS;
     return result;
 }
 
@@ -228,9 +334,25 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset, uint32_t *pval
     return result;
 }
 
+static void vdev_gicd_reset_values(void)
+{
+    int i;
+    for (i = 0; i < NUM_GUESTS_STATIC; i++ ) {
+        /* ITARGETS[0~ 7], CPU Targets are set to 0, due to current single-core support design */
+        int j = 0;
+        for ( j = 0; j < 7; j++ ) {
+            _regs[i].ITARGETSR[j] = 0;
+        }
+
+    }
+}
+
+
 hvmm_status_t vdev_gicd_init(uint32_t base_addr)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    vdev_gicd_reset_values();
 
     _vdev_info.name     = "vgicd";
     _vdev_info.base     = base_addr; 

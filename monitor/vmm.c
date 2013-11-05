@@ -95,10 +95,10 @@ static struct memmap_desc guest_memory_md1[] = {
 
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest_mdlist0[] = {
-    &guest_device_md0[0],
-    &guest_md_empty[0],
+    &guest_device_md0[0],   /* 0x0000_0000 */
+    &guest_md_empty[0],     /* 0x4000_0000 */
     &guest_memory_md0[0],
-    &guest_md_empty[0],
+    &guest_md_empty[0],     /* 0xC000_0000 PA:0x40000000*/
     0
 };
 
