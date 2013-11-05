@@ -137,8 +137,6 @@ setup_core_tag(void * address,long pagesize)
 
 static void setup_revision_tag(void)
 {
-    uint32_t rev = 0;
-
     params->hdr.tag = ATAG_REVISION;
     params->hdr.size = tag_size (atag_revision);
     params->u.revision.rev = 0xcfdfdfdf;
