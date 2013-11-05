@@ -141,6 +141,8 @@ typedef enum {
 
 lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx );
 lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr );
+lpaed_t hvmm_mm_lpaed_l1_l2_table( uint64_t pa);
+lpaed_t hvmm_mm_lpaed_l3_table( uint64_t pa, uint8_t attr_idx);
 void lpaed_stage2_map_page( lpaed_t *pte, uint64_t pa, lpaed_stage2_memattr_t mattr );
 void lpaed_stage2_conf_l1_table( lpaed_t *ttbl1, uint64_t baddr, uint8_t valid );
 void lpaed_stage2_conf_l2_table( lpaed_t *ttbl2, uint64_t baddr, uint8_t valid );

@@ -65,8 +65,18 @@ static struct memmap_desc guest_md_empty[] = {
 };
 
 static struct memmap_desc guest_device_md0[] = {
-    {  "uart", 0x3FCA0000, 0x1C0A0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    //{  "uart", 0x3FCA0000, 0x1C090000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {  "uart", 0x1C090000, 0x1C090000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
     {   "gic", 0x3FE00000, 0x2C000000,     0x8000, LPAED_STAGE2_MEMATTR_DM },
+    {   "timer0", 0x1c110000, 0x1c110000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "timer1", 0x1c120000, 0x1c120000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "sysreg", 0x1c010000, 0x1c010000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "sysctl", 0x1c020000, 0x1c020000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "aaci", 0x1c040000, 0x1c040000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "wdt", 0x1c0F0000, 0x1c0F0000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "rtc", 0x1c170000, 0x1c170000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "mmci", 0x1c050000, 0x1c050000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {   "kmi", 0x1c060000, 0x1c060000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},
 };
 
