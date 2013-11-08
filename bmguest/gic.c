@@ -52,9 +52,13 @@ static void gic_dump_registers(void)
 {
 
     uint32_t midr;
-
+    uint8_t isen = 0x7;
+    char *pa;
+    pa = (char*)(&_gic.ba_gicd[GICD_ISENABLER]);
+    volatile uint8_t *reg8;
+    volatile uint16_t *reg16;
+    volatile uint32_t *reg32;
     HVMM_TRACE_ENTER();
-
     midr = read_midr();
     uart_print( "midr:"); uart_print_hex32(midr); uart_print("\n\r");
 
@@ -62,7 +66,32 @@ static void gic_dump_registers(void)
         uint32_t value;
         uart_print( "gic baseaddr:"); uart_print_hex32(_gic.baseaddr); uart_print("\n\r");
         uart_print( "ba_gicd:"); uart_print_hex32((uint32_t)_gic.ba_gicd); uart_print("\n\r");
-        uart_print( "GICD_TYPER:"); uart_print_hex32(_gic.ba_gicd[GICD_TYPER]); uart_print("\n\r");
+        uart_print( "GICD_TYPER:"); uart_print_hex32(_gic.ba_gicd[GICD_TYPER]); uart_print("\n\r");     
+        _gic.ba_gicd[GICD_ISENABLER + 33 / 32] = (1u << (33 % 32 ));
+
+        reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ISENABLER + 33 /32]);
+        reg16 = (uint16_t *) &(_gic.ba_gicd[GICD_ISENABLER + 33 /32]);
+        reg32 = (uint32_t *) &(_gic.ba_gicd[GICD_ISENABLER + 33 /32]);
+        uart_print_hex32(reg8[0]);uart_print("\n\r");
+        uart_print_hex32(reg8[1]);uart_print("\n\r");
+        uart_print_hex32(reg8[2]);uart_print("\n\r");
+        uart_print_hex32(reg8[3]);uart_print("\n\r");
+        uart_print_hex32(reg16[0]);uart_print("\n\r");
+        uart_print_hex32(reg16[1]);uart_print("\n\r");
+        uart_print_hex32(reg32[0]);uart_print("\n\r");
+
+        _gic.ba_gicd[GICD_ICENABLER + 26 / 32] = (1u << (26 % 32 ));
+        reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ICENABLER + 26 /32]);
+        reg16 = (uint16_t *) &(_gic.ba_gicd[GICD_ICENABLER + 26 /32]);
+        reg32 = (uint32_t *) &(_gic.ba_gicd[GICD_ICENABLER + 26 /32]);
+        uart_print_hex32(reg8[0]);uart_print("\n\r");
+        uart_print_hex32(reg8[1]);uart_print("\n\r");
+        uart_print_hex32(reg8[2]);uart_print("\n\r");
+        uart_print_hex32(reg8[3]);uart_print("\n\r");
+        uart_print_hex32(reg16[0]);uart_print("\n\r");
+        uart_print_hex32(reg16[1]);uart_print("\n\r");
+        uart_print_hex32(reg32[0]);uart_print("\n\r");
+
         uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
         uart_print( "GICC_CTLR:"); uart_print_hex32(_gic.ba_gicc[GICC_CTLR]); uart_print("\n\r");
         uart_print( " GICC_PMR:"); uart_print_hex32(_gic.ba_gicc[GICC_PMR]); uart_print("\n\r");
