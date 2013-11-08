@@ -34,7 +34,7 @@ void scheduler_test_scheduling(){
     void scheduler_test_switch_to_next_guest(void *pdata);
     timer_init(timer_sched);
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
-    timer_set_interval(timer_sched, 1000000);   
+    timer_set_interval(timer_sched, 100000);
     timer_add_callback(timer_sched, &scheduler_test_switch_to_next_guest);
     timer_start(timer_sched);
 
