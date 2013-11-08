@@ -2,6 +2,7 @@
 #include "tests.h"
 #include "tests_gic_timer.h"
 #include "tests_vdev.h"
+#include "tests_malloc.h"
 
 /* Enable/Disable Test Items */
 
@@ -10,13 +11,15 @@
 /* #define TESTS_ENABLE_GIC_PWM_TIMER */
 #define TESTS_ENABLE_VGIC
 #define TESTS_VDEV
+/* #define TESTS_ENABLE_MALLOC */
+
 hvmm_status_t hvmm_tests_main(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 
     /* Entry point for sequence of test code */
-#ifdef TESTS_ENABLE_L2_TABLE
-    result = hvmm_tests_l2_table();
+#ifdef TESTS_ENABLE_MALLOC
+    result = hvmm_tests_malloc();
 #endif
 #ifdef TESTS_ENABLE_GIC_TIMER
     result = hvmm_tests_gic_timer();

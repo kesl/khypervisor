@@ -3,13 +3,17 @@
 #include "mm.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
-#include "gic.h"
+#include <gic.h>
 #include "interrupt.h"
 #include "context.h"
 #include "scheduler.h"
 #include "tests.h"
 #include "print.h"
-#include "hvmm_trace.h"
+#include <hvmm_trace.h>
+#include <vdev.h>
+#include "vdev/vdev_gicd.h"
+#include "cfg_platform.h"
+#include <gic_regs.h>
 
 void hyp_main(void)
 {
@@ -32,6 +36,10 @@ void hyp_main(void)
 
 	/* Initialize Virtual Devices */
 	vdev_init();
+
+    /* Virtual GIC Distributor */
+    printh( "tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
+    vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
 
     /* Start Scheduling */
 	scheduler_test_scheduling();

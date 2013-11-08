@@ -55,7 +55,7 @@ void nrm_loop(void)
 	int i = 0;
 
     uart_init();
-	uart_print(GUEST_LABEL); uart_print("starting...\n\r");
+	uart_print(GUEST_LABEL); uart_print("=== Starting...\n\r");
 
     gic_init();
 
@@ -63,11 +63,12 @@ void nrm_loop(void)
 
     irq_enable();
 
+    /* Test the sample virtual device */
+    test_vdev_sample();
+
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		nrm_delay();
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
-
-        test_vdev_sample();
 
 #ifdef __MONITOR_CALL_HVC__
 	    /* Hyp monitor guest run in Non-secure supervisor mode. 

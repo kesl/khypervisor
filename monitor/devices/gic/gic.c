@@ -1,5 +1,4 @@
 #include "gic.h"
-#include "gic_regs.h"
 #include "armv7_p15.h"
 #include "a15_cp15_sysregs.h"
 #include "uart_print.h"
@@ -7,6 +6,7 @@
 #include "context.h"
 #include "hvmm_trace.h"
 #include <cfg_platform.h>
+#include <gic_regs.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 

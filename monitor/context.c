@@ -5,6 +5,9 @@
 #include "trap.h"
 #include "vmm.h"
 #include <print.h>
+#include <string.h>
+
+#define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
@@ -24,6 +27,7 @@ extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int _current_guest_vmid = VMID_INVALID;
 static int _next_guest_vmid = VMID_INVALID;
+static uint8_t _switch_locked = 0;  /* further switch request will be ignored if set */
 
 // uboot test start
 /* list of possible tags */
@@ -38,70 +42,67 @@ static int _next_guest_vmid = VMID_INVALID;
 #define ATAG_VIDEOLFB   0x54410008
 #define ATAG_CMDLINE    0x54410009
 /* structures for each atag */
-#define u32 uint32_t
-typedef unsigned char u8;
-typedef unsigned short u16;
 
 struct atag_header {
-        u32 size; /* length of tag in words including this header */
-        u32 tag;  /* tag type */
+        uint32_t size; /* length of tag in words including this header */
+        uint32_t tag;  /* tag type */
 };
 struct atag_core {
-        u32 flags;
-        u32 pagesize;
-        u32 rootdev;
+        uint32_t flags;
+        uint32_t pagesize;
+        uint32_t rootdev;
 };
 
 struct atag_mem {
-        u32     size;
-        u32     start;
+        uint32_t     size;
+        uint32_t     start;
 };
 struct atag_serialnr {
-        u32 low;
-        u32 high;
+        uint32_t low;
+        uint32_t high;
 };
 
 struct atag_revision {
-        u32 rev;
+        uint32_t rev;
 };
 struct atag_cmdline {
         char    cmdline[1];
 };
 struct atag_ramdisk {
-        u32 flags;      /* bit 0 = load, bit 1 = prompt */
-        u32 size;       /* decompressed ramdisk size in _kilo_ bytes */
-        u32 start;      /* starting block of floppy-based RAM disk image */
+        uint32_t flags;      /* bit 0 = load, bit 1 = prompt */
+        uint32_t size;       /* decompressed ramdisk size in _kilo_ bytes */
+        uint32_t start;      /* starting block of floppy-based RAM disk image */
 };
 struct atag_videotext {
-        u8              x;           /* width of display */
-        u8              y;           /* height of display */
-        u16             video_page;
-        u8              video_mode;
-        u8              video_cols;
-        u16             video_ega_bx;
-        u8              video_lines;
-        u8              video_isvga;
-        u16             video_points;
+        uint8_t              x;           /* width of display */
+        uint8_t              y;           /* height of display */
+        uint16_t             video_page;
+        uint8_t              video_mode;
+        uint8_t              video_cols;
+        uint16_t             video_ega_bx;
+        uint8_t              video_lines;
+        uint8_t              video_isvga;
+        uint16_t             video_points;
 };
 struct atag_initrd2 {
-        u32 start;      /* physical start address */
-        u32 size;       /* size of compressed ramdisk image in bytes */
+        uint32_t start;      /* physical start address */
+        uint32_t size;       /* size of compressed ramdisk image in bytes */
 };
 struct atag_videolfb {
-        u16             lfb_width;
-        u16             lfb_height;
-        u16             lfb_depth;
-        u16             lfb_linelength;
-        u32             lfb_base;
-        u32             lfb_size;
-        u8              red_size;
-        u8              red_pos;
-        u8              green_size;
-        u8              green_pos;
-        u8              blue_size;
-        u8              blue_pos;
-        u8              rsvd_size;
-        u8              rsvd_pos;
+        uint16_t             lfb_width;
+        uint16_t             lfb_height;
+        uint16_t             lfb_depth;
+        uint16_t             lfb_linelength;
+        uint32_t             lfb_base;
+        uint32_t             lfb_size;
+        uint8_t              red_size;
+        uint8_t              red_pos;
+        uint8_t              green_size;
+        uint8_t              green_pos;
+        uint8_t              blue_size;
+        uint8_t              blue_pos;
+        uint8_t              rsvd_size;
+        uint8_t              rsvd_pos;
 };
 struct atag {
         struct atag_header hdr;
@@ -117,7 +118,7 @@ struct atag {
                 struct atag_cmdline      cmdline;
         } u;
 };
-#define tag_next(t)     ((struct tag *)((u32 *)(t) + (t)->hdr.size))
+#define tag_next(t)     ((struct atag *)((uint32_t *)(t) + (t)->hdr.size))
 #define tag_size(type)  ((sizeof(struct atag_header) + sizeof(struct type)) >> 2)
 static struct atag *params; /* used to point at the current tag */
 
@@ -169,8 +170,9 @@ setup_cmdline_tag(const char * line)
 }
 
 static void
-setup_mem_tag(u32 start, u32 len)
+setup_mem_tag(uint32_t start, uint32_t len)
 {
+    printh("setup_mem_tag start :  %x len : %x\n", start, len);
     params->hdr.tag = ATAG_MEM;             /* Memory tag */
     params->hdr.size = tag_size(atag_mem);  /* size tag */
 
@@ -194,7 +196,7 @@ static void _hyp_fixup_unloaded_guest(void)
 {
 	extern uint32_t guest_bin_start;
 	extern uint32_t guest_bin_end;
-	extern uint32_t guest2_bin_start;
+//	extern uint32_t guest2_bin_start;
 
 	uint32_t *src = &guest_bin_start;
     uint32_t *end = &guest_bin_end;
@@ -467,7 +469,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 		context_copy_regs( regs, regs_current );
         context_save_cops( &context->regs_cop );
         context_save_banked( &context->regs_banked );
-        vgic_save_status( &context->vgic_status );
+        vgic_save_status( &context->vgic_status, context->vmid );
         printh( "context: saving vmid[%d] mode(%x):%s pc:0x%x\n", 
                 _current_guest_vmid, 
                 regs->cpsr & 0x1F, 
@@ -482,7 +484,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 	/* Restore Translation Table for the next guest and Enable Stage 2 Translation */
 	vmm_set_vmid_ttbl( context->vmid, context->ttbl );
 	vmm_stage2_enable(1);
-    vgic_restore_status( &context->vgic_status );
+    vgic_restore_status( &context->vgic_status, context->vmid );
     
     printh( "context: restoring vmid[%d] mode(%x):%s pc:0x%x\n", 
             next_vmid, 
@@ -529,6 +531,8 @@ hvmm_status_t context_perform_switch(void)
             _next_guest_vmid = VMID_INVALID;
         }
     }
+
+    _switch_locked = 0;
     return result;
 }
 
@@ -558,10 +562,10 @@ static void setup_tags(uint32_t *src)
     setup_core_tag(src+(0x100/4), 4096);       /* standard core tag 4k pagesize */
     setup_cmdline_tag(commandline);    /* commandline setting root device */
     setup_revision_tag();
-    //setup_mem_tag(0x80000000, 0x2000000); 
-    //setup_mem_tag(0xa0000000, 0x2000000); 
-    setup_mem_tag(src, 0x20000000); 
-    setup_mem_tag(src+0x20000000, 0x10000000); 
+    //setup_mem_tag(0x80000000, 0x20000000); 
+    //setup_mem_tag(0xa0000000, 0x20000000);
+    setup_mem_tag((uint32_t)(src-(0x20000000/4)), 0x20000000); 
+    setup_mem_tag((uint32_t)(src), 0x10000000); 
     setup_end_tag();                    /* end of tags */
 }
 
@@ -593,6 +597,7 @@ void context_init_guests(void)
 	context->ttbl = vmm_vmid_ttbl(context->vmid);
     context_init_cops( &context->regs_cop );
     context_init_banked( &context->regs_banked );
+    vgic_init_status( &context->vgic_status, context->vmid );
 
 	/* Guest 2 @guest2_bin_start */
 	context = &guest_contexts[1];
@@ -605,6 +610,7 @@ void context_init_guests(void)
 	context->ttbl = vmm_vmid_ttbl(context->vmid);
     context_init_cops( &context->regs_cop );
     context_init_banked( &context->regs_banked );
+    vgic_init_status( &context->vgic_status, context->vmid );
 
 #ifdef BAREMETAL_GUEST
 	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
@@ -613,6 +619,18 @@ void context_init_guests(void)
     setup_tags(src);
 	uart_print("[hyp] init_guests: return\n\r");
 }
+
+struct hyp_guest_context *context_atvmid(vmid_t vmid)
+{
+    struct hyp_guest_context * result = 0;
+
+    if ( vmid < NUM_GUEST_CONTEXTS ) {
+        result = &guest_contexts[vmid];
+    }
+
+    return result;
+}
+
 
 vmid_t context_first_vmid(void)
 {
@@ -650,12 +668,17 @@ vmid_t context_waiting_vmid(void)
 
 hvmm_status_t context_switchto(vmid_t vmid)
 {
+    return context_switchto_lock(vmid, 0);
+}
+
+hvmm_status_t context_switchto_lock(vmid_t vmid, uint8_t locked)
+{
     hvmm_status_t result = HVMM_STATUS_IGNORED;
 
     HVMM_TRACE_ENTER();
 
     /* valid and not current vmid, switch */
-    if ( vmid != context_current_vmid() ) {
+    if (_switch_locked == 0) {
         if ( !_valid_vmid(vmid) ) {
             result = HVMM_STATUS_BAD_ACCESS;
         } else {
@@ -664,7 +687,12 @@ hvmm_status_t context_switchto(vmid_t vmid)
 
             uart_print("switching to vmid:"); uart_print_hex32((uint32_t) vmid ); uart_print("\n\r");
         }
+    } else {
+        printh("context: next vmid locked to %d\n", _next_guest_vmid );
     }
+
+    if ( locked )
+        _switch_locked = locked;
 
     HVMM_TRACE_EXIT();
     return result;

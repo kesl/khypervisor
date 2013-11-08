@@ -1,14 +1,16 @@
-#include "gic.h"
-#include "vgic.h"
+#include <gic.h>
+#include <vgic.h>
 #include "context.h"
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
 #include "sched_policy.h"
 #include <cfg_platform.h>
+#include <print.h>
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
+#include "virq.h"
 
 static void test_start_timer(void)
 {
@@ -117,8 +119,14 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 
 void callback_timer(void *pdata)
 {
+    vmid_t vmid;
     HVMM_TRACE_ENTER();
-    vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+
+    vmid = context_current_vmid();
+    printh( "Injecting IRQ 30 to Guest:%d\n", vmid);
+    //vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+    /* SW VIRQ, No PIRQ */
+    virq_inject(vmid, 30, 0, 0);
     HVMM_TRACE_EXIT();
 }
 

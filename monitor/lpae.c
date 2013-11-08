@@ -9,9 +9,6 @@
 
 #define TTBL_L1_TABADDR_MASK	0x000000FFFFFFF000ULL
 #define TTBL_L2_TABADDR_MASK	0x000000FFFFFFF000ULL
-#define TTBL_L1_L2_TABLEADDR_MASK   0x000000FFFFFFF000ULL
-#define TTBL_L3_TABLEADDR_MASK      0x000000FFFFFFF000ULL
-
 
 /* Level 2 Block, 2MB, entry in LPAE Descriptor format for the given physical address */
 lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr )
@@ -132,8 +129,8 @@ void lpaed_stage2_map_page( lpaed_t *pte, uint64_t pa, lpaed_stage2_memattr_t ma
 	pte->p2m.sbz1 = 0;
 }
 
-/* Level 1, 2 Table, 1GB, 2MB, each entry refer level2, 3 page table.*/
-lpaed_t hvmm_mm_lpaed_l1_l2_table( uint64_t pa)
+/* Level 1 Table, 1GB, each entry refer level2 page table */
+lpaed_t hvmm_mm_lpaed_l1_table( uint64_t pa )
 {  
     lpaed_t lpaed;
    
@@ -142,8 +139,32 @@ lpaed_t hvmm_mm_lpaed_l1_l2_table( uint64_t pa)
     lpaed.pt.table = 1;
  
     // Next-level table address [39:12]
-    lpaed.bits &= ~TTBL_L1_L2_TABLEADDR_MASK;
-    lpaed.bits |= pa & TTBL_L1_L2_TABLEADDR_MASK;
+    lpaed.bits &= ~TTBL_L1_TABADDR_MASK;
+    lpaed.bits |= pa & TTBL_L1_TABADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    lpaed.pt.pxnt = 0;  // PXN limit for subsequent levels of lookup
+    lpaed.pt.xnt = 0;   // XN limit for subsequent levels of lookup
+    lpaed.pt.apt = 0;   // Access permissions limit for subsequent levels of lookup
+    lpaed.pt.nst = 1;   // Table address is in the Non-secure physical address space
+
+    return lpaed;
+}
+
+/* Level 2 Table, 2MB, each entry refer level3 page table.*/
+lpaed_t hvmm_mm_lpaed_l2_table( uint64_t pa )
+{ 
+    lpaed_t lpaed;
+  
+    // Valid Table Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 1;
+
+    // Next-level table address [39:12]
+    lpaed.bits &= ~TTBL_L2_TABADDR_MASK;
+    lpaed.bits |= pa & TTBL_L2_TABADDR_MASK;
 
     // UNK/SBZP [51:40]
     lpaed.pt.sbz = 0;
@@ -157,17 +178,17 @@ lpaed_t hvmm_mm_lpaed_l1_l2_table( uint64_t pa)
 }
 
 /* Level 3 Table, each entry refer 4KB physical address */
-lpaed_t hvmm_mm_lpaed_l3_table( uint64_t pa, uint8_t attr_idx)
+lpaed_t hvmm_mm_lpaed_l3_table( uint64_t pa, uint8_t attr_idx, uint8_t valid )
 { 
     lpaed_t lpaed;
   
     // Valid Table Entry
-    lpaed.pt.valid = 1;
+    lpaed.pt.valid = valid;
     lpaed.pt.table = 1;
 
-    // Next-level table address [39:12]
-    lpaed.bits &= ~TTBL_L3_TABLEADDR_MASK;
-    lpaed.bits |= pa & TTBL_L3_TABLEADDR_MASK;
+    // 4KB physical address [39:12]
+    lpaed.bits &= ~TTBL_L3_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L3_OUTADDR_MASK;
 
     // UNK/SBZP [51:40]
     lpaed.pt.sbz = 0;
@@ -189,3 +210,14 @@ lpaed_t hvmm_mm_lpaed_l3_table( uint64_t pa, uint8_t attr_idx)
     return lpaed;
 }
 
+void lpaed_stage1_conf_l3_table( lpaed_t *ttbl3, uint64_t baddr, uint8_t valid )
+{
+    ttbl3->pt.valid = valid ? 1 : 0;
+    ttbl3->bits &= ~TTBL_L3_OUTADDR_MASK;
+    ttbl3->bits |= baddr & TTBL_L3_OUTADDR_MASK;
+}
+
+void lpaed_stage1_disable_l3_table( lpaed_t *ttbl3 )
+{
+    ttbl3->pt.valid = 0;
+}
