@@ -6,5 +6,9 @@
 #include "lpae.h"
 
 int hvmm_mm_init(void);
+void* hmm_malloc(unsigned long size);
+void hmm_free(void* addr);
+void hmm_umap(unsigned long virt, unsigned long npages);
+void hmm_map(unsigned long phys, unsigned long virt, unsigned long npages);
 
 #endif
