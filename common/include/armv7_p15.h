@@ -287,6 +287,12 @@
                                 " mcr     p15, 4, %0, c6, c0, 4\n\t" \
                                 :: "r" ((val)) : "memory", "cc")
 
+/* TLB maintenance operations */
+
+/* Invalidate entire unified TLB */
+#define invalidate_unified_tlb(val)      asm volatile(\
+                " mcr     p15, 0, %0, c8, c7, 0\n\t" \
+                :: "r" ((val)) : "memory", "cc")
 #endif
 
 
