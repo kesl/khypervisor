@@ -63,6 +63,7 @@ void nrm_loop(void)
 
     irq_enable();
 
+    /* Test the sample virtual device */
     test_vdev_sample();
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
