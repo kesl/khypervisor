@@ -6,7 +6,6 @@
 #include "vgic.h"
 #include "lpae.h"
 
-#define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 #define ARCH_REGS_NUM_GPR	13
 
 typedef enum {
@@ -92,10 +91,12 @@ vmid_t context_waiting_vmid(void);
 
 /* Requests switch to the guest 'vmid' */
 hvmm_status_t context_switchto(vmid_t vmid);
+hvmm_status_t context_switchto_lock(vmid_t vmid, uint8_t locked);
 
 /* available guest vmid query */
 vmid_t context_first_vmid(void);
 vmid_t context_last_vmid(void);
 vmid_t context_next_vmid(vmid_t ofvmid);
+struct hyp_guest_context *context_atvmid(vmid_t vmid);
 
 #endif	// __CONTEXT_H__

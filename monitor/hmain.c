@@ -10,7 +10,8 @@
 #include "tests.h"
 #include "print.h"
 #include "hvmm_trace.h"
-#include "vdev.h"
+#include <vdev.h>
+
 void hyp_main(void)
 {
     init_print();

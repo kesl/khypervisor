@@ -170,7 +170,6 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t irq;
     struct arch_regs *regs = pregs;
 
-    HVMM_TRACE_ENTER();
 
     do {
         /* ACK */
@@ -192,5 +191,4 @@ void gic_interrupt(int fiq, void *pregs)
             break;
         }
     } while(1);
-    HVMM_TRACE_EXIT();
 }

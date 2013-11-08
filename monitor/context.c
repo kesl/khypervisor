@@ -6,6 +6,8 @@
 #include "vmm.h"
 #include <print.h>
 
+#define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
+
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
 #define CPSR_MODE_IRQ   0x12
@@ -24,6 +26,7 @@ extern void __mon_switch_to_guest_context( struct arch_regs *regs );
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int _current_guest_vmid = VMID_INVALID;
 static int _next_guest_vmid = VMID_INVALID;
+static uint8_t _switch_locked = 0;  /* further switch request will be ignored if set */
 
 #ifdef BAREMETAL_GUEST
 static void _hyp_fixup_unloaded_guest(void)
@@ -302,7 +305,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 		context_copy_regs( regs, regs_current );
         context_save_cops( &context->regs_cop );
         context_save_banked( &context->regs_banked );
-        vgic_save_status( &context->vgic_status );
+        vgic_save_status( &context->vgic_status, context->vmid );
         printh( "context: saving vmid[%d] mode(%x):%s pc:0x%x\n", 
                 _current_guest_vmid, 
                 regs->cpsr & 0x1F, 
@@ -317,7 +320,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 	/* Restore Translation Table for the next guest and Enable Stage 2 Translation */
 	vmm_set_vmid_ttbl( context->vmid, context->ttbl );
 	vmm_stage2_enable(1);
-    vgic_restore_status( &context->vgic_status );
+    vgic_restore_status( &context->vgic_status, context->vmid );
     
     printh( "context: restoring vmid[%d] mode(%x):%s pc:0x%x\n", 
             next_vmid, 
@@ -364,6 +367,8 @@ hvmm_status_t context_perform_switch(void)
             _next_guest_vmid = VMID_INVALID;
         }
     }
+
+    _switch_locked = 0;
     return result;
 }
 
@@ -406,6 +411,7 @@ void context_init_guests(void)
 	context->ttbl = vmm_vmid_ttbl(context->vmid);
     context_init_cops( &context->regs_cop );
     context_init_banked( &context->regs_banked );
+    vgic_init_status( &context->vgic_status, context->vmid );
 
 	/* Guest 2 @guest2_bin_start */
 	context = &guest_contexts[1];
@@ -418,6 +424,7 @@ void context_init_guests(void)
 	context->ttbl = vmm_vmid_ttbl(context->vmid);
     context_init_cops( &context->regs_cop );
     context_init_banked( &context->regs_banked );
+    vgic_init_status( &context->vgic_status, context->vmid );
 
 #ifdef BAREMETAL_GUEST
 	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
@@ -425,6 +432,18 @@ void context_init_guests(void)
 #endif
 	uart_print("[hyp] init_guests: return\n\r");
 }
+
+struct hyp_guest_context *context_atvmid(vmid_t vmid)
+{
+    struct hyp_guest_context * result = 0;
+
+    if ( vmid < NUM_GUEST_CONTEXTS ) {
+        result = &guest_contexts[vmid];
+    }
+
+    return result;
+}
+
 
 vmid_t context_first_vmid(void)
 {
@@ -462,12 +481,17 @@ vmid_t context_waiting_vmid(void)
 
 hvmm_status_t context_switchto(vmid_t vmid)
 {
+    return context_switchto_lock(vmid, 0);
+}
+
+hvmm_status_t context_switchto_lock(vmid_t vmid, uint8_t locked)
+{
     hvmm_status_t result = HVMM_STATUS_IGNORED;
 
     HVMM_TRACE_ENTER();
 
     /* valid and not current vmid, switch */
-    if ( vmid != context_current_vmid() ) {
+    if (_switch_locked == 0) {
         if ( !_valid_vmid(vmid) ) {
             result = HVMM_STATUS_BAD_ACCESS;
         } else {
@@ -476,7 +500,12 @@ hvmm_status_t context_switchto(vmid_t vmid)
 
             uart_print("switching to vmid:"); uart_print_hex32((uint32_t) vmid ); uart_print("\n\r");
         }
+    } else {
+        printh("context: next vmid locked to %d\n", _next_guest_vmid );
     }
+
+    if ( locked )
+        _switch_locked = locked;
 
     HVMM_TRACE_EXIT();
     return result;
