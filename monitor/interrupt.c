@@ -5,6 +5,7 @@
 #include "context.h"
 #include "hvmm_trace.h"
 #include "vgic.h"
+#include "virq.h"
 
 hvmm_status_t hvmm_interrupt_init(void)
 {
@@ -26,6 +27,7 @@ hvmm_status_t hvmm_interrupt_init(void)
     /* Virtual Interrupt: GIC Virtual Interface Control */
     if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_init();
     if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_enable(1);
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = virq_init();
 
 	return ret;
 }
