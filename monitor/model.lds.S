@@ -22,7 +22,8 @@ INPUT(./uImage)
 #endif
 
 #ifdef BAREMETAL_GUEST
-	INPUT(./bmguest.bin)
+	INPUT(./zImage) 
+/*	INPUT(./bmguest.bin) */
 /* INPUT(./bmguest2.bin) */
 #endif
 
@@ -59,7 +60,8 @@ SECTIONS
  . = CFG_MEMMAP_GUEST_OFFSET;
   guest_bin_start = .; 
 #ifdef BAREMETAL_GUEST
-  .guest : { ./bmguest.bin }
+/*  .guest : { ./bmguest.bin } */
+  .guest : { ./zImage } 
 #else
 	/* dummy space for guest */
  . = CFG_MEMMAP_GUEST_OFFSET + GUEST_SIZE_MAX;
@@ -75,7 +77,8 @@ SECTIONS
  . = CFG_MEMMAP_GUEST2_OFFSET;
   guest2_bin_start = .; 
 #ifdef BAREMETAL_GUEST
-  .guest2 : { ./bmguest.bin }
+/*  .guest2 : { ./bmguest.bin } */
+  .guest2 : { ./zImage } 
 #else
 	/* dummy space for guest */
  . = CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX; 
