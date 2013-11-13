@@ -366,6 +366,9 @@ hvmm_status_t context_perform_switch(void)
             result = context_perform_switch_to_guest_regs( regs, _next_guest_vmid );
             _next_guest_vmid = VMID_INVALID;
         }
+    } else {
+        /* Staying at the currently active guest. Flush out queued virqs since we didn't have a chance to switch the context, where virq flush takes place,  this time */
+        vgic_flush_virqs(_current_guest_vmid);
     }
 
     _switch_locked = 0;

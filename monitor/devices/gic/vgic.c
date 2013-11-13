@@ -461,14 +461,24 @@ hvmm_status_t vgic_restore_status( struct vgic_status *status, vmid_t vmid )
     _vgic.base[GICH_HCR] = status->hcr;
 
     /* Inject queued virqs to the next guest */
-    if ( _cb_virq_flush != 0 )
-        _cb_virq_flush(vmid);
+    vgic_flush_virqs(vmid);
 
     _vgic_dump_regs();
     result = HVMM_STATUS_SUCCESS;
 
     vgic_enable(1);
     
+    return result;
+}
+
+hvmm_status_t vgic_flush_virqs(vmid_t vmid)
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+    if ( _cb_virq_flush != 0 ) {
+        _cb_virq_flush(vmid);
+        result = HVMM_STATUS_SUCCESS;
+    }
+
     return result;
 }
 
