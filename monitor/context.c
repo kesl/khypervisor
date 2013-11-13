@@ -191,7 +191,7 @@ setup_end_tag(void)
 
 // uboot test end
 
-#ifdef BAREMETAL_GUEST
+#if defined (BAREMETAL_GUEST) || defined (LINUX_GUEST)
 static void _hyp_fixup_unloaded_guest(void)
 {
 	extern uint32_t guest_bin_start;
@@ -561,15 +561,13 @@ void context_switch_to_initial_guest(void)
 
 static void setup_tags(uint32_t *src)
 {
-    char *commandline = "root=/dev/ram console=ttyAMA0, 38400n8 mem=768M mtdparts=armflash:1M@0x800000(uboot),7M@0x1000000(kernel),24M@0x2000000(initrd) mmci.fmax=190000 devtmpfs.mount=0 vmalloc=256M rdinit=/sbin/init";
+    char *commandline = "root=/dev/ram mem=256M rdinit=/sbin/init";
     setup_core_tag(src+(0x100/4), 4096);       /* standard core tag 4k pagesize */
     setup_cmdline_tag(commandline);    /* commandline setting root device */
     setup_revision_tag();
-    //setup_mem_tag(0x80000000, 0x20000000); 
-    //setup_mem_tag(0xa0000000, 0x20000000);
-    setup_mem_tag((uint32_t)(src-(0x20000000/4)), 0x20000000); 
-    setup_mem_tag((uint32_t)(src), 0x10000000); 
-    setup_end_tag();                    /* end of tags */
+    setup_mem_tag((uint32_t)(src-(0x20000000/4)), 0x10000000);
+    /* end of tags */
+    setup_end_tag();
 }
 
 void context_init_guests(void)
@@ -615,7 +613,7 @@ void context_init_guests(void)
     context_init_banked( &context->regs_banked );
     vgic_init_status( &context->vgic_status, context->vmid );
 
-#ifdef BAREMETAL_GUEST
+#if defined (BAREMETAL_GUEST) || defined (LINUX_GUEST)
 	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
 	_hyp_fixup_unloaded_guest();
 #endif
