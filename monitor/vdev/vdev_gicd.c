@@ -9,7 +9,7 @@
 #define VGICD_IIDR_DEFAULT  (0x43B) // Cortex-A15 */
 #define VGICD_NUM_IGROUPR   (VGICD_ITLINESNUM/32)
 #define VGICD_NUM_IENABLER  (VGICD_ITLINESNUM/32)
-
+#define VGICD_NUM_INT 256
 /*
     1. High Priority Registers to be implemented first for test with linux
     2. access size support: 8/16/32bit 
@@ -69,7 +69,7 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset, uint32_t *pval
 
 static vdev_info_t _vdev_info;
 static struct gicd_regs _regs[NUM_GUESTS_STATIC]; 
-
+static uint8_t _ienabled[NUM_GUESTS_STATIC][VGICD_NUM_INT];
 static struct gicd_handler_entry _handler_map[0x10] = {
 /* 0x00 ~ 0x0F */
     { 0x00, handler_000 },              /* CTLR, TYPER, IIDR, IGROUPR */
@@ -125,7 +125,6 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset, uint32_t *pval
             break;
 
         case GICD_TYPER:    /* RO */
-            printh("virtual gicd typer call!!!\n");            
             if ( write == 0 ) {
                 *pvalue = VGICD_TYPER_DEFAULT;
                 result = HVMM_STATUS_SUCCESS;
@@ -161,34 +160,62 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset, uint32_t *pval
     return result;
 }
 
-#if 1
-void vgicd_check_istatus_change(vmid_t vmid, uint32_t vold, uint32_t vnew, vdev_access_size_t access_size)
+void vgicd_get_istatus(vmid_t vmid, uint8_t **enabled_int_list, uint32_t inum)
+{
+    *enabled_int_list = _ienabled[vmid];
+}
+
+void vgicd_check_istatus_change(vmid_t vmid, uint32_t vold, uint32_t vnew, vdev_access_size_t access_size, uint32_t offset)
 {
     /*
         1. find newly enabled interrupt list: from vold and vnew values 
         2. find newly disabled interrupt list: from vold and vnew values
         3. notify outside list of enabled and disabled interrupts
             -> if registered callback is present: callback( enabled_int_list, disabled_int_list )
-     */
+    */
     /*
     enabled_int = (vold & vnew );
     if ( callback ) {
         callback(enabled_int, disabled_int);
     }
     */
+    int i; 
+    uint8_t modified_ibit = 0;
+    printh("vold : %x vnew : %x vmid : %d\n", vold, vnew, vmid);
+    
     if( vnew > vold ) {
         // enabled
-        uint32_t ienabled = vnew - vold;
-        printh("enabled %d\n", ienabled);
+        uint32_t ibit = vnew - vold;
+        for( i = 0; i < 32; i++) {
+            if ( ibit & 1 ) {
+                break;
+            } else {
+                ibit = ibit >> 1;
+                modified_ibit++;
+            }
+        }
+        modified_ibit += (offset * 32);
+        _ienabled[vmid][modified_ibit] = 1;
+        printh("====enabled_bit %d\n", modified_ibit);
     } else if ( vnew < vold) {
         // disabled
-        uint32_t idisabled = vold - vnew;
-        printh("disabled %d\n", idisabled);
+        uint32_t ibit = vold-vnew;
+        for( i = 0; i < 32; i++) {
+            if ( ibit & 1 ) {
+                break;
+            } else {
+                ibit = ibit >> 1;
+                modified_ibit++;
+            }
+        }
+        modified_ibit += (offset * 32);
+        _ienabled[vmid][modified_ibit] = 0;
+        printh("====disabled_bit %d\n", modified_ibit);
     } else {
+        /* noting change interrpt status*/
         return;
     }
 }
-#endif
 
 static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
@@ -197,10 +224,12 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
     struct gicd_regs *regs = &_regs[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
-    printh("write %d offset %d pvalue %x access_size %d \n\n\n", write, offset, *pvalue, access_size);
+//    printh("write %d offset %d pvalue %x access_size %d \n\n\n", write, offset, *pvalue, access_size);
    
     /* FIXME: Support 8/16/32bit access */
+    /* TODO: check interrupt enable status change: vmid, vold, vnew */
 #if 1
+    
     preg_s = &(regs->ISCENABLER[(offset >> 2 ) - GICD_ISENABLER]);
     preg_c = &(regs->ISCENABLER[(offset >> 2 ) - GICD_ICENABLER]);
 
@@ -208,8 +237,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
         if ( (offset >> 2 ) < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
         /* ISENABLER */
             if ( write ) {
-                /* TODO: check interrupt enable status change: vmid, vold, vnew */
-                vgicd_check_istatus_change(vmid, *preg_s, *preg_s | *pvalue, access_size);
+                vgicd_check_istatus_change(vmid, *preg_s, *preg_s | *pvalue, access_size, (offset >> 2 ) - GICD_ISENABLER);
                 *preg_s |= *pvalue;     
             } else {
                 *pvalue = *preg_s;
@@ -218,8 +246,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
         } else if ( (offset >> 2 ) >= GICD_ICENABLER && (offset >> 2 ) < (GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
             /* ICENABLER */
             if ( write ){
-                /* TODO: check interrupt enable status change: vmid, vold, vnew */
-                vgicd_check_istatus_change(vmid, *preg_c, *preg_c & ~(*pvalue), access_size);
+                vgicd_check_istatus_change(vmid, *preg_c, *preg_c & ~(*pvalue), access_size, (offset >> 2) - GICD_ICENABLER);
                 *preg_c &= ~(*pvalue);
             } else {
                 *pvalue = *preg_c;
@@ -231,6 +258,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint16_t *preg_s16 = (uint16_t *)preg_s;
             preg_s16 += (offset & 0x3) >> 1;
             if ( write ) {
+                vgicd_check_istatus_change(vmid, *preg_s16, *preg_s16 | (uint16_t)(*pvalue & 0xFFFF), access_size, (offset >> 2 ) - GICD_ISENABLER);
                 *preg_s16 |= (uint16_t)(*pvalue & 0xFFFF);
             } else {
                 *pvalue = (uint32_t)*preg_s16;
@@ -240,6 +268,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint16_t *preg_c16 = (uint16_t *)preg_c;
             preg_c16 += (offset & 0x3) >> 1;
             if( write ){
+                vgicd_check_istatus_change(vmid, *preg_c16, *preg_c16 & ~((uint16_t)(*pvalue & 0xFFFF)), access_size, (offset >> 2 ) - GICD_ISENABLER);
                 *preg_c16 &= ~((uint16_t)(*pvalue & 0xFFFF));
             } else {
                 *pvalue = (uint32_t)*preg_c16;
@@ -252,7 +281,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint8_t *preg_s8 = (uint8_t *)preg_s;
             preg_s8 += (offset & 0x3);
             if ( write ) {
-                *preg_s8 |= (uint8_t)(*pvalue & 0xFFFF);
+                vgicd_check_istatus_change(vmid, *preg_s8, *preg_s8 | (uint8_t)(*pvalue & 0xFF), access_size, (offset >> 2 ) - GICD_ISENABLER);
+                *preg_s8 |= (uint8_t)(*pvalue & 0xFF);
             } else {
                 *pvalue = (uint32_t)*preg_s8;
             }
@@ -261,17 +291,27 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint8_t *preg_c8 = (uint8_t *)preg_c;
             preg_c8 += ( offset & 0x3 );
             if ( write ){
-                *preg_c8 &= ~((uint8_t)(*pvalue & 0xFFFF));
+                vgicd_check_istatus_change(vmid, *preg_c8, *preg_c8 & ~((uint8_t)(*pvalue & 0xFF)), access_size, (offset >> 2 ) - GICD_ISENABLER);
+                *preg_c8 &= ~((uint8_t)(*pvalue & 0xFF));
             } else {
                 *pvalue = (uint32_t)*preg_c8;
             }
             result = HVMM_STATUS_SUCCESS;
         }
     }
-
+    {
+        uint8_t *elist;
+        vgicd_get_istatus(vmid, &elist, 256);
+        printh("\n\nget_istatus 33 %d\n\n", elist[33]);
+        printh("\n\nget_istatus 1 %d\n\n", elist[1]);
+        printh("\n\nget_istatus 32 %d\n\n", elist[32]);
+        printh("\n\nget_istatus 31 %d\n\n", elist[31]);
+        printh("\n\nget_istatus 0 %d\n\n", elist[0]);
+    }
     return result;
 #endif
 #if 0
+    /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
     if ( offset < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
         /* ISENABLER */

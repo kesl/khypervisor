@@ -3,9 +3,10 @@
 #include <armv7_p15.h>
 #include <gic.h>
 #include <gic_regs.h>
+#include "print.h"
 
 /* for test, surpress traces */
-#define __VGIC_DISABLE_TRACE__
+//#define __VGIC_DISABLE_TRACE__
 
 #ifdef __VGIC_DISABLE_TRACE__
 #ifdef HVMM_TRACE_ENTER
@@ -76,12 +77,13 @@ struct vgic {
 hvmm_status_t vgic_injection_enable(uint8_t enable);
 
 static struct vgic _vgic;
+static void (*_cb_virq_flush)(vmid_t vmid) = 0;
 
 static uint32_t vgic_find_free_slot(void)
 {
     uint32_t slot;
     uint32_t shift = 0;
-    HVMM_TRACE_ENTER();
+
     slot = _vgic.base[GICH_ELSR0];
     if ( slot == 0 && _vgic.num_lr > 32 ) {
         /* first 32 slots are occupied, try the later */
@@ -89,7 +91,6 @@ static uint32_t vgic_find_free_slot(void)
         shift = 32;
     }
 
-    HVMM_TRACE_HEX32("elsrn:", slot);
 
     if ( slot ) {
         slot &= -(slot);
@@ -99,7 +100,6 @@ static uint32_t vgic_find_free_slot(void)
         /* 64 slots are fully occupied */
         slot = VGIC_SLOT_NOTFOUND;
     }
-    HVMM_TRACE_EXIT();
     return slot;
 }
 
@@ -216,7 +216,6 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
     }
 
     vgic_injection_enable(0);
-    _vgic_dump_regs();
 
     HVMM_TRACE_EXIT();
 }
@@ -224,7 +223,6 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
 hvmm_status_t vgic_enable(uint8_t enable)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    HVMM_TRACE_ENTER();
 
     if ( VGIC_READY() ) {
 
@@ -241,7 +239,6 @@ hvmm_status_t vgic_enable(uint8_t enable)
 
         result = HVMM_STATUS_SUCCESS;
     } 
-    HVMM_TRACE_EXIT();
     return result;
 }
 
@@ -381,6 +378,20 @@ static uint64_t _vgic_valid_lr_mask( uint32_t num_lr )
     return mask_valid_lr;
 }
 
+/* 
+ * Registers the callback for flushing out queued virqs for the specified guest (vmid)
+ */
+hvmm_status_t vgic_setcallback_virq_flush(void (*callback)(vmid_t vmid))
+{
+    _cb_virq_flush = callback;
+    if ( _cb_virq_flush == 0 ) {
+        printh( "vgic: virq_flush() cleared\n" );
+    } else {
+        printh( "vgic: virq_flush() set to function at %x\n", (uint32_t) _cb_virq_flush );
+    }
+    return HVMM_STATUS_SUCCESS;
+}
+
 hvmm_status_t vgic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -403,13 +414,27 @@ hvmm_status_t vgic_init(void)
     return result;
 }
 
-hvmm_status_t vgic_save_status( struct vgic_status *status )
+hvmm_status_t vgic_init_status( struct vgic_status *status, vmid_t vmid)
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;
 
-    HVMM_TRACE_ENTER();
-    _vgic_dump_regs();
+    status->hcr = 0;
+    status->apr = 0;
+    status->vmcr = 0;
+    status->saved_once = 0;
+    for( i = 0; i < _vgic.num_lr; i++) {
+        status->lr[i] = 0;
+    }
+
+    return result;
+}
+
+hvmm_status_t vgic_save_status( struct vgic_status *status, vmid_t vmid )
+{
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
+    int i;
+
 
     for( i = 0; i < _vgic.num_lr; i++ ) {
         status->lr[i] = _vgic.base[GICH_LR + i];
@@ -420,37 +445,29 @@ hvmm_status_t vgic_save_status( struct vgic_status *status )
     status->saved_once = VGIC_SIGNATURE_INITIALIZED;
 
     vgic_enable(0);
-    HVMM_TRACE_EXIT();
     return result;
 }
 
-hvmm_status_t vgic_restore_status( struct vgic_status *status )
+hvmm_status_t vgic_restore_status( struct vgic_status *status, vmid_t vmid )
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     int i;
-    HVMM_TRACE_ENTER();
-    if ( status->saved_once == VGIC_SIGNATURE_INITIALIZED ) {
-        for( i = 0; i < _vgic.num_lr; i++) {
-            _vgic.base[GICH_LR + i] = status->lr[i];
-        }
-        _vgic.base[GICH_APR] = status->apr;
-        _vgic.base[GICH_VMCR] = status->vmcr;
-        _vgic.base[GICH_HCR] = status->hcr;
 
-        _vgic_dump_regs();
-        result = HVMM_STATUS_SUCCESS;
-    } else {
-        /* Initialize VGIC state for the guest if it's about to launch for the first time */
-        for( i = 0; i < _vgic.num_lr; i++) {
-            _vgic.base[GICH_LR + i] = 0;
-        }
-        _vgic.base[GICH_APR] = 0;
-        _vgic.base[GICH_VMCR] = 0;
-        _vgic.base[GICH_HCR] = 0;
+    for( i = 0; i < _vgic.num_lr; i++) {
+        _vgic.base[GICH_LR + i] = status->lr[i];
     }
+    _vgic.base[GICH_APR] = status->apr;
+    _vgic.base[GICH_VMCR] = status->vmcr;
+    _vgic.base[GICH_HCR] = status->hcr;
+
+    /* Inject queued virqs to the next guest */
+    if ( _cb_virq_flush != 0 )
+        _cb_virq_flush(vmid);
+
+    _vgic_dump_regs();
+    result = HVMM_STATUS_SUCCESS;
 
     vgic_enable(1);
-    HVMM_TRACE_EXIT();
     
     return result;
 }

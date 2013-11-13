@@ -13,12 +13,12 @@ hvmm_status_t hvmm_tests_vdev(void)
     printh( "tests: Registering sample vdev:'sample' at 0x3FFFF000\n");
     result = vdev_sample_init(0x3FFFF000);
 
+/*
     if ( result == HVMM_STATUS_SUCCESS ) {
-        /* Virtual GIC Distributor */
         printh( "tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
         result = vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
     }
-
+*/
     return result;
 }
 
