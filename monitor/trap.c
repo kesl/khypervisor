@@ -30,12 +30,9 @@ hvmm_status_t _hyp_trap_dabort( struct arch_regs *regs )
 hvmm_status_t _hyp_trap_irq( struct arch_regs *regs )
 {
 
-    HVMM_TRACE_ENTER();
     _trap_hyp_saved_regs = regs;
 
     gic_interrupt(0, regs);
-
-    HVMM_TRACE_EXIT();
 
     context_perform_switch();
     return HVMM_STATUS_SUCCESS;
@@ -80,7 +77,35 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
     if ( ec == 0x24) {
         /* Handle data abort at the priority */
         printh("[hyp] data abort handler: hsr.iss=%x\n", iss);
-		trap_hvc_dabort(iss, regs);
+
+        if ( trap_hvc_dabort(iss, regs) != HVMM_STATUS_SUCCESS ) {
+            printh( "[hyp] === Unhandled dabort ===\n" );
+            printh( "[hyp] current guest vmid:%d\n", context_current_vmid() );
+            context_dump_regs( regs );
+
+            {
+                uint32_t spsr, lr, sp;
+                printh( " - banked regs\n" );
+
+                asm volatile (" mrs     %0, spsr_svc\n\t"
+                          :"=r" (spsr)::"memory", "cc");
+                asm volatile (" mrs     %0, sp_svc\n\t"
+                          :"=r" (sp)::"memory", "cc");
+                asm volatile (" mrs     %0, lr_svc\n\t"
+                          :"=r" (lr)::"memory", "cc");
+                printh( " - svc: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
+
+                asm volatile (" mrs     %0, spsr_irq\n\t"
+                          :"=r" (spsr)::"memory", "cc");
+                asm volatile (" mrs     %0, sp_irq\n\t"
+                          :"=r" (sp)::"memory", "cc");
+                asm volatile (" mrs     %0, lr_irq\n\t"
+                          :"=r" (lr)::"memory", "cc");
+                printh( " - irq: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
+            }
+
+            hyp_abort_infinite();
+        }
     } else {
         /* Handle the other cases */
         switch( iss ) {
