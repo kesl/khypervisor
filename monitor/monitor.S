@@ -47,7 +47,7 @@ trap_hvc:
 	pop 	{r0-r1}
 	msr	    spsr_hyp, r0
 	msr	    elr_hyp, r1
-	ldm	    sp, {r0-r12}
+	pop     {r0-r12}
 
 	@ else if return == HYP_RET_ERET -> Exception Return
 	eret
@@ -58,7 +58,7 @@ trap_hvc:
 	tst 	r0, #0x1f
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r12}
+	pop     {r0-r12}
 	@ stay in Hyp mode
 	mrs	lr, elr_hyp
 	mov	pc, lr
@@ -82,7 +82,7 @@ trap_dabt:
 	pop 	{r0-r1}
 	msr	spsr_hyp, r0
 	msr	elr_hyp, r1
-	ldm	sp, {r0-r12}
+	pop     {r0-r12}
 	eret
 
 trap_irq:
@@ -100,7 +100,7 @@ trap_irq:
 	pop 	{r0-r1}
 	msr	    spsr_hyp, r0
 	msr	    elr_hyp, r1
-	ldm	    sp, {r0-r12}
+	pop     {r0-r12}
 	eret
 
 trap_unhandled:
@@ -118,7 +118,7 @@ trap_unhandled:
 	pop 	{r0-r1}
 	msr     spsr_hyp, r0
 	msr     elr_hyp, r1
-	ldm     sp, {r0-r12}
+	pop     {r0-r12}
 	eret
 
 .global __mon_switch_to_guest_context
