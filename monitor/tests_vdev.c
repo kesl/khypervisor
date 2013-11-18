@@ -31,11 +31,11 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
         /* changed bit */
         if ( istatus & (1 << bit) ) {
             // enabled irq: bit + minirq;
-            printh("enabled irq num is %d\n", bit + minirq);
+            printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
             //pirq = virq2pirq(vmid, bit + minirq);
             //gic_configure_int( ... pirq );
         } else {
-            printh("disabled irq num is %d\n", bit + minirq);
+            printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
             // disabled irq: bit + minirq;
         }
 
@@ -50,17 +50,8 @@ hvmm_status_t hvmm_tests_vdev(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 
-    printh( "tests: Registering sample vdev:'sample' at 0x3FFFF000\n");
-    result = vdev_sample_init(0x3FFFF000);
+    vgicd_set_callback_changed_istatus(&_my_vgicd_changed_istatus);
 
-    vgic_set_callback_changed_istatus(&_my_vgicd_changed_istatus);
-
-/*
-    if ( result == HVMM_STATUS_SUCCESS ) {
-        printh( "tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
-        result = vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
-    }
-*/
     return result;
 }
 

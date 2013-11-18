@@ -9,7 +9,7 @@
 #define VGICD_IIDR_DEFAULT  (0x43B) // Cortex-A15 */
 #define VGICD_NUM_IGROUPR   (VGICD_ITLINESNUM/32)
 #define VGICD_NUM_IENABLER  (VGICD_ITLINESNUM/32)
-#define VGICD_NUM_INT 256
+
 /*
     1. High Priority Registers to be implemented first for test with linux
     2. access size support: 8/16/32bit 
@@ -71,6 +71,7 @@ vgicd_changed_istatus_callback_t _cb_changed_istatus = 0;
 
 static vdev_info_t _vdev_info;
 static struct gicd_regs _regs[NUM_GUESTS_STATIC]; 
+
 static struct gicd_handler_entry _handler_map[0x10] = {
 /* 0x00 ~ 0x0F */
     { 0x00, handler_000 },              /* CTLR, TYPER, IIDR, IGROUPR */
@@ -161,7 +162,7 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset, uint32_t *pval
     return result;
 }
 
-void vgic_set_callback_changed_istatus(vgicd_changed_istatus_callback_t callback) 
+void vgicd_set_callback_changed_istatus(vgicd_changed_istatus_callback_t callback) 
 {
     _cb_changed_istatus = callback;
 }
@@ -181,7 +182,6 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
     struct gicd_regs *regs = &_regs[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
-    /* FIXME: Support 8/16/32bit access */
     if( write && *pvalue == 0) {
         /* Writes 0 -> Has no effect. */
         result = HVMM_STATUS_SUCCESS; 
