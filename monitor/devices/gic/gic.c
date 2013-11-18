@@ -7,6 +7,7 @@
 #include "hvmm_trace.h"
 #include <cfg_platform.h>
 #include <gic_regs.h>
+#include "print.h"
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -335,26 +336,21 @@ void gic_interrupt(int fiq, void *pregs)
 	uint32_t irq;
 	struct arch_regs *regs = pregs;
 
-	HVMM_TRACE_ENTER();
-	do {
-		/* ACK */
-		iar = _gic.ba_gicc[GICC_IAR];
-		irq = iar & GICC_IAR_INTID_MASK;
-		if ( irq < _gic.lines ) {
+	/* ACK */
+	iar = _gic.ba_gicc[GICC_IAR];
+	irq = iar & GICC_IAR_INTID_MASK;
+	if ( irq < _gic.lines ) {
 
-			/* ISR */
-			uart_print( "ISR(irq):"); uart_print_hex32(irq); uart_print("\n\r");
-			if ( _gic.handlers[irq] ) {
-				_gic.handlers[irq]( irq, regs, 0 );
-			}
-
-			/* Completion & Deactivation */
-			_gic.ba_gicc[GICC_EOIR] = irq;
-			_gic.ba_gicc[GICC_DIR] = irq;
-		} else {
-			uart_print( "last irq(no pending):"); uart_print_hex32(irq); uart_print("\n\r");
-			break;
+		/* ISR */
+		printh( "ISR(irq):%x\n", irq);
+		if ( _gic.handlers[irq] ) {
+			_gic.handlers[irq]( irq, regs, 0 );
 		}
-	} while(1);
-	HVMM_TRACE_EXIT();
+
+		/* Completion & Deactivation */
+		_gic.ba_gicc[GICC_EOIR] = irq;
+		_gic.ba_gicc[GICC_DIR] = irq;
+	} else {
+        printh( "gic:no pending irq:%x\n", irq);
+	}
 }

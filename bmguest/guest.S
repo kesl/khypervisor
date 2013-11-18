@@ -77,7 +77,7 @@ except_unhandled:
 	@ Pop registers
 	pop 	{r0,lr}             /* CPSR, LR */
 	msr	    spsr, r0
-	ldm	    sp, {r0-r12}
+	pop 	{r0-r12}
 	movs	pc, lr
 
 except_svc:
@@ -92,7 +92,7 @@ except_svc:
 	@ Pop registers
 	pop 	{r0,lr}             /* CPSR, LR */
 	msr	    spsr, r0
-	ldm	    sp, {r0-r12}
+	pop	    {r0-r12}
 	movs	pc, lr
 
 except_irq:
@@ -107,7 +107,7 @@ except_irq:
 	@ Pop registers
 	pop 	{r0,lr}             /* CPSR, LR */
 	msr	    spsr, r0
-	ldm	    sp, {r0-r12}
+	pop	    {r0-r12}
 
     @ movs	pc, lr
     subs    pc, lr, #4

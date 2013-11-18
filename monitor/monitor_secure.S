@@ -63,7 +63,7 @@ trap_secure_unhandled:
 	@ Pop registers
 	pop 	{r0-r1}
 	msr	spsr_mon, r0
-	ldm	sp, {r0-r12}
+	pop     {r0-r12}
 	eret
 
 /* 

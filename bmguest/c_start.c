@@ -63,8 +63,13 @@ void nrm_loop(void)
 
     irq_enable();
 
-    /* Test the sample virtual device */
+    /* Test the sample virtual device 
+     * - Uncomment the following line of code only if 'vdev_sample' is registered at the monitor
+     * - Otherwise, the monitor will hang with data abort
+     */
+    /* 
     test_vdev_sample();
+    */
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		nrm_delay();

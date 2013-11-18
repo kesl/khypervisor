@@ -16,18 +16,22 @@ void test_vdev_sample()
     int i;
     int v1, v2, r;
 
+    uart_print( "vdev_sample: Starting test..., base:" ); uart_print_hex32( base ); uart_print("\n\r");
     for( i = 0; i < 10; i++ ) {
         v1 = ( 1 + i ) * 2;
         v2 = ( 1 + i ) * 3;
-        *reg_a = v1;
-        *reg_b = v2;
-        r = *reg_c;
 
         uart_print("v1(" ); 
         uart_print_hex32( v1 );
         uart_print(")+v2(" ); 
         uart_print_hex32( v2 );
-        uart_print(")=r(" ); 
+        uart_print(")\n\r" ); 
+
+        *reg_a = v1;
+        *reg_b = v2;
+        r = *reg_c;
+
+        uart_print("    = r(" ); 
         uart_print_hex32( r );
 
         if ( r == ( v1 + v2 ) ) {
@@ -37,4 +41,5 @@ void test_vdev_sample()
         }
         uart_print("\n\r" ); 
     }
+    uart_print( "vdev_sample: End\n\r" );
 }
