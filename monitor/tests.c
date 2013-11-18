@@ -3,6 +3,7 @@
 #include "tests_gic_timer.h"
 #include "tests_vdev.h"
 #include "tests_malloc.h"
+#include "tests_sp804_timer.h"
 
 /* Enable/Disable Test Items */
 
@@ -11,6 +12,7 @@
 /* #define TESTS_ENABLE_GIC_PWM_TIMER */
 #define TESTS_ENABLE_MALLOC
 #define TESTS_ENABLE_VGIC
+#define TESTS_ENABLE_SP804
 /* #define TESTS_VDEV */
 
 hvmm_status_t hvmm_tests_main(void)
@@ -29,6 +31,9 @@ hvmm_status_t hvmm_tests_main(void)
 #endif
 #ifdef TESTS_ENABLE_VGIC
     result = hvmm_tests_vgic();
+#endif
+#ifdef TESTS_ENABLE_SP804
+    result = hvmm_tests_sp804_timer(); 
 #endif
 
 #ifdef TESTS_VDEV
