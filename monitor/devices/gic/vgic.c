@@ -4,6 +4,7 @@
 #include <gic.h>
 #include <gic_regs.h>
 #include "print.h"
+#include <asm-arm_inline.h>
 
 /* for test, surpress traces */
 //#define __VGIC_DISABLE_TRACE__
@@ -26,11 +27,6 @@
 #define VGIC_SIGNATURE_INITIALIZED      0x45108EAD
 #define VGIC_READY()                    (_vgic.initialized == VGIC_SIGNATURE_INITIALIZED) 
 #define VGIC_SLOT_NOTFOUND              (0xFFFFFFFF)
-
-/* TODO: move to asm-arm_inline.h */
-#define asm_clz(x)      ({ uint32_t rval; asm volatile(\
-                                " clz %0, %1\n\t" \
-                                : "=r" (rval) : "r" (x) :); rval;})
 
 /*
  * Operations:
