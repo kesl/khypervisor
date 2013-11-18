@@ -60,10 +60,18 @@ static void gic_dump_registers(void)
 
     if ( (midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
         uint32_t value;
-        uint8_t *reg8;
         uart_print( "gic baseaddr:"); uart_print_hex32(_gic.baseaddr); uart_print("\n\r");
         uart_print( "ba_gicd:"); uart_print_hex32((uint32_t)_gic.ba_gicd); uart_print("\n\r");
-        uart_print( "GICD_TYPER:"); uart_print_hex32(_gic.ba_gicd[GICD_TYPER]); uart_print("\n\r");
+        uart_print( "GICD_TYPER:"); uart_print_hex32(_gic.ba_gicd[GICD_TYPER]); uart_print("\n\r");     
+        _gic.ba_gicd[GICD_ISENABLER + 33 / 32] = (1u << (33 % 32 ));
+        _gic.ba_gicd[GICD_ICENABLER + 33 / 32] = (1u << (33 % 32 ));
+
+        _gic.ba_gicd[GICD_ISENABLER + 1 / 32] = (1u << (1 % 32 ));
+        _gic.ba_gicd[GICD_ICENABLER + 1 / 32] = (1u << (1 % 32 ));
+
+        _gic.ba_gicd[GICD_ISENABLER + 31 / 32] = (1u << (31 % 32 ));
+        _gic.ba_gicd[GICD_ICENABLER + 31 / 32] = (1u << (31 % 32 ));
+
         uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
         uart_print( "GICC_CTLR:"); uart_print_hex32(_gic.ba_gicc[GICC_CTLR]); uart_print("\n\r");
         uart_print( " GICC_PMR:"); uart_print_hex32(_gic.ba_gicc[GICC_PMR]); uart_print("\n\r");
@@ -71,23 +79,6 @@ static void gic_dump_registers(void)
         uart_print( " GICC_RPR:"); uart_print_hex32(_gic.ba_gicc[(0x0014/4)]); uart_print("\n\r");
         uart_print( "GICC_HPPIR:"); uart_print_hex32(_gic.ba_gicc[(0x0018/4)]); uart_print("\n\r");
         uart_print( "GICC_IIDR:"); uart_print_hex32(_gic.ba_gicc[(0x00FC/4)]); uart_print("\n\r");
-
-        /* ITARGETSR. per access size test */
-        uart_print( "GICD_ITARGETSR[0]:"); uart_print_hex32(_gic.ba_gicd[GICD_ITARGETSR]); uart_print("\n\r");
-        reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ITARGETSR] );
-        uart_print( "GICD_ITARGETSR[0][0]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        uart_print( "GICD_ITARGETSR[0][1]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        uart_print( "GICD_ITARGETSR[0][2]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        uart_print( "GICD_ITARGETSR[0][3]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        reg8 += 7 * 4;
-        *reg8 = 0;
-        uart_print( "GICD_ITARGETSR[8][0]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        *reg8 = 1;
-        uart_print( "GICD_ITARGETSR[8][1]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        *reg8 = 2;
-        uart_print( "GICD_ITARGETSR[8][2]:"); uart_print_hex32(*reg8++); uart_print("\n\r");
-        *reg8 = 3;
-        uart_print( "GICD_ITARGETSR[8][3]:"); uart_print_hex32(*reg8); uart_print("\n\r");
     }
     HVMM_TRACE_EXIT();
 }
