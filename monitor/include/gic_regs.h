@@ -90,4 +90,6 @@
 #define GICH_LR_HW            (0x1 << GICH_LR_HW_SHIFT)
 
 #define GICH_MISR_EOI           (1)
+#define GICH_MISR_NP_SHIFT      (3)
+#define GICH_MISR_NP            (1 << GICH_MISR_NP_SHIFT)
 #endif

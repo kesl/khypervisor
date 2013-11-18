@@ -67,8 +67,9 @@
 /*
    Handles data abort case trapped into hvc, not dabort
  */
-void trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
+hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 	//far, fipa, il
 	uint32_t far = read_hdfar();
 	uint32_t fipa;
@@ -85,7 +86,6 @@ void trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 	wnr = (iss & ISS_WNR) ? 1 : 0;
 
     if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) ) {
-        hvmm_status_t result;
         /*
            vdev emulates read/write, update pc, update destination register
          */
@@ -96,6 +96,12 @@ void trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
             /* Let the guest continue by increasing pc */
             regs->pc += 4;
         }
+    } else {
+        printh( "trap_dboart: fipa=0x%x\n", fipa );
+        result = HVMM_STATUS_BAD_ACCESS;
+    }
+    if ( result != HVMM_STATUS_SUCCESS ) {
+        printh( "- INSTR: %s[%d] r%d [%x]\n", wnr ? "str" : "ldr", (sas + 1) * 8, srt, fipa );
     }
 
 	switch (iss & ISS_FSR_MASK) {
@@ -116,4 +122,5 @@ void trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 	}
     HVMM_TRACE_EXIT();
 
+    return result;
 }

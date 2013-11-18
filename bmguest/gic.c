@@ -206,35 +206,26 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t iar;
     uint32_t irq;
     struct arch_regs *regs = pregs;
-    uint8_t did_isr = 0;
 
-
-    uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
-    do {
-        /* ACK */
-        iar = _gic.ba_gicc[GICC_IAR];
-        irq = iar & GICC_IAR_INTID_MASK;
-        if ( irq < _gic.lines ) {
-            uart_print( "irq:"); uart_print_hex32(irq); uart_print("\n\r");
-            if ( irq == 0 ) {
-                uart_print( "ba_gicd:"); uart_print_hex32((uint32_t) _gic.ba_gicd); uart_print("\n\r");
-                uart_print( "ba_gicc:"); uart_print_hex32((uint32_t) _gic.ba_gicc); uart_print("\n\r");
-            }
-
-            /* ISR */
-            if ( _gic.handlers[irq] ) {
-                _gic.handlers[irq]( irq, regs, 0 );
-            }
-
-            /* Completion & Deactivation */
-            _gic.ba_gicc[GICC_EOIR] = irq;
-            _gic.ba_gicc[GICC_DIR] = irq;
-            did_isr = 1;
-        } else {
-            if ( did_isr ) {
-                uart_print( "end of irq(no pending):"); uart_print_hex32(irq); uart_print("\n\r");
-            }
-            break;
+    /* ACK */
+    iar = _gic.ba_gicc[GICC_IAR];
+    irq = iar & GICC_IAR_INTID_MASK;
+    if ( irq < _gic.lines ) {
+        uart_print( "irq:"); uart_print_hex32(irq); uart_print("\n\r");
+        if ( irq == 0 ) {
+            uart_print( "ba_gicd:"); uart_print_hex32((uint32_t) _gic.ba_gicd); uart_print("\n\r");
+            uart_print( "ba_gicc:"); uart_print_hex32((uint32_t) _gic.ba_gicc); uart_print("\n\r");
         }
-    } while(1);
+
+        /* ISR */
+        if ( _gic.handlers[irq] ) {
+            _gic.handlers[irq]( irq, regs, 0 );
+        }
+
+        /* Completion & Deactivation */
+        _gic.ba_gicc[GICC_EOIR] = irq;
+        _gic.ba_gicc[GICC_DIR] = irq;
+    } else {
+        uart_print( "end of irq(no pending):"); uart_print_hex32(irq); uart_print("\n\r");
+    }
 }
