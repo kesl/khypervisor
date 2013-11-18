@@ -215,7 +215,12 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
         }
     }
 
-    vgic_injection_enable(0);
+    if ( _vgic.base[GICH_MISR] & GICH_MISR_NP ) {
+        /* No pending virqs, no need to keep vgic enabled */
+        vgic_enable(0);
+        vgic_injection_enable(0);
+    }
+
 
     HVMM_TRACE_EXIT();
 }
@@ -229,12 +234,11 @@ hvmm_status_t vgic_enable(uint8_t enable)
         if ( enable ) {
             uint32_t hcr = _vgic.base[GICH_HCR];
 
-            hcr |= GICH_HCR_EN;
-            // hcr |= GICH_HCR_NPIE | GICH_HCR_LRENPIE;
+            hcr |= GICH_HCR_EN | GICH_HCR_NPIE;
 
             _vgic.base[GICH_HCR] = hcr;
         } else {
-            _vgic.base[GICH_HCR] &= ~(GICH_HCR_EN);
+            _vgic.base[GICH_HCR] &= ~(GICH_HCR_EN | GICH_HCR_NPIE);
         }
 
         result = HVMM_STATUS_SUCCESS;
@@ -306,6 +310,7 @@ hvmm_status_t vgic_inject_virq(
     if ( slot != VGIC_SLOT_NOTFOUND ) {
         _vgic.base[GICH_LR + slot] = lr_desc;
         vgic_injection_enable(1);
+        vgic_enable(1);
         result = HVMM_STATUS_SUCCESS;
     }
     _vgic_dump_regs();
@@ -461,14 +466,22 @@ hvmm_status_t vgic_restore_status( struct vgic_status *status, vmid_t vmid )
     _vgic.base[GICH_HCR] = status->hcr;
 
     /* Inject queued virqs to the next guest */
-    if ( _cb_virq_flush != 0 )
-        _cb_virq_flush(vmid);
+    vgic_flush_virqs(vmid);
 
     _vgic_dump_regs();
     result = HVMM_STATUS_SUCCESS;
 
-    vgic_enable(1);
-    
+    return result;
+}
+
+hvmm_status_t vgic_flush_virqs(vmid_t vmid)
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+    if ( _cb_virq_flush != 0 ) {
+        _cb_virq_flush(vmid);
+        result = HVMM_STATUS_SUCCESS;
+    }
+
     return result;
 }
 

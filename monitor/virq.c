@@ -51,7 +51,6 @@ static void virq_flush(vmid_t vmid)
     int count = 0;
     struct virq_entry *entries = &_guest_virqs[vmid][0];
 
-    HVMM_TRACE_ENTER();
     for( i = 0; i < VIRQ_MAX_ENTRIES; i++) {
         if ( entries[i].valid ) {
             hvmm_status_t result;
@@ -71,8 +70,9 @@ static void virq_flush(vmid_t vmid)
             count++;
         }
     }
-    printh( "virq: injected %d virqs to vmid %d \n", count, vmid );
-    HVMM_TRACE_EXIT();
+    if ( count > 0 ) {
+        printh( "virq: injected %d virqs to vmid %d \n", count, vmid );
+    }
 }
 
 hvmm_status_t virq_init(void)

@@ -530,6 +530,9 @@ hvmm_status_t context_perform_switch(void)
             result = context_perform_switch_to_guest_regs( regs, _next_guest_vmid );
             _next_guest_vmid = VMID_INVALID;
         }
+    } else {
+        /* Staying at the currently active guest. Flush out queued virqs since we didn't have a chance to switch the context, where virq flush takes place,  this time */
+        vgic_flush_virqs(_current_guest_vmid);
     }
 
     _switch_locked = 0;
@@ -558,7 +561,7 @@ void context_switch_to_initial_guest(void)
 
 static void setup_tags(uint32_t *src)
 {
-    char *commandline = "root=/dev/ram mem=256M rdinit=/sbin/init";
+    char *commandline = "root=/dev/ram rw earlyprintk console=ttyAMA0 mem=256M rdinit=/sbin/init";
     setup_core_tag(src+(0x100/4), 4096);       /* standard core tag 4k pagesize */
     setup_cmdline_tag(commandline);    /* commandline setting root device */
     setup_revision_tag();
