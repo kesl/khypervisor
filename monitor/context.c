@@ -558,7 +558,7 @@ void context_switch_to_initial_guest(void)
 
 static void setup_tags(uint32_t *src)
 {
-    char *commandline = "root=/dev/ram mem=256M rdinit=/sbin/init";
+    char *commandline = "root=/dev/ram rw earlyprintk console=ttyAMA0 mem=256M rdinit=/sbin/init";
     setup_core_tag(src+(0x100/4), 4096);       /* standard core tag 4k pagesize */
     setup_cmdline_tag(commandline);    /* commandline setting root device */
     setup_revision_tag();
