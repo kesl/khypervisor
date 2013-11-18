@@ -99,8 +99,6 @@ static void gic_dump_registers(void)
         _gic.ba_gicd[GICD_ICENABLER] = (0);
         uart_print_hex32(_gic.ba_gicd[GICD_ICENABLER]);uart_print("\n\r");
 
-    
-
         reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ISENABLER + 33 /32]);
         reg16 = (uint16_t *) &(_gic.ba_gicd[GICD_ISENABLER + 33 /32]);
         reg32 = (uint32_t *) &(_gic.ba_gicd[GICD_ISENABLER + 33 /32]);
