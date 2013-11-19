@@ -50,6 +50,17 @@ hvmm_status_t hvmm_tests_vdev(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 
+    printh( "tests: Registering sample vdev:'sample' at 0x3FFFF000\n");
+    result = vdev_sample_init(0x3FFFF000);
+
+    return result;
+}
+
+hvmm_status_t hvmm_tests_vdev_gicd(void)
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    printh( "[%s : %d] register vgicd_changed_istatus callback.\n", __FUNCTION__, __LINE__);
     vgicd_set_callback_changed_istatus(&_my_vgicd_changed_istatus);
 
     return result;

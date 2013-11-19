@@ -195,8 +195,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
         if ( (offset >> 2 ) < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
         /* ISENABLER */
             if ( write ) {
-                vgicd_changed_istatus(vmid, *preg_s | *pvalue, (offset >> 2) - GICD_ISENABLER );
                 *preg_s |= *pvalue;     
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - GICD_ISENABLER );
             } else {
                 *pvalue = *preg_s;
             }
@@ -204,8 +204,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
         } else if ( (offset >> 2 ) >= GICD_ICENABLER && (offset >> 2 ) < (GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
             /* ICENABLER */
             if ( write ){
-                vgicd_changed_istatus(vmid, *preg_c & ~(*pvalue), (offset >> 2) - GICD_ICENABLER );
                 *preg_c &= ~(*pvalue);
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - GICD_ICENABLER );
             } else {
                 *pvalue = *preg_c;
             }
@@ -216,8 +216,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint16_t *preg_s16 = (uint16_t *)preg_s;
             preg_s16 += (offset & 0x3) >> 1;
             if ( write ) {
-                vgicd_changed_istatus(vmid, *preg_s16 | (uint16_t)(*pvalue & 0xFFFF), (offset >> 2) - GICD_ISENABLER );
                 *preg_s16 |= (uint16_t)(*pvalue & 0xFFFF);
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - GICD_ISENABLER );
             } else {
                 *pvalue = (uint32_t)*preg_s16;
             }
@@ -226,8 +226,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint16_t *preg_c16 = (uint16_t *)preg_c;
             preg_c16 += (offset & 0x3) >> 1;
             if( write ){
-                vgicd_changed_istatus(vmid, *preg_c16 & ~((uint16_t)(*pvalue & 0xFFFF)), (offset >> 2) - GICD_ICENABLER );
                 *preg_c16 &= ~((uint16_t)(*pvalue & 0xFFFF));
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - GICD_ICENABLER );
             } else {
                 *pvalue = (uint32_t)*preg_c16;
             }
@@ -239,8 +239,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint8_t *preg_s8 = (uint8_t *)preg_s;
             preg_s8 += (offset & 0x3);
             if ( write ) {
-                vgicd_changed_istatus(vmid, *preg_s8 | (uint8_t)(*pvalue & 0xFF), (offset >> 2) - GICD_ISENABLER );
                 *preg_s8 |= (uint8_t)(*pvalue & 0xFF);
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - GICD_ISENABLER );
             } else {
                 *pvalue = (uint32_t)*preg_s8;
             }
@@ -249,8 +249,8 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
             uint8_t *preg_c8 = (uint8_t *)preg_c;
             preg_c8 += ( offset & 0x3 );
             if ( write ){
-                vgicd_changed_istatus(vmid, *preg_c8 & ~((uint8_t)(*pvalue & 0xFF)), (offset >> 2) - GICD_ICENABLER );
                 *preg_c8 &= ~((uint8_t)(*pvalue & 0xFF));
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - GICD_ICENABLER );
             } else {
                 *pvalue = (uint32_t)*preg_c8;
             }

@@ -54,7 +54,7 @@ static void gic_dump_registers(void)
     uint32_t midr;
 
     HVMM_TRACE_ENTER();
-
+    volatile uint8_t *s_reg8;
     midr = read_midr();
     uart_print( "midr:"); uart_print_hex32(midr); uart_print("\n\r");
 
@@ -71,6 +71,14 @@ static void gic_dump_registers(void)
 
         _gic.ba_gicd[GICD_ISENABLER + 31 / 32] = (1u << (31 % 32 ));
         _gic.ba_gicd[GICD_ICENABLER + 31 / 32] = (1u << (31 % 32 ));
+
+        /* 8/16 bit access test */
+        s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ISENABLER]);
+        s_reg8[2] = 0xf;
+        uart_print_hex32(_gic.ba_gicd[GICD_ISENABLER]);uart_print("\n\r");
+        s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ICENABLER]);
+        s_reg8[2] = 0xf;
+        uart_print_hex32(_gic.ba_gicd[GICD_ISENABLER]);uart_print("\n\r");
 
         uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
         uart_print( "GICC_CTLR:"); uart_print_hex32(_gic.ba_gicc[GICC_CTLR]); uart_print("\n\r");
