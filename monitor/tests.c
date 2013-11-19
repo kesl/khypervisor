@@ -11,7 +11,8 @@
 /* #define TESTS_ENABLE_GIC_PWM_TIMER */
 #define TESTS_ENABLE_MALLOC
 #define TESTS_ENABLE_VGIC
-/* #define TESTS_VDEV */
+#define TESTS_VDEV 
+#define TESTS_VDEV_VGICD
 
 hvmm_status_t hvmm_tests_main(void)
 {
@@ -33,6 +34,10 @@ hvmm_status_t hvmm_tests_main(void)
 
 #ifdef TESTS_VDEV
     result = hvmm_tests_vdev();
+#endif
+
+#ifdef TESTS_VDEV_VGICD
+    result = hvmm_tests_vdev_gicd();
 #endif
     return result;
 }
