@@ -67,6 +67,8 @@ static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset, uint
 static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size);
 static hvmm_status_t handler_F00(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size);
 
+vgicd_changed_istatus_callback_t _cb_changed_istatus = 0;
+
 static vdev_info_t _vdev_info;
 static struct gicd_regs _regs[NUM_GUESTS_STATIC]; 
 
@@ -160,50 +162,100 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset, uint32_t *pval
     return result;
 }
 
-#if 0
-void vgicd_check....()
+void vgicd_set_callback_changed_istatus(vgicd_changed_istatus_callback_t callback) 
 {
-    /*
-        1. find newly enabled interrupt list: from vold and vnew values 
-        2. find newly disabled interrupt list: from vold and vnew values
-        3. notify outside list of enabled and disabled interrupts
-            -> if registered callback is present: callback( enabled_int_list, disabled_int_list )
-     */
-    enabled_int = (vold & vnew );
-    if ( callback ) {
-        callback(enabled_int, disabled_int);
-    }
+    _cb_changed_istatus = callback;
 }
-#endif
+
+void vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offset )
+{
+    if ( _cb_changed_istatus != 0 ) {
+        _cb_changed_istatus( vmid, istatus, word_offset );
+    }
+
+}
 
 static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = context_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
+    uint32_t *preg_s;
+    uint32_t *preg_c;
+    if( write && *pvalue == 0) {
+        /* Writes 0 -> Has no effect. */
+        result = HVMM_STATUS_SUCCESS; 
+        return result;
+    }
+    
+    preg_s = &(regs->ISCENABLER[(offset >> 2 ) - GICD_ISENABLER]);
+    preg_c = &(regs->ISCENABLER[(offset >> 2 ) - GICD_ICENABLER]);
 
-    /* FIXME: Support 8/16/32bit access */
-    offset >>= 2;
-    if ( offset < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
+    if ( access_size == VDEV_ACCESS_WORD ) {
+        if ( (offset >> 2 ) < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
         /* ISENABLER */
-        if ( write ) {
-            regs->ISCENABLER[offset - GICD_ISENABLER] |= *pvalue;
-            /* TODO: check interrupt enable status change: vmid, vold, vnew */
-            //vgicd_check_istatus_change(vmid, vold, vnew);
-        } else {
-            *pvalue = regs->ISCENABLER[offset - GICD_ISENABLER];
+            if ( write ) {
+                *preg_s |= *pvalue;     
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - GICD_ISENABLER );
+            } else {
+                *pvalue = *preg_s;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if ( (offset >> 2 ) >= GICD_ICENABLER && (offset >> 2 ) < (GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
+            /* ICENABLER */
+            if ( write ){
+                *preg_c &= ~(*pvalue);
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - GICD_ICENABLER );
+            } else {
+                *pvalue = *preg_c;
+            }
+            result = HVMM_STATUS_SUCCESS;
         }
-        result = HVMM_STATUS_SUCCESS;
-    } else if ( offset >= GICD_ICENABLER && offset < (GICD_ICENABLER + VGICD_NUM_IENABLER)) {
-        /* ICENABLER */
-        if ( write ) {
-            regs->ISCENABLER[offset - GICD_ICENABLER] &= ~(*pvalue);
-            /* TODO: check interrupt enable status change: vmid, vold, vnew */
-            //vgicd_check_istatus_change(vmid, vold, vnew);
-        } else {
-            *pvalue = regs->ISCENABLER[offset - GICD_ICENABLER];
+    } else if ( access_size == VDEV_ACCESS_HWORD ) {
+        if ( (offset >> 2) < ( GICD_ISENABLER + VGICD_NUM_IENABLER) )  {
+            uint16_t *preg_s16 = (uint16_t *)preg_s;
+            preg_s16 += (offset & 0x3) >> 1;
+            if ( write ) {
+                *preg_s16 |= (uint16_t)(*pvalue & 0xFFFF);
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - GICD_ISENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_s16;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if ( (offset >> 2 ) >= GICD_ICENABLER && (offset >> 2 ) < (GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
+            uint16_t *preg_c16 = (uint16_t *)preg_c;
+            preg_c16 += (offset & 0x3) >> 1;
+            if( write ){
+                *preg_c16 &= ~((uint16_t)(*pvalue & 0xFFFF));
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - GICD_ICENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_c16;
+            }
+            result = HVMM_STATUS_SUCCESS;
         }
-        result = HVMM_STATUS_SUCCESS;
+
+    } else if ( access_size == VDEV_ACCESS_BYTE ) {
+        if ( (offset >> 2) < ( GICD_ISENABLER + VGICD_NUM_IENABLER) )  {
+            uint8_t *preg_s8 = (uint8_t *)preg_s;
+            preg_s8 += (offset & 0x3);
+            if ( write ) {
+                *preg_s8 |= (uint8_t)(*pvalue & 0xFF);
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - GICD_ISENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_s8;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if( ( offset >> 2 ) >= GICD_ICENABLER && ( offset >> 2 ) < (GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
+            uint8_t *preg_c8 = (uint8_t *)preg_c;
+            preg_c8 += ( offset & 0x3 );
+            if ( write ){
+                *preg_c8 &= ~((uint8_t)(*pvalue & 0xFF));
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - GICD_ICENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_c8;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        }
     }
     return result;
 }
@@ -211,6 +263,35 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write, uint32_t offset, uint32_
 static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid = context_current_vmid();
+    struct gicd_regs *regs = &_regs[vmid];
+    uint32_t *preg_s;
+    uint32_t *preg_c;  
+
+    preg_s = &(regs->ISPENDR[(offset >> 2 ) - GICD_ISPENDR]);
+    preg_c = &(regs->ISPENDR[(offset >> 2 ) - GICD_ICPENDR]);
+    offset >>= 2;
+
+    if ( access_size == VDEV_ACCESS_WORD ) {
+        if ( (offset >> 2 ) < (GICD_ISPENDR + VGICD_NUM_IENABLER) ) {
+        /* ISPEND */
+            if ( write ) {
+                *preg_s |= *pvalue;     
+            } else {
+                *pvalue = *preg_s;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if ( (offset >> 2 ) >= GICD_ICPENDR && (offset >> 2 ) < (GICD_ICPENDR + VGICD_NUM_IENABLER) ) {
+            /* ICPEND */
+            if ( write ){
+                *preg_c &= ~(*pvalue);
+            } else {
+                *pvalue = *preg_c;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        }
+    } 
+
     printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
     return result;
 }
