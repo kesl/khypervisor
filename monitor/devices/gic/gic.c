@@ -214,6 +214,12 @@ hvmm_status_t gic_disable_irq(uint32_t irq)
 	return HVMM_STATUS_SUCCESS;
 }
 
+hvmm_status_t gic_deactivate_irq(uint32_t irq)
+{
+    _gic.ba_gicc[GICC_DIR] = irq;
+    return HVMM_STATUS_SUCCESS;
+}
+
 hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler, void *pdata )
 {
 	hvmm_status_t result = HVMM_STATUS_BUSY;
