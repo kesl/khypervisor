@@ -3,11 +3,15 @@
 #include <armv7_p15.h>
 #include <gic.h>
 #include <gic_regs.h>
+#include <slotpirq.h>
+#include <context.h>
 #include "print.h"
+#include "hyp_config.h"
 #include <asm-arm_inline.h>
 
 /* for test, surpress traces */
 //#define __VGIC_DISABLE_TRACE__
+#define VGIC_SIMULATE_HWVIRQ
 
 #ifdef __VGIC_DISABLE_TRACE__
 #ifdef HVMM_TRACE_ENTER
@@ -23,10 +27,9 @@
 /* Cortex-A15: 25 (PPI6) */
 #define VGIC_MAINTENANCE_INTERRUPT_IRQ  25
 
-#define VGIC_MAX_LISTREGISTERS          64
+#define VGIC_MAX_LISTREGISTERS          VGIC_NUM_MAX_SLOTS
 #define VGIC_SIGNATURE_INITIALIZED      0x45108EAD
 #define VGIC_READY()                    (_vgic.initialized == VGIC_SIGNATURE_INITIALIZED) 
-#define VGIC_SLOT_NOTFOUND              (0xFFFFFFFF)
 
 /*
  * Operations:
@@ -185,7 +188,6 @@ static void _vgic_dump_regs(void)
 #endif
 }
 
-
 static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
 {
     HVMM_TRACE_ENTER();
@@ -194,12 +196,24 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
         /* clean up invalid entries from List Registers */
         uint32_t eisr = _vgic.base[GICH_EISR0];
         uint32_t slot;
+        uint32_t pirq;
+        vmid_t vmid;
 
+        vmid = context_current_vmid();
         while(eisr) {
             slot = (31 - asm_clz(eisr));
             eisr &= ~(1 << slot);
             _vgic.base[GICH_LR + slot] = 0;
-	        uart_print( " slot:"); uart_print_hex32(slot); uart_print("\n\r");
+
+            /* deactivate associated pirq at the slot */
+            pirq = slotpirq_get(vmid, slot);
+            if ( pirq != PIRQ_INVALID ) {
+                gic_deactivate_irq(pirq);
+                slotpirq_clear(vmid, slot);
+                printh( "vgic: deactivated pirq %d at slot %d\n", pirq, slot );
+            } else {
+                printh( "vgic: deactivated virq at slot %d\n", slot );
+            }
         }
 
         eisr = _vgic.base[GICH_EISR1];
@@ -207,16 +221,45 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
             slot = (31 - asm_clz(eisr));
             eisr &= ~(1 << slot);
             _vgic.base[GICH_LR + slot + 32] = 0;
-	        uart_print( " slot:"); uart_print_hex32(slot); uart_print("\n\r");
+
+            /* deactivate associated pirq at the slot */
+            pirq = slotpirq_get(vmid, slot + 32);
+            if ( pirq != PIRQ_INVALID ) {
+                gic_deactivate_irq(pirq);
+                slotpirq_clear(vmid, slot + 32);
+                printh( "vgic: deactivated pirq %d at slot %d\n", pirq, slot );
+            } else {
+                printh( "vgic: deactivated virq at slot %d\n", slot );
+            }
         }
     }
 
     if ( _vgic.base[GICH_MISR] & GICH_MISR_NP ) {
         /* No pending virqs, no need to keep vgic enabled */
-        vgic_enable(0);
-        vgic_injection_enable(0);
+        _vgic.base[GICH_HCR] &= ~(GICH_HCR_NPIE);
+        printh( "vgic: no pending virqs, disabling no pending interrupt\n" );
+        {
+            int i;
+            printh( "vgic: active virqs...\n" );
+            for (i = 0; i < _vgic.num_lr; i++ ) {
+                if ( _vgic.base[GICH_LR + i] & 0x20000000 ) {
+                    printh( "- lr[%d]: %x\n", i, _vgic.base[GICH_LR + i] );
+                }
+            }
+        }
     }
 
+    if ( ((~(_vgic.base[GICH_ELSR0])) | (~(_vgic.base[GICH_ELSR1]))) == 0 ) {
+        /* No valid interrupt */
+        vgic_enable(0);
+        vgic_injection_enable(0);
+        printh( "vgic: no valid virqs, disabling vgic\n" );
+    } else {
+        printh( "vgic:MISR:%x ELSR0:%x ELSR1:%x\n",
+            _vgic.base[GICH_MISR], 
+            _vgic.base[GICH_ELSR0],
+            _vgic.base[GICH_ELSR1]);
+    }
 
     HVMM_TRACE_EXIT();
 }
@@ -245,7 +288,6 @@ hvmm_status_t vgic_enable(uint8_t enable)
 hvmm_status_t vgic_injection_enable(uint8_t enable)
 {
     uint32_t hcr;
-    HVMM_TRACE_ENTER();
 
     hcr = read_hcr();
     if ( enable ) {
@@ -261,9 +303,6 @@ hvmm_status_t vgic_injection_enable(uint8_t enable)
     }
 
 	hcr = read_hcr(); uart_print( " updated hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
-
-    HVMM_TRACE_EXIT();
-
     return HVMM_STATUS_SUCCESS;
 }
 
@@ -276,14 +315,15 @@ hvmm_status_t vgic_injection_enable(uint8_t enable)
  * @hw              1 - physical interrupt, 0 - otherwise
  * @physrc          hw:1 - Physical ID, hw:0 - CPUID
  * @maintenance     hw:0, requires EOI asserts Virtual Maintenance Interrupt
+ *
+ * @return          slot index, or VGIC_SLOT_NOTFOUND
  */
-hvmm_status_t vgic_inject_virq( 
+uint32_t vgic_inject_virq( 
         uint32_t virq, uint32_t slot, virq_state_t state, uint32_t priority, 
         uint8_t hw, uint32_t physrc, uint8_t maintenance )
 {
     uint32_t physicalid;
     uint32_t lr_desc;
-    hvmm_status_t result = HVMM_STATUS_BUSY;
 
     HVMM_TRACE_ENTER();
 
@@ -307,44 +347,48 @@ hvmm_status_t vgic_inject_virq(
         _vgic.base[GICH_LR + slot] = lr_desc;
         vgic_injection_enable(1);
         vgic_enable(1);
-        result = HVMM_STATUS_SUCCESS;
     }
     _vgic_dump_regs();
 
     HVMM_TRACE_EXIT();
-    return result;
+    return slot;
 }
 
-hvmm_status_t vgic_inject_virq_hw( uint32_t virq, virq_state_t state, uint32_t priority, uint32_t pirq)
+/*
+ * Return: slot index if successful, VGIC_SLOT_NOTFOUND otherwise 
+ */
+uint32_t vgic_inject_virq_hw( uint32_t virq, virq_state_t state, uint32_t priority, uint32_t pirq)
 {
-    hvmm_status_t result = HVMM_STATUS_BUSY;
-    uint32_t slot;
+    uint32_t slot = VGIC_SLOT_NOTFOUND;
     HVMM_TRACE_ENTER();
 
     slot = vgic_find_free_slot();
     HVMM_TRACE_HEX32("slot:", slot);
     if ( slot != VGIC_SLOT_NOTFOUND ) {
-        result = vgic_inject_virq( virq, slot, state, priority, 1, pirq, 0 );
+#ifdef VGIC_SIMULATE_HWVIRQ
+        slot = vgic_inject_virq( virq, slot, state, priority, 0, 0, 1 );
+#else
+        slot = vgic_inject_virq( virq, slot, state, priority, 1, pirq, 0 );
+#endif
     }
 
     HVMM_TRACE_EXIT();
-    return result;
+    return slot;
 }
 
-hvmm_status_t vgic_inject_virq_sw( uint32_t virq, virq_state_t state, uint32_t priority, uint32_t cpuid, uint8_t maintenance)
+uint32_t vgic_inject_virq_sw( uint32_t virq, virq_state_t state, uint32_t priority, uint32_t cpuid, uint8_t maintenance)
 {
-    hvmm_status_t result = HVMM_STATUS_BUSY;
-    uint32_t slot;
+    uint32_t slot = VGIC_SLOT_NOTFOUND;
     HVMM_TRACE_ENTER();
 
     slot = vgic_find_free_slot();
     HVMM_TRACE_HEX32("slot:", slot);
     if ( slot != VGIC_SLOT_NOTFOUND ) {
-        result = vgic_inject_virq( virq, slot, state, priority, 0, cpuid, maintenance );
+        slot = vgic_inject_virq( virq, slot, state, priority, 0, cpuid, maintenance );
     }
 
     HVMM_TRACE_EXIT();
-    return result;
+    return slot;
 }
 
 
@@ -405,6 +449,8 @@ hvmm_status_t vgic_init(void)
     _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
 
     vgic_maintenance_irq_enable(1);
+
+    slotpirq_init();
 
     result = HVMM_STATUS_SUCCESS;
 

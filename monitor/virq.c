@@ -4,6 +4,7 @@
 #include <hvmm_trace.h>
 #include <vgic.h>
 #include <gic.h>
+#include <slotpirq.h>
 
 #define VIRQ_MIN_VALID_PIRQ 16
 #define VIRQ_NUM_MAX_PIRQS  1024
@@ -20,7 +21,6 @@ struct virq_entry {
 };
 
 static struct virq_entry _guest_virqs[NUM_GUESTS_STATIC][VIRQ_MAX_ENTRIES + 1];
-
 
 hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq, uint32_t pirq, uint8_t hw)
 {
@@ -53,19 +53,22 @@ static void virq_flush(vmid_t vmid)
 
     for( i = 0; i < VIRQ_MAX_ENTRIES; i++) {
         if ( entries[i].valid ) {
-            hvmm_status_t result;
+            uint32_t slot;
             if ( entries[i].hw ) {
-                result = vgic_inject_virq_hw(entries[i].virq, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, entries[i].pirq);
+                slot = vgic_inject_virq_hw(entries[i].virq, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, entries[i].pirq);
+                if ( slot != VGIC_SLOT_NOTFOUND ) {
+                    slotpirq_set( vmid, slot, entries[i].pirq );
+                }
             } else {
-                result = vgic_inject_virq_sw(entries[i].virq, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+                slot = vgic_inject_virq_sw(entries[i].virq, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+            }
+
+            if (slot == VGIC_SLOT_NOTFOUND ) {
+                break;
             }
 
             /* Forget */
             entries[i].valid = 0;
-
-            if (result != HVMM_STATUS_SUCCESS ) {
-                break;
-            }
 
             count++;
         }
@@ -84,6 +87,7 @@ hvmm_status_t virq_init(void)
             _guest_virqs[i][j].valid = 0;
         }
     }
+
     vgic_setcallback_virq_flush(&virq_flush);
     return HVMM_STATUS_SUCCESS;
 }
