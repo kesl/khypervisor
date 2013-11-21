@@ -192,6 +192,13 @@ start:
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
 #endif
+	/* Initialize bss section */
+	ldr	r2, =begin_bss
+	ldr	r3, =end_bss
+	mov	r0, #0
+1:	str	r0, [r2], #4		@ clear bss
+	cmp	r2, r3
+	blo	1b
 	@ Now we've got rid of the secondary CPUs, set up a stack
 	@ for CPU 0 so we can write most of this in C.
 	ldr     sp, =sec_stacklimit
