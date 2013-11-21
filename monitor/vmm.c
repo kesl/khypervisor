@@ -69,6 +69,7 @@ static struct memmap_desc guest_md_empty[] = {
 static struct memmap_desc guest_device_md0[] = {
     /*  label, ipa       , pa        ,       size, attr */
     {  "uart", 0x3FCA0000, 0x1C0A0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x3FD10000, 0x1C110000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
     /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
     {  "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},
@@ -82,6 +83,7 @@ static struct memmap_desc guest_memory_md0[] = {
 
 static struct memmap_desc guest_device_md1[] = {
     {  "uart", 0x3FCA0000, 0x1C0B0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x3FD10000, 0x1C110000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
     /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
     {  "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},

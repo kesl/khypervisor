@@ -5,6 +5,7 @@
 #include "arch_types.h"
 #include "smp.h"
 
+#define GIC_NUM_MAX_IRQS    1024
 #define gic_cpumask_current()	(1u << smp_processor_id())
 #define GIC_INT_PRIORITY_DEFAULT        0xa0
 
