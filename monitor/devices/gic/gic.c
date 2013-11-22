@@ -8,6 +8,9 @@
 #include <cfg_platform.h>
 #include <gic_regs.h>
 #include "print.h"
+#include "virqmap.h"
+#include "virq.h"
+#include "hvmm_types.h"
 
 #define CBAR_PERIPHBASE_MSB_MASK	0x000000FF
 
@@ -21,7 +24,6 @@
 										 |(GIC_INT_PRIORITY_DEFAULT << 16 ) \
 										 |(GIC_INT_PRIORITY_DEFAULT << 8 ) \
 										 |(GIC_INT_PRIORITY_DEFAULT ) )
-#define GIC_NUM_MAX_IRQS	1024
 
 #define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
 
@@ -339,24 +341,38 @@ void gic_interrupt(int fiq, void *pregs)
 	 * 2.1 Deactivation - CPU Interface - GICC_DIR
 	 */
 	uint32_t iar;
-	uint32_t irq;
-	struct arch_regs *regs = pregs;
 
-	/* ACK */
-	iar = _gic.ba_gicc[GICC_IAR];
-	irq = iar & GICC_IAR_INTID_MASK;
-	if ( irq < _gic.lines ) {
+    uint32_t irq;
+    struct arch_regs *regs = pregs;
+    const struct virqmap_entry *virq_entry;
 
-		/* ISR */
-		printh( "ISR(irq):%x\n", irq);
-		if ( _gic.handlers[irq] ) {
-			_gic.handlers[irq]( irq, regs, 0 );
-		}
+    /* ACK */
+    iar = _gic.ba_gicc[GICC_IAR];
+    irq = iar & GICC_IAR_INTID_MASK;
+    if ( irq < _gic.lines ) {
+        virq_entry = virqmap_for_pirq(irq);
 
-		/* Completion & Deactivation */
-		_gic.ba_gicc[GICC_EOIR] = irq;
-		_gic.ba_gicc[GICC_DIR] = irq;
-	} else {
+        /* ISR */
+        printh( "ISR(irq):%x\n", irq);
+
+        /* IRQ INJECTION */
+        if(virq_entry != VIRQMAP_ENTRY_NOTFOUND) { 
+
+            /* priority drop only for hanlding irq in guest */
+            _gic.ba_gicc[GICC_EOIR] = irq;
+            virq_inject(virq_entry->vmid, virq_entry->virq, irq, 1);
+
+        } else {
+
+            if ( _gic.handlers[irq] ) {
+                _gic.handlers[irq]( irq, regs, 0 );
+            }
+
+            /* Completion & Deactivation */
+            _gic.ba_gicc[GICC_EOIR] = irq;
+            _gic.ba_gicc[GICC_DIR] = irq;
+        }
+    } else {
         printh( "gic:no pending irq:%x\n", irq);
-	}
+    }
 }

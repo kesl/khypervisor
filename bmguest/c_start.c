@@ -27,6 +27,7 @@
 #include "uart_print.h"
 #include "gic.h"
 #include "tests.h"
+#include "test_sp804_timer.h"
 
 #ifdef __MONITOR_CALL_HVC__
 #define hsvc_ping()	asm("hvc #0xFFFE")
@@ -70,6 +71,9 @@ void nrm_loop(void)
     /* 
     test_vdev_sample();
     */
+
+    /* Test the SP804 timer */
+    hvmm_tests_sp804_timer();
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		nrm_delay();
