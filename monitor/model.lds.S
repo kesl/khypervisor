@@ -92,18 +92,24 @@ SECTIONS
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.
   */
- .text : { 
-	boot.o(.text) 
-	monitor.o(.text) 
+ .text : {
+	*(.text)
  }
+ .= ALIGN(4);
+ .rodata : {
+	*(.rodata)
+ }
+ .= ALIGN(4);
  .data : { 
-	boot.o(.data) 
-	monitor.o(.data) 
+	*(.data)
  }
- .bss : { 
-	boot.o(.bss) 
-	monitor.o(.bss) 
+ . = ALIGN(4);
+ begin_bss = .;
+ .bss : {
+	*(.bss)
  }
+ end_bss = .;
+
  . = MON_STACK;
  mon_stacktop = .;
  . = MON_STACK + MON_STACK_SIZE;
