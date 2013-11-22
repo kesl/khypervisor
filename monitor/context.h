@@ -14,9 +14,10 @@ typedef enum {
 } hyp_hvc_result_t;
 
 struct arch_regs {
-        unsigned int cpsr; /* CPSR */
-        unsigned int pc; /* Program Counter */
-        unsigned int gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
+        uint32_t cpsr; /* CPSR */
+        uint32_t pc; /* Program Counter */
+        uint32_t lr;
+        uint32_t gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
 } __attribute((packed));
 
 /* co-processor registers: cp15, cp2 */

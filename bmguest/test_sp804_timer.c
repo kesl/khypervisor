@@ -123,15 +123,11 @@ void interrupt_sp804_timer(int irq, void *pregs, void *pdata )
 
 hvmm_status_t hvmm_tests_sp804_timer(void)
 {
-	/* Testing Non-secure Physical Timer Event (PPI2, Interrupt ID:30), Cortex-A15 
-	 * - Periodically triggers timer interrupt
-	 * - switches guest context at every timer interrupt
-	 */
-
 	HVMM_TRACE_ENTER();
 
 	/* start timer */
     sp804_init(SP804_BASE, 100000);
+    gic_enable_irq(34);
     gic_set_irq_handler(34, interrupt_sp804_timer, 0);
 
 	HVMM_TRACE_EXIT();

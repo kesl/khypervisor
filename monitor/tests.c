@@ -14,7 +14,7 @@
 #define TESTS_ENABLE_VGIC
 #define TESTS_VDEV 
 #define TESTS_VDEV_VGICD
-#define TESTS_ENABLE_SP804
+/* #define TESTS_ENABLE_SP804 */
 
 hvmm_status_t hvmm_tests_main(void)
 {

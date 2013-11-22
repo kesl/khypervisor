@@ -74,3 +74,19 @@ const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq)
     }
     return result;
 }
+
+uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq)
+{
+    uint32_t pirq = PIRQ_INVALID;
+
+    /* FIXME: This is ridiculously inefficient to loop up to GIC_NUM_MAX_IRQS */
+    int i;
+    for (i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+        if ( _virqmap[i].vmid == vmid && _virqmap[i].virq == virq ) {
+            pirq = i;
+            break;
+        }
+    }
+    return pirq;
+}
+
