@@ -17,8 +17,9 @@ struct virqmap_entry {
 };
 
 const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq);
-uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq);
 hvmm_status_t virqmap_init(void);
+uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq);
+void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid, uint32_t istatus, uint8_t word_offset );
 
 #define VIRQMAP_ENTRY_NOTFOUND  0
 
