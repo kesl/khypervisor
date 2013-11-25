@@ -123,10 +123,10 @@ void callback_timer(void *pdata)
     HVMM_TRACE_ENTER();
 
     vmid = context_current_vmid();
-    printh( "Injecting IRQ 30 to Guest:%d\n", vmid);
+    //printh( "Injecting IRQ 30 to Guest:%d\n", vmid);
     //vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
     /* SW VIRQ, No PIRQ */
-    virq_inject(vmid, 30, 0, 0);
+    //virq_inject(vmid, 30, 0, 0);
     HVMM_TRACE_EXIT();
 }
 
