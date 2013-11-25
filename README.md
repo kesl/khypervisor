@@ -101,6 +101,37 @@ $ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
 </pre>
 </blockquote>
 
+## Testing minimal linux on ARNDALE board using git submodule
+
+1. Download linux-arndale
+<pre>
+$ git submodule init
+$ git submodule update
+</pre>
+2. Initial setup for linux-arndale
+<pre>
+$ cd linux-arndale
+$ git checkout origin/exynos-jb -b exynos-jb
+$ git apply ../patch/linux-arndale-config-add-minimal-linux-config.patch
+$ git clone https://github.com/android/platform_prebuilt prebuilt
+</pre>
+3. Building linux-arndale
+<pre>
+$ make ARCH=arm arndale_minimal_linux_defconfig
+$ make CROSS_COMPILE=./prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- ARCH=arm -j8
+</pre>
+4. Loading khypervisor to arndale board using CODEVISOR debugger
+<pre>
+<CODEVISOR CMD>$ d.load.binary 0x40008000
+<U-BOOT>$ bootm 40008000
+</pre>
+
+<blockquote>
+<pre>
+- You can use "load memory from file" menu in CVD tool 
+- Loading khypervisor execution file to proper memory address
+</pre>
+</blockquote>
 
 ## Testing Hypervisor Prototype 2 with u-boot
 
