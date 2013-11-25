@@ -4,7 +4,7 @@
 
 #ifdef CFG_GENERIC_CA15
 #ifdef CFG_BOARD_RTSM_VE_CA15
-#define UART_BASE       0x1c090000
+#define UART_BASE       0x1C090000
 #else
 #error "Configuration for board is not specified! GENERIC_CA15 but board is unknown."
 #endif

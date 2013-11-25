@@ -9,6 +9,7 @@
 # Example:
 # 	$ make UBOOT=y 	; # build for U-boot loading and armflash.bin generated
 #
+# 	$ make LINUX=y 	; # build for linux kernel loading
 # 	$ make UBOOT=n 	; # build ELF image for FastModels loading: hvc-man-switch.axf
 #	$ make 		; same as UBOOT=n
 
@@ -52,7 +53,11 @@ INCLUDES    += -I. -I../common/include
 ifeq ($(UBOOT),y)
 CONFIG_FLAGS	= -DBOARD_RTSMVE_CA15
 else
+ifeq ($(LINUX), y)
+CONFIG_FLAGS	= -DLINUX_GUEST
+else
 CONFIG_FLAGS	= -DBAREMETAL_GUEST 
+endif
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)
