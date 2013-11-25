@@ -32,7 +32,7 @@ trap_hvc:
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
-	push	{r0, r1}
+	push	{r0, r1, lr}
 
 	@ service other argument values -> _hyp_hvc_service(sp)
 	mov	r0, sp
@@ -44,7 +44,7 @@ trap_hvc:
 	bne	1f			
 	
 	@ Pop registers
-	pop 	{r0-r1}
+	pop 	{r0-r1, lr}
 	msr	    spsr_hyp, r0
 	msr	    elr_hyp, r1
 	pop     {r0-r12}
@@ -54,7 +54,7 @@ trap_hvc:
 	
 1:	
 	@ Pop registers
-	pop 	{r0-r1}
+	pop 	{r0-r1, lr}
 	tst 	r0, #0x1f
 	msrne	spsr_hyp, r0
 	msr	elr_hyp, r1
@@ -68,7 +68,7 @@ trap_dabt:
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
-	push	{r0, r1}
+	push	{r0, r1, lr}
 
 	@ service other argument values -> _hyp_trap_dabort(sp)
 	mov	r0, sp
@@ -79,7 +79,7 @@ trap_dabt:
 	@ <conditional code>
 
 	@ Pop registers
-	pop 	{r0-r1}
+	pop 	{r0-r1, lr}
 	msr	spsr_hyp, r0
 	msr	elr_hyp, r1
 	pop     {r0-r12}
@@ -90,14 +90,14 @@ trap_irq:
 	push	{r0-r12}
 	mrs	r0, spsr_hyp
 	mrs	r1, elr_hyp
-	push	{r0, r1}
+	push	{r0, r1, lr}
 
 	@ service other argument values -> _hyp_trap_irq(sp)
 	mov	r0, sp
 	bl	_hyp_trap_irq	@ r0: HSR
 
 	@ Pop registers
-	pop 	{r0-r1}
+	pop 	{r0-r1, lr}
 	msr	    spsr_hyp, r0
 	msr	    elr_hyp, r1
 	pop     {r0-r12}
@@ -108,14 +108,14 @@ trap_unhandled:
 	push	{r0-r12}
 	mrs     r0, spsr_hyp
 	mrs     r1, elr_hyp
-	push	{r0, r1}
+	push	{r0, r1, lr}
 
 	@ service other argument values -> _hyp_trap_unhandled(sp)
 	mov	r0, sp
 	bl	_hyp_trap_unhandled	@ r0: HSR
 
 	@ Pop registers
-	pop 	{r0-r1}
+	pop 	{r0-r1, lr}
 	msr     spsr_hyp, r0
 	msr     elr_hyp, r1
 	pop     {r0-r12}
@@ -123,9 +123,9 @@ trap_unhandled:
 
 .global __mon_switch_to_guest_context
 __mon_switch_to_guest_context:	@ struct arch_regs *r0
-	ldmfd	r0!, {r3, lr}
-    msr     spsr_hyp, r3
-    msr     elr_hyp, lr
+	ldmfd	r0!, {r1, r3, lr}
+    msr     spsr_hyp, r1
+    msr     elr_hyp, r3
     ldm     r0, {r0-r12}
 	clrex
 	eret

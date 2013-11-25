@@ -48,13 +48,37 @@ struct gic {
 
 static struct gic _gic;
 
+static void gic_test_vdev_access(void)
+{
+    volatile uint8_t *s_reg8;
+
+    HVMM_TRACE_ENTER();
+    _gic.ba_gicd[GICD_ISENABLER + 33 / 32] = (1u << (33 % 32 ));
+    _gic.ba_gicd[GICD_ICENABLER + 33 / 32] = (1u << (33 % 32 ));
+
+    _gic.ba_gicd[GICD_ISENABLER + 1 / 32] = (1u << (1 % 32 ));
+    _gic.ba_gicd[GICD_ICENABLER + 1 / 32] = (1u << (1 % 32 ));
+
+    _gic.ba_gicd[GICD_ISENABLER + 31 / 32] = (1u << (31 % 32 ));
+    _gic.ba_gicd[GICD_ICENABLER + 31 / 32] = (1u << (31 % 32 ));
+
+    /* 8/16 bit access test */
+    s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ISENABLER]);
+    s_reg8[2] = 0xf;
+    uart_print_hex32(_gic.ba_gicd[GICD_ISENABLER]);uart_print("\n\r");
+    s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ICENABLER]);
+    s_reg8[2] = 0xf;
+    uart_print_hex32(_gic.ba_gicd[GICD_ISENABLER]);uart_print("\n\r");
+
+    HVMM_TRACE_EXIT();
+}
+
 static void gic_dump_registers(void)
 {
 
     uint32_t midr;
 
     HVMM_TRACE_ENTER();
-    volatile uint8_t *s_reg8;
     midr = read_midr();
     uart_print( "midr:"); uart_print_hex32(midr); uart_print("\n\r");
 
@@ -63,22 +87,6 @@ static void gic_dump_registers(void)
         uart_print( "gic baseaddr:"); uart_print_hex32(_gic.baseaddr); uart_print("\n\r");
         uart_print( "ba_gicd:"); uart_print_hex32((uint32_t)_gic.ba_gicd); uart_print("\n\r");
         uart_print( "GICD_TYPER:"); uart_print_hex32(_gic.ba_gicd[GICD_TYPER]); uart_print("\n\r");     
-        _gic.ba_gicd[GICD_ISENABLER + 33 / 32] = (1u << (33 % 32 ));
-        _gic.ba_gicd[GICD_ICENABLER + 33 / 32] = (1u << (33 % 32 ));
-
-        _gic.ba_gicd[GICD_ISENABLER + 1 / 32] = (1u << (1 % 32 ));
-        _gic.ba_gicd[GICD_ICENABLER + 1 / 32] = (1u << (1 % 32 ));
-
-        _gic.ba_gicd[GICD_ISENABLER + 31 / 32] = (1u << (31 % 32 ));
-        _gic.ba_gicd[GICD_ICENABLER + 31 / 32] = (1u << (31 % 32 ));
-
-        /* 8/16 bit access test */
-        s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ISENABLER]);
-        s_reg8[2] = 0xf;
-        uart_print_hex32(_gic.ba_gicd[GICD_ISENABLER]);uart_print("\n\r");
-        s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ICENABLER]);
-        s_reg8[2] = 0xf;
-        uart_print_hex32(_gic.ba_gicd[GICD_ISENABLER]);uart_print("\n\r");
 
         uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); uart_print("\n\r");
         uart_print( "GICC_CTLR:"); uart_print_hex32(_gic.ba_gicc[GICC_CTLR]); uart_print("\n\r");
@@ -87,6 +95,9 @@ static void gic_dump_registers(void)
         uart_print( " GICC_RPR:"); uart_print_hex32(_gic.ba_gicc[(0x0014/4)]); uart_print("\n\r");
         uart_print( "GICC_HPPIR:"); uart_print_hex32(_gic.ba_gicc[(0x0018/4)]); uart_print("\n\r");
         uart_print( "GICC_IIDR:"); uart_print_hex32(_gic.ba_gicc[(0x00FC/4)]); uart_print("\n\r");
+
+        /* Test to see if VGICD on monitor side works as we expect */
+        gic_test_vdev_access();
     }
     HVMM_TRACE_EXIT();
 }
@@ -127,13 +138,13 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 /* API functions */
 hvmm_status_t gic_enable_irq(uint32_t irq)
 {
-    /* TODO: Control GIC Distributor and let the Hypervisor trap and know */
+    _gic.ba_gicd[GICD_ISENABLER + irq / 32] = (1u << (irq % 32 ));
     return HVMM_STATUS_SUCCESS;
 }
 
 hvmm_status_t gic_disable_irq(uint32_t irq)
 {
-    /* TODO: Control GIC Distributor and let the Hypervisor trap and know */
+    _gic.ba_gicd[GICD_ICENABLER + irq / 32] = (1u << (irq % 32 ));
     return HVMM_STATUS_SUCCESS;
 }
 

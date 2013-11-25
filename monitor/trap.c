@@ -48,6 +48,25 @@ hvmm_status_t _hyp_trap_unhandled( struct arch_regs *regs )
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+static void _trap_dump_bregs(void)
+{
+    uint32_t spsr, lr, sp;
+    printh( " - banked regs\n" );
+    asm volatile (" mrs     %0, sp_usr\n\t" :"=r" (sp)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_usr\n\t" :"=r" (lr)::"memory", "cc");
+    printh( " - usr: sp:%x lr:%x\n", sp, lr );
+
+    asm volatile (" mrs     %0, spsr_svc\n\t" :"=r" (spsr)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_svc\n\t" :"=r" (sp)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_svc\n\t" :"=r" (lr)::"memory", "cc");
+    printh( " - svc: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
+
+    asm volatile (" mrs     %0, spsr_irq\n\t" :"=r" (spsr)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_irq\n\t" :"=r" (sp)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_irq\n\t" :"=r" (lr)::"memory", "cc");
+    printh( " - irq: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
+}
+
 /*
  * hvc #imm handler
  *
@@ -77,35 +96,18 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
     if ( ec == 0x24) {
         /* Handle data abort at the priority */
         printh("[hyp] data abort handler: hsr.iss=%x\n", iss);
+        _trap_dump_bregs();
 
         if ( trap_hvc_dabort(iss, regs) != HVMM_STATUS_SUCCESS ) {
             printh( "[hyp] === Unhandled dabort ===\n" );
             printh( "[hyp] current guest vmid:%d\n", context_current_vmid() );
             context_dump_regs( regs );
 
-            {
-                uint32_t spsr, lr, sp;
-                printh( " - banked regs\n" );
-
-                asm volatile (" mrs     %0, spsr_svc\n\t"
-                          :"=r" (spsr)::"memory", "cc");
-                asm volatile (" mrs     %0, sp_svc\n\t"
-                          :"=r" (sp)::"memory", "cc");
-                asm volatile (" mrs     %0, lr_svc\n\t"
-                          :"=r" (lr)::"memory", "cc");
-                printh( " - svc: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
-
-                asm volatile (" mrs     %0, spsr_irq\n\t"
-                          :"=r" (spsr)::"memory", "cc");
-                asm volatile (" mrs     %0, sp_irq\n\t"
-                          :"=r" (sp)::"memory", "cc");
-                asm volatile (" mrs     %0, lr_irq\n\t"
-                          :"=r" (lr)::"memory", "cc");
-                printh( " - irq: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
-            }
+            _trap_dump_bregs();
 
             hyp_abort_infinite();
         }
+        _trap_dump_bregs();
     } else {
         /* Handle the other cases */
         switch( iss ) {
@@ -125,13 +127,14 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
             default:
                 if ( ec == 0x20 ) {
                     // Prefetch Abort routed to Hyp mode
+                    printh( "[hyp]: prefetch abort routed to Hyp mode\n");
                 }
     
                 uart_print("[hyp] _hyp_hvc_service:unknown hsr.iss="); uart_print_hex32( iss ); uart_print("\n\r" );
                 uart_print("[hyp] hsr.ec="); uart_print_hex32( ec ); uart_print("\n\r" );
                 uart_print("[hyp] hsr="); uart_print_hex32( hsr ); uart_print("\n\r" );
                 context_dump_regs( regs );
-    
+                _trap_dump_bregs();
                 hyp_abort_infinite();
                 break;
         }

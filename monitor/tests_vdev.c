@@ -6,6 +6,8 @@
 #include <gic_regs.h>
 #include <cfg_platform.h>
 #include <asm-arm_inline.h>
+#include <gic.h>
+#include "virqmap.h"
 
 /* return the bit position of the first bit set from msb
  * for example, firstbit32(0x7F = 111 1111) returns 7
@@ -26,17 +28,24 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
     cstatus = ostatus[word_offset] ^ istatus;   // find changed bits
 
     while(cstatus) {
+        uint32_t virq;
+        uint32_t pirq;
         bit = firstbit32(cstatus);
 
-        /* changed bit */
-        if ( istatus & (1 << bit) ) {
-            // enabled irq: bit + minirq;
-            printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
-            //pirq = virq2pirq(vmid, bit + minirq);
-            //gic_configure_int( ... pirq );
+        virq = minirq + bit;
+        pirq = virqmap_pirq(vmid, virq);
+
+        if ( pirq != PIRQ_INVALID ) {
+            /* changed bit */
+            if ( istatus & (1 << bit) ) {
+                printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
+                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL, gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT );
+            } else {
+                printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
+                gic_disable_irq(pirq);
+            }
         } else {
-            printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
-            // disabled irq: bit + minirq;
+            printh( "WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid );
         }
 
         cstatus &= ~(1<< bit);
