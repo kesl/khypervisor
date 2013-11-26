@@ -121,9 +121,7 @@ static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *reg
 
 void context_init_banked(struct arch_regs_banked *regs_banked)
 {
-    regs_banked->spsr_usr = 0;
     regs_banked->sp_usr = 0;
-    regs_banked->lr_usr = 0;
     regs_banked->spsr_svc = 0;
     regs_banked->sp_svc = 0;
     regs_banked->lr_svc = 0;
@@ -148,6 +146,9 @@ void context_init_banked(struct arch_regs_banked *regs_banked)
 
 void context_save_banked(struct arch_regs_banked *regs_banked)
 {
+    asm volatile (" mrs     %0, sp_usr\n\t"
+                          :"=r" (regs_banked->sp_usr)::"memory", "cc");
+
 	/* SVC banked register */
     asm volatile (" mrs     %0, spsr_svc\n\t"
                           :"=r" (regs_banked->spsr_svc)::"memory", "cc");
@@ -200,6 +201,9 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
 
 void context_restore_banked(struct arch_regs_banked *regs_banked)
 {
+    asm volatile (" msr    sp_usr, %0\n\t"
+                          ::"r" (regs_banked->sp_usr) :"memory", "cc");
+
 	/* SVC banked register */
     asm volatile (" msr    spsr_svc, %0\n\t"
                           ::"r" (regs_banked->spsr_svc) :"memory", "cc");
@@ -256,6 +260,7 @@ void context_init_cops(struct arch_regs_cop *regs_cop)
     regs_cop->ttbr0 = 0;
     regs_cop->ttbr1 = 0;
     regs_cop->ttbcr = 0;
+    regs_cop->sctlr = 0;
 }
 
 void context_save_cops(struct arch_regs_cop *regs_cop)
@@ -264,6 +269,7 @@ void context_save_cops(struct arch_regs_cop *regs_cop)
     regs_cop->ttbr0 = read_ttbr0();
     regs_cop->ttbr1 = read_ttbr1();
     regs_cop->ttbcr = read_ttbcr();
+    regs_cop->sctlr = read_sctlr();
 }
 
 void context_restore_cops(struct arch_regs_cop *regs_cop)
@@ -272,6 +278,7 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
 	write_ttbr0(regs_cop->ttbr0);
 	write_ttbr1(regs_cop->ttbr1);
 	write_ttbcr(regs_cop->ttbcr);
+    write_sctlr(regs_cop->sctlr);
 }
 
 
