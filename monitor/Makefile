@@ -51,13 +51,13 @@ INCLUDES    += -I. -I../common/include
 
 # Turn off BAREMETAL_GUEST flag to not embed bmguest.bin
 ifeq ($(UBOOT),y)
-CONFIG_FLAGS	= -DBOARD_RTSMVE_CA15
+    CONFIG_FLAGS	= -DBOARD_RTSMVE_CA15
 else
-ifeq ($(LINUX), y)
-CONFIG_FLAGS	= -DLINUX_GUEST
-else
-CONFIG_FLAGS	= -DBAREMETAL_GUEST 
+    CONFIG_FLAGS	= -DBAREMETAL_GUEST 
 endif
+
+ifeq ($(LINUX), y)
+    CONFIG_FLAGS	+= -DLINUX_GUEST
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)

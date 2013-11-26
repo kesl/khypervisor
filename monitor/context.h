@@ -26,13 +26,12 @@ struct arch_regs_cop {
 	uint32_t ttbr0;
 	uint32_t ttbr1;
 	uint32_t ttbcr;
+    uint32_t sctlr;
 };
 
 /* banked registers */
 struct arch_regs_banked {
-    uint32_t spsr_usr;
     uint32_t sp_usr;
-    uint32_t lr_usr;
     uint32_t spsr_svc;
     uint32_t sp_svc;
     uint32_t lr_svc;
