@@ -127,7 +127,7 @@ static void vmm_ttbl3_map( lpaed_t *ttbl3, uint64_t offset, uint32_t pages, uint
     int index_l3_last = 0;
 
  
-//    printh( "%s[%d]: ttbl3:%x offset:%x pte:%x pages:%d, pa:%x\n", __FUNCTION__, __LINE__, (uint32_t) ttbl3, (uint32_t) offset, &ttbl3[offset], pages, (uint32_t) pa);
+    printh( "%s[%d]: ttbl3:%x offset:%x pte:%x pages:%d, pa:%x\n", __FUNCTION__, __LINE__, (uint32_t) ttbl3, (uint32_t) offset, &ttbl3[offset], pages, (uint32_t) pa);
     /* Initialize the address spaces with 'invalid' state */
 
     index_l3 = offset;
@@ -196,11 +196,11 @@ static void vmm_ttbl2_map(lpaed_t *ttbl2, uint64_t va_offset, uint64_t pa, uint3
     int i;
 
     HVMM_TRACE_ENTER();
-//    printh( "ttbl2:%x va_offset:%x pa:%x size:%d\n", (uint32_t) ttbl2, (uint32_t) va_offset, (uint32_t) pa, size);
+    printh( "ttbl2:%x va_offset:%x pa:%x size:%d\n", (uint32_t) ttbl2, (uint32_t) va_offset, (uint32_t) pa, size);
 
     index_l2 = va_offset >> LPAE_BLOCK_L2_SHIFT;
     block_offset = va_offset & LPAE_BLOCK_L2_MASK;
-//    printh( "- index_l2:%d block_offset:%x\n", index_l2, (uint32_t) block_offset);
+    printh( "- index_l2:%d block_offset:%x\n", index_l2, (uint32_t) block_offset);
     /* head < BLOCK */
     if ( block_offset ) {
         uint64_t offset;
@@ -223,7 +223,7 @@ static void vmm_ttbl2_map(lpaed_t *ttbl2, uint64_t va_offset, uint64_t pa, uint3
     if ( size > 0 ) {
         num_blocks = size >> LPAE_BLOCK_L2_SHIFT;
         index_l2_last = index_l2 + num_blocks;
-//        printh( "- index_l2_last:%d num_blocks:%d size:%d\n", index_l2_last, (uint32_t) num_blocks, size);
+        printh( "- index_l2_last:%d num_blocks:%d size:%d\n", index_l2_last, (uint32_t) num_blocks, size);
 
         for( i = index_l2; i < index_l2_last; i++ ) {
             lpaed_stage2_enable_l2_table( &ttbl2[i] );
@@ -236,7 +236,7 @@ static void vmm_ttbl2_map(lpaed_t *ttbl2, uint64_t va_offset, uint64_t pa, uint3
     /* tail < BLOCK */
     if ( size > 0) {
         pages = size >> LPAE_PAGE_SHIFT;
-        //printh( "- pages:%d size:%d\n", pages, size);
+        printh( "- pages:%d size:%d\n", pages, size);
         if ( pages ) {
             ttbl3 = TTBL_L3(ttbl2, index_l2_last);
             vmm_ttbl3_map( ttbl3, 0, pages, pa, mattr );
@@ -254,11 +254,11 @@ static void vmm_ttbl2_init_entries(lpaed_t *ttbl2)
     lpaed_t *ttbl3;
     for( i = 0; i < VMM_L2_PTE_NUM; i++ ) {
         ttbl3 = TTBL_L3(ttbl2, i);
-        //printh("ttbl2[%d]:%x ttbl3[]:%x\n", i, &ttbl2[i], ttbl3 );
+        printh("ttbl2[%d]:%x ttbl3[]:%x\n", i, &ttbl2[i], ttbl3 );
         lpaed_stage2_conf_l2_table( &ttbl2[i], (uint64_t) ((uint32_t) ttbl3), 0);
         for( j = 0; j < VMM_L2_PTE_NUM; j++) {
             ttbl3[j].pt.valid = 0;
-            // printh("- ttbl3[%d]:%x\n", j, &ttbl3[j] );
+            printh("- ttbl3[%d]:%x\n", j, &ttbl3[j] );
         }
     }        
 
@@ -270,7 +270,7 @@ static void vmm_init_ttbl2(lpaed_t *ttbl2, struct memmap_desc *md)
 {
     int i = 0;
     HVMM_TRACE_ENTER();
-    //printh( " - ttbl2:%x\n", (uint32_t) ttbl2 );
+    printh( " - ttbl2:%x\n", (uint32_t) ttbl2 );
     if ( ((uint64_t) ( (uint32_t) ttbl2) ) & 0x0FFFULL ) {
         printh( " - error: invalid ttbl2 address alignment\n" );
     }

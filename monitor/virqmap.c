@@ -48,7 +48,7 @@ hvmm_status_t virqmap_init(void)
     _virqmap[19].virq = 19;
     _virqmap[19].vmid = 0;
     // WDT: shared driver
-    // IRQ 32i
+    // IRQ 32
     _virqmap[32].virq = 32;
     _virqmap[32].vmid = 0;
 
