@@ -95,6 +95,14 @@
                                 " mcr     p15, 4, %0, c1, c0, 0\n\t" \
                                 :: "r" ((val)) : "memory", "cc")
 
+#define read_sctlr()           ({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c1, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+
+#define write_sctlr(val)       asm volatile(\
+                                " mcr     p15, 0, %0, c1, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+
 #define read_httbr()            ({ uint32_t v1, v2; asm volatile(\
                                 " mrrc     p15, 4, %0, %1, c2\n\t" \
                                 : "=r" (v1), "=r" (v2) : : "memory", "cc"); \

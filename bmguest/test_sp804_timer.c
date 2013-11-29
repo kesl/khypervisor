@@ -4,7 +4,7 @@
 #include "test_sp804_timer.h"
 #include "uart_print.h"
 
-#define SP804_BASE 0x3FD10000
+#define SP804_BASE 0x1C110000
 
 /* Register offsets */
 #define SP804_LOAD			0x0
