@@ -258,7 +258,7 @@ static void vmm_ttbl2_init_entries(lpaed_t *ttbl2)
         lpaed_stage2_conf_l2_table( &ttbl2[i], (uint64_t) ((uint32_t) ttbl3), 0);
         for( j = 0; j < VMM_L2_PTE_NUM; j++) {
             ttbl3[j].pt.valid = 0;
-            printh("- ttbl3[%d]:%x\n", j, &ttbl3[j] );
+            //printh("- ttbl3[%d]:%x\n", j, &ttbl3[j] );
         }
     }        
 
