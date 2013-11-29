@@ -33,8 +33,22 @@ hvmm_status_t virqmap_init(void)
 
     // NOTE(wonseok): referenced by https://github.com/kesl/khypervisor/wiki/Hardware-Resources-of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
 
+    _virqmap[1].virq = 1;
+    _virqmap[1].vmid = 0;
+    _virqmap[31].virq = 31;
+    _virqmap[31].vmid = 0;
+    _virqmap[33].virq = 33;
+    _virqmap[33].vmid = 0;
+    _virqmap[16].virq = 16;
+    _virqmap[16].vmid = 0;
+    _virqmap[17].virq = 17;
+    _virqmap[17].vmid = 0;
+    _virqmap[18].virq = 18;
+    _virqmap[18].vmid = 0;
+    _virqmap[19].virq = 19;
+    _virqmap[19].vmid = 0;
     // WDT: shared driver
-    // IRQ 32
+    // IRQ 32i
     _virqmap[32].virq = 32;
     _virqmap[32].vmid = 0;
 

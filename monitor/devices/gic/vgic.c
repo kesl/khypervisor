@@ -214,6 +214,7 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
             } else {
                 printh( "vgic: deactivated virq at slot %d\n", slot );
             }
+            slotvirq_clear(vmid, slot);
         }
 
         eisr = _vgic.base[GICH_EISR1];
@@ -231,6 +232,7 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
             } else {
                 printh( "vgic: deactivated virq at slot %d\n", slot );
             }
+            slotvirq_clear(vmid, slot);
         }
     }
 
@@ -248,17 +250,24 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
             }
         }
     }
+    
+    {
+      uint64_t elsr;
+      elsr = _vgic.base[GICH_ELSR1];
+      elsr <<= 32;
+      elsr |= _vgic.base[GICH_ELSR0];
 
-    if ( ((~(_vgic.base[GICH_ELSR0])) | (~(_vgic.base[GICH_ELSR1]))) == 0 ) {
+      if ( ((~elsr) & _vgic.valid_lr_mask) == 0 ) {
         /* No valid interrupt */
-        vgic_enable(0);
-        vgic_injection_enable(0);
-        printh( "vgic: no valid virqs, disabling vgic\n" );
-    } else {
-        printh( "vgic:MISR:%x ELSR0:%x ELSR1:%x\n",
-            _vgic.base[GICH_MISR], 
-            _vgic.base[GICH_ELSR0],
-            _vgic.base[GICH_ELSR1]);
+          vgic_enable(0);
+          vgic_injection_enable(0);
+          printh( "vgic: no valid virqs, disabling vgic\n" );
+     } else {
+          printh( "vgic:MISR:%x ELSR0:%x ELSR1:%x\n",
+               _vgic.base[GICH_MISR], 
+               _vgic.base[GICH_ELSR0],
+               _vgic.base[GICH_ELSR1]);
+        }
     }
 
     HVMM_TRACE_EXIT();

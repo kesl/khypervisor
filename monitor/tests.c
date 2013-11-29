@@ -10,11 +10,11 @@
 /* GIC/Timer test disabled due to scheduler test does context switching based on timer ticks */
 /* #define TESTS_ENABLE_GIC_TIMER */
 /* #define TESTS_ENABLE_GIC_PWM_TIMER */
-#define TESTS_ENABLE_MALLOC
-/* #define TESTS_ENABLE_VGIC */
-/* #define TESTS_VDEV */
-/* #define TESTS_VDEV_VGICD */
-/* #define TESTS_ENABLE_SP804 */
+/* #define TESTS_ENABLE_MALLOC */
+#define TESTS_ENABLE_VGIC 
+#define TESTS_VDEV 
+#define TESTS_VDEV_VGICD
+#define TESTS_ENABLE_SP804
 
 hvmm_status_t hvmm_tests_main(void)
 {

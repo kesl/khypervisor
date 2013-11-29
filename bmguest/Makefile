@@ -13,7 +13,11 @@ else
 include config-default.mk
 endif
 
+ifeq ($(ARNDALE),y)
+OBJS 		= guest.o c_start.o string.o exception.o gic.o arndale_uart_print.o test_vdev_sample.o test_sp804_timer.o
+else
 OBJS 		= guest.o c_start.o string.o exception.o gic.o uart_print.o test_vdev_sample.o test_sp804_timer.o
+endif
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin

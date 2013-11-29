@@ -47,7 +47,7 @@
 inline void nrm_delay(void)
 {
 	volatile int i = 0;
-	for( i = 0; i < 0x00FFFFFF; i++);
+	for( i = 0; i < 0x00000FFF; i++);
 }
 
 
@@ -68,16 +68,16 @@ void nrm_loop(void)
      * - Uncomment the following line of code only if 'vdev_sample' is registered at the monitor
      * - Otherwise, the monitor will hang with data abort
      */
-    /* 
+     
     test_vdev_sample();
-    */
+    
 
     /* Test the SP804 timer */
     hvmm_tests_sp804_timer();
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
-		nrm_delay();
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
+		nrm_delay();
 
 #ifdef __MONITOR_CALL_HVC__
 	    /* Hyp monitor guest run in Non-secure supervisor mode. 

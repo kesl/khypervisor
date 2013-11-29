@@ -40,7 +40,7 @@ void hyp_main(void)
 
     /* Virtual GIC Distributor */
     printh( "tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
-    vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
+    vdev_gicd_init(0x2c000000 | GIC_OFFSET_GICD);
 
     /* Initialize PIRQ to VIRQ mapping */
     virqmap_init();

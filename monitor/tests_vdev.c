@@ -23,6 +23,7 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
     uint32_t cstatus;                          // changed bits only
     uint32_t minirq;
     int bit;
+    int igstatus = 0;
 
     minirq = word_offset * 32;                 /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
     cstatus = ostatus[word_offset] ^ istatus;   // find changed bits
@@ -31,7 +32,7 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
         uint32_t virq;
         uint32_t pirq;
         bit = firstbit32(cstatus);
-
+        
         virq = minirq + bit;
         pirq = virqmap_pirq(vmid, virq);
 
@@ -43,15 +44,17 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
             } else {
                 printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
                 gic_disable_irq(pirq);
-            }
+            } 
+            igstatus = 0;
         } else {
             printh( "WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid );
-        }
-
+            istatus &= ~(1 << bit);
+            igstatus = 1;
+        } 
         cstatus &= ~(1<< bit);
     }
-
-    ostatus[word_offset] = istatus;
+    if(!igstatus)
+        ostatus[word_offset] = istatus;
 }
 
 

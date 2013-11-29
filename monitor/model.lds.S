@@ -93,17 +93,23 @@ SECTIONS
   * where it won't get overwritten by kernel, initrd or atags.
   */
  .text : { 
-	boot.o(.text) 
-	monitor.o(.text) 
+    *(.text)
  }
+ .= ALIGN(4);
+ .rodata : {
+        *(.rodata)
+ }
+ .= ALIGN(4);
  .data : { 
-	boot.o(.data) 
-	monitor.o(.data) 
+    *(.data)
  }
+ .= ALIGN(4);
+ begin_bss = .;
  .bss : { 
-	boot.o(.bss) 
-	monitor.o(.bss) 
+    *(.bss)
  }
+ end_bss = .;
+
  . = MON_STACK;
  mon_stacktop = .;
  . = MON_STACK + MON_STACK_SIZE;
