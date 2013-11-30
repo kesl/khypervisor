@@ -68,8 +68,9 @@ static struct memmap_desc guest_md_empty[] = {
 
 static struct memmap_desc guest_device_md0[] = {
     /*  label, ipa       , pa        ,       size, attr */
-    {  "uart", 0x1C090000, CFG_UART1,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    { "sp804", 0x1C110000, 0x1C110000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {  "uart", 0x1C090000, CFG_UART1,     0x10000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C110000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
+    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
     /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
     {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},
@@ -82,8 +83,9 @@ static struct memmap_desc guest_memory_md0[] = {
 };
 
 static struct memmap_desc guest_device_md1[] = {
-    {  "uart", 0x1C090000, CFG_UART2,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    { "sp804", 0x1C110000, 0x1C120000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    {  "uart", 0x1C090000, CFG_UART2,     0x10000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C120000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
+    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
     /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
     {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
     {       0, 0, 0, 0,  0},

@@ -33,6 +33,7 @@ hvmm_status_t virqmap_init(void)
 
     // NOTE(wonseok): referenced by https://github.com/kesl/khypervisor/wiki/Hardware-Resources-of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
 
+    // Test vgicd look bmguest/gic.c
     _virqmap[1].virq = 1;
     _virqmap[1].vmid = 0;
     _virqmap[31].virq = 31;
@@ -47,6 +48,12 @@ hvmm_status_t virqmap_init(void)
     _virqmap[18].vmid = 0;
     _virqmap[19].virq = 19;
     _virqmap[19].vmid = 0;
+
+    // pwm timer driver
+    // IRQ 69
+    _virqmap[69].virq = 69;
+    _virqmap[69].vmid = 0;
+    
     // WDT: shared driver
     // IRQ 32
     _virqmap[32].virq = 32;

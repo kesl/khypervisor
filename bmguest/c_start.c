@@ -28,6 +28,9 @@
 #include "gic.h"
 #include "tests.h"
 #include "test_sp804_timer.h"
+#ifdef ARNDALE
+#include "test_pwm_timer.h"
+#endif
 
 #ifdef __MONITOR_CALL_HVC__
 #define hsvc_ping()	asm("hvc #0xFFFE")
@@ -74,6 +77,10 @@ void nrm_loop(void)
 
     /* Test the SP804 timer */
     hvmm_tests_sp804_timer();
+
+#ifdef ARNDALE
+    hvmm_tests_pwm_timer();
+#endif
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
