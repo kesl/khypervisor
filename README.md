@@ -88,7 +88,11 @@ $ git checkout lue_arndale_13.1
 $ make arndale5250
 </pre>
 3. refusing SD card for arndale(X is number of SD card parition)
+
+<a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
+
 <pre>
+$ sudo dd if=arndale-bl1.bin of=/dev/sdg bs=512 seek=1
 $ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
 </pre>
