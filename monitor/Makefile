@@ -58,6 +58,7 @@ endif
 
 ifeq ($(LINUX), y)
     CONFIG_FLAGS	+= -DLINUX_GUEST
+	OBJS += loadlinux.o
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)
