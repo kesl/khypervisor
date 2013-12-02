@@ -492,7 +492,7 @@ void context_init_guests(void)
     {
     	extern uint32_t guest_bin_start;
         uint32_t *src = &guest_bin_start;
-        setup_tags(src);
+        loadlinux_setup_tags(src);
     }
 #endif
 	uart_print("[hyp] init_guests: return\n\r");
