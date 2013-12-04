@@ -93,7 +93,7 @@ $ make arndale5250
 </pre>
 4. refusing SD card for arndale(X is number of SD card parition)
 <pre>
-$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17i
+$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
 $ sudo dd if=bmguest.bin of=/dev/sdX bs=512 seek=2129
