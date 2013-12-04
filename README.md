@@ -82,17 +82,23 @@ $ git submodule init
 $ git submodule update
 $ cd u-boot-arndale
 </pre>
-2. Building u-boot-arndale
+2. patching a autoboot for u-boot-arndale
 <pre>
 $ git checkout lue_arndale_13.1
+$ patch -p1 < ../patch/u-boot_arndale.patch
+</pre>
+3. Building u-boot-arndale
+<pre>
 $ make arndale5250
 </pre>
-3. refusing SD card for arndale(X is number of SD card parition)
+4. refusing SD card for arndale(X is number of SD card parition)
 <pre>
-$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
+$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17i
 $ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
+$ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
+$ sudo dd if=bmguest.bin of=/dev/sdX bs=512 seek=2129
 </pre>
-4. Loading khypervisor to arndale board using CODEVISOR debugger
+5. Loading khypervisor to arndale board using CODEVISOR debugger
 
 <blockquote>
 <pre>

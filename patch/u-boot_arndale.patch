@@ -1,0 +1,13 @@
+diff --git a/include/configs/arndale5250.h b/include/configs/arndale5250.h
+index 2daa3a6..2dc6595 100644
+--- a/include/configs/arndale5250.h
++++ b/include/configs/arndale5250.h
+@@ -137,7 +137,7 @@
+ /* secondary SMP pens */
+ #define CONFIG_SPL_SMP_PEN	(CONFIG_SPL_TEXT_BASE + CONFIG_SPL_MAX_SIZE - 8)
+ 
+-#define CONFIG_BOOTCOMMAND	"mmc read 40007000 451 2000; bootm 40007000"
++#define CONFIG_BOOTCOMMAND	"mmc read 0xa0000000 451 800; mmc read 0x60000000 851 400; mmc read 0x90000000 851 400; go 0xa000004c"
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_LONGHELP		/* undef to save memory */
+ #define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser	*/
