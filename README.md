@@ -133,6 +133,40 @@ $ make CROSS_COMPILE=./prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
 </pre>
 </blockquote>
 
+## Testing minimal linux on RTSM fastmodels using git submodule
+1. Download linux-rtsm
+<pre>
+$ git submodule init
+$ git submodule update
+</pre>
+2. Initial setup for linux
+<pre>
+$ cd linux-rtsm
+$ git checkout 7d1f9aeff1ee4a20b1aeb377dd0f579fe9647619 -b 3.8
+$ git apply ../patch/linux-fastmodels-config-add-minimal-linux-config.patch
+$ cp ../linuxguest/fs.cpio ./
+$ cp ../linuxguest/host-a15.dtb ./
+</pre>
+3. Building linux-arndale
+<pre>
+$ make ARCH=arm vexpress_minhw_defconfig
+$ CROSS_COMPILE=arm-linux-gnueabi- ARCH=arm make -j8
+$ cat host-a15.dtb >> arch/arm/boot/zImage
+4. Loading khypervisor to RTSM fastmodels
+<pre>
+$ cp arch/arm/boot/zImage ../monitor/zImage
+$ cd ../monitor
+$ make LINUX=y
+</pre>
+5. Run and Debug on DS-5 or FastModels MaxView + RTSM VE Cortex A15-A7
+<pre>
+$ maxview &
+ Under monitor/ directory 
+$ ./run_rtsm.sh
+</pre>
+
+
+
 ## Testing Hypervisor Prototype 2 with u-boot
 
 - Project branch information: test

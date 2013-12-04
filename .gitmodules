@@ -7,3 +7,6 @@
 [submodule "linux-arndale"]
 	path = linux-arndale
 	url = git://git.insignal.co.kr/samsung/exynos/android/kernel/samsung/exynos3.0
+[submodule "linux-rtsm"]
+	path = linux-rtsm
+	url = git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
