@@ -4,7 +4,7 @@
 
 #ifdef CFG_EXYNOS5250
 #ifdef CFG_BOARD_ARNDALE
-#define UART2       	CFG_UART0
+#define UART2_BASE       	0x12c20000
 #else
 #error "Configuration for board is not specified! Exynos5250 but board is unknow."
 #endif
@@ -20,7 +20,7 @@
 
 static int serial_err_check(int op)
 {
-	struct s5p_uart *const uart = (struct s5p_uart *) UART2;
+	struct s5p_uart *const uart = (struct s5p_uart *) UART2_BASE;
 	unsigned int mask;
 
 	if(op)
@@ -34,7 +34,7 @@ static int serial_err_check(int op)
 
 void uart_putc(const char c)
 {
-	struct s5p_uart *const uart = (struct s5p_uart *) UART2;
+	struct s5p_uart *const uart = (struct s5p_uart *) UART2_BASE;
 
 
 	while((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {

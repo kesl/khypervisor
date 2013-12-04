@@ -8,6 +8,7 @@
 #include <asm-arm_inline.h>
 #include <gic.h>
 #include "virqmap.h"
+#include <hyp_config.h>
 
 /* return the bit position of the first bit set from msb
  * for example, firstbit32(0x7F = 111 1111) returns 7
@@ -16,17 +17,16 @@
 #define NUM_MAX_VIRQS   128
 #define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
-static uint32_t ostatus[NUM_STATUS_WORDS] = {0, };        // old status
+static uint32_t ostatus[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {0, };        // old status
 
 void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offset )
 {
     uint32_t cstatus;                          // changed bits only
     uint32_t minirq;
     int bit;
-    int igstatus = 0;
 
     minirq = word_offset * 32;                 /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
-    cstatus = ostatus[word_offset] ^ istatus;   // find changed bits
+    cstatus = ostatus[vmid][word_offset] ^ istatus;   // find changed bits
 
     while(cstatus) {
         uint32_t virq;
@@ -45,16 +45,12 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
                 printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
                 gic_disable_irq(pirq);
             } 
-            igstatus = 0;
         } else {
             printh( "WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid );
-            istatus &= ~(1 << bit);
-            igstatus = 1;
         } 
         cstatus &= ~(1<< bit);
     }
-    if(!igstatus)
-        ostatus[word_offset] = istatus;
+    ostatus[vmid][word_offset] = istatus;
 }
 
 

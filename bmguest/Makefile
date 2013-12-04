@@ -17,12 +17,12 @@ else
 include config-default.mk
 endif
 
-OBJS = guest.o c_start.o string.o exception.o gic.o test_vdev_sample.o test_sp804_timer.o
+OBJS = guest.o c_start.o string.o exception.o gic.o test_vdev_sample.o
 
 ifeq ($(ARNDALE),y)
 OBJS += arndale_uart_print.o test_pwm_timer.o
 else
-OBJS += uart_print.o
+OBJS += uart_print.o test_sp804_timer.o
 endif
 
 GUESTIMG 	= bmguest.axf
@@ -46,10 +46,6 @@ GUESTTYPE?=GUEST_HYPMON
 
 GUESTCONFIGS	=
 
-ifeq ($(ARNDALE),y)
-GUESTCONFIGS += -DARNDALE
-endif
-
 ifeq ($(GUESTTYPE),GUEST_HYPMON)
 GUESTCONFIGS	= -D__MONITOR_CALL_HVC__ -DLDS_PHYS_OFFSET='0x80000000' -DLDS_GUEST_OFFSET='0x80000000' -DLDS_GUEST_STACK='0x8F000000'
 else
@@ -60,6 +56,10 @@ endif
 GUESTCONFIGS += -DNUM_ITERATIONS=300 -DGUEST_LABEL='"[guest0] "'
 GUESTCONFIGS += -DLDS_$(GUESTTYPE)=1
 
+
+ifeq ($(ARNDALE),y)
+GUESTCONFIGS += -DARNDALE
+endif
 
 #GUESTCONFIGS	= -D__MONITOR_CALL_HVC__
 # These are needed by the underlying kernel make

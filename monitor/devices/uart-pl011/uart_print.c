@@ -4,7 +4,7 @@
 
 #ifdef CFG_GENERIC_CA15
 #ifdef CFG_BOARD_RTSM_VE_CA15
-#define UART_BASE       CFG_UART0
+#define UART0_BASE       0x1C090000
 #else
 #error "Configuration for board is not specified! GENERIC_CA15 but board is unknown."
 #endif
@@ -12,7 +12,7 @@
 
 void uart_print(const char *str)
 {
-        volatile char *pUART = (char *) UART_BASE;
+        volatile char *pUART = (char *) UART0_BASE;
         while(*str) {
                 *pUART = *str++;
         }
@@ -20,7 +20,7 @@ void uart_print(const char *str)
 
 void uart_putc( const char c )
 {
-        volatile char *pUART = (char *) UART_BASE;
+        volatile char *pUART = (char *) UART0_BASE;
 	*pUART = c;
 }
 

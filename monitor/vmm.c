@@ -66,28 +66,53 @@ static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
 };
 
+#if defined (CFG_BOARD_ARNDALE)
+
 static struct memmap_desc guest_device_md0[] = {
     /*  label, ipa       , pa        ,       size, attr */
-    {  "uart", 0x1C090000, CFG_UART1,     0x10000, LPAED_STAGE2_MEMATTR_DM },
-    { "sp804", 0x1C110000, 0x1C110000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
-    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
+    {  "uart", 0x1C090000, 0x12C10000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C110000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
     /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
     {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
-    {       0, 0, 0, 0,  0},
-};
-
-static struct memmap_desc guest_memory_md0[] = {
-    /* 756MB */
-    { "start", 0x00000000,          0, 0x30000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
     {       0, 0, 0, 0,  0},
 };
 
 static struct memmap_desc guest_device_md1[] = {
-    {  "uart", 0x1C090000, CFG_UART2,     0x10000, LPAED_STAGE2_MEMATTR_DM },
-    { "sp804", 0x1C110000, 0x1C120000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
-    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x10000, LPAED_STAGE2_MEMATTR_DM },
+    {  "uart", 0x1C090000, 0x12C00000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C120000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
     /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
     {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
+    {       0, 0, 0, 0,  0},
+};
+
+#elif defined (CFG_BOARD_RTSM_VE_CA15)
+
+static struct memmap_desc guest_device_md0[] = {
+    /*  label, ipa       , pa        ,       size, attr */
+    {  "uart", 0x1C090000, 0x1C0A0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C110000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
+    {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
+    {       0, 0, 0, 0,  0},
+};
+static struct memmap_desc guest_device_md1[] = {
+    {  "uart", 0x1C090000, 0x1C0B0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C120000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
+    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
+    {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
+    {       0, 0, 0, 0,  0},
+};
+
+#endif
+
+
+static struct memmap_desc guest_memory_md0[] = {
+    /* 756MB */
+    { "start", 0x00000000,          0, 0x30000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
     {       0, 0, 0, 0,  0},
 };
 
@@ -260,7 +285,6 @@ static void vmm_ttbl2_init_entries(lpaed_t *ttbl2)
         lpaed_stage2_conf_l2_table( &ttbl2[i], (uint64_t) ((uint32_t) ttbl3), 0);
         for( j = 0; j < VMM_L2_PTE_NUM; j++) {
             ttbl3[j].pt.valid = 0;
-            //printh("- ttbl3[%d]:%x\n", j, &ttbl3[j] );
         }
     }        
 

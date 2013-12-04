@@ -161,7 +161,7 @@ start:
 #ifdef MACH_MPS
 	ldr	r0, =0x1f005000			@ UART3 base (MPS)
 #elif defined (CFG_BOARD_RTSM_VE_CA15)
-	ldr	r0, =CFG_UART0			@ UART base (Versatile Express)
+	ldr	r0, =0x1c090000			@ UART base (Versatile Express)
 #else
 	ldr	r0, =0x10009000			@ UART base (RealView/EB)
 #endif
@@ -178,14 +178,14 @@ start:
 #if defined (CFG_BOARD_RTSM_VE_CA15)
     /* Initialize UART1 and UART2 for access from guests, as a workaround, 
        since initialization sequence in C, in guest, is not clear a the moment */
-	ldr	r0, =CFG_UART1			@ UART base (Versatile Express)
+	ldr	r0, =0x1c0a0000			@ UART base (Versatile Express)
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
 
-	ldr	r0, =CFG_UART2			@ UART base (Versatile Express)
+	ldr	r0, =0x1c0b0000			@ UART base (Versatile Express)
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]
 	mov	r1, #0xc300

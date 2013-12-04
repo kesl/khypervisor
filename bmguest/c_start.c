@@ -27,9 +27,10 @@
 #include "uart_print.h"
 #include "gic.h"
 #include "tests.h"
-#include "test_sp804_timer.h"
 #ifdef ARNDALE
 #include "test_pwm_timer.h"
+#else
+#include "test_sp804_timer.h"
 #endif
 
 #ifdef __MONITOR_CALL_HVC__
@@ -74,12 +75,11 @@ void nrm_loop(void)
      
     test_vdev_sample();
     
-
-    /* Test the SP804 timer */
-    hvmm_tests_sp804_timer();
-
 #ifdef ARNDALE
     hvmm_tests_pwm_timer();
+#else
+    /* Test the SP804 timer */
+    hvmm_tests_sp804_timer();
 #endif
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
