@@ -5,6 +5,10 @@
 #include "trap.h"
 #include "vmm.h"
 #include <print.h>
+#include <string.h>
+#if defined(LINUX_GUEST)
+#include "loadlinux.h"
+#endif
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 
@@ -28,29 +32,58 @@ static int _current_guest_vmid = VMID_INVALID;
 static int _next_guest_vmid = VMID_INVALID;
 static uint8_t _switch_locked = 0;  /* further switch request will be ignored if set */
 
-#ifdef BAREMETAL_GUEST
+#if defined (BAREMETAL_GUEST) && !defined (LINUX_GUEST)
+#define FIXUP_BMGUEST_LOAD_AT_GUEST1
+#endif
+
+#if defined (LINUX_GUEST)
+static void _hyp_guest0_copy_zimage(void)
+{
+    extern uint32_t guest_bin_start;
+    extern uint32_t guest_bin_end;
+
+    uint32_t *src = &guest_bin_start;
+    uint32_t *end = &guest_bin_end;
+    uint32_t *dst = &guest_bin_start + (0x20008000/4);
+
+    HVMM_TRACE_ENTER();
+
+    uart_print("Copying guest0 image to guest1\n\r");
+    uart_print(" src:");uart_print_hex32((uint32_t)src); 
+    uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
+    uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(uint32_t));uart_print("\n\r");
+
+    while(src < end ) {
+        *dst++ = *src++;
+    }
+    uart_print("=== done ===\n\r");
+    HVMM_TRACE_EXIT();
+}
+#endif
+
+#if defined (FIXUP_BMGUEST_LOAD_AT_GUEST1) 
 static void _hyp_fixup_unloaded_guest(void)
 {
-	extern uint32_t guest_bin_start;
-	extern uint32_t guest_bin_end;
-	extern uint32_t guest2_bin_start;
+    extern uint32_t guest_bin_start;
+    extern uint32_t guest_bin_end;
+    extern uint32_t guest2_bin_start;
 
-	uint32_t *src = &guest_bin_start;
-        uint32_t *end = &guest_bin_end;
-	uint32_t *dst = &guest2_bin_start;
+    uint32_t *src = &guest_bin_start;
+    uint32_t *end = &guest_bin_end;
+    uint32_t *dst = &guest2_bin_start;
 
-	HVMM_TRACE_ENTER();
+    HVMM_TRACE_ENTER();
 
-	uart_print("Copying guest0 image to guest1\n\r");
-	uart_print(" src:");uart_print_hex32((uint32_t)src); 
-	uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
+    uart_print("Copying guest0 image to guest1\n\r");
+    uart_print(" src:");uart_print_hex32((uint32_t)src); 
+    uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
 	uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(uint32_t));uart_print("\n\r");
 
-	while(src < end ) {
-		*dst++ = *src++;
-	}
-	uart_print("=== done ===\n\r");
-	HVMM_TRACE_EXIT();
+    while(src < end ) {
+        *dst++ = *src++;
+    }
+    uart_print("=== done ===\n\r");
+    HVMM_TRACE_EXIT();
 }
 #endif
 
@@ -146,6 +179,7 @@ void context_init_banked(struct arch_regs_banked *regs_banked)
 
 void context_save_banked(struct arch_regs_banked *regs_banked)
 {
+	/* USR banked register */
     asm volatile (" mrs     %0, sp_usr\n\t"
                           :"=r" (regs_banked->sp_usr)::"memory", "cc");
 
@@ -201,6 +235,7 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
 
 void context_restore_banked(struct arch_regs_banked *regs_banked)
 {
+	/* USR banked register */
     asm volatile (" msr    sp_usr, %0\n\t"
                           ::"r" (regs_banked->sp_usr) :"memory", "cc");
 
@@ -283,7 +318,7 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
 
 
 /* DEPRECATED: use context_switchto(vmid) and context_perform_switch() 
-    void context_switch_to_next_guest(struct arch_regs *regs_current)
+   void context_switch_to_next_guest(struct arch_regs *regs_current)
  */
 
 static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs_current, vmid_t next_vmid)
@@ -408,19 +443,27 @@ void context_switch_to_initial_guest(void)
     context_perform_switch();
 }
 
+
 void context_init_guests(void)
 {
 	struct hyp_guest_context *context;
 	struct arch_regs *regs = 0;
+
 	
 	uart_print("[hyp] init_guests: enter\n\r");
 
 
 	/* Guest 1 @guest_bin_start */
-	context = &guest_contexts[0];
-	regs = &context->regs;
-	regs->pc = 0x80000000;	// PA:0xA0000000
-	regs->cpsr = 0x1d3;	    // supervisor, interrupt disabled
+    context = &guest_contexts[0];
+    regs = &context->regs;
+    regs->cpsr = 0x1d3;	        // supervisor, interrupt disabled
+#if defined(LINUX_GUEST)
+    regs->pc = 0xA0008000;	    // PA:0xA0008000, where zImage is
+    regs->gpr[1] = 2272;        //vexpress
+    regs->gpr[2] = 0x80000100;  //src+(0x100/4);
+#else
+    regs->pc = 0x80000000;	    // PA:0xA0000000, default entry for bmguest
+#endif
 
 	/* regs->gpr[] = whatever */
 	context->vmid = 0;
@@ -442,9 +485,19 @@ void context_init_guests(void)
     context_init_banked( &context->regs_banked );
     vgic_init_status( &context->vgic_status, context->vmid );
 
-#ifdef BAREMETAL_GUEST
+#if defined (LINUX_GUEST)
+    _hyp_guest0_copy_zimage();
+#elif defined (BAREMETAL_GUEST) 
 	/* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
 	_hyp_fixup_unloaded_guest();
+#endif
+
+#if defined(LINUX_GUEST)
+    {
+    	extern uint32_t guest_bin_start;
+        uint32_t *src = &guest_bin_start;
+        loadlinux_setup_tags(src);
+    }
 #endif
 	uart_print("[hyp] init_guests: return\n\r");
 }

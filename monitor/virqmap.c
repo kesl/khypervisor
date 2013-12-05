@@ -73,6 +73,8 @@ hvmm_status_t virqmap_init(void)
 
     // UART: dedicated driver 
     // IRQ 37 for guest 0
+
+    // IRQ 37 for guest 0
     _virqmap[38].virq = 37;
     _virqmap[38].vmid = 0;
     // IRQ 38 for guest 1

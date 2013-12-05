@@ -1,0 +1,131 @@
+From 17b9732bb2d893d37896cdba2f9e0ad57f3a4140 Mon Sep 17 00:00:00 2001
+From: joohyun kyong <joohyun0115@gmail.com>
+Date: Thu, 5 Dec 2013 09:52:44 +0900
+Subject: [PATCH] arndale : change kernel sdram address & uart port 2 -> 1
+
+---
+ arch/arm/configs/arndale_minimal_linux_defconfig |    6 +++---
+ arch/arm/mach-exynos/Makefile.boot               |    4 ++--
+ arch/arm/mach-exynos/include/mach/map-exynos5.h  |    2 +-
+ arch/arm/mach-exynos/include/mach/memory.h       |    2 +-
+ arch/arm/mach-exynos/mach-arndale.c              |   15 +++++++--------
+ 5 files changed, 14 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm/configs/arndale_minimal_linux_defconfig b/arch/arm/configs/arndale_minimal_linux_defconfig
+index a515c9a..be4c609 100644
+--- a/arch/arm/configs/arndale_minimal_linux_defconfig
++++ b/arch/arm/configs/arndale_minimal_linux_defconfig
+@@ -489,7 +489,7 @@ CONFIG_ALIGNMENT_TRAP=y
+ # CONFIG_USE_OF is not set
+ CONFIG_ZBOOT_ROM_TEXT=0
+ CONFIG_ZBOOT_ROM_BSS=0
+-CONFIG_CMDLINE="console=ttySAC2,115200n8 vmalloc=512M androidboot.console=ttySAC2 root=/dev/ram rw earlyprintk rdinit=/sbin/init "
++CONFIG_CMDLINE="console=ttySAC1,115200n8 vmalloc=32M androidboot.console=ttySAC1 root=/dev/ram rw earlyprintk rdinit=/sbin/init nosoftlockup"
+ # CONFIG_CMDLINE_FROM_BOOTLOADER is not set
+ CONFIG_CMDLINE_EXTEND=y
+ # CONFIG_CMDLINE_FORCE is not set
+@@ -660,8 +660,8 @@ CONFIG_DEVKMEM=y
+ #
+ CONFIG_SERIAL_8250=y
+ # CONFIG_SERIAL_8250_CONSOLE is not set
+-CONFIG_SERIAL_8250_NR_UARTS=4
+-CONFIG_SERIAL_8250_RUNTIME_UARTS=4
++CONFIG_SERIAL_8250_NR_UARTS=2
++CONFIG_SERIAL_8250_RUNTIME_UARTS=2
+ # CONFIG_SERIAL_8250_EXTENDED is not set
+ 
+ #
+diff --git a/arch/arm/mach-exynos/Makefile.boot b/arch/arm/mach-exynos/Makefile.boot
+index d65956f..bef051b 100644
+--- a/arch/arm/mach-exynos/Makefile.boot
++++ b/arch/arm/mach-exynos/Makefile.boot
+@@ -1,2 +1,2 @@
+-   zreladdr-y	:= 0x40008000
+-params_phys-y	:= 0x40000100
++   zreladdr-y	:= 0x80008000
++params_phys-y	:= 0x80000100
+diff --git a/arch/arm/mach-exynos/include/mach/map-exynos5.h b/arch/arm/mach-exynos/include/mach/map-exynos5.h
+index 883f65d..812fd6f 100644
+--- a/arch/arm/mach-exynos/include/mach/map-exynos5.h
++++ b/arch/arm/mach-exynos/include/mach/map-exynos5.h
+@@ -152,7 +152,7 @@
+ 
+ #define EXYNOS5_PA_ROTATOR		0x11c00000
+ 
+-#define EXYNOS5_PA_SDRAM		0x40000000
++#define EXYNOS5_PA_SDRAM		0x80000000
+ 
+ #define EXYNOS5_PA_NS_MDMA0		0x10800000
+ #define EXYNOS5_PA_NS_MDMA1		0x11c10000
+diff --git a/arch/arm/mach-exynos/include/mach/memory.h b/arch/arm/mach-exynos/include/mach/memory.h
+index 9e3d051..d378ed2 100644
+--- a/arch/arm/mach-exynos/include/mach/memory.h
++++ b/arch/arm/mach-exynos/include/mach/memory.h
+@@ -13,7 +13,7 @@
+ #ifndef __ASM_ARCH_MEMORY_H
+ #define __ASM_ARCH_MEMORY_H __FILE__
+ 
+-#define PLAT_PHYS_OFFSET		UL(0x40000000)
++#define PLAT_PHYS_OFFSET		UL(0x80000000)
+ #define CONSISTENT_DMA_SIZE		(SZ_8M + SZ_8M + SZ_4M)
+ 
+ #if defined(CONFIG_MACH_SMDKV310) || defined(CONFIG_MACH_SMDK5250)
+diff --git a/arch/arm/mach-exynos/mach-arndale.c b/arch/arm/mach-exynos/mach-arndale.c
+index f2a53e7..205f858 100644
+--- a/arch/arm/mach-exynos/mach-arndale.c
++++ b/arch/arm/mach-exynos/mach-arndale.c
+@@ -137,6 +137,7 @@ static struct s3c2410_uartcfg arndale_uartcfgs[] __initdata = {
+ 		.ulcon		= ARNDALE_ULCON_DEFAULT,
+ 		.ufcon		= ARNDALE_UFCON_DEFAULT,
+ 	},
++#if 0
+ 	[2] = {
+ 		.hwport		= 2,
+ 		.flags		= 0,
+@@ -151,6 +152,7 @@ static struct s3c2410_uartcfg arndale_uartcfgs[] __initdata = {
+ 		.ulcon		= ARNDALE_ULCON_DEFAULT,
+ 		.ufcon		= ARNDALE_UFCON_DEFAULT,
+ 	},
++#endif
+ };
+ 
+ #ifdef CONFIG_EXYNOS_MEDIA_DEVICE
+@@ -1239,7 +1241,7 @@ static inline void exynos_sysmmu_init(void)
+ #define PMUREG_ISP_CONFIGURATION	(S5P_VA_PMU  + 0x4020)
+ #define PMUREG_ISP_STATUS		(S5P_VA_PMU  + 0x4024)
+ 
+-int samsung_board_rev;
++int samsung_board_rev = SAMSUNG_BOARD_REV_0_2;
+ 
+ static int get_samsung_board_rev(void)
+ {
+@@ -1301,8 +1303,8 @@ err_power:
+ 
+ static void __init arndale_machine_init(void)
+ {
+-	samsung_board_rev = get_samsung_board_rev();
+ #if 0 /* disalbe for minimal linux */
++	samsung_board_rev = get_samsung_board_rev();
+ 	exynos5_smdk5250_mmc_init();
+ 	exynos5_smdk5250_power_init();
+ 	exynos5_smdk5250_usb_init();
+@@ -1523,13 +1525,10 @@ static void __init arndale_fixup(struct machine_desc *desc,
+ 				struct tag *tags, char **cmdline,
+ 				struct meminfo *mi)
+ {
+-	mi->bank[0].start = 0x40000000;
+-	mi->bank[0].size = 1024 * SZ_1M;
+-
+-	mi->bank[1].start = 0x80000000;
+-	mi->bank[1].size = 1023 * SZ_1M;
++	mi->bank[0].start = 0x80000000;
++	mi->bank[0].size = 256 * SZ_1M;
+ 
+-	mi->nr_banks = 2;
++	mi->nr_banks = 1;
+ }
+ 
+ MACHINE_START(ARNDALE, "ARNDALE")
+-- 
+1.7.9.5
+

@@ -17,7 +17,7 @@
 #define NUM_MAX_VIRQS   128
 #define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
-static uint32_t ostatus[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {0, };        // old status
+static uint32_t ostatus[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {{0, },};        // old status
 
 void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offset )
 {
