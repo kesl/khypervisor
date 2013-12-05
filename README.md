@@ -113,6 +113,7 @@ $ git submodule update
 $ cd linux-arndale
 $ git checkout origin/exynos-jb -b exynos-jb
 $ git apply ../patch/linux-arndale-config-add-minimal-linux-config.patch
+$ git apply ../patch/arndale-change-kernel-sdram-address-uart-port-2-1.patch
 $ git clone https://github.com/android/platform_prebuilt prebuilt
 </pre>
 3. Building linux-arndale
