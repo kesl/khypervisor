@@ -10,10 +10,13 @@ void scheduler_schedule(void)
 
 void scheduler_test_switch_to_next_guest(void *pdata){
     struct arch_regs *regs = pdata;
+#if 0 /* ignore message due to flood log message */
     uint64_t pct = read_cntpct();
     uint32_t tval = read_cnthp_tval();
+
     uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
     uart_print( "cnth_tval:"); uart_print_hex32(tval); uart_print("\n\r");
+#endif
 
     /* Note: As of context_switchto() and context_perform_switch() are available,
        no need to test if trapped from Hyp mode.

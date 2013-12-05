@@ -33,6 +33,10 @@
 #include "test_sp804_timer.h"
 #endif
 
+//#define TESTS_ENABLE_VDEV_SAMPLE
+//#define TESTS_ENABLE_PWM_TIMER
+//#define TESTS_ENABLE_SP804_TIMER
+
 #ifdef __MONITOR_CALL_HVC__
 #define hsvc_ping()	asm("hvc #0xFFFE")
 #define hsvc_yield()	asm("hvc #0xFFFD")
@@ -45,15 +49,14 @@
 #endif
 
 #ifndef NUM_ITERATIONS	
-#define NUM_ITERATIONS	10
+#define NUM_ITERATIONS	1000
 #endif
 
 inline void nrm_delay(void)
 {
 	volatile int i = 0;
-	for( i = 0; i < 0x00000FFF; i++);
+	for( i = 0; i < 0x0000FFFF; i++);
 }
-
 
 void nrm_loop(void) 
 {
@@ -73,14 +76,19 @@ void nrm_loop(void)
      * - Otherwise, the monitor will hang with data abort
      */
      
+#ifdef TESTS_ENABLE_VDEV_SAMPLE
     test_vdev_sample();
+#endif
     
-#ifdef ARNDALE
+#ifdef TESTS_ENABLE_PWM_TIMER
     hvmm_tests_pwm_timer();
-#else
+#endif
+
+#ifdef TESTS_ENABLE_SP804_TIMER
     /* Test the SP804 timer */
     hvmm_tests_sp804_timer();
 #endif
+
 
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );

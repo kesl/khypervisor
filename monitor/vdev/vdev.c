@@ -51,7 +51,7 @@ hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t acces
     int i = 0;
     uint32_t offset;
     uint8_t isize = 4;
-    vmid_t vmid = context_current_vmid();
+
     HVMM_TRACE_ENTER();
     if ( regs->cpsr & 0x20 ) {
         /* Thumb */
@@ -64,7 +64,7 @@ hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t acces
         offset = fipa - vdev_list[i].base;
         if ( fipa >= vdev_list[i].base && offset < vdev_list[i].size && vdev_list[i].handler != 0) {
             /* fipa is in the rage: base ~ base + size */
-            printh("vdev: found %s for fipa %x srt:%x gpr[srt]:%x write:%d vmid:%d\n", vdev_list[i].name, fipa, srt, regs->gpr[srt], wnr, vmid );
+            printh("vdev: found %s for fipa %x srt:%x gpr[srt]:%x write:%d vmid:%d\n", vdev_list[i].name, fipa, srt, regs->gpr[srt], wnr, context_current_vmid() );
             result = vdev_list[i].handler(wnr, offset, &(regs->gpr[srt]), access_size);
             if ( wnr == 0 ) {
                 printh("vdev: result:%x\n", regs->gpr[srt] );

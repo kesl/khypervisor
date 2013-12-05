@@ -1,4 +1,5 @@
 #include <armv7_p15.h>
+#include <cfg_platform.h>
 #include <uart_print.h>
 #include <hvmm_trace.h>
 #include "context.h"
@@ -87,6 +88,7 @@ static void _hyp_fixup_unloaded_guest(void)
 }
 #endif
 
+#ifdef DEBUG
 static char *_modename(uint8_t mode)
 {
     char *name = "Unknown";
@@ -121,6 +123,7 @@ static char *_modename(uint8_t mode)
     }
     return name;
 }
+#endif
 
 void context_dump_regs( struct arch_regs *regs )
 {
@@ -407,8 +410,8 @@ hvmm_status_t context_perform_switch(void)
     } else if ( _next_guest_vmid != VMID_INVALID && _current_guest_vmid != _next_guest_vmid ) {
         struct arch_regs *regs = trap_saved_regs();
         if ( (regs->cpsr & 0x1F) != 0x1A ) {
-            uart_print( "curr:" ); uart_print_hex32( _current_guest_vmid ); uart_print( "\n\r" );
-            uart_print( "next:" ); uart_print_hex32( _next_guest_vmid ); uart_print( "\n\r" );
+            printh("curr: %x\n", _current_guest_vmid);
+            printh("next: %x\n", _next_guest_vmid);
 
             /* Only if not from Hyp */
             result = context_perform_switch_to_guest_regs( regs, _next_guest_vmid );
@@ -459,7 +462,7 @@ void context_init_guests(void)
     regs->cpsr = 0x1d3;	        // supervisor, interrupt disabled
 #if defined(LINUX_GUEST)
     regs->pc = 0xA0008000;	    // PA:0xA0008000, where zImage is
-    regs->gpr[1] = 2272;        //vexpress
+    regs->gpr[1] = CFG_MACHINE_NUMBER;
     regs->gpr[2] = 0x80000100;  //src+(0x100/4);
 #else
     regs->pc = 0x80000000;	    // PA:0xA0000000, default entry for bmguest
@@ -567,7 +570,7 @@ hvmm_status_t context_switchto_lock(vmid_t vmid, uint8_t locked)
             _next_guest_vmid = vmid;
             result = HVMM_STATUS_SUCCESS;
 
-            uart_print("switching to vmid:"); uart_print_hex32((uint32_t) vmid ); uart_print("\n\r");
+            printh("switching to vmid: %x\n", (uint32_t)vmid);
         }
     } else {
         printh("context: next vmid locked to %d\n", _next_guest_vmid );

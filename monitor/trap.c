@@ -5,6 +5,7 @@
 #include "gic.h"
 #include "sched_policy.h"
 #include "trap_dabort.h"
+
 #include "print.h"
 
 /* By holding the address to the saved regs struct, 
@@ -84,11 +85,11 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
 
 		_trap_hyp_saved_regs = regs;
 
-		uart_print("[hvc] _hyp_hvc_service: enter\n\r");
+		printh("[hvc] _hyp_hvc_service: enter\n\r");
 
     if ( ec == 0x12 && ((iss & 0xFFFF) == 0xFFFF) ) {
         /* Internal request to stay in hyp mode */
-        uart_print("[hvc] enter hyp\n\r");
+        printh("[hvc] enter hyp\n\r");
         context_dump_regs( regs );
         return HYP_RESULT_STAY;
     }
@@ -113,13 +114,13 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
         switch( iss ) {
             case 0xFFFE:
                 /* hyp_ping */
-                uart_print("[hyp] _hyp_hvc_service:ping\n\r");
+                printh("[hyp] _hyp_hvc_service:ping\n\r");
                 context_dump_regs( regs );
                 break;
             case 0xFFFD:
                 {
                     /* hsvc_yield() */
-                    uart_print("[hyp] _hyp_hvc_service:yield\n\r");
+                    printh("[hyp] _hyp_hvc_service:yield\n\r");
                     context_dump_regs( regs );
                     context_switchto(sched_policy_determ_next());
                 }
@@ -130,16 +131,16 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
                     printh( "[hyp]: prefetch abort routed to Hyp mode\n");
                 }
     
-                uart_print("[hyp] _hyp_hvc_service:unknown hsr.iss="); uart_print_hex32( iss ); uart_print("\n\r" );
-                uart_print("[hyp] hsr.ec="); uart_print_hex32( ec ); uart_print("\n\r" );
-                uart_print("[hyp] hsr="); uart_print_hex32( hsr ); uart_print("\n\r" );
+                printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
+                printh("[hyp] hsr.ec= %x\n", ec);
+                printh("[hyp] hsr= %x\n", hsr);
                 context_dump_regs( regs );
                 _trap_dump_bregs();
                 hyp_abort_infinite();
                 break;
         }
     }
-    uart_print("[hyp] _hyp_hvc_service: done\n\r");
+    printh("[hyp] _hyp_hvc_service: done\n\r");
 
     context_perform_switch();
     return HYP_RESULT_ERET;

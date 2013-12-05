@@ -1,3 +1,4 @@
+#include <cfg_platform.h>
 #include <hyp_config.h>
 #include "virqmap.h"
 #include "print.h"
@@ -32,66 +33,8 @@ hvmm_status_t virqmap_init(void)
     }
 
     // NOTE(wonseok): referenced by https://github.com/kesl/khypervisor/wiki/Hardware-Resources-of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
-
-    // Test vgicd look bmguest/gic.c
-    _virqmap[1].virq = 1;
-    _virqmap[1].vmid = 0;
-    _virqmap[31].virq = 31;
-    _virqmap[31].vmid = 0;
-    _virqmap[33].virq = 33;
-    _virqmap[33].vmid = 0;
-    _virqmap[16].virq = 16;
-    _virqmap[16].vmid = 0;
-    _virqmap[17].virq = 17;
-    _virqmap[17].vmid = 0;
-    _virqmap[18].virq = 18;
-    _virqmap[18].vmid = 0;
-    _virqmap[19].virq = 19;
-    _virqmap[19].vmid = 0;
-
-    // pwm timer driver
-    // IRQ 69
-    _virqmap[69].virq = 69;
-    _virqmap[69].vmid = 0;
-    
-    // WDT: shared driver
-    // IRQ 32
-    _virqmap[32].virq = 32;
-    _virqmap[32].vmid = 0;
-
-    // SP804: shared driver
-    // IRQ 34, 35
-    _virqmap[34].virq = 34;
-    _virqmap[34].vmid = 0;
-    _virqmap[35].virq = 35;
-    _virqmap[35].vmid = 0;
-
-    // RTC: shared driver
-    // IRQ 36
-    _virqmap[36].virq = 36;
-    _virqmap[36].vmid = 0;
-
-    // UART: dedicated driver 
-    // IRQ 37 for guest 0
-
-    // IRQ 37 for guest 0
-    _virqmap[38].virq = 37;
-    _virqmap[38].vmid = 0;
-    // IRQ 38 for guest 1
-    _virqmap[39].virq = 37;
-    _virqmap[39].vmid = 1;
-
-    // ACCI: shared driver
-    // IRQ 43 
-    _virqmap[43].virq = 43;
-    _virqmap[43].vmid = 0; 
-
-    // KMI: shared driver
-    // IRQ 44, 45
-    _virqmap[44].virq = 44;
-    _virqmap[44].vmid = 0; 
-    _virqmap[45].virq = 45;
-    _virqmap[45].vmid = 0; 
+    CFG_GUEST0_VIRQMAP(_virqmap);
+    CFG_GUEST1_VIRQMAP(_virqmap);
 
     vgicd_set_callback_changed_istatus(&virqmap_vgicd_changed_istatus_callback_handler);
 
