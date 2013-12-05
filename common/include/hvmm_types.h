@@ -4,6 +4,7 @@
 #include <arch_types.h>
 #define VMID_INVALID    0xFF
 #define PIRQ_INVALID    0xFFFFFFFF
+#define VIRQ_INVALID    PIRQ_INVALID
 
 typedef enum {
 	HVMM_STATUS_SUCCESS = 0,

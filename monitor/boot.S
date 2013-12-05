@@ -178,20 +178,27 @@ start:
 #if defined (CFG_BOARD_RTSM_VE_CA15)
     /* Initialize UART1 and UART2 for access from guests, as a workaround, 
        since initialization sequence in C, in guest, is not clear a the moment */
-	ldr	r0, =0x1c0A0000			@ UART base (Versatile Express)
+	ldr	r0, =0x1c0a0000			@ UART base (Versatile Express)
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
 
-	ldr	r0, =0x1c0B0000			@ UART base (Versatile Express)
+	ldr	r0, =0x1c0b0000			@ UART base (Versatile Express)
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
 #endif
+/* Initialize bss section */
+    ldr  r2, =begin_bss
+    ldr  r3, =end_bss
+    mov  r0, #0
+1:  str  r0, [r2], #4    @ clear bss
+    cmp  r2, r3
+    blo  1b
 	@ Now we've got rid of the secondary CPUs, set up a stack
 	@ for CPU 0 so we can write most of this in C.
 	ldr     sp, =sec_stacklimit

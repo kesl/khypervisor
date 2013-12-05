@@ -14,7 +14,7 @@
 #define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
 static struct virqmap_entry _virqmap[GIC_NUM_MAX_IRQS];
-static uint32_t old_vgicd_status[NUM_STATUS_WORDS] = {0, };        // old status
+static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {{0,}, };        // old status
 
 /* 
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
@@ -33,6 +33,27 @@ hvmm_status_t virqmap_init(void)
 
     // NOTE(wonseok): referenced by https://github.com/kesl/khypervisor/wiki/Hardware-Resources-of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
 
+    // Test vgicd look bmguest/gic.c
+    _virqmap[1].virq = 1;
+    _virqmap[1].vmid = 0;
+    _virqmap[31].virq = 31;
+    _virqmap[31].vmid = 0;
+    _virqmap[33].virq = 33;
+    _virqmap[33].vmid = 0;
+    _virqmap[16].virq = 16;
+    _virqmap[16].vmid = 0;
+    _virqmap[17].virq = 17;
+    _virqmap[17].vmid = 0;
+    _virqmap[18].virq = 18;
+    _virqmap[18].vmid = 0;
+    _virqmap[19].virq = 19;
+    _virqmap[19].vmid = 0;
+
+    // pwm timer driver
+    // IRQ 69
+    _virqmap[69].virq = 69;
+    _virqmap[69].vmid = 0;
+    
     // WDT: shared driver
     // IRQ 32
     _virqmap[32].virq = 32;
@@ -103,7 +124,6 @@ uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq)
 }
 
 
-// vgicd_changed_istatus callback in handler_ISCENABLER
 void virqmap_vgicd_changed_istatus_callback_handler( vmid_t vmid, uint32_t istatus, uint8_t word_offset )
 {
     uint32_t cstatus;                          // changed bits only
@@ -111,7 +131,7 @@ void virqmap_vgicd_changed_istatus_callback_handler( vmid_t vmid, uint32_t istat
     int bit;
 
     minirq = word_offset * 32;                 /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
-    cstatus = old_vgicd_status[word_offset] ^ istatus;   // find changed bits
+    cstatus = old_vgicd_status[vmid][word_offset] ^ istatus;   // find changed bits
 
     while(cstatus) {
         uint32_t virq;
@@ -125,7 +145,7 @@ void virqmap_vgicd_changed_istatus_callback_handler( vmid_t vmid, uint32_t istat
             /* changed bit */
             if ( istatus & (1 << bit) ) {
                 printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
-                gic_enable_irq(pirq);
+                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL, gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT );
             } else {
                 printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
                 gic_disable_irq(pirq);
@@ -133,9 +153,7 @@ void virqmap_vgicd_changed_istatus_callback_handler( vmid_t vmid, uint32_t istat
         } else {
             printh( "WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid );
         }
-
         cstatus &= ~(1<< bit);
     }
-
-    old_vgicd_status[word_offset] = istatus;
+    old_vgicd_status[vmid][word_offset] = istatus;
 }

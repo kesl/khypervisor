@@ -6,6 +6,7 @@
 #include "armv7_p15.h"
 #include "arch_types.h"
 #include "print.h"
+#include <memmap.cfg>
 
 /* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
  * Indexed by the AttrIndex bits of a LPAE entry;
@@ -96,8 +97,8 @@
 /* PL2 Stage 1 Level 3 */
 #define HMM_L3_PTE_NUM  512
 
-#define HEAP_ADDR 0xF2000000
-#define HEAP_SIZE 0xD000000
+#define HEAP_ADDR CFG_MEMMAP_MON_OFFSET + 0x02000000
+#define HEAP_SIZE 0x0D000000
 
 #define L2_ENTRY_MASK 0x1FF
 #define L2_SHIFT 21

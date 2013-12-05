@@ -27,19 +27,23 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq, uint32_t pirq, uint8_t hw)
     hvmm_status_t result = HVMM_STATUS_BUSY;
     int i;
     struct virq_entry *q = &_guest_virqs[vmid][0];
-    
-    for( i = 0; i < VIRQ_MAX_ENTRIES; i++ ) {
-        if ( q[i].valid == 0 ) {
-            q[i].pirq = pirq;
-            q[i].virq = virq;
-            q[i].hw = hw;
-            q[i].valid = 1;
-            result = HVMM_STATUS_SUCCESS;
-            break;
+    int slot = slotvirq_getslot(vmid, virq);
+    if ( slot == SLOT_INVALID ) {
+        /* Inject only the same virq is not present in a slot */
+        for( i = 0; i < VIRQ_MAX_ENTRIES; i++ ) {
+            if ( q[i].valid == 0 ) {
+                q[i].pirq = pirq;
+                q[i].virq = virq;   
+                q[i].hw = hw;
+                q[i].valid = 1;
+                result = HVMM_STATUS_SUCCESS;
+                break;
+            }
         }
-    }
-
     printh( "virq: queueing virq %d pirq %d to vmid %d %s\n", virq, pirq, vmid, result == HVMM_STATUS_SUCCESS ? "done" : "failed");
+    } else {
+     printh( "virq: rejected queueing duplicated virq %d pirq %d to vmid %d %s\n", virq, pirq, vmid);    
+    }
     return result;
 }
 
@@ -66,6 +70,8 @@ static void virq_flush(vmid_t vmid)
             if (slot == VGIC_SLOT_NOTFOUND ) {
                 break;
             }
+
+            slotvirq_set( vmid, slot, entries[i].virq );    
 
             /* Forget */
             entries[i].valid = 0;

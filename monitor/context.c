@@ -331,12 +331,16 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
 	vmm_stage2_enable(1);
     vgic_restore_status( &context->vgic_status, context->vmid );
     
-    printh( "context: restoring vmid[%d] mode(%x):%s pc:0x%x\n", 
+    {
+        uint32_t lr = 0;
+        asm volatile( "mov  %0, lr" : "=r" (lr) : : "memory", "cc");
+        printh( "context: restoring vmid[%d] mode(%x):%s pc:0x%x lr:0x%x\n", 
             next_vmid, 
             context->regs.cpsr & 0x1F, 
             _modename(context->regs.cpsr & 0x1F),
-            context->regs.pc
-   );
+            context->regs.pc, lr
+        );
+    }
 
     /* The next becomes the current */
     _current_guest_vmid = next_vmid;

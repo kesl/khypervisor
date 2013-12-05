@@ -5,6 +5,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.txt file.
 
+# Usage: make [ARNDALE=y]
+# Example:
+# 	$ make ARBDALE=y 	; # build for ARNDALE board
+#	$ make 		; build for RTSM
 
 # Include config file (prefer config.mk, fall back to config-default.mk)
 ifneq ($(wildcard config.mk),)
@@ -13,7 +17,13 @@ else
 include config-default.mk
 endif
 
-OBJS 		= guest.o c_start.o string.o exception.o gic.o uart_print.o test_vdev_sample.o test_sp804_timer.o
+OBJS = guest.o c_start.o string.o exception.o gic.o test_vdev_sample.o
+
+ifeq ($(ARNDALE),y)
+OBJS += arndale_uart_print.o test_pwm_timer.o
+else
+OBJS += uart_print.o test_sp804_timer.o
+endif
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin
@@ -46,6 +56,10 @@ endif
 GUESTCONFIGS += -DNUM_ITERATIONS=300 -DGUEST_LABEL='"[guest0] "'
 GUESTCONFIGS += -DLDS_$(GUESTTYPE)=1
 
+
+ifeq ($(ARNDALE),y)
+GUESTCONFIGS += -DARNDALE
+endif
 
 #GUESTCONFIGS	= -D__MONITOR_CALL_HVC__
 # These are needed by the underlying kernel make
