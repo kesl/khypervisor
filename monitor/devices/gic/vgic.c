@@ -10,7 +10,7 @@
 #include <asm-arm_inline.h>
 
 /* for test, surpress traces */
-//#define __VGIC_DISABLE_TRACE__
+#define __VGIC_DISABLE_TRACE__
 #define VGIC_SIMULATE_HWVIRQ
 
 #ifdef __VGIC_DISABLE_TRACE__
@@ -311,7 +311,8 @@ hvmm_status_t vgic_injection_enable(uint8_t enable)
         }
     }
 
-	hcr = read_hcr(); uart_print( " updated hcr:"); uart_print_hex32(hcr); uart_print("\n\r");
+	hcr = read_hcr();
+	printh( " updated hcr: %x\n", hcr);
     return HVMM_STATUS_SUCCESS;
 }
 

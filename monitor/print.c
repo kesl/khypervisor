@@ -8,7 +8,7 @@ void init_print()
     format_reg_puts(&uart_print);
 }
 
-void printh(const char *format, ...)
+void printH(const char *format, ...)
 {
     va_list ap;
     va_start(ap, format);

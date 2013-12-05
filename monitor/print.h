@@ -2,5 +2,13 @@
 #define __PRINT_H__
 
 void init_print();
-void printh(const char *format, ...);
+
+void printH(const char *format, ...);
+
+#ifdef DEBUG
+#define printh printH
+#else
+#define printh(format, args...) ((void)0)
+#endif
+
 #endif

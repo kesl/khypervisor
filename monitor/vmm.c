@@ -66,74 +66,17 @@ static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
 };
 
-#if defined (CFG_BOARD_ARNDALE)
-
 static struct memmap_desc guest_device_md0[] = {
-    /*  label, ipa       , pa        ,       size, attr */
-    {   "sysreg", 0x1c010000, 0x1c010000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "sysctl", 0x1c020000, 0x1c020000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "aaci", 0x1c040000, 0x1c040000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "mmci", 0x1c050000, 0x1c050000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "kmi", 0x1c060000, 0x1c060000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "kmi2", 0x1c070000, 0x1c070000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial0", 0x1C090000, 0x12C10000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial1", 0x1C0a0000, 0x12C00000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial2", 0x1C0b0000, 0x12C20000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial3", 0x1C0c0000, 0x12C30000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "wdt", 0x1c0F0000, 0x1c0F0000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
-    {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
-    {   "v2m_timer01(sp804)", 0x1c110000, 0x1c110000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "v2m_timer23", 0x1c120000, 0x1c120000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "rtc", 0x1c170000, 0x1c170000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "clcd", 0x1c1f0000, 0x1c1f0000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {       0, 0, 0, 0,  0},
+    /*  label, ipa, pa, size, attr */
+    CFG_GUEST0_DEVICE_MEMORY,
+    { 0, 0, 0, 0,  0},
 };
 
 static struct memmap_desc guest_device_md1[] = {
-    {  "uart", 0x1C090000, 0x12C00000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    { "sp804", 0x1C110000, 0x1C120000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    { "pwm_timer", 0x3FD10000, 0x12DD0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
-    {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
-    {       0, 0, 0, 0,  0},
+    /*  label, ipa, pa, size, attr */
+    CFG_GUEST1_DEVICE_MEMORY,
+    { 0, 0, 0, 0,  0},
 };
-
-#elif defined (CFG_BOARD_RTSM_VE_CA15)
-
-static struct memmap_desc guest_device_md0[] = {
-    /*  label, ipa       , pa        ,       size, attr */
-    {   "sysreg", 0x1c010000, 0x1c010000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "sysctl", 0x1c020000, 0x1c020000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "aaci", 0x1c040000, 0x1c040000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "mmci", 0x1c050000, 0x1c050000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "kmi", 0x1c060000, 0x1c060000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "kmi2", 0x1c070000, 0x1c070000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial0", 0x1C090000, 0x1C0a0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial1", 0x1C0a0000, 0x1C090000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial2", 0x1C0b0000, 0x1C0b0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {  "v2m_serial3", 0x1C0c0000, 0x1C0c0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "wdt", 0x1c0F0000, 0x1c0F0000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
-    {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
-    {   "v2m_timer01(sp804)", 0x1c110000, 0x1c110000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "v2m_timer23", 0x1c120000, 0x1c120000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "rtc", 0x1c170000, 0x1c170000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {   "clcd", 0x1c1f0000, 0x1c1f0000,   0x1000, LPAED_STAGE2_MEMATTR_DM },
-    {       0, 0, 0, 0,  0},
-};
-
-static struct memmap_desc guest_device_md1[] = {
-    {  "uart", 0x1C090000, 0x1C0B0000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    { "sp804", 0x1C110000, 0x1C120000,     0x1000, LPAED_STAGE2_MEMATTR_DM },
-    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
-    {  "gicc", 0x2C000000 | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,     0x2000, LPAED_STAGE2_MEMATTR_DM },
-    {       0, 0, 0, 0,  0},
-};
-
-#endif
-
 
 static struct memmap_desc guest_memory_md0[] = {
     /* 756MB */
@@ -458,7 +401,10 @@ hvmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
      * VTTBR.VMID = vmid
      * VTTBR.BADDR = ttbl
      */
-    vttbr = read_vttbr(); uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+    vttbr = read_vttbr();
+#if 0 /* ignore message due to flood log message */
+    uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+#endif
     vttbr &= ~(VTTBR_VMID_MASK);
     vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
 
@@ -466,6 +412,9 @@ hvmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
     vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
     write_vttbr(vttbr);
 
-    vttbr = read_vttbr(); uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+    vttbr = read_vttbr();
+#if 0 /* ignore message due to flood log message */
+    uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+#endif
     return HVMM_STATUS_SUCCESS;
 }

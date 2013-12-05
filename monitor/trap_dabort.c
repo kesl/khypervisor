@@ -2,9 +2,11 @@
 #include <armv7_p15.h>
 #include <vdev.h>
 #include <hvmm_trace.h>
-#include "print.h"
 #include "context.h"
 #include "trap_dabort.h"
+
+#define DEBUG
+#include "print.h"
 
 /*
  * ISS encoding for Data Abort exceptions taken to Hyp mode as beloww

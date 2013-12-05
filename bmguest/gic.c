@@ -34,7 +34,11 @@
  */
 
 /* Determined by Hypervisor's Stage2 Address Translation Table */
+#ifdef ARNDALE
+#define GIC_BASEADDR_GUEST                (0x10480000)
+#else
 #define GIC_BASEADDR_GUEST                (0x2C000000)
+#endif
 
 struct gic {
     uint32_t baseaddr;
