@@ -12,6 +12,9 @@
 #endif
 #include "virq.h"
 
+/* TODO: generic timer enable/disable feature using the vdev */
+#define RTOS_WORKAROUND
+
 static void test_start_timer(void)
 {
 	uint32_t ctl;
@@ -117,16 +120,30 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 	return HVMM_STATUS_SUCCESS;
 }
 
+#ifdef RTOS_WORKAROUND
+static int virtual_timer_sync_count;
+static int rtos_vmid = 1;
+#define VIRTUAL_TIMER_SYNC 30
+#endif
+
 void callback_timer(void *pdata)
 {
+#ifndef RTOS_WORKAROUND
     vmid_t vmid;
     HVMM_TRACE_ENTER();
 
     vmid = context_current_vmid();
     printh( "Injecting IRQ 30 to Guest:%d\n", vmid);
+#endif
     //vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
     /* SW VIRQ, No PIRQ */
+#ifdef RTOS_WORKAROUND
+    if (virtual_timer_sync_count++ > VIRTUAL_TIMER_SYNC)
+        virq_inject(rtos_vmid, 30, 0, 0);
+#else
     virq_inject(vmid, 30, 0, 0);
+#endif
+
     HVMM_TRACE_EXIT();
 }
 
