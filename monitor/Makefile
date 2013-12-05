@@ -10,6 +10,7 @@
 # 	$ make UBOOT=y 	; # build for U-boot loading and armflash.bin generated
 #
 # 	$ make LINUX=y 	; # build for linux kernel loading
+# 	$ make LINUX=y RTOS=y	; # build for linux kernel + rtos kernel
 # 	$ make UBOOT=n 	; # build ELF image for FastModels loading: hvc-man-switch.axf
 #	$ make 		; same as UBOOT=n
 
@@ -59,6 +60,10 @@ endif
 ifeq ($(LINUX), y)
     CONFIG_FLAGS	+= -DLINUX_GUEST
 	OBJS += loadlinux.o
+endif
+
+ifeq ($(RTOS), y)
+    CONFIG_FLAGS	+= -DRTOS_GUEST
 endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)

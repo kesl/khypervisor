@@ -22,8 +22,12 @@ INPUT(./uImage)
 #endif
 
 #ifdef LINUX_GUEST
-	INPUT(./zImage) 
+	INPUT(./zImage)
+#ifdef RTOS_GUEST
+	INPUT(./rtos.bin)
+#else
 	INPUT(./bmguest.bin)
+#endif
 #elif BAREMETAL_GUEST
 	INPUT(./bmguest.bin)
 #endif
@@ -79,7 +83,11 @@ SECTIONS
  . = CFG_MEMMAP_GUEST2_OFFSET;
   guest2_bin_start = .; 
 #ifdef LINUX_GUEST
+#ifdef RTOS_GUEST
+ .guest2 : { ./rtos.bin }
+#else
  .guest2 : { ./bmguest.bin }
+#endif
 #elif BAREMETAL_GUEST
  .guest2 : { ./bmguest.bin }
 #else
