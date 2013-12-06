@@ -12,10 +12,9 @@
 /* #define TESTS_ENABLE_GIC_PWM_TIMER */
 /* #define TESTS_ENABLE_MALLOC */
 /* #define TESTS_ENABLE_VGIC */
-#define TESTS_VDEV
-#ifdef RTOS_GUEST
+/* #define TESTS_VDEV */
 #define TESTS_ENABLE_VGIC
-#endif
+#define TESTS_ENABLE_VDEV_TIMER
 /* #define TESTS_ENABLE_SP804 */
 
 hvmm_status_t hvmm_tests_main(void)
@@ -34,6 +33,9 @@ hvmm_status_t hvmm_tests_main(void)
 #endif
 #ifdef TESTS_ENABLE_VGIC
     result = hvmm_tests_vgic();
+#endif
+#ifdef TESTS_ENABLE_VDEV_TIMER
+    result = hvmm_tests_vdev_timer();
 #endif
 #ifdef TESTS_ENABLE_SP804
     result = hvmm_tests_sp804_timer(); 

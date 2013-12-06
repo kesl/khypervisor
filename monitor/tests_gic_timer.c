@@ -7,13 +7,12 @@
 #include "sched_policy.h"
 #include <cfg_platform.h>
 #include <print.h>
+#include "hyp_config.h"
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
 #include "virq.h"
-
-/* TODO: generic timer enable/disable feature using the vdev */
-#define RTOS_WORKAROUND
+#include "vdev/vdev_timer.h"
 
 static void test_start_timer(void)
 {
@@ -120,30 +119,25 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 	return HVMM_STATUS_SUCCESS;
 }
 
-#ifdef RTOS_WORKAROUND
-static int virtual_timer_sync_count;
-static int rtos_vmid = 1;
-#define VIRTUAL_TIMER_SYNC 30
-#endif
+static int _timer_status[NUM_GUESTS_STATIC] = {0, };
+
+void _timer_injection_changed_status( vmid_t vmid, uint32_t status )
+{
+    _timer_status[vmid] = status;
+}
 
 void callback_timer(void *pdata)
 {
-#ifndef RTOS_WORKAROUND
     vmid_t vmid;
     HVMM_TRACE_ENTER();
-
     vmid = context_current_vmid();
+
     printh( "Injecting IRQ 30 to Guest:%d\n", vmid);
-#endif
     //vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
     /* SW VIRQ, No PIRQ */
-#ifdef RTOS_WORKAROUND
-    if (virtual_timer_sync_count++ > VIRTUAL_TIMER_SYNC)
-        virq_inject(rtos_vmid, 30, 0, 0);
-#else
-    virq_inject(vmid, 30, 0, 0);
-#endif
 
+    if ( _timer_status[vmid] == 0 )
+        virq_inject(vmid, 30, 0, 0);
     HVMM_TRACE_EXIT();
 }
 
@@ -156,6 +150,10 @@ hvmm_status_t hvmm_tests_vgic(void)
      *      -> ISR implementation is empty for the moment
      *      -> This should handle completion of deactivation and further injection if there is any pending virtual IRQ
      */
+    int i;
+    vtimer_set_callback_chagned_status(&_timer_injection_changed_status);
+    for( i = 0; i < NUM_GUESTS_STATIC; i++)
+       _timer_status[i] = 1;
     timer_add_callback(timer_sched, &callback_timer);
     return HVMM_STATUS_SUCCESS;
 }

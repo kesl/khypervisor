@@ -15,7 +15,6 @@
 #include "cfg_platform.h"
 #include <gic_regs.h>
 #include "virqmap.h"
-
 void hyp_main(void)
 {
     init_print();
@@ -41,7 +40,7 @@ void hyp_main(void)
     /* Virtual GIC Distributor */
     printh( "tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
     vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
-
+    
     /* Initialize PIRQ to VIRQ mapping */
     virqmap_init();
 
