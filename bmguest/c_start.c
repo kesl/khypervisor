@@ -88,8 +88,6 @@ void nrm_loop(void)
     /* Test the SP804 timer */
     hvmm_tests_sp804_timer();
 #endif
-
-
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
 		nrm_delay();
