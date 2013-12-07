@@ -1,0 +1,31 @@
+diff --git a/include/configs/arndale5250.h b/include/configs/arndale5250.h
+index 2daa3a6..8efb8a4 100644
+--- a/include/configs/arndale5250.h
++++ b/include/configs/arndale5250.h
+@@ -100,6 +100,7 @@
+ /* Command definition*/
+ #include <config_cmd_default.h>
+ 
++#define CONFIG_CMD_BOOTZ
+ #define CONFIG_CMD_PING
+ #define CONFIG_CMD_ELF
+ #define CONFIG_CMD_MMC
+@@ -137,11 +138,16 @@
+ /* secondary SMP pens */
+ #define CONFIG_SPL_SMP_PEN	(CONFIG_SPL_TEXT_BASE + CONFIG_SPL_MAX_SIZE - 8)
+ 
+-#define CONFIG_BOOTCOMMAND	"mmc read 40007000 451 2000; bootm 40007000"
++#ifdef	CONFIG_CMD_BOOTZ
++#define CONFIG_BOOTCOMMAND	"mmc read 80008000 C51 2000; bootz 80008000"
++#define CONFIG_SYS_PROMPT		"ZIMAGE: ARNDALE # "
++#else
++#define CONFIG_BOOTCOMMAND	"mmc read 40008000 C51 2000; bootm 40008000"
++#define CONFIG_SYS_PROMPT		"UIMAGE: ARNDALE # "
++#endif
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_LONGHELP		/* undef to save memory */
+ #define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser	*/
+-#define CONFIG_SYS_PROMPT		"ARNDALE5250 # "
+ #define CONFIG_SYS_CBSIZE		256	/* Console I/O Buffer Size */
+ #define CONFIG_SYS_PBSIZE		384	/* Print Buffer Size */
+ #define CONFIG_SYS_MAXARGS		16	/* max number of command args */

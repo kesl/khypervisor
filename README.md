@@ -85,7 +85,7 @@ $ cd u-boot-arndale
 2. patching a autoboot for u-boot-arndale
 <pre>
 $ git checkout lue_arndale_13.1
-$ patch -p1 < ../patch/u-boot_arndale.patch
+$ git apply ../patch/u-boot-bootz.patch
 </pre>
 3. Building u-boot-arndale
 <pre>
@@ -103,7 +103,6 @@ $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
 $ sudo dd if=bmguest.bin of=/dev/sdX bs=512 seek=2129
 </pre>
 5. Loading khypervisor to arndale board using CODEVISOR debugger
-
 <blockquote>
 <pre>
 - You can use "load memory from file" menu in CVD tool 
@@ -130,11 +129,19 @@ $ git clone https://github.com/android/platform_prebuilt prebuilt
 <pre>
 $ make ARCH=arm arndale_minimal_linux_defconfig
 $ make CROSS_COMPILE=./prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- ARCH=arm -j8
+$ sudo dd if=./arch/arm/boot/zImage of=/dev/sdX bs=512 seek=3153
 </pre>
 4. Loading khypervisor to arndale board using CODEVISOR debugger
 <pre>
 <CODEVISOR CMD>$ d.load.binary 0x40008000
 <U-BOOT>$ bootm 40008000
+or, 
+1. uImage
+<U-BOOT>$ mmc read 40008000 C51 2000
+<U-BOOT>$ bootm 40008000
+2. zImage
+<U-BOOT>$ mmc read 80008000 C51 2000
+<U-BOOT>$ bootz 80008000
 </pre>
 
 <blockquote>
