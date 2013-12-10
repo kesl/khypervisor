@@ -45,43 +45,44 @@
 
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
+<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Architecture</h3>
+<img width=597.15px height=324.9px src="./images/arch.png"/>
+<p>
+The hypervisor consists of a few sub-systems and device drivers. On a target hardware to run a virtualized software system it needs other software components such as boot-loader, software images for guest software such as Linux and RTOS, and the hypervisor image. A boot-loader is responsible for loading the software images of the hypervisor and guest software to designated address in the memory and triggering the very first execution of the hypervisor image in the memory. It is up to the boot-loader use on the target hardware whether to load the software images from the Flash Memory, an SD Card or any storage media it prefers.
+</p>
 <h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Features</h3>
-<p>Features
-Hardware Acclerated Hypervisor
+<p>Hardware Acclerated Hypervisor
 <ol>
 <li> ARMv7 Virtualization Extensions </li>
 <li> Hyp Mode, 2-Stage Address Translation, and GICv2 </li>
 </ol>
+
 Full Virtualization
 <ol>
 <li>No Guest Modification Required</li>
 </ol>
+
+Device Dedication Model
 <ol>
-<li>Device Dedication Model – Each VM Reserves Exclusive Access to Dedicated Hardware Devices</li>
+<li>Each VM Reserves Exclusive Access to Dedicated Hardware Devices</li>
 </ol>
-Supported Guest OS Types: Linux, RTOS and Bare Metal Application
-Supported architecture : ARM Cortex-A15
-Supported Target Hardware
+
+Supported Guest OS Types: Linux, RTOS and Bare Metal Application<br>
+Supported architecture : ARM Cortex-A15<br>
+Supported Target Hardware<br>
+
 <ol>
-<li>ARM RTSM VE - FastModels</li>
-<li>InSignal’s Arndale Board – Exynos 5250</li>
+<li>ARM RTSM VE - FastModels <br><img width=260px height=111px src="./images/ds5.png"/></li>
+<li>InSignal’s Arndale Board – Exynos 5250<br><img src="./images/arndale.jpg"/></li>
 </ol>
+
 </p>
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Contact</h3>
 
-<p>Having trouble with our source? <a href="http://help.github.com/pages">http://help.github.com/pages</a> Contact <a href="kesl@kookmin.ac.kr">kesl@kookmin.ac.kr</a> and we’ll help you sort it out. If you need more information, visit our Labs homepage <a href="http://embedded.kookmin.ac.kr/">http://embedded.kookmin.ac.kr/</a></p>
+<p>Having trouble with our source? Contact <a href="kesl@kookmin.ac.kr">kesl@kookmin.ac.kr</a> and we’ll help you sort it out. If you need more information, visit our Labs homepage <a href="http://embedded.kookmin.ac.kr/">http://embedded.kookmin.ac.kr/</a></p>
       </section>
     </div>
 
