@@ -15,15 +15,21 @@ char TaskData[N_TASKS];
 void TaskStart(void *data);
 void Task(void *data);
 
+
 void Task(void *data)
 {
 	char task = *(char *)data;
-
+    OS_TCB MYTaskData;
+    
+    
     for (;;) {
-		printf("Task %d\n", (int)task);
+    OSTaskQuery((int)task + 11, &MYTaskData);
+          printf("Task%d() RUNNING\n", (int)task);
         OSTimeDlyHMSM(0, 0, 1, 0);
     }
 }
+
+OS_TCB MYTaskData[8];
 
 void TaskStart(void *data)
 {
@@ -42,9 +48,25 @@ void TaskStart(void *data)
 
     printf("OSStatInit\n");
 
+    //int i, j;
     while (1) {
         OSCtxSwCtr = 0;
-        OSTimeDlyHMSM(0, 0, 30, 0);
+        OSTimeDlyHMSM(0, 0, 4, 0);
+
+        for(i = 0; i <N_TASKS; i++){
+            OSTaskQuery(11+i, &(MYTaskData[i]));
+        }
+
+        printf("---------------------------------\n");
+        printf("   # Task \tstatus \tPrio \n"); 
+        printf("---------------------------------\n");
+        for(i = 0; i < N_TASKS; i++){
+            printf("   Task%d() : \t%s \t%d\n", i, "READY", MYTaskData[i].OSTCBPrio);
+        }
+        printf("---------------------------------\n");
+        printf("#Tasks :%5d\tCPU Usage :%3d%\n", OSTaskCtr, OSCPUUsage);
+        printf("#Task switch/sec :%5d\n", OSCtxSwCtr);
+        printf("\n");
     }
 
 }
@@ -56,12 +78,12 @@ int main(void)
     init_IRQ();
     printf("TaskStart\n");
 
-    printf("\n Init Done\n");
+    printf("\nInit Done\n");
 
     /*Initialize uC/OS-II*/
     OSTaskCreate(TaskStart, (void *) 0, &TaskStartStk[TASK_STK_SIZE - 1], 7);
 
-    printf("\n Start multitasking \n");
+    printf("\nStart multitasking \n");
     OSStart(); /* Start multitasking */
 
     return 0;
