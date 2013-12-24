@@ -1,0 +1,136 @@
+diff --git a/drivers/serial/serial_s5p.c b/drivers/serial/serial_s5p.c
+index 54aa60b..b3e7588 100644
+--- a/drivers/serial/serial_s5p.c
++++ b/drivers/serial/serial_s5p.c
+@@ -30,6 +30,9 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++#define DEMO_WORKAROUND
++//#define MOTOR_CONTROL 
++
+ #define RX_FIFO_COUNT_MASK	0xff
+ #define RX_FIFO_FULL_MASK	(1 << 8)
+ #define TX_FIFO_FULL_MASK	(1 << 24)
+@@ -83,6 +86,27 @@ void serial_setbrg_dev(const int dev_index)
+ 		writeb(val % 16, &uart->rest.value);
+ }
+ 
++#ifdef MOTOR_CONTROL
++void serial_setbrg_dev_motor(const int dev_index)
++{
++	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
++	u32 uclk = get_uart_clk(dev_index);
++	u32 baudrate = 38400;
++	u32 val;
++
++	val = uclk / baudrate;
++
++	writel(val / 16 - 1, &uart->ubrdiv);
++
++	if (s5p_uart_divslot())
++		writew(udivslot[val % 16], &uart->rest.slot);
++	else
++		writeb(val % 16, &uart->rest.value);
++}
++#endif
++
++
++
+ /*
+  * Initialise the serial port with the given baudrate. The settings
+  * are always 8 data bits, no parity, 1 stop bit, no start bits.
+@@ -90,6 +114,9 @@ void serial_setbrg_dev(const int dev_index)
+ int serial_init_dev(const int dev_index)
+ {
+ 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
++#ifdef DEMO_WORKAROUND
++	struct s5p_uart *const uart1 = s5p_get_base_uart(dev_index - 1);
++#endif
+ 
+ 	/* enable FIFOs */
+ 	writel(0x1, &uart->ufcon);
+@@ -98,9 +125,26 @@ int serial_init_dev(const int dev_index)
+ 	writel(0x3, &uart->ulcon);
+ 	/* No interrupts, no DMA, pure polling */
+ 	writel(0x245, &uart->ucon);
++#ifdef DEMO_WORKAROUND
++	/* enable FIFOs */
++	writel(0x1, &uart1->ufcon);
++	writel(0, &uart1->umcon);
++	/* 8N1 */
++	writel(0x3, &uart1->ulcon);
++	/* No interrupts, no DMA, pure polling */
++	writel(0x205, &uart1->ucon);
++#endif
++
+ 
++#ifdef MOTOR_CONTROL
++	serial_setbrg_dev_motor(dev_index);
++#else
+ 	serial_setbrg_dev(dev_index);
++#endif
+ 
++#ifdef DEMO_WORKAROUND
++	serial_setbrg_dev(dev_index - 1);
++#endif
+ 	return 0;
+ }
+ 
+@@ -149,7 +193,9 @@ int serial_getc_dev(const int dev_index)
+ void serial_putc_dev(const char c, const int dev_index)
+ {
+ 	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
+-
++#ifdef DEMO_WORKAROUND
++	struct s5p_uart *const uart1 = s5p_get_base_uart(dev_index - 1);
++#endif
+ 	/* wait for room in the tx FIFO */
+ 	while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {
+ 		if (serial_err_check(dev_index, 1))
+@@ -161,6 +207,20 @@ void serial_putc_dev(const char c, const int dev_index)
+ 	/* If \n, also do \r */
+ 	if (c == '\n')
+ 		serial_putc('\r');
++
++#ifdef DEMO_WORKAROUND
++	/* wait for room in the tx FIFO */
++	while ((readl(&uart1->ufstat) & TX_FIFO_FULL_MASK)) {
++		if (serial_err_check(dev_index - 1, 1))
++			return;
++	}
++
++	writeb(c, &uart1->utxh);
++
++	/* If \n, also do \r */
++	if (c == '\n')
++		serial_putc('\r');
++#endif
+ }
+ 
+ /*
+@@ -177,6 +237,11 @@ void serial_puts_dev(const char *s, const int dev_index)
+ {
+ 	while (*s)
+ 		serial_putc_dev(*s++, dev_index);
++
++#ifdef DEMO_WORKAROUND
++	while (*s)
++		serial_putc_dev(*s++, dev_index - 1);
++#endif
+ }
+ 
+ /* Multi serial device functions */
+diff --git a/include/configs/arndale5250.h b/include/configs/arndale5250.h
+index 2daa3a6..b6a4fb2 100644
+--- a/include/configs/arndale5250.h
++++ b/include/configs/arndale5250.h
+@@ -137,7 +137,7 @@
+ /* secondary SMP pens */
+ #define CONFIG_SPL_SMP_PEN	(CONFIG_SPL_TEXT_BASE + CONFIG_SPL_MAX_SIZE - 8)
+ 
+-#define CONFIG_BOOTCOMMAND	"mmc read 40007000 451 2000; bootm 40007000"
++#define CONFIG_BOOTCOMMAND	 "mmc read 0xa0000000 451 800;mmc read 0x90000000 851 400;mmc read 0x80008000 c51 2000;go 0xa000004c"
+ /* Miscellaneous configurable options */
+ #define CONFIG_SYS_LONGHELP		/* undef to save memory */
+ #define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser	*/

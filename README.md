@@ -2,13 +2,12 @@
 
 ## Sub-projects
 - securemode-switching/
-    - boot-wrapper based modification for TrstZone Secure/Non-Secure world switching example
+    - boot-wrapper based modification for TrustZone Secure/Non-Secure world switching example
 
 - bmguest/
     - Bare Metal Guest Application
-    - entry: 0x00000000 
-    - UART Print is not working due to the UART address is not reachable (PA@0x1???????)
-
+    - entry: 0x80000000 
+    - RTSM & arndale board guest
 - monitor/
     - Prototype 1
         - 2 bare metal guests
@@ -20,19 +19,58 @@
             - Interrupt Handling through GICv2
             - Generic Timer and Scheduler (Round-robin)
             - Boot loader
+    - v1
+        - Linux guest and rtos guest
+        - Linux guest and bmguest guest
+        - 2 bare metal guests
+        - flash loading
+        
+- rtosguest/
+    - ucos-ii Guest Application
+    - entry: 0x80000000
+    - RTSM & arndale board guest
+    
+- linux-rtsm/
+    - linux Guest Application on FAST Models simulator
+    - entry: 0x80000000
+    
+- linux-arndale/
+    - linux Guest Application on ARNDALE Board 
+    - entry: 0x80000000    
+    
+## Tool chain
+- ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-</i>
 
 ## Building Hypervisor (Monitor)
-<blockquote>
-<pre>
-$ cd monitor
-$ make UBOOT=y ; Build image for U-boot loading: armflash.bin
-or
-$ make UBOOT=n ; Build ELF image: hvc-man-switch.axf (can be loaded from FastModels as an application)
+<pre>$ cd monitor</pre>
 
-$ make ; without UBOOT variable is equivalent as UBOOT=n
-</pre>
-</blockquote>
-
+1. Build image for FastModels as an application<br>
+   Build ELF image: hvc-man-switch.axf (can be loaded from FastModels as an application) 
+ - 1-1. configure SYSTEM variable in monitor/config-default.mk
+	- <pre> SYSTEM ?= vexpress </pre>
+	- For 2 bmguest
+		- copy bmguest.bin from bmguest 
+		- <pre> $ make </pre>	
+	- For 1 Linux guest & 1 bmguest
+		- copy zImage from linux-rtsm
+		- <pre> $ make LINUX=y </pre>
+	- For 1 Linux guest & 1 rtos
+		- copy zImage from linux-rtsm and rtos.bin from rtosguest
+		- <pre> $ make LINUX=y RTOS=y</pre>
+ 
+2. Build image for flashloading<br>
+   Build binary image: hvc-man-switch.bin (can be loaded from uboot)
+ - 2-1. configure SYSTEM variable in monitor/config-default.mk
+    - <pre> SYSTEM ?= arndale </pre>
+ 	- For 2 bmguest
+		- copy bmguest.bin from bmguest
+ 		- <pre> $ make UBOOT=y</pre>
+ 	- For 1 Linux guest & 1 bmguest
+    	- copy zImage from linux-arndale
+ 		- <pre> $ make UBOOT=y LINUX=y </pre>
+ 	- For 1 Linux guest & 1 rtos
+	    - copy zImage from linux-arndale and rtos.bin from rtosguest
+	 	- <pre> $ make UBOOT=y LINUX=y RTOS=y</pre>
 
 
 ## Download CodeBendch Lite Compiler for u-boot
@@ -40,10 +78,110 @@ $ make ; without UBOOT variable is equivalent as UBOOT=n
 - Compiler version: Sourcery CodeBench Lite 2013.05-23(gcc version: 4.7.3)
 
 1. Access CodeBench page in Mentor Graphics(R) site
-	http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/
+    http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/
 2. Find ARM Processor part in the page and Click Download the EABI Release
-	http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/request?id=e023fac2-e611-476b-a702-90eabb2aeca8&downloadlite=scblite2012&fmpath=/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/form
+    http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/request?id=e023fac2-e611-476b-a702-90eabb2aeca8&downloadlite=scblite2012&fmpath=/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/form
 3. Fill the form about your information(name, email, etc), then you will receive the download URL of your email
+
+## Linux on K-hypervisor at ARNDALE board with u-boot
+
+1. Download u-boot-arndale
+<pre>
+$ git checkout arndale
+$ git submodule init
+$ git submodule update
+$ cd u-boot-arndale
+</pre>
+2. patching a autoboot for u-boot-arndale
+<pre>
+$ git checkout lue_arndale_13.1
+$ patch -p1 < ../patch/u-boot-arndale-2console.patch
+</pre>
+3. Building u-boot-arndale
+<pre>
+$ CROSS_COMPILE=arm-linux-gnueabihf- make arndale5250
+</pre>
+4. Copy u-boot, k-hypervisor, linux guest, bmguest guest image to SD card for arndale(X is number of SD card parition)
+
+	<a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
+
+	<pre>
+$ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
+$ sudo dd if=spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
+$ sudo dd if=u-boot.bin of=/dev/sdX bs=512 seek=49
+$ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
+$ sudo dd if=bmguest.bin of=/dev/sdX bs=512 seek=2129
+$ sudo dd if=zImage of=/dev/sdX bs=512 seek=3153 
+	</pre>
+    
+5. Loading khypervisor to arndale board using sd card
+
+## Building Linux guest for arndale board
+1. Download linux-arndale
+<pre>
+$ git submodule init
+$ git submodule update
+</pre>
+2. Initial setup for linux-arndale
+<pre>
+$ cd linux-arndale
+$ git checkout origin/exynos-jb -b exynos-jb
+$ git apply ../patch/linux-arndale-config-add-minimal-linux-config.patch
+$ git apply ../patch/arndale-change-kernel-sdram-address-uart-port-2-1.patch
+$ git clone https://github.com/android/platform_prebuilt prebuilt
+</pre>
+3. Building linux-arndale
+<pre>
+$ make ARCH=arm arndale_minimal_linux_defconfig
+$ make CROSS_COMPILE=./prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- ARCH=arm -j8
+$ sudo dd if=./arch/arm/boot/zImage of=/dev/sdX bs=512 seek=3153
+</pre>
+
+## Building Linux guest for rtsm
+1. Download linux-rtsm
+<pre>
+$ git submodule init
+$ git submodule update
+</pre>
+2. Initial setup for linux
+<pre>
+$ cd linux-rtsm
+$ git checkout 7d1f9aeff1ee4a20b1aeb377dd0f579fe9647619 -b 3.8
+$ git apply ../patch/linux-fastmodels-config-add-minimal-linux-config.patch
+$ cp ../linuxguest/fs.cpio ./
+$ cp ../linuxguest/host-a15.dtb ./
+</pre>
+3. Building linux-arndale
+<pre>
+$ make ARCH=arm vexpress_minhw_defconfig
+$ CROSS_COMPILE=arm-linux-gnueabi- ARCH=arm make -j8
+$ cat host-a15.dtb >> arch/arm/boot/zImage
+</pre>
+
+## Building bmguest guest for arndale board
+Build binary image: bmguest.bin 
+1. build bmguest
+<pre>
+$ cd bmguest
+$ make ARNDALE=y
+</pre>
+
+## Building bmguest guest for rtsm
+Build binary image: bmguest.bin 
+1. build bmguest
+<pre>
+$ cd bmguest
+$ make
+</pre>
+
+## Building rtos guest 
+Build binary image: rtos.bin 
+1. build rtos 
+<pre>
+$ cd rtosguest/ucos-ii
+$ CROSS_COMPILE=arm-none-eabi- make
+</pre>
+
 
 ## Testing Hypervisor Prototype 2 automatically with u-boot
 - Branch infomation: proto2
@@ -135,11 +273,16 @@ $ sudo dd if=./arch/arm/boot/zImage of=/dev/sdX bs=512 seek=3153
 <pre>
 <CODEVISOR CMD>$ d.load.binary 0x40008000
 <U-BOOT>$ bootm 40008000
-or, 
-1. uImage
+</pre>
+or,
+<br>
+1. uImage 
+<pre>
 <U-BOOT>$ mmc read 40008000 C51 2000
 <U-BOOT>$ bootm 40008000
+</pre>
 2. zImage
+<pre>
 <U-BOOT>$ mmc read 80008000 C51 2000
 <U-BOOT>$ bootz 80008000
 </pre>
@@ -170,6 +313,7 @@ $ cp ../linuxguest/host-a15.dtb ./
 $ make ARCH=arm vexpress_minhw_defconfig
 $ CROSS_COMPILE=arm-linux-gnueabi- ARCH=arm make -j8
 $ cat host-a15.dtb >> arch/arm/boot/zImage
+</pre>
 4. Loading khypervisor to RTSM fastmodels
 <pre>
 $ cp arch/arm/boot/zImage ../monitor/zImage
@@ -203,7 +347,7 @@ $ ./run_rtsm.sh
 $ git clone git://git.denx.de/u-boot.git
 $ make vexpress_ca15_tc2_config; make 
 or 
-make vexpress_ca15_tc2
+$ make vexpress_ca15_tc2
 </pre>
 
 2. Build bmguest/
@@ -262,11 +406,6 @@ $ make UBOOT=y
 <pre>
 Bootloader will be supported.
 </pre>
-
-
-
-## Tool chain
-- ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-</i>
 
 ## Testing Secure/Non-secure World Switching, Prototype 1 Phase 2
 1. Build bmguest/
