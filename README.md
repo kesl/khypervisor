@@ -52,10 +52,10 @@
 		- copy bmguest.bin from bmguest 
 		- <pre> $ make </pre>	
 	- For 1 Linux guest & 1 bmguest
-		- copy zimage from linux-rtsm
+		- copy zImage from linux-rtsm
 		- <pre> $ make LINUX=y </pre>
 	- For 1 Linux guest & 1 rtos
-		- copy zimage from linux-rtsm and rtos.bin from rtosguest
+		- copy zImage from linux-rtsm and rtos.bin from rtosguest
 		- <pre> $ make LINUX=y RTOS=y</pre>
  
 2. Build image for flashloading<br>
@@ -66,10 +66,10 @@
 		- copy bmguest.bin from bmguest
  		- <pre> $ make UBOOT=y</pre>
  	- For 1 Linux guest & 1 bmguest
-    	- copy zimage from linux-arndale
+    	- copy zImage from linux-arndale
  		- <pre> $ make UBOOT=y LINUX=y </pre>
  	- For 1 Linux guest & 1 rtos
-	    - copy zimage from linux-arndale and rtos.bin from rtosguest
+	    - copy zImage from linux-arndale and rtos.bin from rtosguest
 	 	- <pre> $ make UBOOT=y LINUX=y RTOS=y</pre>
 
 
@@ -134,7 +134,7 @@ $ git clone https://github.com/android/platform_prebuilt prebuilt
 <pre>
 $ make ARCH=arm arndale_minimal_linux_defconfig
 $ make CROSS_COMPILE=./prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- ARCH=arm -j8
-$ sudo dd if=./arch/arm/boot/zimage of=/dev/sdX bs=512 seek=3153
+$ sudo dd if=./arch/arm/boot/zImage of=/dev/sdX bs=512 seek=3153
 </pre>
 
 ## Building Linux guest for rtsm
@@ -267,7 +267,7 @@ $ git clone https://github.com/android/platform_prebuilt prebuilt
 <pre>
 $ make ARCH=arm arndale_minimal_linux_defconfig
 $ make CROSS_COMPILE=./prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- ARCH=arm -j8
-$ sudo dd if=./arch/arm/boot/zimage of=/dev/sdX bs=512 seek=3153
+$ sudo dd if=./arch/arm/boot/zImage of=/dev/sdX bs=512 seek=3153
 </pre>
 4. Loading khypervisor to arndale board using CODEVISOR debugger
 <pre>
