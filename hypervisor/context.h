@@ -1,7 +1,7 @@
 #ifndef __CONTEXT_H__
 #define __CONTEXT_H__
 
-#include "hyp_config.h"
+#include <k-hypervisor-config.h>
 #include "arch_types.h"
 #include "vgic.h"
 #include "lpae.h"
@@ -98,5 +98,7 @@ vmid_t context_first_vmid(void);
 vmid_t context_last_vmid(void);
 vmid_t context_next_vmid(vmid_t ofvmid);
 struct hyp_guest_context *context_atvmid(vmid_t vmid);
+
+void start_guest_os(void);
 
 #endif	// __CONTEXT_H__

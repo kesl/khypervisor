@@ -1,10 +1,11 @@
 #include "virq.h"
-#include "hyp_config.h"
-#include "print.h"
+#include <k-hypervisor-config.h>
 #include <hvmm_trace.h>
 #include <vgic.h>
 #include <gic.h>
 #include <slotpirq.h>
+
+#include <log/print.h>
 
 #define VIRQ_MIN_VALID_PIRQ 16
 #define VIRQ_NUM_MAX_PIRQS  1024

@@ -6,7 +6,7 @@
 #include "trap_dabort.h"
 
 #define DEBUG
-#include "print.h"
+#include <log/print.h>
 
 /*
  * ISS encoding for Data Abort exceptions taken to Hyp mode as beloww

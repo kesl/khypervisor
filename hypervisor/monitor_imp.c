@@ -1,5 +1,6 @@
 #include "monitor_private.h"
-#include "uart_print.h"
+
+#include <log/uart_print.h>
 
 void mon_enter_hyp(void)
 {

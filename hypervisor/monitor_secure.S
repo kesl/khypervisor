@@ -58,7 +58,8 @@ trap_secure_unhandled:
 	push	{r0, r1}
 
 	mov	r0, sp
-	bl	_trap_secure_unhandled
+	/* Place holder in case we need to handle secure state exception */
+	/* bl	_trap_secure_unhandled */
 
 	@ Pop registers
 	pop 	{r0-r1}
@@ -90,7 +91,7 @@ __mon_enter_hyp:
 	ldr	r0, =monitor_hyp_vectors
 	mcr	p15, 4, r0, c12, c0, 0
 
-	bl	hyp_main
+	bl main
 
 	@ never come back
 1:	b 1b

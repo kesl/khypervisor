@@ -5,9 +5,10 @@
 #include <gic_regs.h>
 #include <slotpirq.h>
 #include <context.h>
-#include "print.h"
-#include "hyp_config.h"
+#include <k-hypervisor-config.h>
 #include <asm-arm_inline.h>
+
+#include <log/print.h>
 
 /* for test, surpress traces */
 #define __VGIC_DISABLE_TRACE__

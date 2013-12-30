@@ -1,7 +1,8 @@
 #include <context.h>
-#include <print.h>
 #include <vdev.h>
 #include <hvmm_trace.h>
+
+#include <log/print.h>
 
 #define MAX_VDEV    5
 

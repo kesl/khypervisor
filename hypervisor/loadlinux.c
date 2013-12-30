@@ -1,6 +1,6 @@
 #include "loadlinux.h"
-#include "string.h"
-#include "print.h"
+#include <log/string.h>
+#include <log/print.h>
 
 /* list of possible tags */
 #define ATAG_NONE       0x00000000

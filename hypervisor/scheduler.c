@@ -44,3 +44,4 @@ void scheduler_test_scheduling(){
 
     timer_add_callback(timer_sched, &extra_timer_callback);
 }
+

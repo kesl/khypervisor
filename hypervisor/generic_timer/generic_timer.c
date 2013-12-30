@@ -1,10 +1,11 @@
-#include <cfg_platform.h>
 #include <generic_timer.h>
 #include <hvmm_trace.h>
 #include "generic_timer_regs.h"
 #if defined(CFG_BOARD_ARNDALE)
     #include "mct.h"
 #endif
+
+#include <config/cfg_platform.h>
 
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata);
 

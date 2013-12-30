@@ -1,6 +1,7 @@
 #include "vdev_sample.h"
 #include <context.h>
-#include <print.h>
+
+#include <log/print.h>
 
 struct vdev_sample_regs{
     uint32_t axis_x;

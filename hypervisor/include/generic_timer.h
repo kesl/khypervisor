@@ -2,8 +2,9 @@
 #define __GENERIC_TIMER_H__
 
 #include "armv7_p15.h"
-#include "uart_print.h"
 #include "gic.h"
+
+#include <log/uart_print.h>
 
 typedef enum {
     GENERIC_TIMER_HYP,      /* IRQ 26 */

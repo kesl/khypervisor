@@ -6,7 +6,8 @@
  */
 #include "timer.h"
 #include "generic_timer.h"
-#include <cfg_platform.h>
+
+#include <config/cfg_platform.h>
 
 #define USEC 1000000
 

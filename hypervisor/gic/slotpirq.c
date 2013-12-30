@@ -1,8 +1,8 @@
 #include <slotpirq.h>
-#include <hyp_config.h>
+#include <k-hypervisor-config.h>
 #include <vgic.h>
-#include <print.h>
 /* SLOT:PIRQ mapping */
+#include <log/print.h>
 
 static uint32_t _guest_pirqatslot[NUM_GUESTS_STATIC][VGIC_NUM_MAX_SLOTS];
 static uint32_t _guest_virqatslot[NUM_GUESTS_STATIC][VGIC_NUM_MAX_SLOTS];

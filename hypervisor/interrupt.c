@@ -1,11 +1,12 @@
 #include "hvmm_types.h"
 #include "gic.h"
-#include "uart_print.h"
 #include "armv7_p15.h"
 #include "context.h"
 #include "hvmm_trace.h"
 #include "vgic.h"
 #include "virq.h"
+
+#include <log/uart_print.h>
 
 hvmm_status_t hvmm_interrupt_init(void)
 {

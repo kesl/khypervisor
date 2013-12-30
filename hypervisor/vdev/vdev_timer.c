@@ -1,6 +1,7 @@
 #include "vdev_timer.h"
 #include <context.h>
-#include <print.h>
+
+#include <log/print.h>
 
 struct vdev_timer_regs{
     uint32_t timer_mask;

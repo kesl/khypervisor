@@ -1,6 +1,7 @@
-#include <uart_print.h>
 #include "lpae.h"
-#include "print.h"
+
+#include <log/print.h>
+#include <log/uart_print.h>
 
 /* Long-descriptor translation table format */
 #define TTBL_L1_OUTADDR_MASK	0x000000FFEC000000ULL

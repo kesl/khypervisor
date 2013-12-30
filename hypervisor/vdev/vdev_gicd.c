@@ -1,8 +1,9 @@
 #include "vdev_gicd.h"
 #include <context.h>
-#include <print.h>
 #include <gic_regs.h>
 #include <vdev.h>
+
+#include <log/print.h>
 
 #define VGICD_ITLINESNUM    128
 #define VGICD_TYPER_DEFAULT ((VGICD_ITLINESNUM >> 5) - 1)   // Lines:128, CPU:0, Security Extenstin:No

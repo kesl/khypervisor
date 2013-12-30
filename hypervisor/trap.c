@@ -6,7 +6,7 @@
 #include "sched_policy.h"
 #include "trap_dabort.h"
 
-#include "print.h"
+#include <log/print.h>
 
 /* By holding the address to the saved regs struct, 
    context or other modules can access to this structure

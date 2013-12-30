@@ -1,6 +1,7 @@
 #ifndef __HVMM_TRACE_H__
 #define __HVMM_TRACE_H__
-#include "uart_print.h"
+
+#include <log/uart_print.h>
 
 #ifdef DEBUG
 #define HVMM_TRACE_ENTER()  {uart_print( __FUNCTION__ );  uart_print("() - enter\n\r");}

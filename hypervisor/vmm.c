@@ -1,13 +1,14 @@
 /* Virtual Machine Memory Management Module */
 
-#include "hyp_config.h"
+#include <k-hypervisor-config.h>
 #include <arch_types.h>
 #include "vmm.h"
 #include <armv7_p15.h>
 #include <hvmm_trace.h>
-#include <cfg_platform.h>
 #include <gic_regs.h>
-#include "print.h"
+
+#include <config/cfg_platform.h>
+#include <log/print.h>
 
 /* Stage 2 Level 1 */
 #define VMM_L1_PTE_NUM          4

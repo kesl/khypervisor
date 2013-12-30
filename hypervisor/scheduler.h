@@ -3,8 +3,9 @@
 
 #include "armv7_p15.h"
 #include "context.h"
-#include "uart_print.h"
 #include "timer.h"
+
+#include <log/uart_print.h>
 
 hvmm_status_t scheduler_next_event(int irq, void *pdata);
 

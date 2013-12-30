@@ -1,12 +1,13 @@
-
-#include "hyp_config.h"
+#include <k-hypervisor-config.h>
 #include "mm.h"
 #include "vmm.h"
-#include "uart_print.h"
 #include "armv7_p15.h"
 #include "arch_types.h"
-#include "print.h"
-#include <memmap.cfg>
+
+#include <config/memmap.cfg>
+#include <log/print.h>
+#include <log/uart_print.h>
+
 
 /* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
  * Indexed by the AttrIndex bits of a LPAE entry;

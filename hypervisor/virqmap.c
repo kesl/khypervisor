@@ -1,11 +1,12 @@
-#include <cfg_platform.h>
-#include <hyp_config.h>
+#include <k-hypervisor-config.h>
 #include "virqmap.h"
-#include "print.h"
 #include "context.h"
 #include "hvmm_types.h"
 #include "vdev/vdev_gicd.h"
 #include <asm-arm_inline.h>
+
+#include <config/cfg_platform.h>
+#include <log/print.h>
 
 /* return the bit position of the first bit set from msb
  * for example, firstbit32(0x7F = 111 1111) returns 7
