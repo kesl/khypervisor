@@ -27,11 +27,7 @@
 #include "uart_print.h"
 #include "gic.h"
 #include "tests.h"
-#ifdef ARNDALE
-#include "test_pwm_timer.h"
-#else
 #include "test_sp804_timer.h"
-#endif
 
 //#define TESTS_ENABLE_VDEV_SAMPLE
 //#define TESTS_ENABLE_PWM_TIMER

@@ -1,5 +1,5 @@
 #include "arch_types.h"
-#include <cfg_platform.h>
+#include <config/cfg_platform.h>
 
 
 #ifdef CFG_GENERIC_CA15

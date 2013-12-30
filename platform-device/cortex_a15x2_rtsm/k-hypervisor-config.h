@@ -1,0 +1,6 @@
+#ifndef KHYPERVISOR_CONFIG_H
+#define KHYPERVISOR_CONFIG_H
+
+#define NUM_GUESTS_STATIC       2
+
+#endif  /* KHYPERVISOR_CONFIG_H */
