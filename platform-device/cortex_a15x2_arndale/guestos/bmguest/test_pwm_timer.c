@@ -1,8 +1,11 @@
-#include <pwm.h>
-#include "pwm_priv.h"
-#include "gic.h"
+#include <gic.h>
 #include "hvmm_trace.h"
-#include <io-exynos.h>
+#include "armv7_p15.h"
+#include "uart_print.h"
+#include "test_pwm_timer.h"
+#include "io-exynos.h"
+
+
 uint32_t tcntb1; 
 static pwm_timer_callback_t _callback;
 
@@ -53,13 +56,10 @@ hvmm_status_t pwm_timer_enable_irq()
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     /* handler */
-        gic_test_set_irq_handler(69, &_pwm_timer_irq_handler, 0);
+    gic_enable_irq(69);
     /* configure and enable interrupt */
-        gic_test_configure_irq(69,
-           GIC_INT_POLARITY_LEVEL,
-           gic_cpumask_current(),
-           GIC_INT_PRIORITY_DEFAULT );
-        result = HVMM_STATUS_SUCCESS;
+    gic_set_irq_handler(69, interrupt_pwmtimer, 0);
+    result = HVMM_STATUS_SUCCESS;
     return result;
    
 }
@@ -96,4 +96,29 @@ void pwm_timer_init()
     vmm_writel(tcon, TCON);
     tcon &= ~(TCON_T1MANUALUPD);
     vmm_writel(tcon, TCON);
+}
+void interrupt_pwmtimer(int irq, void *pregs, void *pdata )
+{
+    pwm_timer_disable_int();
+
+    uart_print( "=======================================\n\r" );
+    HVMM_TRACE_ENTER();
+
+    HVMM_TRACE_EXIT();
+    uart_print( "=======================================\n\r" );
+
+    pwm_timer_enable_int();
+}
+
+hvmm_status_t hvmm_tests_pwm_timer(void)
+{
+    /* Testing pwm timer event (timer1, Interrupt ID : 69), Cortex-A15 exynos5250
+         * - Periodically triggers timer interrupt
+     * - Just print uart_print
+     */
+        HVMM_TRACE_ENTER();
+    pwm_timer_init();
+    pwm_timer_enable_int();
+        HVMM_TRACE_EXIT();
+        return HVMM_STATUS_SUCCESS;
 }

@@ -1,6 +1,7 @@
 #include "arch_types.h"
 #include "exynos-uart.h"
-#include <cfg_platform.h>
+
+#include <config/cfg_platform.h>
 
 #ifdef CFG_EXYNOS5250
 #ifdef CFG_BOARD_ARNDALE

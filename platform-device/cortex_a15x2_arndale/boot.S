@@ -8,7 +8,7 @@
  */
 
 #define NS_BIT	0x1
-#include <cfg_platform.h>
+#include "config/cfg_platform.h"
 	.syntax	unified
 	.arch_extension sec
 	.arch_extension virt
@@ -135,19 +135,9 @@ start:
 	adr	r2, 1f
 	ldmia	r2, {r3 - r7}			@ move the code to a location
 	stmia	r1, {r3 - r7}			@ less likely to be overridden
-#ifdef CFG_BOARD_RTSM_VE_CA15
-	ldr	r0, =0x1c010030			@ VE SYS_FLAGS register
-#elif defined(CFG_BOARD_ARNDALE)
-#else
-	ldr	r0, =0x10000030			@ RealView SYS_FLAGS register
-#endif
 	mov	pc, r1				@ branch to the relocated code
 1:
-#ifdef CFG_BOARD_RTSM_VE_CA15
-	wfe
-#elif defined(CFG_BOARD_ARNDALE)
     wfe
-#endif
 	ldr	r1, [r0]
 	cmp	r1, #0
 	beq	1b
@@ -158,40 +148,8 @@ start:
 	@
 	@ UART initialisation (38400 8N1)
 	@
-#ifdef MACH_MPS
-	ldr	r0, =0x1f005000			@ UART3 base (MPS)
-#elif defined (CFG_BOARD_RTSM_VE_CA15)
 	ldr	r0, =0x1c090000			@ UART base (Versatile Express)
-#else
-	ldr	r0, =0x10009000			@ UART base (RealView/EB)
-#endif
-#ifdef CFG_BOARD_ARNDALE        
-    @ Do nothing for ARNDALE
-#else
-	mov	r1, #0x10			@ ibrd
-	str	r1, [r0, #0x24]
-	mov	r1, #0xc300
-	orr	r1, #0x0001			@ cr
-	str	r1, [r0, #0x30]
-#endif
 
-#if defined (CFG_BOARD_RTSM_VE_CA15)
-    /* Initialize UART1 and UART2 for access from guests, as a workaround, 
-       since initialization sequence in C, in guest, is not clear a the moment */
-	ldr	r0, =0x1c0a0000			@ UART base (Versatile Express)
-	mov	r1, #0x10			@ ibrd
-	str	r1, [r0, #0x24]
-	mov	r1, #0xc300
-	orr	r1, #0x0001			@ cr
-	str	r1, [r0, #0x30]
-
-	ldr	r0, =0x1c0b0000			@ UART base (Versatile Express)
-	mov	r1, #0x10			@ ibrd
-	str	r1, [r0, #0x24]
-	mov	r1, #0xc300
-	orr	r1, #0x0001			@ cr
-	str	r1, [r0, #0x30]
-#endif
 /* Initialize bss section */
     ldr  r2, =begin_bss
     ldr  r3, =end_bss
@@ -203,8 +161,9 @@ start:
 	@ for CPU 0 so we can write most of this in C.
 	ldr     sp, =sec_stacklimit
 
-	@ And call the C entrypoint
-	bl      c_start
+	bl mon_init
+    bl mon_enter_hyp   // Secure -> NS.Hyp -> hyp_main()
+
 	@ Never reached
 1:	b 1b
 

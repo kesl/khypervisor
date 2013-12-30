@@ -1,0 +1,137 @@
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           ARM
+  Version:                           0x1
+  Entry point address:               0xe0000000
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          41228 (bytes into file)
+  Flags:                             0x5000002, has entry point, Version5 EABI
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         2
+  Size of section headers:           40 (bytes)
+  Number of section headers:         15
+  Section header string table index: 12
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .text             PROGBITS        e0000000 008000 000548 00  AX  0   0  4
+  [ 2] .rodata.str1.4    PROGBITS        e0000548 008548 000078 01 AMS  0   0  4
+  [ 3] .ARM.attributes   ARM_ATTRIBUTES  00000000 0085c0 000036 00      0   0  1
+  [ 4] .comment          PROGBITS        00000000 0085f6 000011 01  MS  0   0  1
+  [ 5] .debug_line       PROGBITS        00000000 008607 00029d 00      0   0  1
+  [ 6] .debug_info       PROGBITS        00000000 0088a4 000898 00      0   0  1
+  [ 7] .debug_abbrev     PROGBITS        00000000 00913c 0002f0 00      0   0  1
+  [ 8] .debug_aranges    PROGBITS        00000000 009430 000080 00      0   0  8
+  [ 9] .debug_loc        PROGBITS        00000000 0094b0 0007e7 00      0   0  1
+  [10] .debug_str        PROGBITS        00000000 009c97 0001f4 01  MS  0   0  1
+  [11] .debug_frame      PROGBITS        00000000 009e8c 0001dc 00      0   0  4
+  [12] .shstrtab         STRTAB          00000000 00a068 0000a1 00      0   0  1
+  [13] .symtab           SYMTAB          00000000 00a364 000380 10     14  29  4
+  [14] .strtab           STRTAB          00000000 00a6e4 000154 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  LOAD           0x008000 0xe0000000 0xe0000000 0x005c0 0x005c0 R E 0x8000
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x4
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .text .rodata.str1.4 
+   01     
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+
+There are no unwind sections in this file.
+
+Symbol table '.symtab' contains 56 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: e0000000     0 SECTION LOCAL  DEFAULT    1 
+     2: e0000548     0 SECTION LOCAL  DEFAULT    2 
+     3: 00000000     0 SECTION LOCAL  DEFAULT    3 
+     4: 00000000     0 SECTION LOCAL  DEFAULT    4 
+     5: 00000000     0 SECTION LOCAL  DEFAULT    5 
+     6: 00000000     0 SECTION LOCAL  DEFAULT    6 
+     7: 00000000     0 SECTION LOCAL  DEFAULT    7 
+     8: 00000000     0 SECTION LOCAL  DEFAULT    8 
+     9: 00000000     0 SECTION LOCAL  DEFAULT    9 
+    10: 00000000     0 SECTION LOCAL  DEFAULT   10 
+    11: 00000000     0 SECTION LOCAL  DEFAULT   11 
+    12: e0000004     0 NOTYPE  LOCAL  DEFAULT    1 guest_entry
+    13: e0000000     0 NOTYPE  LOCAL  DEFAULT    1 $a
+    14: e0000014     0 NOTYPE  LOCAL  DEFAULT    1 $d
+    15: 0000000c     0 NOTYPE  LOCAL  DEFAULT    8 $d
+    16: 00000000     0 FILE    LOCAL  DEFAULT  ABS c_start.c
+    17: e0000018     0 NOTYPE  LOCAL  DEFAULT    1 $a
+    18: e0000048     0 NOTYPE  LOCAL  DEFAULT    1 $d
+    19: e0000548     0 NOTYPE  LOCAL  DEFAULT    2 $d
+    20: 00000010     0 NOTYPE  LOCAL  DEFAULT   11 $d
+    21: 00000000     0 FILE    LOCAL  DEFAULT  ABS semihosting.c
+    22: e0000054     0 NOTYPE  LOCAL  DEFAULT    1 $a
+    23: e000020c     0 NOTYPE  LOCAL  DEFAULT    1 $d
+    24: e0000578     0 NOTYPE  LOCAL  DEFAULT    2 $d
+    25: 00000038     0 NOTYPE  LOCAL  DEFAULT   11 $d
+    26: 00000000     0 FILE    LOCAL  DEFAULT  ABS string.c
+    27: e000021c     0 NOTYPE  LOCAL  DEFAULT    1 $a
+    28: 00000138     0 NOTYPE  LOCAL  DEFAULT   11 $d
+    29: e0000018    60 FUNC    GLOBAL DEFAULT    1 nrm_loop
+    30: e0000240   104 FUNC    GLOBAL DEFAULT    1 memmove
+    31: f0000000     0 NOTYPE  GLOBAL DEFAULT  ABS guest_stacklimit
+    32: e0000130    20 FUNC    GLOBAL DEFAULT    1 semi_exit
+    33: e00000ec    56 FUNC    GLOBAL DEFAULT    1 semi_get_cmdline
+    34: e000021c    36 FUNC    GLOBAL DEFAULT    1 memcpy
+    35: e000000c     0 NOTYPE  GLOBAL DEFAULT    1 __semi_call
+    36: e0000144    12 FUNC    GLOBAL DEFAULT    1 semi_fatal
+    37: e00000a8    36 FUNC    GLOBAL DEFAULT    1 semi_read
+    38: 80000000     0 NOTYPE  GLOBAL DEFAULT  ABS PHYS_OFFSET
+    39: e000009c    12 FUNC    GLOBAL DEFAULT    1 semi_write0
+    40: e0000000     0 FUNC    GLOBAL DEFAULT    1 guest_start
+    41: e00002a8    72 FUNC    GLOBAL DEFAULT    1 memchr
+    42: ef000000     0 NOTYPE  GLOBAL DEFAULT  ABS GUEST_STACK
+    43: e0000434   212 FUNC    GLOBAL DEFAULT    1 strncmp
+    44: e000007c    32 FUNC    GLOBAL DEFAULT    1 semi_close
+    45: e0000344   116 FUNC    GLOBAL DEFAULT    1 memcmp
+    46: e0000324    32 FUNC    GLOBAL DEFAULT    1 memset
+    47: e0000054    40 FUNC    GLOBAL DEFAULT    1 semi_open
+    48: e00000cc    32 FUNC    GLOBAL DEFAULT    1 semi_flen
+    49: e00003b8   124 FUNC    GLOBAL DEFAULT    1 strcmp
+    50: e0000150   204 FUNC    GLOBAL DEFAULT    1 semi_load_file
+    51: e0000124    12 FUNC    GLOBAL DEFAULT    1 semi_reportexc
+    52: e00002f0    52 FUNC    GLOBAL DEFAULT    1 strlen
+    53: e0000508    64 FUNC    GLOBAL DEFAULT    1 strchr
+    54: e0000000     0 NOTYPE  GLOBAL DEFAULT  ABS GUEST_OFFSET
+    55: ef000000     0 NOTYPE  GLOBAL DEFAULT  ABS guest_stacktop
+
+No version information found in this file.
+Attribute Section: aeabi
+File Attributes
+  Tag_CPU_name: "Cortex-A15"
+  Tag_CPU_arch: v7
+  Tag_CPU_arch_profile: Application
+  Tag_ARM_ISA_use: Yes
+  Tag_THUMB_ISA_use: Thumb-2
+  Tag_ABI_PCS_wchar_t: 4
+  Tag_ABI_FP_denormal: Needed
+  Tag_ABI_FP_exceptions: Needed
+  Tag_ABI_FP_number_model: IEEE 754
+  Tag_ABI_align_needed: 8-byte
+  Tag_ABI_enum_size: int
+  Tag_MPextension_use: Allowed
+  Tag_DIV_use: Allowed in v7-A with integer division extension
+  Tag_Virtualization_use: TrustZone and Virtualization Extensions

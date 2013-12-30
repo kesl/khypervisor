@@ -12,26 +12,7 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 ENTRY(start)
 
-#include <memmap.cfg>
-
-#ifndef SEMIHOSTING
-INPUT(./uImage)
-#ifdef USE_INITRD
- INPUT(./filesystem.cpio.gz)
-#endif
-#endif
-
-#ifdef LINUX_GUEST
-	INPUT(./zImage)
-#ifdef RTOS_GUEST
-	INPUT(./rtos.bin)
-#else
-	INPUT(./bmguest.bin)
-#endif
-#elif BAREMETAL_GUEST
-	INPUT(./bmguest.bin)
-#endif
-
+#include "config/memmap.cfg"
 
 MON_SIZE    = 0x0F000000;
 MON_STACK	= CFG_MEMMAP_MON_OFFSET + MON_SIZE;
@@ -56,22 +37,11 @@ SECTIONS
  . = CFG_MEMMAP_PHYS_START + 0x00d00000;
 
  fs_start = .;
-#if defined(USE_INITRD) && !defined(SEMIHOSTING)
- .filesystem : { ./filesystem.cpio.gz }
-#endif
  fs_end = .;
 
 /* Guest 1 */
  . = CFG_MEMMAP_GUEST_OFFSET;
   guest_bin_start = .; 
-#ifdef LINUX_GUEST
-  .guest : { ./zImage } 
-#elif BAREMETAL_GUEST
-  .guest : { ./bmguest.bin }
-#else
-	/* dummy space for guest */
- . = CFG_MEMMAP_GUEST_OFFSET + GUEST_SIZE_MAX;
-#endif
   guest_bin_end = .; 
 
  . = GUEST_STACK;
@@ -82,20 +52,7 @@ SECTIONS
 /* Guest 2 */
  . = CFG_MEMMAP_GUEST2_OFFSET;
   guest2_bin_start = .; 
-#ifdef LINUX_GUEST
-#ifdef RTOS_GUEST
- .guest2 : { ./rtos.bin }
-#else
- .guest2 : { ./bmguest.bin }
-#endif
-#elif BAREMETAL_GUEST
- .guest2 : { ./bmguest.bin }
-#else
-	/* dummy space for guest */
- . = CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX; 
-#endif
   guest2_bin_end = .; 
-
 
  . = GUEST2_STACK;
  guest2_stacktop = .;
@@ -111,7 +68,7 @@ SECTIONS
  }
  .= ALIGN(4);
  .rodata : {
-        *(.rodata)
+    *(.rodata)
  }
  .= ALIGN(4);
  .data : { 

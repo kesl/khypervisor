@@ -16,9 +16,6 @@
 #
 CROSS_COMPILE	?= arm-linux-gnueabihf-
 ARCH		?= arm
-
-SYSTEM ?= arndale
-
 CPPFLAGS	+= -DSMP
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
-CPPFLAGS	+= -g
+CPPFLAGS	+= -DVEXPRESS -g
