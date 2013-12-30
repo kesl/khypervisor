@@ -1,9 +1,11 @@
 #include "tests_malloc.h"
-#include "print.h"
 #include "hvmm_trace.h"
 #include "lpae.h"
 #include "mm.h"
 #include "armv7_p15.h"
+
+#include <config/cfg_platform.h>
+#include <log/print.h>
 
 hvmm_status_t hvmm_tests_malloc(void){
     HVMM_TRACE_ENTER();

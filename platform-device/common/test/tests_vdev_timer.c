@@ -1,4 +1,3 @@
-#include "tests_vdev_timer.h"
 #include "vdev/vdev_timer.h"
 
 hvmm_status_t hvmm_tests_vdev_timer(void)

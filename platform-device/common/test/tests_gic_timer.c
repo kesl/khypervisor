@@ -5,14 +5,15 @@
 #include "armv7_p15.h"
 #include "timer.h"
 #include "sched_policy.h"
-#include <cfg_platform.h>
-#include <print.h>
 #include "hyp_config.h"
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
 #include "virq.h"
 #include "vdev/vdev_timer.h"
+
+#include <config/cfg_platform.h>
+#include <log/print.h>
 
 static void test_start_timer(void)
 {

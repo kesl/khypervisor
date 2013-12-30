@@ -4,7 +4,6 @@
 #include "tests_vdev.h"
 #include "tests_malloc.h"
 #include "tests_sp804_timer.h"
-#include "tests_vdev_timer.h"
 
 /* Enable/Disable Test Items */
 
