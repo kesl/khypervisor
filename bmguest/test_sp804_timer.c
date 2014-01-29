@@ -32,104 +32,106 @@
 #define SP804_ONESHOT			(1 << 0)
 
 #define writec(v, a)    (*(volatile unsigned char *)(a) = (v))
-#define readc(a)         (*(volatile unsigned char *)(a)) 
+#define readc(a)         (*(volatile unsigned char *)(a))
 #define writes(v, a)    (*(volatile unsigned short *)(a) = (v))
-#define reads(a)         (*(volatile unsigned short *)(a)) 
+#define reads(a)         (*(volatile unsigned short *)(a))
 #define writel(v, a)    (*(volatile uint32_t *)(a) = (v))
-#define readl(a)         (*(volatile uint32_t *)(a)) 
+#define readl(a)         (*(volatile uint32_t *)(a))
 
 /* Load the timer with ticks value */
 void sp804_load(uint32_t loadval, uint32_t sp804_base)
 {
-	writel(loadval, sp804_base + SP804_LOAD);
+    writel(loadval, sp804_base + SP804_LOAD);
 }
 
 void sp804_init_periodic(uint32_t sp804_base, uint32_t load_value)
 {
-	volatile uint32_t reg;
+    volatile uint32_t reg;
 
-	/* Periodic, wraparound, 32 bit, irq on wraparound */
-	reg = SP804_PERIODIC | SP804_32BIT | SP804_IRQEN;
+    /* Periodic, wraparound, 32 bit, irq on wraparound */
+    reg = SP804_PERIODIC | SP804_32BIT | SP804_IRQEN;
 
-	writel(reg, sp804_base + SP804_CTRL);
+    writel(reg, sp804_base + SP804_CTRL);
 
-	/* 1 tick per usec, 1 irq per msec */
-	if (load_value)
-		sp804_load(load_value, sp804_base);
-	else
-		sp804_load(1000, sp804_base);
+    /* 1 tick per usec, 1 irq per msec */
+    if (load_value)
+        sp804_load(load_value, sp804_base);
+    else
+        sp804_load(1000, sp804_base);
 }
 
 void sp804_init_oneshot(uint32_t sp804_base)
 {
-	volatile uint32_t reg = readl(sp804_base + SP804_CTRL);
+    volatile uint32_t reg = readl(sp804_base + SP804_CTRL);
 
-	/* One shot, 32 bits, no irqs */
-	reg |= SP804_32BIT | SP804_ONESHOT;
+    /* One shot, 32 bits, no irqs */
+    reg |= SP804_32BIT | SP804_ONESHOT;
 
-	writel(reg, sp804_base + SP804_CTRL);
+    writel(reg, sp804_base + SP804_CTRL);
 }
 void sp804_init(uint32_t sp804_base, uint32_t load_value)
 {
 
-	sp804_init_periodic(sp804_base, load_value);
+    sp804_init_periodic(sp804_base, load_value);
     sp804_start(sp804_base);
 }
 
 /* Enable timer with its current configuration */
 void sp804_stop(uint32_t sp804_base)
 {
-     writel(0, sp804_base + SP804_CTRL);
+    writel(0, sp804_base + SP804_CTRL);
 }
 
 void sp804_start(uint32_t sp804_base)
 {
-	volatile uint32_t reg = readl(sp804_base + SP804_CTRL);
+    volatile uint32_t reg = readl(sp804_base + SP804_CTRL);
 
-	reg |= SP804_ENABLE;
+    reg |= SP804_ENABLE;
 
-	writel(reg, sp804_base + SP804_CTRL);
+    writel(reg, sp804_base + SP804_CTRL);
 
 }
 
 uint32_t sp804_read(uint32_t sp804_base)
 {
-	return readl(sp804_base + SP804_VALUE);
+    return readl(sp804_base + SP804_VALUE);
 }
 
 void sp804_irq_clear(uint32_t sp804_base)
 {
-	writel(1, sp804_base + SP804_INTCLR);
+    writel(1, sp804_base + SP804_INTCLR);
 }
 
 void interrupt_sp804_timer(int irq, void *pregs, void *pdata )
 {
-	uint32_t ctl;
-	uint32_t val;
+    uint32_t ctl;
+    uint32_t val;
     vmid_t vmid;
 
-	uart_print( "=======================================\n\r" );
-	HVMM_TRACE_ENTER();
+    uart_print( "=======================================\n\r" );
+    HVMM_TRACE_ENTER();
 
-	val = sp804_read(SP804_BASE);
-	uart_print( "sp804:"); uart_print_hex32(val); uart_print("\n\r");
+    val = sp804_read(SP804_BASE);
+    uart_print( "sp804:");
+    uart_print_hex32(val);
+    uart_print("\n\r");
 
-	/* irq clear */
+    /* irq clear */
     sp804_irq_clear(SP804_BASE);
-	
-	HVMM_TRACE_EXIT();
-	uart_print( "=======================================\n\r" );
+
+    HVMM_TRACE_EXIT();
+    uart_print( "=======================================\n\r" );
 }
 
 hvmm_status_t hvmm_tests_sp804_timer(void)
 {
-	HVMM_TRACE_ENTER();
+    HVMM_TRACE_ENTER();
 
-	/* start timer */
+    /* start timer */
     sp804_init(SP804_BASE, 100000);
     gic_enable_irq(34);
     gic_set_irq_handler(34, interrupt_sp804_timer, 0);
 
-	HVMM_TRACE_EXIT();
-	return HVMM_STATUS_SUCCESS;
+    HVMM_TRACE_EXIT();
+    return HVMM_STATUS_SUCCESS;
 }

@@ -3,7 +3,7 @@
 
 #include "arch_types.h"
 
-/* 
+/*
  * Cortex-A15 Implementation Defined Registers
  * ACTLR
  * L2CTLR

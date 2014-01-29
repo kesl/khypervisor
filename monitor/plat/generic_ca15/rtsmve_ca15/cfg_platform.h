@@ -1,4 +1,4 @@
-/* 
+/*
  *  BOARD param
  */
 #define CFG_BOARD_RTSM_VE_CA15

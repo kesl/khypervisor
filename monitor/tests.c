@@ -24,30 +24,39 @@ hvmm_status_t hvmm_tests_main(void)
 
     /* Entry point for sequence of test code */
 #ifdef TESTS_ENABLE_MALLOC
+
     result = hvmm_tests_malloc();
 #endif
 #ifdef TESTS_ENABLE_GIC_TIMER
+
     result = hvmm_tests_gic_timer();
 #endif
 #ifdef TESTS_ENABLE_GIC_PWM_TIMER
+
     result = hvmm_tests_gic_pwm_timer();
 #endif
 #ifdef TESTS_ENABLE_VGIC
+
     result = hvmm_tests_vgic();
 #endif
 #ifdef TESTS_ENABLE_VDEV_TIMER
+
     result = hvmm_tests_vdev_timer();
 #endif
 #ifdef TESTS_ENABLE_SP804
-    result = hvmm_tests_sp804_timer(); 
+
+    result = hvmm_tests_sp804_timer();
 #endif
 
 #ifdef TESTS_VDEV
+
     result = hvmm_tests_vdev();
 #endif
 
 #ifdef TESTS_VDEV_VGICD
+
     result = hvmm_tests_vdev_gicd();
 #endif
+
     return result;
 }

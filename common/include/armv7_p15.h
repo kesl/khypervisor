@@ -194,7 +194,7 @@
 #define read_cntkctl()          ({ uint32_t rval; asm volatile(\
                                 " mrc     p15, 0, %0, c14, c1, 0\n\t" \
                                 : "=r" (rval) : : "memory", "cc"); rval;})
-                
+
 #define write_cntkctl(val)      asm volatile(\
                                 " mcr     p15, 0, %0, c14, c1, 0\n\t" \
                                 :: "r" ((val)) : "memory", "cc")
@@ -220,7 +220,7 @@
 #define read_cntp_tval()        ({ uint32_t rval; asm volatile(\
                                 " mrc     p15, 0, %0, c14, c2, 0\n\t" \
                                 : "=r" (rval) : : "memory", "cc"); rval;})
-                
+
 #define write_cntp_tval(val)    asm volatile(\
                                 " mcr     p15, 0, %0, c14, c2, 0\n\t" \
                                 :: "r" ((val)) : "memory", "cc")

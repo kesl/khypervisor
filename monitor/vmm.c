@@ -18,13 +18,13 @@
 #define VMM_L2L3_PTE_NUM_TOTAL  (VMM_L2_PTE_NUM * VMM_L3_PTE_NUM + VMM_L2_PTE_NUM)
 #define VMM_PTE_NUM_TOTAL  (VMM_L1_PTE_NUM + VMM_L1_PADDING_PTE_NUM + VMM_L2L3_PTE_NUM_TOTAL \
                              * VMM_L1_PTE_NUM)
-/* VTTBR */ 
+/* VTTBR */
 #define VTTBR_INITVAL                                   0x0000000000000000ULL
 #define VTTBR_VMID_MASK                                 0x00FF000000000000ULL
 #define VTTBR_VMID_SHIFT                                48
 #define VTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
 #define VTTBR_BADDR_SHIFT                               12
-        
+
 /* VTCR */
 #define VTCR_INITVAL                                    0x80000000
 #define VTCR_SH0_MASK                                   0x00003000
@@ -54,7 +54,8 @@ static lpaed_t *_vmid_ttbl[NUM_GUESTS_STATIC];
 static lpaed_t _ttbl_guest0[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 static lpaed_t _ttbl_guest1[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 
-struct memmap_desc {
+struct memmap_desc
+{
     char *label;
     uint64_t va;
     uint64_t pa;
@@ -62,53 +63,62 @@ struct memmap_desc {
     lpaed_stage2_memattr_t attr;
 };
 
-static struct memmap_desc guest_md_empty[] = {
-    {       0, 0, 0, 0,  0},
-};
+static struct memmap_desc guest_md_empty[] =
+    {
+        {
+            0, 0, 0, 0,  0
+        },
+    };
 
-static struct memmap_desc guest_device_md0[] = {
-    /*  label, ipa, pa, size, attr */
-    CFG_GUEST0_DEVICE_MEMORY,
-    { 0, 0, 0, 0,  0},
-};
+static struct memmap_desc guest_device_md0[] =
+    {
+        /*  label, ipa, pa, size, attr */
+        CFG_GUEST0_DEVICE_MEMORY,
+        { 0, 0, 0, 0,  0},
+    };
 
-static struct memmap_desc guest_device_md1[] = {
-    /*  label, ipa, pa, size, attr */
-    CFG_GUEST1_DEVICE_MEMORY,
-    { 0, 0, 0, 0,  0},
-};
+static struct memmap_desc guest_device_md1[] =
+    {
+        /*  label, ipa, pa, size, attr */
+        CFG_GUEST1_DEVICE_MEMORY,
+        { 0, 0, 0, 0,  0},
+    };
 
-static struct memmap_desc guest_memory_md0[] = {
-    /* 756MB */
-    { "start", 0x00000000,          0, 0x30000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
-    {       0, 0, 0, 0,  0},
-};
+static struct memmap_desc guest_memory_md0[] =
+    {
+        /* 756MB */
+        { "start", 0x00000000,          0, 0x30000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
+        {       0, 0, 0, 0,  0},
+    };
 
-static struct memmap_desc guest_memory_md1[] = {
-    /* 256MB */
-    { "start", 0x00000000,          0, 0x10000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
-    {       0, 0, 0, 0,  0},
-};
-
-/* Memory Map for Guest 0 */
-static struct memmap_desc *guest_mdlist0[] = {
-    &guest_device_md0[0],   /* 0x0000_0000 */
-    &guest_md_empty[0],     /* 0x4000_0000 */
-    &guest_memory_md0[0],
-    &guest_md_empty[0],     /* 0xC000_0000 PA:0x40000000*/
-    0
-};
+static struct memmap_desc guest_memory_md1[] =
+    {
+        /* 256MB */
+        { "start", 0x00000000,          0, 0x10000000, LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT },
+        {       0, 0, 0, 0,  0},
+    };
 
 /* Memory Map for Guest 0 */
-static struct memmap_desc *guest_mdlist1[] = {
-    &guest_device_md1[0],
-    &guest_md_empty[0],
-    &guest_memory_md1[0],
-    &guest_md_empty[0],
-    0
-};
+static struct memmap_desc *guest_mdlist0[] =
+    {
+        &guest_device_md0[0],   /* 0x0000_0000 */
+        &guest_md_empty[0],     /* 0x4000_0000 */
+        &guest_memory_md0[0],
+        &guest_md_empty[0],     /* 0xC000_0000 PA:0x40000000*/
+        0
+    };
 
-/* Returns address of L3 TTBL at 'l2index' entry of L2 
+/* Memory Map for Guest 0 */
+static struct memmap_desc *guest_mdlist1[] =
+    {
+        &guest_device_md1[0],
+        &guest_md_empty[0],
+        &guest_memory_md1[0],
+        &guest_md_empty[0],
+        0
+    };
+
+/* Returns address of L3 TTBL at 'l2index' entry of L2
     lpaed_t *TTBL_L3(lpaed_t *ttbl_l2, uint32_t index_l2);
  */
 #define TTBL_L3(ttbl_l2, index_l2) (&ttbl_l2[VMM_L2_PTE_NUM + (VMM_L3_PTE_NUM * (index_l2))])
@@ -116,12 +126,12 @@ static struct memmap_desc *guest_mdlist1[] = {
 
 
 static void vmm_ttbl3_map( lpaed_t *ttbl3, uint64_t offset, uint32_t pages, uint64_t pa,
-                            lpaed_stage2_memattr_t mattr ) 
+                           lpaed_stage2_memattr_t mattr )
 {
     int index_l3 = 0;
     int index_l3_last = 0;
 
- 
+
     printh( "%s[%d]: ttbl3:%x offset:%x pte:%x pages:%d, pa:%x\n", __FUNCTION__, __LINE__, (uint32_t) ttbl3, (uint32_t) offset, &ttbl3[offset], pages, (uint32_t) pa);
     /* Initialize the address spaces with 'invalid' state */
 
@@ -254,7 +264,7 @@ static void vmm_ttbl2_init_entries(lpaed_t *ttbl2)
         for( j = 0; j < VMM_L2_PTE_NUM; j++) {
             ttbl3[j].pt.valid = 0;
         }
-    }        
+    }
 
     HVMM_TRACE_EXIT();
 }
@@ -265,7 +275,8 @@ static void vmm_init_ttbl2(lpaed_t *ttbl2, struct memmap_desc *md)
     int i = 0;
     HVMM_TRACE_ENTER();
     printh( " - ttbl2:%x\n", (uint32_t) ttbl2 );
-    if ( ((uint64_t) ( (uint32_t) ttbl2) ) & 0x0FFFULL ) {
+    if ( ((uint64_t) ( (uint32_t) ttbl2) ) & 0x0FFFULL )
+    {
         printh( " - error: invalid ttbl2 address alignment\n" );
     }
 
@@ -274,7 +285,8 @@ static void vmm_init_ttbl2(lpaed_t *ttbl2, struct memmap_desc *md)
 
     vmm_ttbl2_unmap( ttbl2, 0x00000000, 0x40000000 );
 
-    while(md[i].label != 0) {
+    while(md[i].label != 0)
+    {
         vmm_ttbl2_map(ttbl2, md[i].va, md[i].pa, md[i].size, md[i].attr );
         i++;
     }
@@ -286,7 +298,8 @@ static void vmm_init_ttbl(lpaed_t *ttbl, struct memmap_desc *mdlist[])
     int i = 0;
     HVMM_TRACE_ENTER();
 
-    while(mdlist[i]) {
+    while(mdlist[i])
+    {
         struct memmap_desc *md = mdlist[i];
 
         if ( md[0].label == 0 ) {
@@ -308,7 +321,10 @@ static void vmm_init_mmu(void)
 
     HVMM_TRACE_ENTER();
 
-    vtcr = read_vtcr(); uart_print( "vtcr:"); uart_print_hex32(vtcr); uart_print("\n\r");
+    vtcr = read_vtcr();
+    uart_print( "vtcr:");
+    uart_print_hex32(vtcr);
+    uart_print("\n\r");
 
     // start lookup at level 1 table
     vtcr &= ~VTCR_SL0_MASK;
@@ -318,20 +334,28 @@ static void vmm_init_mmu(void)
     vtcr &= ~VTCR_IRGN0_MASK;
     vtcr |= (0x3 << VTCR_IRGN0_SHIFT) & VTCR_IRGN0_MASK;
     write_vtcr(vtcr);
-    vtcr = read_vtcr(); uart_print( "vtcr:"); uart_print_hex32(vtcr); uart_print("\n\r");
+    vtcr = read_vtcr();
+    uart_print( "vtcr:");
+    uart_print_hex32(vtcr);
+    uart_print("\n\r");
     {
         uint32_t sl0 = (vtcr & VTCR_SL0_MASK) >> VTCR_SL0_SHIFT;
         uint32_t t0sz = vtcr & 0xF;
         uint32_t baddr_x = (sl0 == 0 ? 14 - t0sz : 5 - t0sz);
-        uart_print( "vttbr.baddr.x:"); uart_print_hex32(baddr_x); uart_print("\n\r");
+        uart_print( "vttbr.baddr.x:");
+        uart_print_hex32(baddr_x);
+        uart_print("\n\r");
     }
-// VTTBR
-    vttbr = read_vttbr(); uart_print( "vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+    // VTTBR
+    vttbr = read_vttbr();
+    uart_print( "vttbr:" );
+    uart_print_hex64(vttbr);
+    uart_print("\n\r");
 
     HVMM_TRACE_EXIT();
 }
 
-/* 
+/*
  * Initialization of Virtual Machine Memory Management 
  * Stage 2 Translation
  */
@@ -362,7 +386,7 @@ void vmm_init(void)
 
     vmm_init_ttbl(&_ttbl_guest0[0], &guest_mdlist0[0]);
     vmm_init_ttbl(&_ttbl_guest1[0], &guest_mdlist1[0]);
-   
+
     vmm_init_mmu();
 
     HVMM_TRACE_EXIT();
@@ -397,14 +421,18 @@ hvmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 {
     uint64_t vttbr;
 
-    /* 
+    /*
      * VTTBR.VMID = vmid
      * VTTBR.BADDR = ttbl
      */
     vttbr = read_vttbr();
 #if 0 /* ignore message due to flood log message */
-    uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+
+    uart_print( "current vttbr:" );
+    uart_print_hex64(vttbr);
+    uart_print("\n\r");
 #endif
+
     vttbr &= ~(VTTBR_VMID_MASK);
     vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
 
@@ -414,7 +442,11 @@ hvmm_status_t vmm_set_vmid_ttbl( vmid_t vmid, lpaed_t *ttbl )
 
     vttbr = read_vttbr();
 #if 0 /* ignore message due to flood log message */
-    uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r");
+
+    uart_print( "changed vttbr:" );
+    uart_print_hex64(vttbr);
+    uart_print("\n\r");
 #endif
+
     return HVMM_STATUS_SUCCESS;
 }

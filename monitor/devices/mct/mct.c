@@ -6,7 +6,8 @@ static inline uint32_t exynos5_mct_read(uint32_t offset)
 {
     return vmm_readl((void *) EXYNOS5_MCT_BASE + offset);
 }
-static void exynos5_mct_write(uint32_t value, uint32_t offset){
+static void exynos5_mct_write(uint32_t value, uint32_t offset)
+{
 
     uint32_t stat_addr;
     uint32_t mask;
@@ -15,52 +16,52 @@ static void exynos5_mct_write(uint32_t value, uint32_t offset){
 
     vmm_writel(value, exynos5_sys_timer + offset);
 
-    if(likely(offset >= EXYNOS5_MCT_L_BASE(0))){
+    if(likely(offset >= EXYNOS5_MCT_L_BASE(0))) {
         uint32_t base = offset & EXYNOS5_MCT_L_MASK;
-        switch( offset & ~EXYNOS5_MCT_L_MASK){
-            case (uint32_t) MCT_L_TCON_OFFSET:
-                stat_addr = base + MCT_L_WSTAT_OFFSET;
-                mask = 1 << 3;
-                break;
-            case (uint32_t) MCT_L_ICNTB_OFFSET:
-                stat_addr = base + MCT_L_WSTAT_OFFSET;
-                mask = 1 << 1;  /* L_ICNTB write status */
-                break;
-            case (uint32_t) MCT_L_TCNTB_OFFSET:
-                stat_addr = base + MCT_L_WSTAT_OFFSET;
-                mask = 1 << 0;  /* L_TCNTB write status */
-                break;
-            default:
-                return;
+        switch( offset & ~EXYNOS5_MCT_L_MASK) {
+        case (uint32_t) MCT_L_TCON_OFFSET:
+            stat_addr = base + MCT_L_WSTAT_OFFSET;
+            mask = 1 << 3;
+            break;
+        case (uint32_t) MCT_L_ICNTB_OFFSET:
+            stat_addr = base + MCT_L_WSTAT_OFFSET;
+            mask = 1 << 1;  /* L_ICNTB write status */
+            break;
+        case (uint32_t) MCT_L_TCNTB_OFFSET:
+            stat_addr = base + MCT_L_WSTAT_OFFSET;
+            mask = 1 << 0;  /* L_TCNTB write status */
+            break;
+        default:
+            return;
         }
-    }else{
+    } else {
         switch (offset) {
-            case (uint32_t) EXYNOS5_MCT_G_TCON:
-                stat_addr = EXYNOS5_MCT_G_WSTAT;
-                mask = 1 << 16; /* G_TCON write status */
-                break;
-            case (uint32_t) EXYNOS5_MCT_G_COMP0_L:
-                stat_addr = EXYNOS5_MCT_G_WSTAT;
-                mask = 1 << 0;  /* G_COMP0_L write status */
-                break;
-            case (uint32_t) EXYNOS5_MCT_G_COMP0_U:
-                stat_addr = EXYNOS5_MCT_G_WSTAT;
-                mask = 1 << 1;  /* G_COMP0_U write status */
-                break;
-            case (uint32_t) EXYNOS5_MCT_G_COMP0_ADD_INCR:
-                stat_addr = EXYNOS5_MCT_G_WSTAT;
-                mask = 1 << 2;  /* G_COMP0_ADD_INCR w status */
-                break;
-            case (uint32_t) EXYNOS5_MCT_G_CNT_L:
-                stat_addr = EXYNOS5_MCT_G_CNT_WSTAT;
-                mask = 1 << 0;  /* G_CNT_L write status */
-                break;
-            case (uint32_t) EXYNOS5_MCT_G_CNT_U:
-                stat_addr = EXYNOS5_MCT_G_CNT_WSTAT;
-                mask = 1 << 1;  /* G_CNT_U write status */
-                break;
-            default:
-                return;
+        case (uint32_t) EXYNOS5_MCT_G_TCON:
+            stat_addr = EXYNOS5_MCT_G_WSTAT;
+            mask = 1 << 16; /* G_TCON write status */
+            break;
+        case (uint32_t) EXYNOS5_MCT_G_COMP0_L:
+            stat_addr = EXYNOS5_MCT_G_WSTAT;
+            mask = 1 << 0;  /* G_COMP0_L write status */
+            break;
+        case (uint32_t) EXYNOS5_MCT_G_COMP0_U:
+            stat_addr = EXYNOS5_MCT_G_WSTAT;
+            mask = 1 << 1;  /* G_COMP0_U write status */
+            break;
+        case (uint32_t) EXYNOS5_MCT_G_COMP0_ADD_INCR:
+            stat_addr = EXYNOS5_MCT_G_WSTAT;
+            mask = 1 << 2;  /* G_COMP0_ADD_INCR w status */
+            break;
+        case (uint32_t) EXYNOS5_MCT_G_CNT_L:
+            stat_addr = EXYNOS5_MCT_G_CNT_WSTAT;
+            mask = 1 << 0;  /* G_CNT_L write status */
+            break;
+        case (uint32_t) EXYNOS5_MCT_G_CNT_U:
+            stat_addr = EXYNOS5_MCT_G_CNT_WSTAT;
+            mask = 1 << 1;  /* G_CNT_U write status */
+            break;
+        default:
+            return;
         }
     }
     /* Wait maximum 1 ms until written values are applied */
@@ -73,7 +74,8 @@ static void exynos5_mct_write(uint32_t value, uint32_t offset){
     }
 }
 
-void mct_init(void){
+void mct_init(void)
+{
     uint32_t reg;
     exynos5_mct_write(0, EXYNOS5_MCT_G_CNT_L);
     exynos5_mct_write(0, EXYNOS5_MCT_G_CNT_U);

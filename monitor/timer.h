@@ -35,7 +35,8 @@ typedef enum{
 
 typedef void(*timer_callback_t)(void *pdata);
 
-struct timer_channel{
+struct timer_channel
+{
     uint32_t interval_us;
     timer_callback_t callbacks[TIMER_MAX_CHANNEL_CALLBACKS];
 };
@@ -82,9 +83,9 @@ hvmm_status_t timer_add_callback(timer_channel_t channel, timer_callback_t handl
  */
 hvmm_status_t timer_remove_callback(timer_channel_t channel, timer_callback_t handler);
 
-/* 
+/*
  * Converts from microseconds to system counter. 
  */
 uint64_t timer_t2c(uint64_t time_us);
-   
+
 #endif

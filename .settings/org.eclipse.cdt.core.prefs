@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.2131831649/CROSS_COMPILE/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.2131831649/CROSS_COMPILE/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.2131831649/CROSS_COMPILE/value=arm-none-eabi-
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.2131831649/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.2131831649/appendContributed=true

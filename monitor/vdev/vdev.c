@@ -45,7 +45,7 @@ hvmm_status_t vdev_reg_device(vdev_info_t *new_vdev)
     return result;
 }
 
-hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t access_size, uint32_t srt, struct arch_regs *regs) 
+hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t access_size, uint32_t srt, struct arch_regs *regs)
 {
     hvmm_status_t result = HVMM_STATUS_NOT_FOUND;
     int i = 0;
@@ -53,13 +53,16 @@ hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t acces
     uint8_t isize = 4;
 
     HVMM_TRACE_ENTER();
-    if ( regs->cpsr & 0x20 ) {
+    if ( regs->cpsr & 0x20 )
+    {
         /* Thumb */
         isize = 2;
     }
 
-    for (i = 0; i < MAX_VDEV; i++){
-        if ( vdev_list[i].base == 0 ) break;
+    for (i = 0; i < MAX_VDEV; i++)
+    {
+        if ( vdev_list[i].base == 0 )
+            break;
 
         offset = fipa - vdev_list[i].base;
         if ( fipa >= vdev_list[i].base && offset < vdev_list[i].size && vdev_list[i].handler != 0) {

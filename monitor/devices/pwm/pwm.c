@@ -3,7 +3,7 @@
 #include "devices/mct/io-exynos.h"
 #include "gic.h"
 #include "hvmm_trace.h"
-uint32_t tcntb1; 
+uint32_t tcntb1;
 static pwm_timer_callback_t _callback;
 
 
@@ -13,7 +13,7 @@ hvmm_status_t pwm_timer_enable_int()
     uint32_t tcstat;
     HVMM_TRACE_ENTER();
     tcon = vmm_readl(TCON);
-    tcstat = vmm_readl(CSTAT); 
+    tcstat = vmm_readl(CSTAT);
     //auto reload set & timer start
     tcon |= (TCON_T1RELOAD);
     tcon |= (TCON_T1START);
@@ -33,11 +33,11 @@ hvmm_status_t pwm_timer_disable_int()
     /* Stop pwm timer1 */
     tcon = vmm_readl(TCON);
     tcon &= ~(1 << 8);
-    vmm_writel(tcon, TCON);    
-    /* Disable Pwm timer1 Interrupt */  
+    vmm_writel(tcon, TCON);
+    /* Disable Pwm timer1 Interrupt */
     tcstat = vmm_readl(CSTAT);
     tcstat &= ~(1 << 1);
-    vmm_writel(tcstat, CSTAT); 
+    vmm_writel(tcstat, CSTAT);
     return HVMM_STATUS_SUCCESS;
 }
 hvmm_status_t pwm_timer_set_interval(uint32_t interval)
@@ -47,21 +47,21 @@ hvmm_status_t pwm_timer_set_interval(uint32_t interval)
 }
 static void _pwm_timer_irq_handler(int irq, void *regs, void *pdata)
 {
-   _callback(regs); 
+    _callback(regs);
 }
 hvmm_status_t pwm_timer_enable_irq()
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     /* handler */
-        gic_test_set_irq_handler(69, &_pwm_timer_irq_handler, 0);
+    gic_test_set_irq_handler(69, &_pwm_timer_irq_handler, 0);
     /* configure and enable interrupt */
-        gic_test_configure_irq(69,
-           GIC_INT_POLARITY_LEVEL,
-           gic_cpumask_current(),
-           GIC_INT_PRIORITY_DEFAULT );
-        result = HVMM_STATUS_SUCCESS;
+    gic_test_configure_irq(69,
+                           GIC_INT_POLARITY_LEVEL,
+                           gic_cpumask_current(),
+                           GIC_INT_PRIORITY_DEFAULT );
+    result = HVMM_STATUS_SUCCESS;
     return result;
-   
+
 }
 hvmm_status_t pwm_timer_set_callback(pwm_timer_callback_t callback)
 {
@@ -76,7 +76,7 @@ void pwm_timer_init()
     uint32_t tcon;
 
     pwm_timer_set_interval(0);
-    pwm_timer_enable_irq(); 
+    pwm_timer_enable_irq();
 
     tcfg0 = vmm_readl(TCFG0);
     tcfg1 = vmm_readl(TCFG1);

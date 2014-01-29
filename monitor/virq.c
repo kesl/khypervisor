@@ -13,7 +13,8 @@
 
 #define VIRQ_MAX_ENTRIES    128
 
-struct virq_entry {
+struct virq_entry
+{
     uint32_t pirq;
     uint32_t virq;
     uint8_t hw;
@@ -33,16 +34,16 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq, uint32_t pirq, uint8_t hw)
         for( i = 0; i < VIRQ_MAX_ENTRIES; i++ ) {
             if ( q[i].valid == 0 ) {
                 q[i].pirq = pirq;
-                q[i].virq = virq;   
+                q[i].virq = virq;
                 q[i].hw = hw;
                 q[i].valid = 1;
                 result = HVMM_STATUS_SUCCESS;
                 break;
             }
         }
-    printh( "virq: queueing virq %d pirq %d to vmid %d %s\n", virq, pirq, vmid, result == HVMM_STATUS_SUCCESS ? "done" : "failed");
+        printh( "virq: queueing virq %d pirq %d to vmid %d %s\n", virq, pirq, vmid, result == HVMM_STATUS_SUCCESS ? "done" : "failed");
     } else {
-     printh( "virq: rejected queueing duplicated virq %d pirq %d to vmid %d %s\n", virq, pirq, vmid);    
+        printh( "virq: rejected queueing duplicated virq %d pirq %d to vmid %d %s\n", virq, pirq, vmid);
     }
     return result;
 }
@@ -71,7 +72,7 @@ static void virq_flush(vmid_t vmid)
                 break;
             }
 
-            slotvirq_set( vmid, slot, entries[i].virq );    
+            slotvirq_set( vmid, slot, entries[i].virq );
 
             /* Forget */
             entries[i].valid = 0;

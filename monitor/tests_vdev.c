@@ -32,7 +32,7 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
         uint32_t virq;
         uint32_t pirq;
         bit = firstbit32(cstatus);
-        
+
         virq = minirq + bit;
         pirq = virqmap_pirq(vmid, virq);
 
@@ -44,10 +44,10 @@ void _my_vgicd_changed_istatus( vmid_t vmid, uint32_t istatus, uint8_t word_offs
             } else {
                 printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, __LINE__, bit + minirq);
                 gic_disable_irq(pirq);
-            } 
+            }
         } else {
             printh( "WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid );
-        } 
+        }
         cstatus &= ~(1<< bit);
     }
     ostatus[vmid][word_offset] = istatus;

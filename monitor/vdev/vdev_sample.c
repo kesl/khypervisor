@@ -2,14 +2,15 @@
 #include <context.h>
 #include <print.h>
 
-struct vdev_sample_regs{
+struct vdev_sample_regs
+{
     uint32_t axis_x;
     uint32_t axis_y;
     uint32_t axis_z;
 };
 
 static vdev_info_t _vdev_info;
-static struct vdev_sample_regs regs[NUM_GUESTS_STATIC]; 
+static struct vdev_sample_regs regs[NUM_GUESTS_STATIC];
 
 hvmm_status_t access_handler(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
 {
@@ -18,23 +19,23 @@ hvmm_status_t access_handler(uint32_t write, uint32_t offset, uint32_t *pvalue, 
     unsigned int vmid = context_current_vmid();
     if (!write) {
         // READ
-        switch (offset){
+        switch (offset) {
         case 0x0:
-            *pvalue = regs[vmid].axis_x;        
+            *pvalue = regs[vmid].axis_x;
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x4:
-            *pvalue = regs[vmid].axis_y;        
+            *pvalue = regs[vmid].axis_y;
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x8:
-            *pvalue = regs[vmid].axis_x + regs[vmid].axis_y;        
+            *pvalue = regs[vmid].axis_x + regs[vmid].axis_y;
             result = HVMM_STATUS_SUCCESS;
             break;
         }
-    } else { 
+    } else {
         //WRITE
-        switch (offset){
+        switch (offset) {
         case 0x0:
             regs[vmid].axis_x = *pvalue;
             result = HVMM_STATUS_SUCCESS;
@@ -57,7 +58,7 @@ hvmm_status_t vdev_sample_init(uint32_t base_addr)
     hvmm_status_t result = HVMM_STATUS_BUSY;
 
     _vdev_info.name     = "sample";
-    _vdev_info.base     = base_addr; 
+    _vdev_info.base     = base_addr;
     _vdev_info.size     = sizeof(struct vdev_sample_regs);
     _vdev_info.handler  = access_handler;
 

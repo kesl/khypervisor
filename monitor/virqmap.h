@@ -11,8 +11,9 @@
  *
  * TODO(wonseok): need to change a structure when we support a sharing device among guests.
  */
-struct virqmap_entry {
-    vmid_t vmid;      
+struct virqmap_entry
+{
+    vmid_t vmid;
     uint32_t virq;
 };
 

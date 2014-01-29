@@ -8,14 +8,20 @@ void scheduler_schedule(void)
     context_switchto(sched_policy_determ_next());
 }
 
-void scheduler_test_switch_to_next_guest(void *pdata){
+void scheduler_test_switch_to_next_guest(void *pdata)
+{
     struct arch_regs *regs = pdata;
 #if 0 /* ignore message due to flood log message */
+
     uint64_t pct = read_cntpct();
     uint32_t tval = read_cnthp_tval();
 
-    uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
-    uart_print( "cnth_tval:"); uart_print_hex32(tval); uart_print("\n\r");
+    uart_print( "cntpct:");
+    uart_print_hex64(pct);
+    uart_print("\n\r");
+    uart_print( "cnth_tval:");
+    uart_print_hex32(tval);
+    uart_print("\n\r");
 #endif
 
     /* Note: As of context_switchto() and context_perform_switch() are available,
@@ -30,10 +36,10 @@ void scheduler_test_switch_to_next_guest(void *pdata){
 
 void extra_timer_callback(void *pdata)
 {
-
 }
 
-void scheduler_test_scheduling(){
+void scheduler_test_scheduling()
+{
     void scheduler_test_switch_to_next_guest(void *pdata);
     timer_init(timer_sched);
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/

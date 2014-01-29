@@ -39,87 +39,132 @@
  * bits that's not in use in a given node type can be used as
  * extra software-defined bits. */
 
-typedef struct {
+typedef struct
+{
     /* These are used in all kinds of entry. */
-    unsigned long valid:1;      /* Valid mapping */
-    unsigned long table:1;      /* == 1 in 4k map entries too */
+unsigned long valid:
+    1;      /* Valid mapping */
+unsigned long table:
+    1;      /* == 1 in 4k map entries too */
 
     /* These ten bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long ai:3;         /* Attribute Index */
-    unsigned long ns:1;         /* Not-Secure */
-    unsigned long user:1;       /* User-visible */
-    unsigned long ro:1;         /* Read-Only */
-    unsigned long sh:2;         /* Shareability */
-    unsigned long af:1;         /* Access Flag */
-    unsigned long ng:1;         /* Not-Global */
+unsigned long ai:
+    3;         /* Attribute Index */
+unsigned long ns:
+    1;         /* Not-Secure */
+unsigned long user:
+    1;       /* User-visible */
+unsigned long ro:
+    1;         /* Read-Only */
+unsigned long sh:
+    2;         /* Shareability */
+unsigned long af:
+    1;         /* Access Flag */
+unsigned long ng:
+    1;         /* Not-Global */
 
     /* The base address must be appropriately aligned for Block entries */
-    unsigned long base:28;      /* Base address of block or next table */
-    unsigned long sbz:12;       /* Must be zero */
+unsigned long base:
+    28;      /* Base address of block or next table */
+unsigned long sbz:
+    12;       /* Must be zero */
 
     /* These seven bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long hint:1;       /* In a block of 16 contiguous entries */
-    unsigned long pxn:1;        /* Privileged-XN */
-    unsigned long xn:1;         /* eXecute-Never */
-    unsigned long avail:4;      /* Ignored by hardware */
+unsigned long hint:
+    1;       /* In a block of 16 contiguous entries */
+unsigned long pxn:
+    1;        /* Privileged-XN */
+unsigned long xn:
+    1;         /* eXecute-Never */
+unsigned long avail:
+    4;      /* Ignored by hardware */
 
     /* These 5 bits are only used in Table entries and are ignored in
      * Block entries */
-    unsigned long pxnt:1;       /* Privileged-XN */
-    unsigned long xnt:1;        /* eXecute-Never */
-    unsigned long apt:2;        /* Access Permissions */
-    unsigned long nst:1;        /* Not-Secure */
-} __attribute__((__packed__)) lpae_pt_t;
+unsigned long pxnt:
+    1;       /* Privileged-XN */
+unsigned long xnt:
+    1;        /* eXecute-Never */
+unsigned long apt:
+    2;        /* Access Permissions */
+unsigned long nst:
+    1;        /* Not-Secure */
+}
+__attribute__((__packed__)) lpae_pt_t;
 
 /* The p2m tables have almost the same layout, but some of the permission
  * and cache-control bits are laid out differently (or missing) */
-typedef struct {
+typedef struct
+{
     /* These are used in all kinds of entry. */
-    unsigned long valid:1;      /* Valid mapping */
-    unsigned long table:1;      /* == 1 in 4k map entries too */
+unsigned long valid:
+    1;      /* Valid mapping */
+unsigned long table:
+    1;      /* == 1 in 4k map entries too */
 
     /* These ten bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long mattr:4;      /* Memory Attributes */
-    unsigned long read:1;       /* Read access */
-    unsigned long write:1;      /* Write access */
-    unsigned long sh:2;         /* Shareability */
-    unsigned long af:1;         /* Access Flag */
-    unsigned long sbz4:1;
+unsigned long mattr:
+    4;      /* Memory Attributes */
+unsigned long read:
+    1;       /* Read access */
+unsigned long write:
+    1;      /* Write access */
+unsigned long sh:
+    2;         /* Shareability */
+unsigned long af:
+    1;         /* Access Flag */
+unsigned long sbz4:
+    1;
 
     /* The base address must be appropriately aligned for Block entries */
-    unsigned long base:28;      /* Base address of block or next table */
-    unsigned long sbz3:12;
+unsigned long base:
+    28;      /* Base address of block or next table */
+unsigned long sbz3:
+    12;
 
     /* These seven bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long hint:1;       /* In a block of 16 contiguous entries */
-    unsigned long sbz2:1;
-    unsigned long xn:1;         /* eXecute-Never */
-    unsigned long avail:4;      /* Ignored by hardware */
+unsigned long hint:
+    1;       /* In a block of 16 contiguous entries */
+unsigned long sbz2:
+    1;
+unsigned long xn:
+    1;         /* eXecute-Never */
+unsigned long avail:
+    4;      /* Ignored by hardware */
 
-    unsigned long sbz1:5;
-} __attribute__((__packed__)) lpae_p2m_t;
+unsigned long sbz1:
+    5;
+}
+__attribute__((__packed__)) lpae_p2m_t;
 
 
 /*
  * Walk is the common bits of p2m and pt entries which are needed to
  * simply walk the table (e.g. for debug).
  */
-typedef struct {
+typedef struct
+{
     /* These are used in all kinds of entry. */
-    unsigned long valid:1;      /* Valid mapping */
-    unsigned long table:1;      /* == 1 in 4k map entries too */
+unsigned long valid:
+    1;      /* Valid mapping */
+unsigned long table:
+    1;      /* == 1 in 4k map entries too */
 
-    unsigned long pad2:10;
+unsigned long pad2:
+    10;
 
     /* The base address must be appropriately aligned for Block entries */
-    unsigned long base:28;      /* Base address of block or next table */
+unsigned long base:
+    28;      /* Base address of block or next table */
 
-    unsigned long pad1:24;
-} __attribute__((__packed__)) lpae_walk_t;
+unsigned long pad1:
+    24;
+}
+__attribute__((__packed__)) lpae_walk_t;
 
 typedef union {
     uint64_t bits;

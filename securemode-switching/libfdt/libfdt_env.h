@@ -2,7 +2,6 @@
 #define _LIBFDT_ENV_H
 
 #include <stddef.h>
-#include <stdint.h>
 #include <string.h>
 
 #define _B(n)	((unsigned long long)((uint8_t *)&x)[n])

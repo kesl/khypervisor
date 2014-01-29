@@ -72,22 +72,23 @@
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-	//far, fipa, il
-	uint32_t far = read_hdfar();
-	uint32_t fipa;
-	uint32_t sas, srt, wnr;
+    //far, fipa, il
+    uint32_t far = read_hdfar();
+    uint32_t fipa;
+    uint32_t sas, srt, wnr;
 
     HVMM_TRACE_ENTER();
 
     printh( "trap_hvc_dabort: hdfar:%x hpfar:%x\n", far, read_hpfar() );
-	fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
-	fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
-	fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
-	sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
-	srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
-	wnr = (iss & ISS_WNR) ? 1 : 0;
+    fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
+    fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
+    fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
+    sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
+    srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
+    wnr = (iss & ISS_WNR) ? 1 : 0;
 
-    if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) ) {
+    if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) )
+    {
         /*
            vdev emulates read/write, update pc, update destination register
          */
@@ -98,30 +99,32 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
             /* Let the guest continue by increasing pc */
             regs->pc += 4;
         }
-    } else {
+    } else
+    {
         printh( "trap_dboart: fipa=0x%x\n", fipa );
         result = HVMM_STATUS_BAD_ACCESS;
     }
-    if ( result != HVMM_STATUS_SUCCESS ) {
+    if ( result != HVMM_STATUS_SUCCESS )
+    {
         printh( "- INSTR: %s[%d] r%d [%x]\n", wnr ? "str" : "ldr", (sas + 1) * 8, srt, fipa );
     }
 
-	switch (iss & ISS_FSR_MASK) {
-		case TRANS_FAULT_LEVEL1:
-		case TRANS_FAULT_LEVEL2:
-		case TRANS_FAULT_LEVEL3:
-		    break;
+    switch (iss & ISS_FSR_MASK)
+    {
+    case TRANS_FAULT_LEVEL1:
+    case TRANS_FAULT_LEVEL2:
+    case TRANS_FAULT_LEVEL3:
+        break;
 
-		case ACCESS_FAULT_LEVEL1:
-		case ACCESS_FAULT_LEVEL2:
-		case ACCESS_FAULT_LEVEL3:
-            {
-			    printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
-            }
-		    break;
-		default:
-		break;
-	}
+    case ACCESS_FAULT_LEVEL1:
+    case ACCESS_FAULT_LEVEL2:
+    case ACCESS_FAULT_LEVEL3: {
+            printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
+        }
+        break;
+    default:
+        break;
+    }
     HVMM_TRACE_EXIT();
 
     return result;
