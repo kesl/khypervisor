@@ -1,0 +1,11 @@
+filesystem.cpio.gz
+linux-system.axf
+uImage
+model.lds
+config.mk
+*.o
+*.swp
+tags
+modelsemi.lds
+bmguest.bin
+*.axf
