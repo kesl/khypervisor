@@ -17,11 +17,11 @@
 static struct virqmap_entry _virqmap[GIC_NUM_MAX_IRQS];
 static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {{0,}, };        // old status
 
-/* 
+/*
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
  * Mapping of between pirq and virq is hard-coded.
  */
-hvmm_status_t virqmap_init(void) 
+hvmm_status_t virqmap_init(void)
 {
     // TODO(wonseok): read file and initialize the mapping.
     HVMM_TRACE_ENTER();
@@ -47,7 +47,8 @@ const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq)
 {
     const struct virqmap_entry * result = VIRQMAP_ENTRY_NOTFOUND;
 
-    if ( _virqmap[pirq].vmid != VMID_INVALID) {
+    if ( _virqmap[pirq].vmid != VMID_INVALID)
+    {
         result = &_virqmap[pirq];
     }
     return result;

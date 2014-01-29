@@ -9,28 +9,32 @@
 #define ARCH_REGS_NUM_GPR	13
 
 typedef enum {
-        HYP_RESULT_ERET = 0,
-        HYP_RESULT_STAY = 1
+    HYP_RESULT_ERET = 0,
+    HYP_RESULT_STAY = 1
 } hyp_hvc_result_t;
 
-struct arch_regs {
-        uint32_t cpsr; /* CPSR */
-        uint32_t pc; /* Program Counter */
-        uint32_t lr;
-        uint32_t gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
-} __attribute((packed));
+struct arch_regs
+{
+    uint32_t cpsr; /* CPSR */
+    uint32_t pc; /* Program Counter */
+    uint32_t lr;
+    uint32_t gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
+}
+__attribute((packed));
 
 /* co-processor registers: cp15, cp2 */
-struct arch_regs_cop {
+struct arch_regs_cop
+{
     uint32_t vbar;
-	uint32_t ttbr0;
-	uint32_t ttbr1;
-	uint32_t ttbcr;
+    uint32_t ttbr0;
+    uint32_t ttbr1;
+    uint32_t ttbcr;
     uint32_t sctlr;
 };
 
 /* banked registers */
-struct arch_regs_banked {
+struct arch_regs_banked
+{
     uint32_t sp_usr;
     uint32_t spsr_svc;
     uint32_t sp_svc;
@@ -46,7 +50,7 @@ struct arch_regs_banked {
     uint32_t lr_irq;
 
     uint32_t spsr_fiq;
-	//Cortex-A15 processor does not support sp_fiq
+    //Cortex-A15 processor does not support sp_fiq
     //uint32_t sp_fiq;
     uint32_t lr_fiq;
     uint32_t r8_fiq;
@@ -56,13 +60,14 @@ struct arch_regs_banked {
     uint32_t r12_fiq;
 };
 
-struct hyp_guest_context {
-        struct arch_regs regs;
-        lpaed_t *ttbl;
-        vmid_t vmid;
-        struct vgic_status vgic_status;
-        struct arch_regs_cop regs_cop;
-        struct arch_regs_banked regs_banked;
+struct hyp_guest_context
+{
+    struct arch_regs regs;
+    lpaed_t *ttbl;
+    vmid_t vmid;
+    struct vgic_status vgic_status;
+    struct arch_regs_cop regs_cop;
+    struct arch_regs_banked regs_banked;
 };
 
 void context_dump_regs( struct arch_regs *regs );

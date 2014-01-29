@@ -22,13 +22,14 @@
 
 void c_start(void)
 {
-	uart_print("[secure] Starting...\n\r");
-	uart_print_hex32( 0xF00DBEAF ); uart_print( "\n\r" );
+    uart_print("[secure] Starting...\n\r");
+    uart_print_hex32( 0xF00DBEAF );
+    uart_print( "\n\r" );
 
-	/* Initialize Monitor by installing Secure Monitor Call Execption handler */
-	mon_init();
+    /* Initialize Monitor by installing Secure Monitor Call Execption handler */
+    mon_init();
 
-	mon_enter_hyp();	// Secure -> NS.Hyp -> hyp_main()
+    mon_enter_hyp();	// Secure -> NS.Hyp -> hyp_main()
 
-	/* ___ DEAD END ___ */
+    /* ___ DEAD END ___ */
 }

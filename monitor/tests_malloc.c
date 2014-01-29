@@ -5,7 +5,8 @@
 #include "mm.h"
 #include "armv7_p15.h"
 
-hvmm_status_t hvmm_tests_malloc(void){
+hvmm_status_t hvmm_tests_malloc(void)
+{
     HVMM_TRACE_ENTER();
     int* test1;
     int* test2;

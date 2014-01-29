@@ -14,9 +14,10 @@ static generic_timer_callback_t _callback[GENERIC_TIMER_NUM_TYPES];
 
 hvmm_status_t generic_timer_init()
 {
-    #if defined(CFG_BOARD_ARNDALE)
-        mct_init(); 
-    #endif
+#if defined(CFG_BOARD_ARNDALE)
+    mct_init();
+#endif
+
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
     _timer_irqs[GENERIC_TIMER_NSP] = 27;
     _timer_irqs[GENERIC_TIMER_VIR] = 30;
@@ -33,8 +34,7 @@ hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
         _tvals[type] = tval;
         generic_timer_reg_write(GENERIC_TIMER_REG_HYP_TVAL, tval);
         result = HVMM_STATUS_SUCCESS;
-    } else {
-    }
+    } else {}
 
     return result;
 }
@@ -46,9 +46,9 @@ hvmm_status_t generic_timer_enable_int(generic_timer_type_t type )
 
     if ( type == GENERIC_TIMER_HYP ) {
         ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
-        ctrl |= GENERIC_TIMER_CTRL_ENABLE;      
+        ctrl |= GENERIC_TIMER_CTRL_ENABLE;
         ctrl &= ~GENERIC_TIMER_CTRL_IMASK;
-    
+
         generic_timer_reg_write(GENERIC_TIMER_REG_HYP_CTRL, ctrl);
         result = HVMM_STATUS_SUCCESS;
     }
@@ -88,9 +88,9 @@ hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type)
         gic_test_set_irq_handler(irq, &_generic_timer_hyp_irq_handler, 0);
 
         gic_test_configure_irq(irq,
-            GIC_INT_POLARITY_LEVEL, 
-            gic_cpumask_current(),
-            GIC_INT_PRIORITY_DEFAULT );
+                               GIC_INT_POLARITY_LEVEL,
+                               gic_cpumask_current(),
+                               GIC_INT_PRIORITY_DEFAULT );
 
         result = HVMM_STATUS_SUCCESS;
     }

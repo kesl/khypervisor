@@ -19,12 +19,14 @@ typedef enum {
  */
 typedef hvmm_status_t (* vdev_callback_t)(uint32_t wnr, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size);
 
-typedef struct {
-	char *name;
-	unsigned int base;
-	unsigned int size;
-	vdev_callback_t handler;
-} vdev_info_t;
+typedef struct
+{
+    char *name;
+    unsigned int base;
+    unsigned int size;
+    vdev_callback_t handler;
+}
+vdev_info_t;
 
 void vdev_init(void);
 int register_vdev(void);

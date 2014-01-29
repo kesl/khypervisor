@@ -15,7 +15,7 @@
 #define GICD_ISENABLER	(0x100/4)
 #define GICD_ICENABLER	(0x180/4)
 #define GICD_IPRIORITYR	(0x400/4)
-#define GICD_ITARGETSR	(0x800/4) 
+#define GICD_ITARGETSR	(0x800/4)
 #define GICD_ICFGR	(0xC00/4)
 
 /* CPU Interface */

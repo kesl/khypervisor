@@ -16,7 +16,7 @@ typedef void (*generic_timer_callback_t)(void *pdata);
 
 /* Calling this function is required only once in the entire system. */
 hvmm_status_t generic_timer_init();
-/* Enable the timer interrupt. Specified by timer type */ 
+/* Enable the timer interrupt. Specified by timer type */
 hvmm_status_t generic_timer_enable_int(generic_timer_type_t type);
 /* Disable the timer. Specified by timer type */
 hvmm_status_t generic_timer_disable_int(generic_timer_type_t type);

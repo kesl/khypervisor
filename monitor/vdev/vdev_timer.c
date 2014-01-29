@@ -2,12 +2,13 @@
 #include <context.h>
 #include <print.h>
 
-struct vdev_timer_regs{
+struct vdev_timer_regs
+{
     uint32_t timer_mask;
 };
 
 static vdev_info_t _vdev_info;
-static struct vdev_timer_regs regs[NUM_GUESTS_STATIC]; 
+static struct vdev_timer_regs regs[NUM_GUESTS_STATIC];
 
 static vtimer_changed_status_callback_t _write_status = 0;
 
@@ -30,15 +31,15 @@ static hvmm_status_t access_handler(uint32_t write, uint32_t offset, uint32_t *p
     unsigned int vmid = context_current_vmid();
     if (!write) {
         // READ
-        switch (offset){
+        switch (offset) {
         case 0x0:
             *pvalue = regs[vmid].timer_mask;
             result = HVMM_STATUS_SUCCESS;
             break;
         }
-    } else { 
+    } else {
         //WRITE
-        switch (offset){
+        switch (offset) {
         case 0x0:
             regs[vmid].timer_mask = *pvalue;
             vtimer_changed_status(vmid, *pvalue);
@@ -54,7 +55,7 @@ hvmm_status_t vdev_timer_init(uint32_t base_addr)
     hvmm_status_t result = HVMM_STATUS_BUSY;
 
     _vdev_info.name     = "vtimer";
-    _vdev_info.base     = base_addr; 
+    _vdev_info.base     = base_addr;
     _vdev_info.size     = sizeof(struct vdev_timer_regs);
     _vdev_info.handler  = access_handler;
 

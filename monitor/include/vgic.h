@@ -13,7 +13,8 @@ typedef enum {
     VIRQ_STATE_PENDING_ACTIVE = 0x03,
 } virq_state_t;
 
-struct vgic_status {
+struct vgic_status
+{
     uint32_t saved_once;    /* restore only if saved once to avoid dealing with corrupted data */
     uint32_t lr[64];
     uint32_t hcr;
@@ -28,11 +29,11 @@ hvmm_status_t vgic_save_status( struct vgic_status *status, vmid_t vmid );
 hvmm_status_t vgic_restore_status( struct vgic_status *status, vmid_t vmid );
 hvmm_status_t vgic_flush_virqs(vmid_t vmid);
 /* returns slot index if successful, VGIC_SLOT_NOTFOUND otherwise */
-uint32_t vgic_inject_virq_sw( uint32_t virq, virq_state_t state, uint32_t priority, 
-                                    uint32_t cpuid, uint8_t maintenance);
+uint32_t vgic_inject_virq_sw( uint32_t virq, virq_state_t state, uint32_t priority,
+                              uint32_t cpuid, uint8_t maintenance);
 /* returns slot index if successful, VGIC_SLOT_NOTFOUND otherwise */
 uint32_t vgic_inject_virq_hw( uint32_t virq, virq_state_t state, uint32_t priority, uint32_t pirq);
-uint32_t vgic_inject_virq( uint32_t virq, uint32_t slot, virq_state_t state, uint32_t priority, 
-                                uint8_t hw, uint32_t physrc, uint8_t maintenance );
+uint32_t vgic_inject_virq( uint32_t virq, uint32_t slot, virq_state_t state, uint32_t priority,
+                           uint8_t hw, uint32_t physrc, uint8_t maintenance );
 hvmm_status_t vgic_setcallback_virq_flush(void (*callback)(vmid_t vmid));
 #endif

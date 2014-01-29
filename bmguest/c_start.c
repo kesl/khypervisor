@@ -43,26 +43,28 @@
 #define SWITCH_MANUAL() asm("smc #0")
 #endif
 
-#ifndef GUEST_LABEL	
+#ifndef GUEST_LABEL
 #define GUEST_LABEL	"[guest0] "
 #endif
 
-#ifndef NUM_ITERATIONS	
+#ifndef NUM_ITERATIONS
 #define NUM_ITERATIONS	1000
 #endif
 
 inline void nrm_delay(void)
 {
-	volatile int i = 0;
-	for( i = 0; i < 0x0000FFFF; i++);
+    volatile int i = 0;
+    for( i = 0; i < 0x0000FFFF; i++)
+        ;
 }
 
-void nrm_loop(void) 
+void nrm_loop(void)
 {
-	int i = 0;
+    int i = 0;
 
     uart_init();
-	uart_print(GUEST_LABEL); uart_print("=== Starting...\n\r");
+    uart_print(GUEST_LABEL);
+    uart_print("=== Starting...\n\r");
 
     gic_init();
 
@@ -70,16 +72,18 @@ void nrm_loop(void)
 
     irq_enable();
 
-    /* Test the sample virtual device 
+    /* Test the sample virtual device
      * - Uncomment the following line of code only if 'vdev_sample' is registered at the monitor
      * - Otherwise, the monitor will hang with data abort
      */
-     
+
 #ifdef TESTS_ENABLE_VDEV_SAMPLE
+
     test_vdev_sample();
 #endif
-    
+
 #ifdef TESTS_ENABLE_PWM_TIMER
+
     hvmm_tests_pwm_timer();
 #endif
 
@@ -87,31 +91,42 @@ void nrm_loop(void)
     /* Test the SP804 timer */
     hvmm_tests_sp804_timer();
 #endif
-	for( i = 0; i < NUM_ITERATIONS; i++ ) {
-		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
-		nrm_delay();
+
+    for( i = 0; i < NUM_ITERATIONS; i++ ) {
+        uart_print(GUEST_LABEL);
+        uart_print("iteration ");
+        uart_print_hex32( i );
+        uart_print( "\n\r" );
+        nrm_delay();
 
 #ifdef __MONITOR_CALL_HVC__
-	    /* Hyp monitor guest run in Non-secure supervisor mode. 
-           Request test hvc ping and yield one after another 
-         */
-		if (i & 0x1) {
-			uart_print(GUEST_LABEL); uart_print( "hsvc_ping()\n\r" );
-			hsvc_ping();
-			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_ping() \n\r" );
-		} else {
-			uart_print(GUEST_LABEL); uart_print( "hsvc_yield()\n\r" );
-			hsvc_yield();
-			uart_print(GUEST_LABEL); uart_print( "returned from hsvc_yield() \n\r" );
-		}
+        /* Hyp monitor guest run in Non-secure supervisor mode.
+              Request test hvc ping and yield one after another 
+            */
+        if (i & 0x1) {
+            uart_print(GUEST_LABEL);
+            uart_print( "hsvc_ping()\n\r" );
+            hsvc_ping();
+            uart_print(GUEST_LABEL);
+            uart_print( "returned from hsvc_ping() \n\r" );
+        } else {
+            uart_print(GUEST_LABEL);
+            uart_print( "hsvc_yield()\n\r" );
+            hsvc_yield();
+            uart_print(GUEST_LABEL);
+            uart_print( "returned from hsvc_yield() \n\r" );
+        }
 #else
         /* Secure monitor guest run in Non-secure supervisor mode
            Request for switch to Secure mode (sec_loop() in the monitor)
          */
-		SWITCH_MANUAL();	
+        SWITCH_MANUAL();
 #endif
-		nrm_delay();
-	}
-	uart_print(GUEST_LABEL); uart_print("done\n\r");
-	while(1);
+
+        nrm_delay();
+    }
+    uart_print(GUEST_LABEL);
+    uart_print("done\n\r");
+    while(1)
+        ;
 }
