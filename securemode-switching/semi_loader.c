@@ -17,6 +17,7 @@
  */
 
 #include <string.h>
+#include <arch_types.h>
 #include "libfdt.h"
 #include "semihosting.h"
 #include "semi_loader.h"

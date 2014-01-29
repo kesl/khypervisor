@@ -16,7 +16,6 @@
  *    from this software without specific prior written permission.
  */
 
-#include <stdint.h>
 #include "monitor.h"
 #include "uart_print.h"
 #include "armv7_p15.h"

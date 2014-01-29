@@ -46,7 +46,6 @@ e0000014:	ef000000 	.word	0xef000000
 
 e0000018 <nrm_loop>:
 
-#include <stdint.h>
 #include "semihosting.h"
 
 void nrm_loop(void) 

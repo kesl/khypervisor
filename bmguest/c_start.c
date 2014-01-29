@@ -22,7 +22,6 @@
  * and booting the kernel.
  */
 
-#include <stdint.h>
 #include <asm-arm_inline.h>
 #include "uart_print.h"
 #include "gic.h"

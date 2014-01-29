@@ -69,7 +69,7 @@ guest.o: guest.S
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -Ilibfdt -c -o $@ $<
+	$(CC) $(CPPFLAGS) -O2 -ffreestanding -I. -I../common/include -Ilibfdt -c -o $@ $<
 
 model.lds: $(LD_SCRIPT) Makefile 
 	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<
