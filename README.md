@@ -26,6 +26,7 @@ The easiest way to use k-hypervisor is to start with one of the pre-configured
 platform-device projects (locate in the platform-device/<device_name> directory).  
 
 See also -
-arndale port : https://github.com/kesl/khypervisor/tree/v1/platform-device/cortex_a15x2_arndale
-rtsm    port : https://github.com/kesl/khypervisor/tree/v1/platform-device/cortex_a15x2_rtsm
+
+    - arndale port : platform-device/cortex_a15x2_arndale
+    - rtsm    port : platform-device/cortex_a15x2_rtsm
 
