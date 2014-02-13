@@ -27,6 +27,7 @@
 
 #include <log/uart_print.h>
 #include <log/print.h>
+#include <version.h>
 
 #define NUM_GUEST_CONTEXTS		NUM_GUESTS_STATIC
 
@@ -141,9 +142,9 @@ static char *_modename(uint8_t mode)
     return name;
 }
 #endif
-
 void context_dump_regs( struct arch_regs *regs )
 {
+#ifdef DEBUG
     uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" );
     uart_print( "  pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
     uart_print( "  lr:" ); uart_print_hex32( regs->lr ); uart_print( "\n\r" );
@@ -157,8 +158,8 @@ void context_dump_regs( struct arch_regs *regs )
 	    }
     }
 #endif
+#endif
 }
-
 static void context_copy_regs( struct arch_regs *regs_dst, struct arch_regs *regs_src )
 {
 	int i;
@@ -632,8 +633,11 @@ void start_guest_os(void)
     /* Start Scheduling */
     scheduler_test_scheduling();
 
-    /* Begin running test code for newly implemented features*/
+    /* Begin running test code for newly implemented features */
     hvmm_tests_main();
+
+    /* Print Banner */
+    printH("%s", BANNER_STRING);
 
     /* Switch to the first guest */
     context_switch_to_initial_guest();
