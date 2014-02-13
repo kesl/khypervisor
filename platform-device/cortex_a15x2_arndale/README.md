@@ -94,7 +94,7 @@ serial device for linuxguest is /dev/ttyS1
 
 3. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x90000000 851 400;mmc read 0x80008000 c51 2000;go 0xa000004c
+$ ZIMAGE: ARNDALE # 
 </pre>
 
 4. Enter the following command
