@@ -15,42 +15,45 @@
 ### Download Tool chain for k-hypervisor
 - ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-</i>
 
+# Dowun load hypervisor git & git module
+<pre>
+$ git clone https://github.com/kesl/khypervisor.git
+$ cd khypervisor
+$ git submodule init
+$ git submodule update
+</pre>
 
-# bmguset + linux guest
+# RTOSguset + linux guest
 
 ## Building u-boot
 
-1. Download u-boot
+1. patching a autoboot for u-boot-native
 <pre>
 $ cd platform-device/cortex_a15x2_arndale
-$ git submodule init
-$ git submodule update
 $ cd u-boot-native
-</pre>
-2. patching a autoboot for u-boot-native
-<pre>
 $ git checkout lue_arndale_13.1
 $ git apply ../patch/u-boot-bootz.patch
 </pre>
-3. Building u-boot-arndale
+2. Building u-boot-arndale
 <pre>
-$ make arndale5250
+$ make arndale5250 CROSS_COMPILE=arm-none-eabi- -j8
+</pre>
+
+## Building the RTOS guest
+<pre>
+$ cd platform-device/cortex_a15x2_arndale/guestos/ucos-ii/
+$ make CROSS_COMPILE=arm-none-eabi-
 </pre>
 
 ## Building the linux guset
-1. Download linux
-<pre>
-$ git submodule init
-$ git submodule update
-</pre>
-2. Initial setup for linux
+1. Initial setup for linux
 <pre>
 $ cd guestos/linux
 $ git checkout origin/exynos-jb -b exynos-jb
 $ git apply ../../patch/linux-arndale-config-add-minimal-linux-config.patch
 $ git apply ../../patch/arndale-change-kernel-sdram-address-uart-port-2-1.patch
 </pre>
-3. Building linux-arndale
+2. Building linux-arndale
 <pre>
 $ make ARCH=arm arndale_minimal_linux_defconfig
 $ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
@@ -61,12 +64,12 @@ $ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
 <pre>
 $ cd platform-device/cortex_a15x2_arndale
 $ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/guest0.bin
-$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest1.bin
+$ cp ./guestos/ucos-ii/rtos.bin ./guestimages/guest1.bin
 </pre>
 2. Initial setup for linux
 <pre>
 $ cd platform-device/cortex_a15x2_arndale
-$ make LINUX=y
+$ make LINUX=y RTOS=y 
 </pre>
 
 
@@ -85,11 +88,12 @@ $ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
 $ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=2129
 </pre>
 
-2. Setting serial port and run minicom
+2. Setting serial port and run minicom, open 2 minicoms
 <pre>
-minicom -s
-serial device for hypervisor & bmguest is /dev/ttyS0
-serial device for linuxguest is /dev/ttyS1
+$ minicom -s
+"serial device for hypervisor & rtos sets /dev/ttyS0"
+$ minicom -s
+"serial device for linuxguest sets /dev/ttyS1"
 </pre>
 
 3. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
