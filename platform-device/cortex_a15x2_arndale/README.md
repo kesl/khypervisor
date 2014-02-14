@@ -15,7 +15,7 @@
 ### Download Tool chain for k-hypervisor
 - ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-</i>
 
-# Dowun load hypervisor git & git module
+# Download hypervisor git & git module
 <pre>
 $ git clone https://github.com/kesl/khypervisor.git
 $ cd khypervisor
@@ -77,7 +77,7 @@ $ make LINUX=y RTOS=y
 
 1. refusing SD card for arndale(X is number of SD card parition)
 
-<a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
+Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
 
 <pre>
 $ sudo dd if=./u-boot-native/arndale-bl1.bin of=/dev/sdX bs=512 seek=1
