@@ -1,8 +1,8 @@
 #include "gic.h"
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
-#include "test_sp804_timer.h"
-#include "uart_print.h"
+#include "sp804_timer.h"
+#include <log/uart_print.h>
 
 #define SP804_BASE 0x1C110000
 

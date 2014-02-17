@@ -4,9 +4,11 @@
 #
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.txt file.
+
 # Usage: make
 # Example:
-#	$ make 		; build
+#	$ make 		; build for RTSM
+
 # Include config file (prefer config.mk, fall back to config-default.mk)
 ifneq ($(wildcard config.mk),)
 include config.mk
@@ -14,14 +16,24 @@ else
 include config-default.mk
 endif
 
-OBJS = guest.o c_start.o string.o exception.o gic.o test_vdev_sample.o test_vtimer.o
+COMMON_SOURCE_DIR=../../../../common
 
-OBJS += arndale_uart_print.o test_pwm_timer.o
+COMMON_OBJS = $(COMMON_SOURCE_DIR)/guest/c_start.o \
+	$(COMMON_SOURCE_DIR)/guest/exception.o \
+	$(COMMON_SOURCE_DIR)/guest/gic.o \
+	$(COMMON_SOURCE_DIR)/guest/test/test_vdev_sample.o \
+	$(COMMON_SOURCE_DIR)/guest/test/test_vtimer.o \
+	$(COMMON_SOURCE_DIR)/log/string.o \
+	$(COMMON_SOURCE_DIR)/guest/guest.o
+	
+OBJS = boot.o main.o $(COMMON_OBJS)
+
+OBJS += drivers/uart.o drivers/pwm_timer.o
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin
 LD_SCRIPT	= model.lds.S
-INCLUDES    = -I. -I../common/include
+INCLUDES    = -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include -I$(COMMON_SOURCE_DIR)/guest
 
 CPPFLAGS    += $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
@@ -84,8 +96,15 @@ $(GUESTIMG): $(OBJS) model.lds
 
 $(GUESTBIN): $(GUESTIMG)
 	$(OBJCOPY) -O binary -S $< $@
-
+	
 guest.o: guest.S
+	@echo "================================================================="
+	@echo "GUESTCONFIGS='$(GUESTCONFIGS)'"
+	@echo "================================================================="
+	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
+	
+
+boot.o: boot.S
 	@echo "================================================================="
 	@echo "GUESTCONFIGS='$(GUESTCONFIGS)'"
 	@echo "================================================================="
@@ -96,7 +115,6 @@ guest.o: guest.S
 
 model.lds: $(LD_SCRIPT) Makefile
 	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -E -P -C -o $@ $<
-
 
 force: ;
 

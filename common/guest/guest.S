@@ -9,16 +9,8 @@
 	.arch_extension sec
 	.arch_extension virt
 	.text
-
-	
-	@ Guest start code
-.global guest_start
-guest_start:
-
-	b 	guest_entry
-.type guest_start, %function
-
-guest_entry:
+.global common_guest_entry
+common_guest_entry:
     /* Stack pointer initialization for svc, irq, and system/user modes */
     @ sp for guest svc mode
     ldr     sp, =guest_stacklimit_svc

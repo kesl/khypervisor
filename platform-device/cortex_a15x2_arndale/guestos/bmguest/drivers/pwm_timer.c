@@ -1,10 +1,9 @@
 #include <gic.h>
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
-#include "uart_print.h"
-#include "test_pwm_timer.h"
+#include "pwm_timer.h"
 #include "io-exynos.h"
-
+#include <log/uart_print.h>
 
 uint32_t tcntb1; 
 static pwm_timer_callback_t _callback;

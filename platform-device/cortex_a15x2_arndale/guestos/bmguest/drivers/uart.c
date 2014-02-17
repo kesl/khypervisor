@@ -1,4 +1,4 @@
-#include "uart_print.h"
+#include <log/uart_print.h>
 #include "exynos-uart.h"
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
 #define UART0           0x12C10000

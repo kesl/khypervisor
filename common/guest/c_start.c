@@ -24,14 +24,11 @@
 
 #include <stdint.h>
 #include <asm-arm_inline.h>
-#include "uart_print.h"
-#include "gic.h"
-#include "tests.h"
-#include "test_sp804_timer.h"
+#include <log/uart_print.h>
+#include <gic.h>
+#include <test/tests.h>
 
 //#define TESTS_ENABLE_VDEV_SAMPLE
-//#define TESTS_ENABLE_PWM_TIMER
-//#define TESTS_ENABLE_SP804_TIMER
 
 #ifdef __MONITOR_CALL_HVC__
 #define hsvc_ping()	asm("hvc #0xFFFE")
@@ -45,7 +42,7 @@
 #endif
 
 #ifndef NUM_ITERATIONS	
-#define NUM_ITERATIONS	1000
+#define NUM_ITERATIONS	10
 #endif
 
 inline void nrm_delay(void)
@@ -59,7 +56,7 @@ void nrm_loop(void)
 	int i = 0;
 
     uart_init();
-	uart_print(GUEST_LABEL); uart_print("=== Starting...\n\r");
+	uart_print(GUEST_LABEL); uart_print("=== Starting commom start up\n\r");
 
     gic_init();
 
@@ -75,15 +72,7 @@ void nrm_loop(void)
 #ifdef TESTS_ENABLE_VDEV_SAMPLE
     test_vdev_sample();
 #endif
-    
-#ifdef TESTS_ENABLE_PWM_TIMER
-    hvmm_tests_pwm_timer();
-#endif
 
-#ifdef TESTS_ENABLE_SP804_TIMER
-    /* Test the SP804 timer */
-    hvmm_tests_sp804_timer();
-#endif
 	for( i = 0; i < NUM_ITERATIONS; i++ ) {
 		uart_print(GUEST_LABEL); uart_print("iteration "); uart_print_hex32( i ); uart_print( "\n\r" );
 		nrm_delay();
@@ -109,6 +98,8 @@ void nrm_loop(void)
 #endif
 		nrm_delay();
 	}
-	uart_print(GUEST_LABEL); uart_print("done\n\r");
-	while(1);
+	uart_print(GUEST_LABEL); uart_print("common nrm_loop done\n\r");
+
+	/* start platform start up code */
+	main();
 }
