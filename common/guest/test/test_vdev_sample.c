@@ -1,5 +1,5 @@
 #include <arch_types.h>
-#include "uart_print.h"
+#include <log/uart_print.h>
 
 #define VDEV_SAMPLE_BASE    0x3FFFF000
 #define VDEV_OFFSET_REGA    0x00

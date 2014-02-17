@@ -18,7 +18,7 @@ include config-default.mk
 endif
 
 HYPERVISOR_SOURCE_DIR=../../hypervisor
-COMMON_SOURCE_DIR=../common
+COMMON_SOURCE_DIR=../../common
 
 BOOTLOADER	= boot.S
 
@@ -64,7 +64,7 @@ LD_SCRIPT	= model.lds.S
 OBJS 		+= drivers/uart/uart_print.o
 
 INCLUDES    = -I $(HYPERVISOR_SOURCE_DIR)/include -I $(HYPERVISOR_SOURCE_DIR)
-INCLUDES    += -I. -I $(COMMON_SOURCE_DIR)
+INCLUDES    += -I. -I $(COMMON_SOURCE_DIR) -I $(COMMON_SOURCE_DIR)/include
 INCLUDES    +=  -I ./include
 
 GUEST0BIN	= ./guestimages/guest0.bin

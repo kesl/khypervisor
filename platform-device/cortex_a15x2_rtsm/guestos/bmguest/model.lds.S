@@ -51,14 +51,22 @@ SECTIONS
   * where it won't get overwritten by kernel, initrd or atags.
   */
  .text : { 
-	guest.o(.text)
+    *(.text)
  }
+ .= ALIGN(4);
+ .rodata : {
+    *(.rodata)
+ }
+ .= ALIGN(4);
  .data : { 
-	guest.o(.data) 
+    *(.data)
  }
+ .= ALIGN(4);
+ begin_bss = .;
  .bss : { 
-	guest.o(.bss) 
+    *(.bss)
  }
+ end_bss = .;
 
  . = GUEST_STACK;
  guest_stacktop_svc = .;
