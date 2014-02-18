@@ -1,7 +1,13 @@
 import os
 import sys
+from os.path import join
 from nose.tools import ok_, eq_
-from .. import checkpatch
+
+PROJRELROOT = '../'
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), PROJRELROOT)))
+sys.path.append(os.path.abspath('./'))
+
+import checkpatch
 
 def test_coding_style():
     print 'Code Quality Check... : Coding Style'
