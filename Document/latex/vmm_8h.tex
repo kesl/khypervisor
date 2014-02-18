@@ -1,0 +1,181 @@
+\hypertarget{vmm_8h}{\section{vmm.\-h \-File \-Reference}
+\label{vmm_8h}\index{vmm.\-h@{vmm.\-h}}
+}
+{\ttfamily \#include $<$hvmm\-\_\-types.\-h$>$}\*
+{\ttfamily \#include \char`\"{}lpae.\-h\char`\"{}}\*
+\-Include dependency graph for vmm.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=220pt]{vmm_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{vmm_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ \hyperlink{vmm_8h_a269ada885aa7296fc4601e4cfe6a134b}{vmm\-\_\-vmid\-\_\-ttbl} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vmm_8h_afee733063f1c9c6f9fa314492d1ffb11}{vmm\-\_\-set\-\_\-vmid\-\_\-ttbl} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl)
+\item 
+void \hyperlink{vmm_8h_aad790266948b8b547025a7a62006f0da}{vmm\-\_\-stage2\-\_\-enable} (int enable)
+\item 
+void \hyperlink{vmm_8h_a34e0e13c32b08fd108582567c29ccebf}{vmm\-\_\-init} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vmm_8h_a34e0e13c32b08fd108582567c29ccebf}{\index{vmm.\-h@{vmm.\-h}!vmm\-\_\-init@{vmm\-\_\-init}}
+\index{vmm\-\_\-init@{vmm\-\_\-init}!vmm.h@{vmm.\-h}}
+\subsubsection[{vmm\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vmm\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{vmm_8h_a34e0e13c32b08fd108582567c29ccebf}
+
+
+\-Definition at line 339 of file vmm.\-c.
+
+
+\begin{DoxyCode}
+{
+    /*
+     * Initializes Translation Table for Stage2 Translation (IPA -> PA)
+     */
+    int i;
+
+    HVMM_TRACE_ENTER();
+    for( i = 0; i < NUM_GUESTS_STATIC; i++ ) {
+        _vmid_ttbl[i] = 0;
+    }
+
+    _vmid_ttbl[0] = &_ttbl_guest0[0];
+    _vmid_ttbl[1] = &_ttbl_guest1[0];
+
+
+    /*
+     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
+     * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
+     * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
+     */
+
+    guest_memory_md0[0].pa = (uint64_t) ((uint32_t) &guest_bin_start);
+    guest_memory_md1[0].pa = (uint64_t) ((uint32_t) &guest2_bin_start);
+
+    vmm_init_ttbl(&_ttbl_guest0[0], &guest_mdlist0[0]);
+    vmm_init_ttbl(&_ttbl_guest1[0], &guest_mdlist1[0]);
+   
+    vmm_init_mmu();
+
+    HVMM_TRACE_EXIT();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vmm_8h_a34e0e13c32b08fd108582567c29ccebf_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vmm_8h_afee733063f1c9c6f9fa314492d1ffb11}{\index{vmm.\-h@{vmm.\-h}!vmm\-\_\-set\-\_\-vmid\-\_\-ttbl@{vmm\-\_\-set\-\_\-vmid\-\_\-ttbl}}
+\index{vmm\-\_\-set\-\_\-vmid\-\_\-ttbl@{vmm\-\_\-set\-\_\-vmid\-\_\-ttbl}!vmm.h@{vmm.\-h}}
+\subsubsection[{vmm\-\_\-set\-\_\-vmid\-\_\-ttbl}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vmm\-\_\-set\-\_\-vmid\-\_\-ttbl} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl}
+\end{DoxyParamCaption}
+)}}\label{vmm_8h_afee733063f1c9c6f9fa314492d1ffb11}
+
+
+\-Definition at line 397 of file vmm.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint64_t vttbr;
+
+    /* 
+     * VTTBR.VMID = vmid
+     * VTTBR.BADDR = ttbl
+     */
+    vttbr = read_vttbr();
+#if 0 /* ignore message due to flood log message */
+    uart_print( "current vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r")
+      ;
+#endif
+    vttbr &= ~(VTTBR_VMID_MASK);
+    vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
+
+    vttbr &= ~(VTTBR_BADDR_MASK);
+    vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
+    write_vttbr(vttbr);
+
+    vttbr = read_vttbr();
+#if 0 /* ignore message due to flood log message */
+    uart_print( "changed vttbr:" ); uart_print_hex64(vttbr); uart_print("\n\r")
+      ;
+#endif
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{vmm_8h_aad790266948b8b547025a7a62006f0da}{\index{vmm.\-h@{vmm.\-h}!vmm\-\_\-stage2\-\_\-enable@{vmm\-\_\-stage2\-\_\-enable}}
+\index{vmm\-\_\-stage2\-\_\-enable@{vmm\-\_\-stage2\-\_\-enable}!vmm.h@{vmm.\-h}}
+\subsubsection[{vmm\-\_\-stage2\-\_\-enable}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vmm\-\_\-stage2\-\_\-enable} (
+\begin{DoxyParamCaption}
+\item[{int}]{enable}
+\end{DoxyParamCaption}
+)}}\label{vmm_8h_aad790266948b8b547025a7a62006f0da}
+
+
+\-Definition at line 383 of file vmm.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t hcr;
+
+    // HCR.VM[0] = enable
+    hcr = read_hcr(); //uart_print( "hcr:"); uart_print_hex32(hcr);
+       uart_print("\n\r");
+    if ( enable ) {
+        hcr |= (0x1);
+    } else {
+        hcr &= ~(0x1);
+    }
+    write_hcr( hcr );
+}
+\end{DoxyCode}
+\hypertarget{vmm_8h_a269ada885aa7296fc4601e4cfe6a134b}{\index{vmm.\-h@{vmm.\-h}!vmm\-\_\-vmid\-\_\-ttbl@{vmm\-\_\-vmid\-\_\-ttbl}}
+\index{vmm\-\_\-vmid\-\_\-ttbl@{vmm\-\_\-vmid\-\_\-ttbl}!vmm.h@{vmm.\-h}}
+\subsubsection[{vmm\-\_\-vmid\-\_\-ttbl}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t}$\ast$ {\bf vmm\-\_\-vmid\-\_\-ttbl} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)}}\label{vmm_8h_a269ada885aa7296fc4601e4cfe6a134b}
+
+
+\-Definition at line 373 of file vmm.\-c.
+
+
+\begin{DoxyCode}
+{
+    lpaed_t *ttbl = 0;
+    if ( vmid < NUM_GUESTS_STATIC ) {
+        ttbl = _vmid_ttbl[vmid];
+    }
+    return ttbl;
+}
+\end{DoxyCode}

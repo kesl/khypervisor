@@ -1,0 +1,351 @@
+\hypertarget{generic__timer__regs_8h}{\section{generic\-\_\-timer/generic\-\_\-timer\-\_\-regs.h \-File \-Reference}
+\label{generic__timer__regs_8h}\index{generic\-\_\-timer/generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer/generic\-\_\-timer\-\_\-regs.\-h}}
+}
+{\ttfamily \#include \char`\"{}asm-\/arm\-\_\-inline.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}arch\-\_\-types.\-h\char`\"{}}\*
+\-Include dependency graph for generic\-\_\-timer\-\_\-regs.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=308pt]{generic__timer__regs_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=248pt]{generic__timer__regs_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{generic__timer__regs_8h_a8efa8ea74c4e67832062909f9544354b}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E}~(1 $<$$<$ 0)
+\item 
+\#define \hyperlink{generic__timer__regs_8h_a53e23d75a48e68fbf31a243d794fe2e7}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K}~(1 $<$$<$ 1)
+\item 
+\#define \hyperlink{generic__timer__regs_8h_ad603580a3a296a42124dc3ffb1616947}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S}~(1 $<$$<$ 2)
+\item 
+\#define \hyperlink{generic__timer__regs_8h_a45b1cfb471471ddbb3ea689a33f1e421}{generic\-\_\-timer\-\_\-pcounter\-\_\-read}()~\hyperlink{armv7__p15_8h_a4939c99e7b83a6fbef2867ab52240464}{read\-\_\-cntpct}()
+\item 
+\#define \hyperlink{generic__timer__regs_8h_a9655b66250137c8c6cf25bb82fd2c93a}{generic\-\_\-timer\-\_\-vcounter\-\_\-read}()~\hyperlink{armv7__p15_8h_a12e577d17891dc46fcc76e72f6bbd9f0}{read\-\_\-cntvct}()
+\end{DoxyCompactItemize}
+\subsection*{\-Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \*
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba72361d9748f2b2954e2739c9533bceae}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-F\-R\-E\-Q}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba4bf0a7695baa4937c2f736806d9e0822}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-C\-T\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba625f655f0428421a5c4148fbdd2ea436}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-K\-C\-T\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bad25f4c8359d56a0e5ca6e71fc1f5c662}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-T\-R\-L}, 
+\*
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55baa8cd51c8309bd3de48671c3c533f1e8e}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-T\-V\-A\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba616c71960835bc93650409b53a198f11}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-V\-A\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55baccef1901d59fd32a320e10ff157cbda5}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-T\-R\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba7d9f1f59c653f543a551dfd088a9a259}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-T\-V\-A\-L}, 
+\*
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bad3d982029e3a387108b36198ee893830}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-V\-A\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba10b1c4d53803d1bd92e70d3940f8e465}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-T\-R\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba5c11a6c81f505837c3896fc8eb70ab3e}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-T\-V\-A\-L}, 
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bab2beec1a34fdfd20e01e519832c20256}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-V\-A\-L}, 
+\*
+\hyperlink{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba8176032681a504ed9323bf517aa41054}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-O\-F\-F}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{generic__timer__regs_8h_a21908c6f55add221caf5e3de30fe8f77}{generic\-\_\-timer\-\_\-reg\-\_\-write} (int reg, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} val)
+\item 
+static \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{generic__timer__regs_8h_a076a2f37c8f342ce8d64fda8bf6cdc90}{generic\-\_\-timer\-\_\-reg\-\_\-read} (int reg)
+\item 
+static void \hyperlink{generic__timer__regs_8h_a531989be17f7397a7b42dbf29cacc6ff}{generic\-\_\-timer\-\_\-reg\-\_\-write64} (int reg, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} val)
+\item 
+static \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} \hyperlink{generic__timer__regs_8h_ac82169092a24b779c0b745cfc5371f33}{generic\-\_\-timer\-\_\-reg\-\_\-read64} (int reg)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{generic__timer__regs_8h_a8efa8ea74c4e67832062909f9544354b}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E}}
+\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-E\-N\-A\-B\-L\-E}~(1 $<$$<$ 0)}}\label{generic__timer__regs_8h_a8efa8ea74c4e67832062909f9544354b}
+
+
+\-Definition at line 7 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+\hypertarget{generic__timer__regs_8h_a53e23d75a48e68fbf31a243d794fe2e7}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K}}
+\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-M\-A\-S\-K}~(1 $<$$<$ 1)}}\label{generic__timer__regs_8h_a53e23d75a48e68fbf31a243d794fe2e7}
+
+
+\-Definition at line 8 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+\hypertarget{generic__timer__regs_8h_ad603580a3a296a42124dc3ffb1616947}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S}}
+\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-C\-T\-R\-L\-\_\-\-I\-S\-T\-A\-T\-U\-S}~(1 $<$$<$ 2)}}\label{generic__timer__regs_8h_ad603580a3a296a42124dc3ffb1616947}
+
+
+\-Definition at line 9 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+\hypertarget{generic__timer__regs_8h_a45b1cfb471471ddbb3ea689a33f1e421}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!generic\-\_\-timer\-\_\-pcounter\-\_\-read@{generic\-\_\-timer\-\_\-pcounter\-\_\-read}}
+\index{generic\-\_\-timer\-\_\-pcounter\-\_\-read@{generic\-\_\-timer\-\_\-pcounter\-\_\-read}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-pcounter\-\_\-read}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf generic\-\_\-timer\-\_\-pcounter\-\_\-read}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~{\bf read\-\_\-cntpct}()}}\label{generic__timer__regs_8h_a45b1cfb471471ddbb3ea689a33f1e421}
+
+
+\-Definition at line 10 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+\hypertarget{generic__timer__regs_8h_a9655b66250137c8c6cf25bb82fd2c93a}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!generic\-\_\-timer\-\_\-vcounter\-\_\-read@{generic\-\_\-timer\-\_\-vcounter\-\_\-read}}
+\index{generic\-\_\-timer\-\_\-vcounter\-\_\-read@{generic\-\_\-timer\-\_\-vcounter\-\_\-read}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-vcounter\-\_\-read}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf generic\-\_\-timer\-\_\-vcounter\-\_\-read}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~{\bf read\-\_\-cntvct}()}}\label{generic__timer__regs_8h_a9655b66250137c8c6cf25bb82fd2c93a}
+
+
+\-Definition at line 11 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+
+
+\subsection{\-Enumeration \-Type \-Documentation}
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55b}{\subsubsection[{anonymous enum}]{\setlength{\rightskip}{0pt plus 5cm}anonymous enum}}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55b}
+\begin{Desc}
+\item[\-Enumerator\-: ]\par
+\begin{description}
+\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-F\-R\-E\-Q@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-F\-R\-E\-Q}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-F\-R\-E\-Q@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-F\-R\-E\-Q}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba72361d9748f2b2954e2739c9533bceae}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-F\-R\-E\-Q}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba72361d9748f2b2954e2739c9533bceae}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-C\-T\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-C\-T\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-C\-T\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-C\-T\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba4bf0a7695baa4937c2f736806d9e0822}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-C\-T\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba4bf0a7695baa4937c2f736806d9e0822}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-K\-C\-T\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-K\-C\-T\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-K\-C\-T\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-K\-C\-T\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba625f655f0428421a5c4148fbdd2ea436}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-K\-C\-T\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba625f655f0428421a5c4148fbdd2ea436}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-T\-R\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-T\-R\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-T\-R\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-T\-R\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bad25f4c8359d56a0e5ca6e71fc1f5c662}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-T\-R\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bad25f4c8359d56a0e5ca6e71fc1f5c662}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-T\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-T\-V\-A\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-T\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-T\-V\-A\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55baa8cd51c8309bd3de48671c3c533f1e8e}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-T\-V\-A\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55baa8cd51c8309bd3de48671c3c533f1e8e}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-V\-A\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-V\-A\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba616c71960835bc93650409b53a198f11}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-H\-Y\-P\-\_\-\-C\-V\-A\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba616c71960835bc93650409b53a198f11}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-T\-R\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-T\-R\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-T\-R\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-T\-R\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55baccef1901d59fd32a320e10ff157cbda5}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-T\-R\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55baccef1901d59fd32a320e10ff157cbda5}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-T\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-T\-V\-A\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-T\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-T\-V\-A\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba7d9f1f59c653f543a551dfd088a9a259}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-T\-V\-A\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba7d9f1f59c653f543a551dfd088a9a259}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-V\-A\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-V\-A\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bad3d982029e3a387108b36198ee893830}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-P\-H\-Y\-S\-\_\-\-C\-V\-A\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bad3d982029e3a387108b36198ee893830}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-T\-R\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-T\-R\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-T\-R\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-T\-R\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba10b1c4d53803d1bd92e70d3940f8e465}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-T\-R\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba10b1c4d53803d1bd92e70d3940f8e465}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-T\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-T\-V\-A\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-T\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-T\-V\-A\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba5c11a6c81f505837c3896fc8eb70ab3e}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-T\-V\-A\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba5c11a6c81f505837c3896fc8eb70ab3e}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-V\-A\-L}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-V\-A\-L@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-V\-A\-L}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bab2beec1a34fdfd20e01e519832c20256}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-C\-V\-A\-L}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55bab2beec1a34fdfd20e01e519832c20256}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-O\-F\-F@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-O\-F\-F}!generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}}\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-O\-F\-F@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-O\-F\-F}}\item[{\em 
+\hypertarget{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba8176032681a504ed9323bf517aa41054}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-R\-E\-G\-\_\-\-V\-I\-R\-T\-\_\-\-O\-F\-F}\label{generic__timer__regs_8h_a06fc87d81c62e9abb8790b6e5713c55ba8176032681a504ed9323bf517aa41054}
+}]\end{description}
+\end{Desc}
+
+
+
+\-Definition at line 14 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+
+\begin{DoxyCode}
+     {
+    GENERIC_TIMER_REG_FREQ,
+    GENERIC_TIMER_REG_HCTL,
+    GENERIC_TIMER_REG_KCTL,
+    GENERIC_TIMER_REG_HYP_CTRL,
+    GENERIC_TIMER_REG_HYP_TVAL,
+    GENERIC_TIMER_REG_HYP_CVAL,
+    GENERIC_TIMER_REG_PHYS_CTRL,
+    GENERIC_TIMER_REG_PHYS_TVAL,
+    GENERIC_TIMER_REG_PHYS_CVAL,
+    GENERIC_TIMER_REG_VIRT_CTRL,
+    GENERIC_TIMER_REG_VIRT_TVAL,
+    GENERIC_TIMER_REG_VIRT_CVAL,
+    GENERIC_TIMER_REG_VIRT_OFF,
+};
+\end{DoxyCode}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{generic__timer__regs_8h_a076a2f37c8f342ce8d64fda8bf6cdc90}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!generic\-\_\-timer\-\_\-reg\-\_\-read@{generic\-\_\-timer\-\_\-reg\-\_\-read}}
+\index{generic\-\_\-timer\-\_\-reg\-\_\-read@{generic\-\_\-timer\-\_\-reg\-\_\-read}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-reg\-\_\-read}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf uint32\-\_\-t} {\bf generic\-\_\-timer\-\_\-reg\-\_\-read} (
+\begin{DoxyParamCaption}
+\item[{int}]{reg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{generic__timer__regs_8h_a076a2f37c8f342ce8d64fda8bf6cdc90}
+
+
+\-Definition at line 68 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+
+\begin{DoxyCode}
+{
+    uint32_t val;
+
+    switch (reg) {
+    case GENERIC_TIMER_REG_FREQ:
+        val = read_cntfrq();
+        break;
+    case GENERIC_TIMER_REG_HCTL:
+        val = read_cnthctl();
+        break;
+    case GENERIC_TIMER_REG_KCTL:
+        val = read_cntkctl();
+        break;
+    case GENERIC_TIMER_REG_HYP_CTRL:
+        val = read_cnthp_ctl();
+        break;
+    case GENERIC_TIMER_REG_HYP_TVAL:
+        val = read_cnthp_tval();
+        break;
+    case GENERIC_TIMER_REG_PHYS_CTRL:
+        val = read_cntp_ctl();
+        break;
+    case GENERIC_TIMER_REG_PHYS_TVAL:
+        val = read_cntp_tval();
+        break;
+    case GENERIC_TIMER_REG_VIRT_CTRL:
+        val = read_cntv_ctl();
+        break;
+    case GENERIC_TIMER_REG_VIRT_TVAL:
+        val = read_cntv_tval();
+        break;
+    default:
+        uart_print("Trying to read invalid generic-timer register\n\r");
+        break;
+    }
+
+    return val;
+}
+\end{DoxyCode}
+\hypertarget{generic__timer__regs_8h_ac82169092a24b779c0b745cfc5371f33}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!generic\-\_\-timer\-\_\-reg\-\_\-read64@{generic\-\_\-timer\-\_\-reg\-\_\-read64}}
+\index{generic\-\_\-timer\-\_\-reg\-\_\-read64@{generic\-\_\-timer\-\_\-reg\-\_\-read64}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-reg\-\_\-read64}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf uint64\-\_\-t} {\bf generic\-\_\-timer\-\_\-reg\-\_\-read64} (
+\begin{DoxyParamCaption}
+\item[{int}]{reg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{generic__timer__regs_8h_ac82169092a24b779c0b745cfc5371f33}
+
+
+\-Definition at line 131 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+
+\begin{DoxyCode}
+{
+    uint64_t val;
+
+    switch (reg) {
+    case GENERIC_TIMER_REG_HYP_CVAL:
+        val = read_cnthp_cval();
+        break;
+    case GENERIC_TIMER_REG_PHYS_CVAL:
+        val = read_cntp_tval();
+        break;
+    case GENERIC_TIMER_REG_VIRT_CVAL:
+        val = read_cntv_cval();
+        break;
+    case GENERIC_TIMER_REG_VIRT_OFF:
+        val = read_cntvoff();
+        break;
+    default:
+        uart_print("Trying to read invalid generic-timer register\n\r");
+        break;
+    }
+
+    return val;
+}
+\end{DoxyCode}
+\hypertarget{generic__timer__regs_8h_a21908c6f55add221caf5e3de30fe8f77}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!generic\-\_\-timer\-\_\-reg\-\_\-write@{generic\-\_\-timer\-\_\-reg\-\_\-write}}
+\index{generic\-\_\-timer\-\_\-reg\-\_\-write@{generic\-\_\-timer\-\_\-reg\-\_\-write}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-reg\-\_\-write}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf generic\-\_\-timer\-\_\-reg\-\_\-write} (
+\begin{DoxyParamCaption}
+\item[{int}]{reg, }
+\item[{{\bf uint32\-\_\-t}}]{val}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{generic__timer__regs_8h_a21908c6f55add221caf5e3de30fe8f77}
+
+
+\-Definition at line 30 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+
+\begin{DoxyCode}
+{
+    switch (reg) {
+    case GENERIC_TIMER_REG_FREQ:
+        write_cntfrq(val);
+        break;
+    case GENERIC_TIMER_REG_HCTL:
+        write_cnthctl(val);
+        break;
+    case GENERIC_TIMER_REG_KCTL:
+        write_cntkctl(val);
+        break;
+    case GENERIC_TIMER_REG_HYP_CTRL:
+        write_cnthp_ctl(val);
+        break;
+    case GENERIC_TIMER_REG_HYP_TVAL:
+        write_cnthp_tval(val);
+        break;
+    case GENERIC_TIMER_REG_PHYS_CTRL:
+        write_cntp_ctl(val);
+        break;
+    case GENERIC_TIMER_REG_PHYS_TVAL:
+        write_cntp_tval(val);
+        break;
+    case GENERIC_TIMER_REG_VIRT_CTRL:
+        write_cntv_ctl(val);
+        break;
+    case GENERIC_TIMER_REG_VIRT_TVAL:
+        write_cntv_tval(val);
+        break;
+    default:
+        uart_print("Trying to write invalid generic-timer register\n\r");
+        break;
+    }
+
+    isb();
+}
+\end{DoxyCode}
+\hypertarget{generic__timer__regs_8h_a531989be17f7397a7b42dbf29cacc6ff}{\index{generic\-\_\-timer\-\_\-regs.\-h@{generic\-\_\-timer\-\_\-regs.\-h}!generic\-\_\-timer\-\_\-reg\-\_\-write64@{generic\-\_\-timer\-\_\-reg\-\_\-write64}}
+\index{generic\-\_\-timer\-\_\-reg\-\_\-write64@{generic\-\_\-timer\-\_\-reg\-\_\-write64}!generic_timer_regs.h@{generic\-\_\-timer\-\_\-regs.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-reg\-\_\-write64}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf generic\-\_\-timer\-\_\-reg\-\_\-write64} (
+\begin{DoxyParamCaption}
+\item[{int}]{reg, }
+\item[{{\bf uint64\-\_\-t}}]{val}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{generic__timer__regs_8h_a531989be17f7397a7b42dbf29cacc6ff}
+
+
+\-Definition at line 108 of file generic\-\_\-timer\-\_\-regs.\-h.
+
+
+\begin{DoxyCode}
+{
+    switch (reg) {
+    case GENERIC_TIMER_REG_HYP_CVAL:
+        write_cnthp_cval(val);
+        break;
+    case GENERIC_TIMER_REG_PHYS_CVAL:
+        write_cntp_cval(val);
+        break;
+    case GENERIC_TIMER_REG_VIRT_CVAL:
+        write_cntv_cval(val);
+        break;
+    case GENERIC_TIMER_REG_VIRT_OFF:
+        write_cntvoff(val);
+        break;
+    default:
+        uart_print("Trying to write invalid generic-timer register\n\r");
+        break;
+    }
+
+    isb();
+}
+\end{DoxyCode}

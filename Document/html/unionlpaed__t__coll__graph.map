@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$structlpae__pt__t.html" title="{lpae_pt_t\n|+ valid\l+ table\l+ ai\l+ ns\l+ user\l+ ro\l+ sh\l+ af\l+ ng\l+ base\land 8 more...|}" alt="" coords="5,5,104,264"/>
+<area shape="rect" id="node4" href="$structlpae__p2m__t.html" title="{lpae_p2m_t\n|+ valid\l+ table\l+ mattr\l+ read\l+ write\l+ sh\l+ af\l+ sbz4\l+ base\l+ sbz3\land 4 more...|}" alt="" coords="128,5,227,264"/>
+<area shape="rect" id="node6" href="$structlpae__walk__t.html" title="{lpae_walk_t\n|+ valid\l+ table\l+ pad2\l+ base\l+ pad1\l|}" alt="" coords="251,57,341,212"/>
+</map>

@@ -1,0 +1,705 @@
+\hypertarget{gic_8c}{\section{gic/gic.c \-File \-Reference}
+\label{gic_8c}\index{gic/gic.\-c@{gic/gic.\-c}}
+}
+{\ttfamily \#include \char`\"{}gic.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}a15\-\_\-cp15\-\_\-sysregs.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}smp.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}context.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}hvmm\-\_\-trace.\-h\char`\"{}}\*
+{\ttfamily \#include $<$gic\-\_\-regs.\-h$>$}\*
+{\ttfamily \#include \char`\"{}virqmap.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}virq.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}hvmm\-\_\-types.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+{\ttfamily \#include $<$config/cfg\-\_\-platform.\-h$>$}\*
+\-Include dependency graph for gic.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{gic_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structgic}{gic}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{gic_8c_a636ebe1049205391c94c87fb73751cd3}{\-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F
+\item 
+\#define \hyperlink{gic_8c_a30ca90ad0e327260a65618197261f4f2}{\-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15}~0x412fc0f1
+\item 
+\#define \hyperlink{gic_8c_aafc97bc5f4bc00a3153f9f7a42a75084}{\-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N}~(0x0\-F\-F\-F $<$$<$4)
+\item 
+\#define \hyperlink{gic_8c_a98c20b3bc1389721882e5614f64f4c86}{\-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15}~(0x\-C0\-F $<$$<$ 4)
+\item 
+\#define \hyperlink{gic_8c_ae03ba1b0ce9d92968e25bfc5137b6141}{\-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D}
+\item 
+\#define \hyperlink{gic_8c_abf8cb594c336c07b1ed464f49ffd7848}{\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}~0x5108\-E\-A\-D7
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{gic_8c_a355755273aee03b63c4a9aa6e7e4a95e}{gic\-\_\-dump\-\_\-registers} (void)
+\item 
+static \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} \hyperlink{gic_8c_a571d07e36235ca9d298c086e117e2bb1}{gic\-\_\-periphbase\-\_\-pa} (void)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_ac9cad87ffdf3a3e1cde6002ea3f347a9}{gic\-\_\-init\-\_\-baseaddr} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$va\-\_\-base)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_a592c46444cc3e5696daa78bedbbe31f3}{gic\-\_\-init\-\_\-dist} (void)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_a8395d48667bdc01bce88521812a39f53}{gic\-\_\-init\-\_\-cpui} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_a53e36754e628b6624a760838e37fd9df}{gic\-\_\-enable\-\_\-irq} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} irq)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_ac9a2d7f5ce83d3499113a8566f65fad0}{gic\-\_\-disable\-\_\-irq} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} irq)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_a7a8d9c8017d6bcc6fc377b52ed6b74c1}{gic\-\_\-deactivate\-\_\-irq} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} irq)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_aaee4d58fadbe09c39f45e8e114a4dd4d}{gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler} (int irq, \hyperlink{gic_8h_a4b1f3150431142b6910f651a1172f446}{gic\-\_\-irq\-\_\-handler\-\_\-t} handler, void $\ast$pdata)
+\item 
+volatile \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$ \hyperlink{gic_8c_a608941cbc8ab5a657834d451f0368a6e}{gic\-\_\-vgic\-\_\-baseaddr} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_a0913d7e2dc598b3eb2cb09c4a1185cbe}{gic\-\_\-init} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{gic_8c_acbe5581611f81cd00b58cebeda222edf}{gic\-\_\-test\-\_\-configure\-\_\-irq} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} irq, \hyperlink{gic_8h_a1f4bb652388c46210cea87dfa0d0da83}{gic\-\_\-int\-\_\-polarity\-\_\-t} polarity, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} cpumask, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} priority)
+\item 
+void \hyperlink{gic_8c_a55735be7cf847ae8064b56d22bd80831}{gic\-\_\-interrupt} (int fiq, void $\ast$pregs)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structgic}{gic} \hyperlink{gic_8c_a812e13a3081e93998d02dcad7c12f64b}{\-\_\-gic}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{gic_8c_a30ca90ad0e327260a65618197261f4f2}{\index{gic.\-c@{gic.\-c}!\-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15@{\-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15}}
+\index{\-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15@{\-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15}!gic.c@{gic.\-c}}
+\subsubsection[{\-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-R\-M\-\_\-\-C\-P\-U\-I\-D\-\_\-\-C\-O\-R\-T\-E\-X\-A15}~0x412fc0f1}}\label{gic_8c_a30ca90ad0e327260a65618197261f4f2}
+
+
+\-Definition at line 18 of file gic.\-c.
+
+\hypertarget{gic_8c_a636ebe1049205391c94c87fb73751cd3}{\index{gic.\-c@{gic.\-c}!\-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K@{\-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K}}
+\index{\-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K@{\-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K}!gic.c@{gic.\-c}}
+\subsubsection[{\-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-B\-A\-R\-\_\-\-P\-E\-R\-I\-P\-H\-B\-A\-S\-E\-\_\-\-M\-S\-B\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F}}\label{gic_8c_a636ebe1049205391c94c87fb73751cd3}
+
+
+\-Definition at line 16 of file gic.\-c.
+
+\hypertarget{gic_8c_ae03ba1b0ce9d92968e25bfc5137b6141}{\index{gic.\-c@{gic.\-c}!\-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D@{\-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D}}
+\index{\-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D@{\-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D}!gic.c@{gic.\-c}}
+\subsubsection[{\-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-I\-N\-T\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-D\-E\-F\-A\-U\-L\-T\-\_\-\-W\-O\-R\-D}}}\label{gic_8c_ae03ba1b0ce9d92968e25bfc5137b6141}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+( (GIC_INT_PRIORITY_DEFAULT << 24 ) \
+                                         |(GIC_INT_PRIORITY_DEFAULT << 16 ) \
+                                         |(GIC_INT_PRIORITY_DEFAULT << 8 ) \
+                                         |(GIC_INT_PRIORITY_DEFAULT ) )
+\end{DoxyCode}
+
+
+\-Definition at line 24 of file gic.\-c.
+
+\hypertarget{gic_8c_abf8cb594c336c07b1ed464f49ffd7848}{\index{gic.\-c@{gic.\-c}!\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D@{\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}}
+\index{\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D@{\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}!gic.c@{gic.\-c}}
+\subsubsection[{\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}~0x5108\-E\-A\-D7}}\label{gic_8c_abf8cb594c336c07b1ed464f49ffd7848}
+
+
+\-Definition at line 29 of file gic.\-c.
+
+\hypertarget{gic_8c_aafc97bc5f4bc00a3153f9f7a42a75084}{\index{gic.\-c@{gic.\-c}!\-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N@{\-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N}}
+\index{\-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N@{\-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N}!gic.c@{gic.\-c}}
+\subsubsection[{\-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-M\-I\-D\-R\-\_\-\-M\-A\-S\-K\-\_\-\-P\-P\-N}~(0x0\-F\-F\-F $<$$<$4)}}\label{gic_8c_aafc97bc5f4bc00a3153f9f7a42a75084}
+
+
+\-Definition at line 20 of file gic.\-c.
+
+\hypertarget{gic_8c_a98c20b3bc1389721882e5614f64f4c86}{\index{gic.\-c@{gic.\-c}!\-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15@{\-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15}}
+\index{\-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15@{\-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15}!gic.c@{gic.\-c}}
+\subsubsection[{\-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-M\-I\-D\-R\-\_\-\-P\-P\-N\-\_\-\-C\-O\-R\-T\-E\-X\-A15}~(0x\-C0\-F $<$$<$ 4)}}\label{gic_8c_a98c20b3bc1389721882e5614f64f4c86}
+
+
+\-Definition at line 21 of file gic.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{gic_8c_a7a8d9c8017d6bcc6fc377b52ed6b74c1}{\index{gic.\-c@{gic.\-c}!gic\-\_\-deactivate\-\_\-irq@{gic\-\_\-deactivate\-\_\-irq}}
+\index{gic\-\_\-deactivate\-\_\-irq@{gic\-\_\-deactivate\-\_\-irq}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-deactivate\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-deactivate\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{irq}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_a7a8d9c8017d6bcc6fc377b52ed6b74c1}
+
+
+\-Definition at line 220 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    _gic.ba_gicc[GICC_DIR] = irq;
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_ac9a2d7f5ce83d3499113a8566f65fad0}{\index{gic.\-c@{gic.\-c}!gic\-\_\-disable\-\_\-irq@{gic\-\_\-disable\-\_\-irq}}
+\index{gic\-\_\-disable\-\_\-irq@{gic\-\_\-disable\-\_\-irq}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-disable\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-disable\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{irq}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_ac9a2d7f5ce83d3499113a8566f65fad0}
+
+
+\-Definition at line 214 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    _gic.ba_gicd[GICD_ICENABLER + irq / 32] = (1u << (irq % 32));
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_a355755273aee03b63c4a9aa6e7e4a95e}{\index{gic.\-c@{gic.\-c}!gic\-\_\-dump\-\_\-registers@{gic\-\_\-dump\-\_\-registers}}
+\index{gic\-\_\-dump\-\_\-registers@{gic\-\_\-dump\-\_\-registers}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-dump\-\_\-registers}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf gic\-\_\-dump\-\_\-registers} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{gic_8c_a355755273aee03b63c4a9aa6e7e4a95e}
+
+
+\-Definition at line 46 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+
+    uint32_t midr;
+
+    HVMM_TRACE_ENTER();
+
+    midr = read_midr();
+    uart_print( "midr:"); uart_print_hex32(midr); uart_print("\n\r");
+
+    if ( (midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+        uint32_t value;
+        uart_print( "cbar:"); uart_print_hex32(_gic.baseaddr); uart_print("\n\r
+      ");
+        uart_print( "ba_gicd:"); uart_print_hex32((uint32_t)_gic.ba_gicd); 
+      uart_print("\n\r");
+        uart_print( "ba_gicc:"); uart_print_hex32((uint32_t)_gic.ba_gicc); 
+      uart_print("\n\r");
+        uart_print( "ba_gich:"); uart_print_hex32((uint32_t)_gic.ba_gich); 
+      uart_print("\n\r");
+        uart_print( "ba_gicv:"); uart_print_hex32((uint32_t)_gic.ba_gicv); 
+      uart_print("\n\r");
+        uart_print( "ba_gicvi:"); uart_print_hex32((uint32_t)_gic.ba_gicvi); 
+      uart_print("\n\r");
+        value = _gic.ba_gicd[GICD_CTLR]; uart_print( "GICD_CTLR:"); 
+      uart_print_hex32(value); uart_print("\n\r");
+        value = _gic.ba_gicd[GICD_TYPER]; uart_print( "GICD_TYPER:"); 
+      uart_print_hex32(value); uart_print("\n\r");
+        value = _gic.ba_gicd[GICD_IIDR]; uart_print( "GICD_IIDR:"); 
+      uart_print_hex32(value); uart_print("\n\r");
+    }
+    HVMM_TRACE_EXIT();
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_a53e36754e628b6624a760838e37fd9df}{\index{gic.\-c@{gic.\-c}!gic\-\_\-enable\-\_\-irq@{gic\-\_\-enable\-\_\-irq}}
+\index{gic\-\_\-enable\-\_\-irq@{gic\-\_\-enable\-\_\-irq}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-enable\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-enable\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{irq}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_a53e36754e628b6624a760838e37fd9df}
+
+
+\-Definition at line 208 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    _gic.ba_gicd[GICD_ISENABLER + irq / 32] = (1u << (irq % 32));
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_a0913d7e2dc598b3eb2cb09c4a1185cbe}{\index{gic.\-c@{gic.\-c}!gic\-\_\-init@{gic\-\_\-init}}
+\index{gic\-\_\-init@{gic\-\_\-init}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_a0913d7e2dc598b3eb2cb09c4a1185cbe}
+
+
+\-Definition at line 247 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+    int i;
+
+    HVMM_TRACE_ENTER();
+
+    for( i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+        _gic.handlers[i] = 0;
+    }
+    
+    /*
+     * Determining VA of GIC base adddress has not been defined yet. Let is use
+       the PA for the time being
+     */
+    result = gic_init_baseaddr((void*)CFG_GIC_BASE_PA);
+
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        gic_dump_registers();
+    }
+
+    /*
+     * Initialize and Enable GIC Distributor
+     */
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        result = gic_init_dist();
+    }
+
+    /*
+     * Initialize and Enable GIC CPU Interface for this CPU
+     */
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        result = gic_init_cpui();
+    }
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        _gic.initialized = GIC_SIGNATURE_INITIALIZED;
+    }
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{gic_8c_a0913d7e2dc598b3eb2cb09c4a1185cbe_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{gic_8c_ac9cad87ffdf3a3e1cde6002ea3f347a9}{\index{gic.\-c@{gic.\-c}!gic\-\_\-init\-\_\-baseaddr@{gic\-\_\-init\-\_\-baseaddr}}
+\index{gic\-\_\-init\-\_\-baseaddr@{gic\-\_\-init\-\_\-baseaddr}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-init\-\_\-baseaddr}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-init\-\_\-baseaddr} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t} $\ast$}]{va\-\_\-base}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{gic_8c_ac9cad87ffdf3a3e1cde6002ea3f347a9}
+
+
+\-Definition at line 86 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+// MIDR[15:4], CRn:c0, Op1:0, CRm:c0, Op2:0  == 0xC0F (Cortex-A15)
+// Cortex-A15 C15 System Control, C15 Registers
+// Name: Op1, CRm, Op2
+    uint32_t midr;
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    HVMM_TRACE_ENTER();
+
+    midr = read_midr();
+    uart_print( "midr:"); uart_print_hex32(midr); uart_print("\n\r");
+
+    /* 
+     * Note:
+     * We currently support GICv2 with Cortex-A15 only. 
+     * Other architectures with GICv2 support will be further listed and added
+       for support later
+     */
+    if ( (midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+        /* fall-back to periphbase addr from cbar */
+        if ( va_base == 0 ) va_base = (uint32_t *) (uint32_t) (gic_periphbase_pa
+      () & 0x00000000FFFFFFFFULL);
+        _gic.baseaddr = (uint32_t) va_base;
+        uart_print( "cbar:"); uart_print_hex32(_gic.baseaddr); uart_print("\n\r
+      ");
+        _gic.ba_gicd = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICD);
+        _gic.ba_gicc = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICC);
+        _gic.ba_gich = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICH);
+        _gic.ba_gicv = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICV);
+        _gic.ba_gicvi = (uint32_t *) (_gic.baseaddr + GIC_OFFSET_GICVI);
+
+        result = HVMM_STATUS_SUCCESS;
+    } else {
+        uart_print( "GICv2 Unsupported\n\r" );
+        uart_print( "midr.ppn:"); uart_print_hex32(midr & MIDR_MASK_PPN); 
+      uart_print("\n\r");
+
+        result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+    }
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=306pt]{gic_8c_ac9cad87ffdf3a3e1cde6002ea3f347a9_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{gic_8c_a8395d48667bdc01bce88521812a39f53}{\index{gic.\-c@{gic.\-c}!gic\-\_\-init\-\_\-cpui@{gic\-\_\-init\-\_\-cpui}}
+\index{gic\-\_\-init\-\_\-cpui@{gic\-\_\-init\-\_\-cpui}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-init\-\_\-cpui}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-init\-\_\-cpui} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{gic_8c_a8395d48667bdc01bce88521812a39f53}
+
+
+\-Definition at line 181 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+    int i;
+
+    /* Disable forwarding PPIs(ID16~31) */
+    _gic.ba_gicd[GICD_ICENABLER] = 0xFFFF0000;
+    /* Enable forwarding SGIs(ID0~15) */
+    _gic.ba_gicd[GICD_ISENABLER] = 0x0000FFFF;
+    
+    /* Default priority for SGIs and PPIs */
+    for( i = 0; i < 32; i += 4 ) {
+        _gic.ba_gicd[GICD_IPRIORITYR | i/4] = GIC_INT_PRIORITY_DEFAULT_WORD;
+    }
+
+    /* No Priority Masking: the lowest value as the threshold : 255 */
+    _gic.ba_gicc[GICC_PMR] = 0xFF;
+    _gic.ba_gicc[GICC_BPR] = 0x0;
+
+    /* Enable signaling of interrupts and GICC_EOIR only drops priority */
+    _gic.ba_gicc[GICC_CTLR] = GICC_CTL_ENABLE | GICC_CTL_EOI;
+
+    result = HVMM_STATUS_SUCCESS;
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_a592c46444cc3e5696daa78bedbbe31f3}{\index{gic.\-c@{gic.\-c}!gic\-\_\-init\-\_\-dist@{gic\-\_\-init\-\_\-dist}}
+\index{gic\-\_\-init\-\_\-dist@{gic\-\_\-init\-\_\-dist}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-init\-\_\-dist}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-init\-\_\-dist} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{gic_8c_a592c46444cc3e5696daa78bedbbe31f3}
+
+
+\-Definition at line 128 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t type;
+    int i;
+    uint32_t cpumask;
+
+    HVMM_TRACE_ENTER();
+
+    /* Disable Distributor */
+    _gic.ba_gicd[GICD_CTLR] = 0;
+
+    type = _gic.ba_gicd[GICD_TYPER];
+    _gic.lines = 32 * ((type & GICD_TYPE_LINES_MASK) + 1);
+    _gic.cpus = 1 + ((type & GICD_TYPE_CPUS_MASK) >> GICD_TYPE_CPUS_SHIFT);
+    uart_print( "GIC: lines:"); uart_print_hex32(_gic.lines ); 
+    uart_print( " cpus:"); uart_print_hex32(_gic.cpus);
+    uart_print( " IID:" ); uart_print_hex32(_gic.ba_gicd[GICD_IIDR]); 
+      uart_print("\n\r");
+
+    /* Interrupt polarity for SPIs (Global Interrupts) active-low */
+    for( i = 32; i < _gic.lines; i += 16 ) {
+        _gic.ba_gicd[GICD_ICFGR + i / 16] = 0x0;
+    }
+
+    /* Default Priority for all Interrupts
+     * Private/Banked interrupts will be configured separately 
+     */
+    for( i = 32; i < _gic.lines; i+= 4 ) {
+        _gic.ba_gicd[GICD_IPRIORITYR + i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
+    }
+
+    /* Disable all global interrupts. 
+     * Private/Banked interrupts will be configured separately 
+     */
+    for( i = 32; i < _gic.lines; i+= 32 ) {
+        _gic.ba_gicd[GICD_ICENABLER + i / 32] = 0xFFFFFFFF;
+    }
+
+    /* Route all global IRQs to this CPU */
+    cpumask = 1 << smp_processor_id();
+    cpumask |= cpumask << 8;
+    cpumask |= cpumask << 16;
+    for( i = 32; i < _gic.lines; i += 4 ) {
+        _gic.ba_gicd[GICD_ITARGETSR + i / 4] = cpumask;
+    }
+
+
+    /* Enable Distributor */
+    _gic.ba_gicd[GICD_CTLR] = GICD_CTLR_ENABLE;
+    HVMM_TRACE_EXIT();
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=280pt]{gic_8c_a592c46444cc3e5696daa78bedbbe31f3_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{gic_8c_a55735be7cf847ae8064b56d22bd80831}{\index{gic.\-c@{gic.\-c}!gic\-\_\-interrupt@{gic\-\_\-interrupt}}
+\index{gic\-\_\-interrupt@{gic\-\_\-interrupt}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-interrupt}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf gic\-\_\-interrupt} (
+\begin{DoxyParamCaption}
+\item[{int}]{fiq, }
+\item[{void $\ast$}]{pregs}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_a55735be7cf847ae8064b56d22bd80831}
+
+
+\-Definition at line 337 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    /*
+     * 1. ACK - CPU Interface - GICC_IAR read
+     * 2. Completion - CPU Interface - GICC_EOIR
+     * 2.1 Deactivation - CPU Interface - GICC_DIR
+     */
+    uint32_t iar;
+
+    uint32_t irq;
+    struct arch_regs *regs = pregs;
+    const struct virqmap_entry *virq_entry;
+
+    /* ACK */
+    iar = _gic.ba_gicc[GICC_IAR];
+    irq = iar & GICC_IAR_INTID_MASK;
+    if ( irq < _gic.lines ) {
+        virq_entry = virqmap_for_pirq(irq);
+
+        /* ISR */
+        printh( "ISR(irq):%x\n", irq);
+
+        /* IRQ INJECTION */
+        if(virq_entry != VIRQMAP_ENTRY_NOTFOUND) { 
+
+            /* priority drop only for hanlding irq in guest */
+            _gic.ba_gicc[GICC_EOIR] = irq;
+            virq_inject(virq_entry->vmid, virq_entry->virq, irq, 1);
+
+        } else {
+
+            if ( _gic.handlers[irq] ) {
+                _gic.handlers[irq]( irq, regs, 0 );
+            }
+
+            /* Completion & Deactivation */
+            _gic.ba_gicc[GICC_EOIR] = irq;
+            _gic.ba_gicc[GICC_DIR] = irq;
+        }
+    } else {
+        printh( "gic:no pending irq:%x\n", irq);
+    }
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{gic_8c_a55735be7cf847ae8064b56d22bd80831_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{gic_8c_a571d07e36235ca9d298c086e117e2bb1}{\index{gic.\-c@{gic.\-c}!gic\-\_\-periphbase\-\_\-pa@{gic\-\_\-periphbase\-\_\-pa}}
+\index{gic\-\_\-periphbase\-\_\-pa@{gic\-\_\-periphbase\-\_\-pa}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-periphbase\-\_\-pa}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf uint64\-\_\-t} {\bf gic\-\_\-periphbase\-\_\-pa} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{gic_8c_a571d07e36235ca9d298c086e117e2bb1}
+
+
+\-Definition at line 72 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+// CBAR:   4,  c0,   0
+// MRC p15, 4, <Rt>, c15, c0, 0; Read Configuration Base Address Register
+    uint64_t periphbase = (uint64_t) read_cbar();
+    uint64_t pbmsb = periphbase & ((uint64_t)CBAR_PERIPHBASE_MSB_MASK);
+    if ( pbmsb ) {
+        periphbase &= ~ ((uint64_t)CBAR_PERIPHBASE_MSB_MASK);
+        periphbase |= (pbmsb << 32);
+    }
+    
+    return periphbase;
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_acbe5581611f81cd00b58cebeda222edf}{\index{gic.\-c@{gic.\-c}!gic\-\_\-test\-\_\-configure\-\_\-irq@{gic\-\_\-test\-\_\-configure\-\_\-irq}}
+\index{gic\-\_\-test\-\_\-configure\-\_\-irq@{gic\-\_\-test\-\_\-configure\-\_\-irq}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-test\-\_\-configure\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-test\-\_\-configure\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{irq, }
+\item[{{\bf gic\-\_\-int\-\_\-polarity\-\_\-t}}]{polarity, }
+\item[{{\bf uint8\-\_\-t}}]{cpumask, }
+\item[{{\bf uint8\-\_\-t}}]{priority}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_acbe5581611f81cd00b58cebeda222edf}
+
+
+\-Definition at line 294 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    HVMM_TRACE_ENTER();
+    if ( irq < _gic.lines ) {
+        uint32_t icfg;
+        volatile uint8_t *reg8;
+        /* disable forwarding */
+        result = gic_disable_irq( irq );
+
+        if ( result == HVMM_STATUS_SUCCESS ) {
+
+            /* polarity: level or edge */
+            icfg = _gic.ba_gicd[GICD_ICFGR + irq / 16];
+            if ( polarity == GIC_INT_POLARITY_LEVEL ) {
+                icfg &= ~( 2u << (2 * (irq % 16)) );
+            } else {
+                icfg |= ( 2u << (2 * (irq % 16)) );
+            }
+            _gic.ba_gicd[GICD_ICFGR + irq / 16] = icfg;
+
+            /* routing */
+        
+            reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ITARGETSR]);
+            reg8[irq] = cpumask;
+
+            /* priority */
+            reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_IPRIORITYR]);
+            reg8[irq] = priority;
+
+            /* enable forwarding */
+            result = gic_enable_irq( irq );
+        }
+    } else {
+        uart_print( "invalid irq:"); uart_print_hex32(irq); uart_print("\n\r");
+        result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+    }
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{gic_8c_acbe5581611f81cd00b58cebeda222edf_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{gic_8c_aaee4d58fadbe09c39f45e8e114a4dd4d}{\index{gic.\-c@{gic.\-c}!gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler@{gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler}}
+\index{gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler@{gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf gic\-\_\-test\-\_\-set\-\_\-irq\-\_\-handler} (
+\begin{DoxyParamCaption}
+\item[{int}]{irq, }
+\item[{{\bf gic\-\_\-irq\-\_\-handler\-\_\-t}}]{handler, }
+\item[{void $\ast$}]{pdata}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_aaee4d58fadbe09c39f45e8e114a4dd4d}
+
+
+\-Definition at line 226 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+    if ( irq < GIC_NUM_MAX_IRQS ) {
+        _gic.handlers[irq] = handler;
+        result = HVMM_STATUS_SUCCESS;
+    }
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{gic_8c_a608941cbc8ab5a657834d451f0368a6e}{\index{gic.\-c@{gic.\-c}!gic\-\_\-vgic\-\_\-baseaddr@{gic\-\_\-vgic\-\_\-baseaddr}}
+\index{gic\-\_\-vgic\-\_\-baseaddr@{gic\-\_\-vgic\-\_\-baseaddr}!gic.c@{gic.\-c}}
+\subsubsection[{gic\-\_\-vgic\-\_\-baseaddr}]{\setlength{\rightskip}{0pt plus 5cm}volatile {\bf uint32\-\_\-t}$\ast$ {\bf gic\-\_\-vgic\-\_\-baseaddr} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{gic_8c_a608941cbc8ab5a657834d451f0368a6e}
+
+
+\-Definition at line 236 of file gic.\-c.
+
+
+\begin{DoxyCode}
+{
+    if ( _gic.initialized != GIC_SIGNATURE_INITIALIZED ) {
+        HVMM_TRACE_ENTER();
+        uart_print("gic: ERROR - not initialized\n\r");
+        HVMM_TRACE_EXIT();
+    }
+
+    return _gic.ba_gich;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{gic_8c_a812e13a3081e93998d02dcad7c12f64b}{\index{gic.\-c@{gic.\-c}!\-\_\-gic@{\-\_\-gic}}
+\index{\-\_\-gic@{\-\_\-gic}!gic.c@{gic.\-c}}
+\subsubsection[{\-\_\-gic}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf gic} {\bf \-\_\-gic}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{gic_8c_a812e13a3081e93998d02dcad7c12f64b}
+
+
+\-Definition at line 44 of file gic.\-c.
+

@@ -1,0 +1,165 @@
+\hypertarget{vdev__sample_8c}{\section{vdev/vdev\-\_\-sample.c \-File \-Reference}
+\label{vdev__sample_8c}\index{vdev/vdev\-\_\-sample.\-c@{vdev/vdev\-\_\-sample.\-c}}
+}
+{\ttfamily \#include \char`\"{}vdev\-\_\-sample.\-h\char`\"{}}\*
+{\ttfamily \#include $<$context.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for vdev\-\_\-sample.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev__sample_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structvdev__sample__regs}{vdev\-\_\-sample\-\_\-regs}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__sample_8c_ad85bd19fef323af14b2b6811709735d7}{access\-\_\-handler} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__sample_8c_ae7bf575925e2277b4fc5f5a1855cd7bf}{vdev\-\_\-sample\-\_\-init} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} base\-\_\-addr)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structvdev__info__t}{vdev\-\_\-info\-\_\-t} \hyperlink{vdev__sample_8c_ad12ce613d7928c78f9c72f2d902d61b6}{\-\_\-vdev\-\_\-info}
+\item 
+static struct \hyperlink{structvdev__sample__regs}{vdev\-\_\-sample\-\_\-regs} \hyperlink{vdev__sample_8c_a83967e2c2e61558528fec54f1060435b}{regs} \mbox{[}\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev__sample_8c_ad85bd19fef323af14b2b6811709735d7}{\index{vdev\-\_\-sample.\-c@{vdev\-\_\-sample.\-c}!access\-\_\-handler@{access\-\_\-handler}}
+\index{access\-\_\-handler@{access\-\_\-handler}!vdev_sample.c@{vdev\-\_\-sample.\-c}}
+\subsubsection[{access\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf access\-\_\-handler} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)}}\label{vdev__sample_8c_ad85bd19fef323af14b2b6811709735d7}
+
+
+\-Definition at line 15 of file vdev\-\_\-sample.\-c.
+
+
+\begin{DoxyCode}
+{
+    printh( "%s: %s offset:%d value:%x\n", __FUNCTION__, write ? "write" : "
+      read", offset, write ? *pvalue : (uint32_t) pvalue );
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    unsigned int vmid = context_current_vmid();
+    if (!write) {
+        // READ
+        switch (offset){
+        case 0x0:
+            *pvalue = regs[vmid].axis_x;        
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        case 0x4:
+            *pvalue = regs[vmid].axis_y;        
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        case 0x8:
+            *pvalue = regs[vmid].axis_x + regs[vmid].axis_y;        
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    } else { 
+        //WRITE
+        switch (offset){
+        case 0x0:
+            regs[vmid].axis_x = *pvalue;
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        case 0x4:
+            regs[vmid].axis_y = *pvalue;
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        case 0x8:
+            /* read-only register, ignored, but no error */
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=312pt]{vdev__sample_8c_ad85bd19fef323af14b2b6811709735d7_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__sample_8c_ae7bf575925e2277b4fc5f5a1855cd7bf}{\index{vdev\-\_\-sample.\-c@{vdev\-\_\-sample.\-c}!vdev\-\_\-sample\-\_\-init@{vdev\-\_\-sample\-\_\-init}}
+\index{vdev\-\_\-sample\-\_\-init@{vdev\-\_\-sample\-\_\-init}!vdev_sample.c@{vdev\-\_\-sample.\-c}}
+\subsubsection[{vdev\-\_\-sample\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-sample\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{base\-\_\-addr}
+\end{DoxyParamCaption}
+)}}\label{vdev__sample_8c_ae7bf575925e2277b4fc5f5a1855cd7bf}
+
+
+\-Definition at line 56 of file vdev\-\_\-sample.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    _vdev_info.name     = "sample";
+    _vdev_info.base     = base_addr; 
+    _vdev_info.size     = sizeof(struct vdev_sample_regs);
+    _vdev_info.handler  = access_handler;
+
+    result = vdev_reg_device(&_vdev_info);
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
+    } else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, 
+      _vdev_info.name, result);
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev__sample_8c_ae7bf575925e2277b4fc5f5a1855cd7bf_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{vdev__sample_8c_ad12ce613d7928c78f9c72f2d902d61b6}{\index{vdev\-\_\-sample.\-c@{vdev\-\_\-sample.\-c}!\-\_\-vdev\-\_\-info@{\-\_\-vdev\-\_\-info}}
+\index{\-\_\-vdev\-\_\-info@{\-\_\-vdev\-\_\-info}!vdev_sample.c@{vdev\-\_\-sample.\-c}}
+\subsubsection[{\-\_\-vdev\-\_\-info}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vdev\-\_\-info\-\_\-t} {\bf \-\_\-vdev\-\_\-info}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__sample_8c_ad12ce613d7928c78f9c72f2d902d61b6}
+
+
+\-Definition at line 12 of file vdev\-\_\-sample.\-c.
+
+\hypertarget{vdev__sample_8c_a83967e2c2e61558528fec54f1060435b}{\index{vdev\-\_\-sample.\-c@{vdev\-\_\-sample.\-c}!regs@{regs}}
+\index{regs@{regs}!vdev_sample.c@{vdev\-\_\-sample.\-c}}
+\subsubsection[{regs}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf vdev\-\_\-sample\-\_\-regs} {\bf regs}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__sample_8c_a83967e2c2e61558528fec54f1060435b}
+
+
+\-Definition at line 13 of file vdev\-\_\-sample.\-c.
+

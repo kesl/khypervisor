@@ -1,0 +1,112 @@
+\hypertarget{trap__dabort_8h}{\section{trap\-\_\-dabort.\-h \-File \-Reference}
+\label{trap__dabort_8h}\index{trap\-\_\-dabort.\-h@{trap\-\_\-dabort.\-h}}
+}
+{\ttfamily \#include $<$hvmm\-\_\-types.\-h$>$}\*
+\-Include dependency graph for trap\-\_\-dabort.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=160pt]{trap__dabort_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{trap__dabort_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{trap__dabort_8h_a22a8194bf32c99c7a7e99a9f380b2905}{trap\-\_\-hvc\-\_\-dabort} (unsigned int iss, struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{trap__dabort_8h_a22a8194bf32c99c7a7e99a9f380b2905}{\index{trap\-\_\-dabort.\-h@{trap\-\_\-dabort.\-h}!trap\-\_\-hvc\-\_\-dabort@{trap\-\_\-hvc\-\_\-dabort}}
+\index{trap\-\_\-hvc\-\_\-dabort@{trap\-\_\-hvc\-\_\-dabort}!trap_dabort.h@{trap\-\_\-dabort.\-h}}
+\subsubsection[{trap\-\_\-hvc\-\_\-dabort}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf trap\-\_\-hvc\-\_\-dabort} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{iss, }
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{trap__dabort_8h_a22a8194bf32c99c7a7e99a9f380b2905}
+
+
+\-Definition at line 72 of file trap\-\_\-dabort.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+    //far, fipa, il
+    uint32_t far = read_hdfar();
+    uint32_t fipa;
+    uint32_t sas, srt, wnr;
+
+    HVMM_TRACE_ENTER();
+
+    printh( "trap_hvc_dabort: hdfar:%x hpfar:%x\n", far, read_hpfar() );
+    fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
+    fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
+    fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
+    sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
+    srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
+    wnr = (iss & ISS_WNR) ? 1 : 0;
+
+    if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) ) {
+        /*
+           vdev emulates read/write, update pc, update destination register
+         */
+        result = vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs );
+        if ( result != HVMM_STATUS_SUCCESS ) {
+            printh( "trap_dabort: emulation failed guest pc:%x\n", regs->pc );
+
+            /* Let the guest continue by increasing pc */
+            regs->pc += 4;
+        }
+    } else {
+        printh( "trap_dboart: fipa=0x%x\n", fipa );
+        result = HVMM_STATUS_BAD_ACCESS;
+    }
+    if ( result != HVMM_STATUS_SUCCESS ) {
+        printh( "- INSTR: %s[%d] r%d [%x]\n", wnr ? "str" : "ldr", (sas + 1) * 
+      8, srt, fipa );
+    }
+
+    switch (iss & ISS_FSR_MASK) {
+        case TRANS_FAULT_LEVEL1:
+        case TRANS_FAULT_LEVEL2:
+        case TRANS_FAULT_LEVEL3:
+            break;
+
+        case ACCESS_FAULT_LEVEL1:
+        case ACCESS_FAULT_LEVEL2:
+        case ACCESS_FAULT_LEVEL3:
+            {
+                printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
+            }
+            break;
+        default:
+        break;
+    }
+    HVMM_TRACE_EXIT();
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{trap__dabort_8h_a22a8194bf32c99c7a7e99a9f380b2905_cgraph}
+\end{center}
+\end{figure}
+
+

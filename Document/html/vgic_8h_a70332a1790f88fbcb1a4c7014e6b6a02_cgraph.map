@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$vgic_8c.html#acb00c28d2618d3581a7d26f8e265ccb8" title="vgic_flush_virqs" alt="" coords="195,5,309,35"/>
+<area shape="rect" id="node5" href="$vgic_8c.html#abfca2f5be8dfbb355800d70dbda23b5e" title="_vgic_dump_regs" alt="" coords="191,59,313,88"/>
+<area shape="rect" id="node7" href="$vgic_8c.html#ac1d43326139a3717d69ce1f876cd221c" title="vgic_is_free_slot" alt="" coords="363,59,483,88"/>
+<area shape="rect" id="node9" href="$vgic_8c.html#aab31fc8d2c44ebb938b78cfb1f7c975f" title="vgic_find_free_slot" alt="" coords="531,59,661,88"/>
+</map>

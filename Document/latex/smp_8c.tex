@@ -1,0 +1,43 @@
+\hypertarget{smp_8c}{\section{smp.\-c \-File \-Reference}
+\label{smp_8c}\index{smp.\-c@{smp.\-c}}
+}
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}smp.\-h\char`\"{}}\*
+\-Include dependency graph for smp.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=214pt]{smp_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{smp_8c_aa120cf745804d1aed1f2e3d19570ab43}{smp\-\_\-processor\-\_\-id} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{smp_8c_aa120cf745804d1aed1f2e3d19570ab43}{\index{smp.\-c@{smp.\-c}!smp\-\_\-processor\-\_\-id@{smp\-\_\-processor\-\_\-id}}
+\index{smp\-\_\-processor\-\_\-id@{smp\-\_\-processor\-\_\-id}!smp.c@{smp.\-c}}
+\subsubsection[{smp\-\_\-processor\-\_\-id}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf smp\-\_\-processor\-\_\-id} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{smp_8c_aa120cf745804d1aed1f2e3d19570ab43}
+
+
+\-Definition at line 5 of file smp.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* Cortex-A15, 
+     * MPIDR[1:0] - CPUID - 0,1, 2, or 3
+     * MPIDR[7:2] - Reserved, Read as zero
+     */
+    uint32_t id = read_mpidr() & 0x0FF;
+    return id;
+}
+\end{DoxyCode}

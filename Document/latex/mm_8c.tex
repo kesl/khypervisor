@@ -1,0 +1,1199 @@
+\hypertarget{mm_8c}{\section{mm.\-c \-File \-Reference}
+\label{mm_8c}\index{mm.\-c@{mm.\-c}}
+}
+{\ttfamily \#include $<$k-\/hypervisor-\/config.\-h$>$}\*
+{\ttfamily \#include \char`\"{}mm.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}vmm.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}arch\-\_\-types.\-h\char`\"{}}\*
+{\ttfamily \#include $<$config/memmap.\-cfg$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+\-Include dependency graph for mm.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+union \hyperlink{unionheader}{header}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{mm_8c_a2c907a8bc3ef7ca2e00817e63708771f}{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}~0xeeaa4400
+\item 
+\#define \hyperlink{mm_8c_a2b56f7118e928dce984ab8eab8ebf79a}{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}~0xff000004
+\item 
+\#define \hyperlink{mm_8c_a0b13d4fb9fae8589866e218e964b9370}{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L}~(\hyperlink{mm_8c_a2c907a8bc3ef7ca2e00817e63708771f}{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}$|$\hyperlink{mm_8c_a2b56f7118e928dce984ab8eab8ebf79a}{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}$<$$<$32)
+\item 
+\#define \hyperlink{mm_8c_a81343c14ddcafbb7abd3d16a6611df84}{\-U\-N\-C\-A\-C\-H\-E\-D}~0x0
+\item 
+\#define \hyperlink{mm_8c_a320201c0180cde1303067f407f4d5390}{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}~0x1
+\item 
+\#define \hyperlink{mm_8c_ad9a3fc93c9a019f279e92ffe8737f081}{\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}~0x2
+\item 
+\#define \hyperlink{mm_8c_a973016ed9f4fcee58ec1ae95d320c71c}{\-W\-R\-I\-T\-E\-B\-A\-C\-K}~0x3
+\item 
+\#define \hyperlink{mm_8c_acd04a0327233a94fd9f0a88e04b14ef5}{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}~0x4
+\item 
+\#define \hyperlink{mm_8c_ab6911c59f148d9d2e657db52adbac25a}{\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}~0x7
+\item 
+\#define \hyperlink{mm_8c_a8ea795955a5c505980ffeb556f28014b}{\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}~\hyperlink{mm_8c_acd04a0327233a94fd9f0a88e04b14ef5}{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}
+\item 
+\#define \hyperlink{mm_8c_a608a79b7dce3f91a5b67f8043cb3e875}{\-D\-E\-V\-\_\-\-W\-C}~\hyperlink{mm_8c_a320201c0180cde1303067f407f4d5390}{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}
+\item 
+\#define \hyperlink{mm_8c_a67cca4ca72da021b000bfd4e001b851c}{\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}~\hyperlink{mm_8c_a973016ed9f4fcee58ec1ae95d320c71c}{\-W\-R\-I\-T\-E\-B\-A\-C\-K}
+\item 
+\#define \hyperlink{mm_8c_a17a2bfe0d2848be36a2771b3ac4340d7}{\-S\-C\-T\-L\-R\-\_\-\-T\-E}~(1$<$$<$30)
+\item 
+\#define \hyperlink{mm_8c_a2c6499f38b725ddf7325a2007460acd4}{\-S\-C\-T\-L\-R\-\_\-\-A\-F\-E}~(1$<$$<$29)
+\item 
+\#define \hyperlink{mm_8c_a5587f4833f6621424d36b694ca5cd4cb}{\-S\-C\-T\-L\-R\-\_\-\-T\-R\-E}~(1$<$$<$28)
+\item 
+\#define \hyperlink{mm_8c_a262333211dbe2b59bb5d8ba58e606451}{\-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I}~(1$<$$<$27)
+\item 
+\#define \hyperlink{mm_8c_a84a7900092362ddcca33d5344ddc32d8}{\-S\-C\-T\-L\-R\-\_\-\-E\-E}~(1$<$$<$25)
+\item 
+\#define \hyperlink{mm_8c_a60713873cb7a4b52bab0bdc28c67a712}{\-S\-C\-T\-L\-R\-\_\-\-V\-E}~(1$<$$<$24)
+\item 
+\#define \hyperlink{mm_8c_a3c822cb745d3c523ebb0a8dbf06ed5a8}{\-S\-C\-T\-L\-R\-\_\-\-U}~(1$<$$<$22)
+\item 
+\#define \hyperlink{mm_8c_a72f5917646e2a5f6be4f20cdffdffafb}{\-S\-C\-T\-L\-R\-\_\-\-F\-I}~(1$<$$<$21)
+\item 
+\#define \hyperlink{mm_8c_a36a101e07390969e4dc8f697d21d9f26}{\-S\-C\-T\-L\-R\-\_\-\-W\-X\-N}~(1$<$$<$19)
+\item 
+\#define \hyperlink{mm_8c_aefdece0dbf293b2d2092e0e836361409}{\-S\-C\-T\-L\-R\-\_\-\-H\-A}~(1$<$$<$17)
+\item 
+\#define \hyperlink{mm_8c_aefac54b4d4c8d24ef6fe5ace19886508}{\-S\-C\-T\-L\-R\-\_\-\-R\-R}~(1$<$$<$14)
+\item 
+\#define \hyperlink{mm_8c_a74c261b86bd41bafb024ab40cf59a8a6}{\-S\-C\-T\-L\-R\-\_\-\-V}~(1$<$$<$13)
+\item 
+\#define \hyperlink{mm_8c_a4463aca82a645205290b851968b6a9a8}{\-S\-C\-T\-L\-R\-\_\-\-I}~(1$<$$<$12)
+\item 
+\#define \hyperlink{mm_8c_ad8d7b14b8e35c56f940185c098e8c014}{\-S\-C\-T\-L\-R\-\_\-\-Z}~(1$<$$<$11)
+\item 
+\#define \hyperlink{mm_8c_a59a947122b641ad6beb97aaa1a4d4495}{\-S\-C\-T\-L\-R\-\_\-\-S\-W}~(1$<$$<$10)
+\item 
+\#define \hyperlink{mm_8c_aa97e85698e9798c1bf4ad0e92174a4ef}{\-S\-C\-T\-L\-R\-\_\-\-B}~(1$<$$<$7)
+\item 
+\#define \hyperlink{mm_8c_ab29d865ad7a8a670db94641a194ccaf6}{\-S\-C\-T\-L\-R\-\_\-\-C}~(1$<$$<$2)
+\item 
+\#define \hyperlink{mm_8c_acf49275ed384ea3668029cb0d87f93d1}{\-S\-C\-T\-L\-R\-\_\-\-A}~(1$<$$<$1)
+\item 
+\#define \hyperlink{mm_8c_abe99dc6083b4bfc86a229928483c84a4}{\-S\-C\-T\-L\-R\-\_\-\-M}~(1$<$$<$0)
+\item 
+\#define \hyperlink{mm_8c_a4ecd7c7162537dc5ec433cf97037e3b8}{\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}~0x00c50078
+\item 
+\#define \hyperlink{mm_8c_ac0a5410252496a99d2ac094e358052da}{\-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}~0x30c51878
+\item 
+\#define \hyperlink{mm_8c_a0c2db026d6f5b1ea43cd521c9b1599cd}{\-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}~0x0000000000000000\-U\-L\-L
+\item 
+\#define \hyperlink{mm_8c_ab0d4e7fe00a07b5a4bdae6dc2615c555}{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L
+\item 
+\#define \hyperlink{mm_8c_a21dc50b72e7a8cf33a6956eb1e967355}{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T}~12
+\item 
+\#define \hyperlink{mm_8c_a980afbff15e420e0d24a4c32a4f798cd}{\-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}~0x80000000
+\item 
+\#define \hyperlink{mm_8c_ae489b26e8b05f779ce527dd6d0a6bf46}{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K}~0x00003000
+\item 
+\#define \hyperlink{mm_8c_a6dd05fee64d85b254ebe89d7c168238c}{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T}~12
+\item 
+\#define \hyperlink{mm_8c_ae48872a50720e7834dc2474ff4013356}{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K}~0x00000\-C00
+\item 
+\#define \hyperlink{mm_8c_a87a919a03e888b586851dc151585c18d}{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}~10
+\item 
+\#define \hyperlink{mm_8c_a4666091a36af06e484bbb49b0b0c4375}{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K}~0x00000300
+\item 
+\#define \hyperlink{mm_8c_ac60d1dceadbae08549124e7ba63d1b7d}{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}~8
+\item 
+\#define \hyperlink{mm_8c_a7f8be03afc776f20725d0511fc6667e0}{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K}~0x00000003
+\item 
+\#define \hyperlink{mm_8c_a08a0f95a5f60965a28a8e850b6404c7a}{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T}~0
+\item 
+\#define \hyperlink{mm_8c_a18bfc3cd96161f416a47db0a95832ab8}{\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}~512
+\item 
+\#define \hyperlink{mm_8c_a4f5f8a6a4d4322185db7a680f88a1a05}{\-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}~512
+\item 
+\#define \hyperlink{mm_8c_ad3ad8bb977816662ac434c4730c7089b}{\-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}~512
+\item 
+\#define \hyperlink{mm_8c_ae6ea72ea9b13965ca0a411909cf1d836}{\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R}~\-C\-F\-G\-\_\-\-M\-E\-M\-M\-A\-P\-\_\-\-M\-O\-N\-\_\-\-O\-F\-F\-S\-E\-T + 0x02000000
+\item 
+\#define \hyperlink{mm_8c_a1b45302695680930829cac31d65e41e1}{\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}~0x0\-D000000
+\item 
+\#define \hyperlink{mm_8c_a7ea15d5cfd6345437fdfc7ebc2cbd369}{\-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}~0x1\-F\-F
+\item 
+\#define \hyperlink{mm_8c_a7f3060298be5456735d84c0c3560aaf1}{\-L2\-\_\-\-S\-H\-I\-F\-T}~21
+\item 
+\#define \hyperlink{mm_8c_a627fb02baa9a5ac0bee831e2ff62b4c0}{\-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}~0x1\-F\-F
+\item 
+\#define \hyperlink{mm_8c_a9e6057f138b9dc38b717ec7e7548690d}{\-L3\-\_\-\-S\-H\-I\-F\-T}~12
+\item 
+\#define \hyperlink{mm_8c_a3dae59fafa297ee1eeadf416db7b4b1e}{\-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R}~\hyperlink{mm_8c_ae6ea72ea9b13965ca0a411909cf1d836}{\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R} + \hyperlink{mm_8c_a1b45302695680930829cac31d65e41e1}{\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}
+\item 
+\#define \hyperlink{mm_8c_ac6dcef7a1829fc392ee1ed77205ec2ff}{\-N\-A\-L\-L\-O\-C}~1024
+\end{DoxyCompactItemize}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef long \hyperlink{mm_8c_aa508dd61e627680e57643837d292d89f}{\-Align}
+\item 
+typedef union \hyperlink{unionheader}{header} \hyperlink{mm_8c_a725658198c30a10bfdcc6bf6cf30f121}{fl\-\_\-bheader}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{unionlpaed__t}{lpaed\-\_\-t} \-\_\-hmm\-\_\-pgtable\mbox{[}\hyperlink{mm_8c_a18bfc3cd96161f416a47db0a95832ab8}{\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}\mbox{]} \hyperlink{mm_8c_a935d72a577c3ab62f2b2626c52091115}{\-\_\-\-\_\-attribute} ((\-\_\-\-\_\-aligned\-\_\-\-\_\-(4096)))
+\item 
+void \hyperlink{mm_8c_a7c9c4518af771f7f39434b5dcc41d1d4}{hmm\-\_\-heap\-\_\-init} (void)
+\item 
+static void \hyperlink{mm_8c_aa82c7756438b1aa5429be9ee49aea5ed}{\-\_\-hmm\-\_\-init} (void)
+\item 
+int \hyperlink{mm_8c_ae8f2b7d0b30b5fa78b50cee688872d93}{hvmm\-\_\-mm\-\_\-init} (void)
+\item 
+void \hyperlink{mm_8c_a8c6819b2416a9da42da9a5ac8d1a9d51}{hmm\-\_\-flush\-T\-L\-B} (void)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ \hyperlink{mm_8c_a2474e37847535a7ab59fcef069a3b63a}{hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry} (unsigned long virt, unsigned long npages)
+\item 
+void \hyperlink{mm_8c_a4ca7bdd94dcc4cfff4b534b6ba0c7493}{hmm\-\_\-umap} (unsigned long virt, unsigned long npages)
+\item 
+void \hyperlink{mm_8c_addc0cbf4f901eef091961846460ab81f}{hmm\-\_\-map} (unsigned long phys, unsigned long virt, unsigned long npages)
+\item 
+void $\ast$ \hyperlink{mm_8c_aed9cb3337e230955ad366c56c50f1c9e}{hmm\-\_\-sbrk} (unsigned int incr)
+\item 
+void \hyperlink{mm_8c_ab7237ca6c0b383d215c263b9f1855388}{hmm\-\_\-free} (void $\ast$ap)
+\item 
+static \hyperlink{mm_8c_a725658198c30a10bfdcc6bf6cf30f121}{fl\-\_\-bheader} $\ast$ \hyperlink{mm_8c_a50b17e6b64d9c0892bce1d8585e4f6a7}{morecore} (unsigned int nu)
+\item 
+void $\ast$ \hyperlink{mm_8c_a3421aed4792b89e78be604efbae319dc}{hmm\-\_\-malloc} (unsigned long size)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{mm_8c_aaeb50616cf303a81199782dccfe98461}{mm\-\_\-break}
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{mm_8c_a382bf173e93d5b52f7387b81913ddec5}{mm\-\_\-prev\-\_\-break}
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{mm_8c_aa3abe9a33212c2a76ad5a5b311d9fdfb}{last\-\_\-valid\-\_\-address}
+\item 
+static \hyperlink{mm_8c_a725658198c30a10bfdcc6bf6cf30f121}{fl\-\_\-bheader} \hyperlink{mm_8c_a793c43e1bf8501fea23668a2ab7a7021}{freep\-\_\-base}
+\item 
+static \hyperlink{mm_8c_a725658198c30a10bfdcc6bf6cf30f121}{fl\-\_\-bheader} $\ast$ \hyperlink{mm_8c_a2af201098f51c02f77e15cd9c8e010eb}{freep}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{mm_8c_a320201c0180cde1303067f407f4d5390}{\index{mm.\-c@{mm.\-c}!\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E@{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}}
+\index{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E@{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}~0x1}}\label{mm_8c_a320201c0180cde1303067f407f4d5390}
+
+
+\-Definition at line 43 of file mm.\-c.
+
+\hypertarget{mm_8c_a67cca4ca72da021b000bfd4e001b851c}{\index{mm.\-c@{mm.\-c}!\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D@{\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}}
+\index{\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D@{\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}!mm.c@{mm.\-c}}
+\subsubsection[{\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}~{\bf \-W\-R\-I\-T\-E\-B\-A\-C\-K}}}\label{mm_8c_a67cca4ca72da021b000bfd4e001b851c}
+
+
+\-Definition at line 50 of file mm.\-c.
+
+\hypertarget{mm_8c_a8ea795955a5c505980ffeb556f28014b}{\index{mm.\-c@{mm.\-c}!\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D@{\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}}
+\index{\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D@{\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}!mm.c@{mm.\-c}}
+\subsubsection[{\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}~{\bf \-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}}}\label{mm_8c_a8ea795955a5c505980ffeb556f28014b}
+
+
+\-Definition at line 48 of file mm.\-c.
+
+\hypertarget{mm_8c_acd04a0327233a94fd9f0a88e04b14ef5}{\index{mm.\-c@{mm.\-c}!\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D@{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}}
+\index{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D@{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}!mm.c@{mm.\-c}}
+\subsubsection[{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}~0x4}}\label{mm_8c_acd04a0327233a94fd9f0a88e04b14ef5}
+
+
+\-Definition at line 46 of file mm.\-c.
+
+\hypertarget{mm_8c_a608a79b7dce3f91a5b67f8043cb3e875}{\index{mm.\-c@{mm.\-c}!\-D\-E\-V\-\_\-\-W\-C@{\-D\-E\-V\-\_\-\-W\-C}}
+\index{\-D\-E\-V\-\_\-\-W\-C@{\-D\-E\-V\-\_\-\-W\-C}!mm.c@{mm.\-c}}
+\subsubsection[{\-D\-E\-V\-\_\-\-W\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-D\-E\-V\-\_\-\-W\-C}~{\bf \-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}}}\label{mm_8c_a608a79b7dce3f91a5b67f8043cb3e875}
+
+
+\-Definition at line 49 of file mm.\-c.
+
+\hypertarget{mm_8c_ae6ea72ea9b13965ca0a411909cf1d836}{\index{mm.\-c@{mm.\-c}!\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R@{\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R}}
+\index{\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R@{\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-E\-A\-P\-\_\-\-A\-D\-D\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-E\-A\-P\-\_\-\-A\-D\-D\-R}~\-C\-F\-G\-\_\-\-M\-E\-M\-M\-A\-P\-\_\-\-M\-O\-N\-\_\-\-O\-F\-F\-S\-E\-T + 0x02000000}}\label{mm_8c_ae6ea72ea9b13965ca0a411909cf1d836}
+
+
+\-Definition at line 101 of file mm.\-c.
+
+\hypertarget{mm_8c_a3dae59fafa297ee1eeadf416db7b4b1e}{\index{mm.\-c@{mm.\-c}!\-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R@{\-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R}}
+\index{\-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R@{\-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-E\-A\-P\-\_\-\-E\-N\-D\-\_\-\-A\-D\-D\-R}~{\bf \-H\-E\-A\-P\-\_\-\-A\-D\-D\-R} + {\bf \-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}}}\label{mm_8c_a3dae59fafa297ee1eeadf416db7b4b1e}
+
+
+\-Definition at line 110 of file mm.\-c.
+
+\hypertarget{mm_8c_a1b45302695680930829cac31d65e41e1}{\index{mm.\-c@{mm.\-c}!\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E@{\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}}
+\index{\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E@{\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-E\-A\-P\-\_\-\-S\-I\-Z\-E}~0x0\-D000000}}\label{mm_8c_a1b45302695680930829cac31d65e41e1}
+
+
+\-Definition at line 102 of file mm.\-c.
+
+\hypertarget{mm_8c_a18bfc3cd96161f416a47db0a95832ab8}{\index{mm.\-c@{mm.\-c}!\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M@{\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}}
+\index{\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M@{\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}~512}}\label{mm_8c_a18bfc3cd96161f416a47db0a95832ab8}
+
+
+\-Definition at line 93 of file mm.\-c.
+
+\hypertarget{mm_8c_a4f5f8a6a4d4322185db7a680f88a1a05}{\index{mm.\-c@{mm.\-c}!\-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M@{\-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}}
+\index{\-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M@{\-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-M\-M\-\_\-\-L2\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}~512}}\label{mm_8c_a4f5f8a6a4d4322185db7a680f88a1a05}
+
+
+\-Definition at line 96 of file mm.\-c.
+
+\hypertarget{mm_8c_ad3ad8bb977816662ac434c4730c7089b}{\index{mm.\-c@{mm.\-c}!\-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M@{\-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}}
+\index{\-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M@{\-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-M\-M\-\_\-\-L3\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}~512}}\label{mm_8c_ad3ad8bb977816662ac434c4730c7089b}
+
+
+\-Definition at line 99 of file mm.\-c.
+
+\hypertarget{mm_8c_ac0a5410252496a99d2ac094e358052da}{\index{mm.\-c@{mm.\-c}!\-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E@{\-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}}
+\index{\-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E@{\-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}~0x30c51878}}\label{mm_8c_ac0a5410252496a99d2ac094e358052da}
+
+
+\-Definition at line 74 of file mm.\-c.
+
+\hypertarget{mm_8c_a980afbff15e420e0d24a4c32a4f798cd}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L@{\-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}}
+\index{\-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L@{\-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}~0x80000000}}\label{mm_8c_a980afbff15e420e0d24a4c32a4f798cd}
+
+
+\-Definition at line 82 of file mm.\-c.
+
+\hypertarget{mm_8c_a4666091a36af06e484bbb49b0b0c4375}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K}}
+\index{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-M\-A\-S\-K}~0x00000300}}\label{mm_8c_a4666091a36af06e484bbb49b0b0c4375}
+
+
+\-Definition at line 87 of file mm.\-c.
+
+\hypertarget{mm_8c_ac60d1dceadbae08549124e7ba63d1b7d}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-I\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}~8}}\label{mm_8c_ac60d1dceadbae08549124e7ba63d1b7d}
+
+
+\-Definition at line 88 of file mm.\-c.
+
+\hypertarget{mm_8c_ae48872a50720e7834dc2474ff4013356}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K}}
+\index{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-M\-A\-S\-K}~0x00000\-C00}}\label{mm_8c_ae48872a50720e7834dc2474ff4013356}
+
+
+\-Definition at line 85 of file mm.\-c.
+
+\hypertarget{mm_8c_a87a919a03e888b586851dc151585c18d}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-O\-R\-G\-N0\-\_\-\-S\-H\-I\-F\-T}~10}}\label{mm_8c_a87a919a03e888b586851dc151585c18d}
+
+
+\-Definition at line 86 of file mm.\-c.
+
+\hypertarget{mm_8c_ae489b26e8b05f779ce527dd6d0a6bf46}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K}}
+\index{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-M\-A\-S\-K}~0x00003000}}\label{mm_8c_ae489b26e8b05f779ce527dd6d0a6bf46}
+
+
+\-Definition at line 83 of file mm.\-c.
+
+\hypertarget{mm_8c_a6dd05fee64d85b254ebe89d7c168238c}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-S\-H0\-\_\-\-S\-H\-I\-F\-T}~12}}\label{mm_8c_a6dd05fee64d85b254ebe89d7c168238c}
+
+
+\-Definition at line 84 of file mm.\-c.
+
+\hypertarget{mm_8c_a7f8be03afc776f20725d0511fc6667e0}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K}}
+\index{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K@{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-M\-A\-S\-K}~0x00000003}}\label{mm_8c_a7f8be03afc776f20725d0511fc6667e0}
+
+
+\-Definition at line 89 of file mm.\-c.
+
+\hypertarget{mm_8c_a08a0f95a5f60965a28a8e850b6404c7a}{\index{mm.\-c@{mm.\-c}!\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-C\-R\-\_\-\-T0\-S\-Z\-\_\-\-S\-H\-I\-F\-T}~0}}\label{mm_8c_a08a0f95a5f60965a28a8e850b6404c7a}
+
+
+\-Definition at line 90 of file mm.\-c.
+
+\hypertarget{mm_8c_ab0d4e7fe00a07b5a4bdae6dc2615c555}{\index{mm.\-c@{mm.\-c}!\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}}
+\index{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L}}\label{mm_8c_ab0d4e7fe00a07b5a4bdae6dc2615c555}
+
+
+\-Definition at line 78 of file mm.\-c.
+
+\hypertarget{mm_8c_a21dc50b72e7a8cf33a6956eb1e967355}{\index{mm.\-c@{mm.\-c}!\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T@{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-T\-B\-R\-\_\-\-B\-A\-D\-D\-R\-\_\-\-S\-H\-I\-F\-T}~12}}\label{mm_8c_a21dc50b72e7a8cf33a6956eb1e967355}
+
+
+\-Definition at line 79 of file mm.\-c.
+
+\hypertarget{mm_8c_a0c2db026d6f5b1ea43cd521c9b1599cd}{\index{mm.\-c@{mm.\-c}!\-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L@{\-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}}
+\index{\-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L@{\-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}!mm.c@{mm.\-c}}
+\subsubsection[{\-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-T\-T\-B\-R\-\_\-\-I\-N\-I\-T\-V\-A\-L}~0x0000000000000000\-U\-L\-L}}\label{mm_8c_a0c2db026d6f5b1ea43cd521c9b1599cd}
+
+
+\-Definition at line 77 of file mm.\-c.
+
+\hypertarget{mm_8c_a2c907a8bc3ef7ca2e00817e63708771f}{\index{mm.\-c@{mm.\-c}!\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L@{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}}
+\index{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L@{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}!mm.c@{mm.\-c}}
+\subsubsection[{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}~0xeeaa4400}}\label{mm_8c_a2c907a8bc3ef7ca2e00817e63708771f}
+
+
+\-Definition at line 30 of file mm.\-c.
+
+\hypertarget{mm_8c_a2b56f7118e928dce984ab8eab8ebf79a}{\index{mm.\-c@{mm.\-c}!\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L@{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}}
+\index{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L@{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}!mm.c@{mm.\-c}}
+\subsubsection[{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}~0xff000004}}\label{mm_8c_a2b56f7118e928dce984ab8eab8ebf79a}
+
+
+\-Definition at line 31 of file mm.\-c.
+
+\hypertarget{mm_8c_a0b13d4fb9fae8589866e218e964b9370}{\index{mm.\-c@{mm.\-c}!\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L@{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L}}
+\index{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L@{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L}!mm.c@{mm.\-c}}
+\subsubsection[{\-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R\-V\-A\-L}~({\bf \-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R0\-V\-A\-L}$|${\bf \-I\-N\-I\-T\-I\-A\-L\-\_\-\-M\-A\-I\-R1\-V\-A\-L}$<$$<$32)}}\label{mm_8c_a0b13d4fb9fae8589866e218e964b9370}
+
+
+\-Definition at line 32 of file mm.\-c.
+
+\hypertarget{mm_8c_a7ea15d5cfd6345437fdfc7ebc2cbd369}{\index{mm.\-c@{mm.\-c}!\-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K@{\-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}}
+\index{\-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K@{\-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L2\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}~0x1\-F\-F}}\label{mm_8c_a7ea15d5cfd6345437fdfc7ebc2cbd369}
+
+
+\-Definition at line 104 of file mm.\-c.
+
+\hypertarget{mm_8c_a7f3060298be5456735d84c0c3560aaf1}{\index{mm.\-c@{mm.\-c}!\-L2\-\_\-\-S\-H\-I\-F\-T@{\-L2\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-L2\-\_\-\-S\-H\-I\-F\-T@{\-L2\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-L2\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L2\-\_\-\-S\-H\-I\-F\-T}~21}}\label{mm_8c_a7f3060298be5456735d84c0c3560aaf1}
+
+
+\-Definition at line 105 of file mm.\-c.
+
+\hypertarget{mm_8c_a627fb02baa9a5ac0bee831e2ff62b4c0}{\index{mm.\-c@{mm.\-c}!\-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K@{\-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}}
+\index{\-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K@{\-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L3\-\_\-\-E\-N\-T\-R\-Y\-\_\-\-M\-A\-S\-K}~0x1\-F\-F}}\label{mm_8c_a627fb02baa9a5ac0bee831e2ff62b4c0}
+
+
+\-Definition at line 107 of file mm.\-c.
+
+\hypertarget{mm_8c_a9e6057f138b9dc38b717ec7e7548690d}{\index{mm.\-c@{mm.\-c}!\-L3\-\_\-\-S\-H\-I\-F\-T@{\-L3\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-L3\-\_\-\-S\-H\-I\-F\-T@{\-L3\-\_\-\-S\-H\-I\-F\-T}!mm.c@{mm.\-c}}
+\subsubsection[{\-L3\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L3\-\_\-\-S\-H\-I\-F\-T}~12}}\label{mm_8c_a9e6057f138b9dc38b717ec7e7548690d}
+
+
+\-Definition at line 108 of file mm.\-c.
+
+\hypertarget{mm_8c_ac6dcef7a1829fc392ee1ed77205ec2ff}{\index{mm.\-c@{mm.\-c}!\-N\-A\-L\-L\-O\-C@{\-N\-A\-L\-L\-O\-C}}
+\index{\-N\-A\-L\-L\-O\-C@{\-N\-A\-L\-L\-O\-C}!mm.c@{mm.\-c}}
+\subsubsection[{\-N\-A\-L\-L\-O\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-N\-A\-L\-L\-O\-C}~1024}}\label{mm_8c_ac6dcef7a1829fc392ee1ed77205ec2ff}
+
+
+\-Definition at line 111 of file mm.\-c.
+
+\hypertarget{mm_8c_acf49275ed384ea3668029cb0d87f93d1}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-A@{\-S\-C\-T\-L\-R\-\_\-\-A}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-A@{\-S\-C\-T\-L\-R\-\_\-\-A}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-A}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-A}~(1$<$$<$1)}}\label{mm_8c_acf49275ed384ea3668029cb0d87f93d1}
+
+
+\-Definition at line 71 of file mm.\-c.
+
+\hypertarget{mm_8c_a2c6499f38b725ddf7325a2007460acd4}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-A\-F\-E@{\-S\-C\-T\-L\-R\-\_\-\-A\-F\-E}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-A\-F\-E@{\-S\-C\-T\-L\-R\-\_\-\-A\-F\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-A\-F\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-A\-F\-E}~(1$<$$<$29)}}\label{mm_8c_a2c6499f38b725ddf7325a2007460acd4}
+
+
+\-Definition at line 55 of file mm.\-c.
+
+\hypertarget{mm_8c_aa97e85698e9798c1bf4ad0e92174a4ef}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-B@{\-S\-C\-T\-L\-R\-\_\-\-B}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-B@{\-S\-C\-T\-L\-R\-\_\-\-B}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-B}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-B}~(1$<$$<$7)}}\label{mm_8c_aa97e85698e9798c1bf4ad0e92174a4ef}
+
+
+\-Definition at line 69 of file mm.\-c.
+
+\hypertarget{mm_8c_a4ecd7c7162537dc5ec433cf97037e3b8}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E@{\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E@{\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-B\-A\-S\-E}~0x00c50078}}\label{mm_8c_a4ecd7c7162537dc5ec433cf97037e3b8}
+
+
+\-Definition at line 73 of file mm.\-c.
+
+\hypertarget{mm_8c_ab29d865ad7a8a670db94641a194ccaf6}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-C@{\-S\-C\-T\-L\-R\-\_\-\-C}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-C@{\-S\-C\-T\-L\-R\-\_\-\-C}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-C}~(1$<$$<$2)}}\label{mm_8c_ab29d865ad7a8a670db94641a194ccaf6}
+
+
+\-Definition at line 70 of file mm.\-c.
+
+\hypertarget{mm_8c_a84a7900092362ddcca33d5344ddc32d8}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-E\-E@{\-S\-C\-T\-L\-R\-\_\-\-E\-E}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-E\-E@{\-S\-C\-T\-L\-R\-\_\-\-E\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-E\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-E\-E}~(1$<$$<$25)}}\label{mm_8c_a84a7900092362ddcca33d5344ddc32d8}
+
+
+\-Definition at line 58 of file mm.\-c.
+
+\hypertarget{mm_8c_a72f5917646e2a5f6be4f20cdffdffafb}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-F\-I@{\-S\-C\-T\-L\-R\-\_\-\-F\-I}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-F\-I@{\-S\-C\-T\-L\-R\-\_\-\-F\-I}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-F\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-F\-I}~(1$<$$<$21)}}\label{mm_8c_a72f5917646e2a5f6be4f20cdffdffafb}
+
+
+\-Definition at line 61 of file mm.\-c.
+
+\hypertarget{mm_8c_aefdece0dbf293b2d2092e0e836361409}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-H\-A@{\-S\-C\-T\-L\-R\-\_\-\-H\-A}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-H\-A@{\-S\-C\-T\-L\-R\-\_\-\-H\-A}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-H\-A}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-H\-A}~(1$<$$<$17)}}\label{mm_8c_aefdece0dbf293b2d2092e0e836361409}
+
+
+\-Definition at line 63 of file mm.\-c.
+
+\hypertarget{mm_8c_a4463aca82a645205290b851968b6a9a8}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-I@{\-S\-C\-T\-L\-R\-\_\-\-I}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-I@{\-S\-C\-T\-L\-R\-\_\-\-I}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-I}~(1$<$$<$12)}}\label{mm_8c_a4463aca82a645205290b851968b6a9a8}
+
+
+\-Definition at line 66 of file mm.\-c.
+
+\hypertarget{mm_8c_abe99dc6083b4bfc86a229928483c84a4}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-M@{\-S\-C\-T\-L\-R\-\_\-\-M}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-M@{\-S\-C\-T\-L\-R\-\_\-\-M}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-M}~(1$<$$<$0)}}\label{mm_8c_abe99dc6083b4bfc86a229928483c84a4}
+
+
+\-Definition at line 72 of file mm.\-c.
+
+\hypertarget{mm_8c_a262333211dbe2b59bb5d8ba58e606451}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I@{\-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I@{\-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-N\-M\-F\-I}~(1$<$$<$27)}}\label{mm_8c_a262333211dbe2b59bb5d8ba58e606451}
+
+
+\-Definition at line 57 of file mm.\-c.
+
+\hypertarget{mm_8c_aefac54b4d4c8d24ef6fe5ace19886508}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-R\-R@{\-S\-C\-T\-L\-R\-\_\-\-R\-R}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-R\-R@{\-S\-C\-T\-L\-R\-\_\-\-R\-R}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-R\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-R\-R}~(1$<$$<$14)}}\label{mm_8c_aefac54b4d4c8d24ef6fe5ace19886508}
+
+
+\-Definition at line 64 of file mm.\-c.
+
+\hypertarget{mm_8c_a59a947122b641ad6beb97aaa1a4d4495}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-S\-W@{\-S\-C\-T\-L\-R\-\_\-\-S\-W}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-S\-W@{\-S\-C\-T\-L\-R\-\_\-\-S\-W}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-S\-W}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-S\-W}~(1$<$$<$10)}}\label{mm_8c_a59a947122b641ad6beb97aaa1a4d4495}
+
+
+\-Definition at line 68 of file mm.\-c.
+
+\hypertarget{mm_8c_a17a2bfe0d2848be36a2771b3ac4340d7}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-T\-E@{\-S\-C\-T\-L\-R\-\_\-\-T\-E}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-T\-E@{\-S\-C\-T\-L\-R\-\_\-\-T\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-T\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-T\-E}~(1$<$$<$30)}}\label{mm_8c_a17a2bfe0d2848be36a2771b3ac4340d7}
+
+
+\-Definition at line 54 of file mm.\-c.
+
+\hypertarget{mm_8c_a5587f4833f6621424d36b694ca5cd4cb}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-T\-R\-E@{\-S\-C\-T\-L\-R\-\_\-\-T\-R\-E}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-T\-R\-E@{\-S\-C\-T\-L\-R\-\_\-\-T\-R\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-T\-R\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-T\-R\-E}~(1$<$$<$28)}}\label{mm_8c_a5587f4833f6621424d36b694ca5cd4cb}
+
+
+\-Definition at line 56 of file mm.\-c.
+
+\hypertarget{mm_8c_a3c822cb745d3c523ebb0a8dbf06ed5a8}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-U@{\-S\-C\-T\-L\-R\-\_\-\-U}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-U@{\-S\-C\-T\-L\-R\-\_\-\-U}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-U}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-U}~(1$<$$<$22)}}\label{mm_8c_a3c822cb745d3c523ebb0a8dbf06ed5a8}
+
+
+\-Definition at line 60 of file mm.\-c.
+
+\hypertarget{mm_8c_a74c261b86bd41bafb024ab40cf59a8a6}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-V@{\-S\-C\-T\-L\-R\-\_\-\-V}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-V@{\-S\-C\-T\-L\-R\-\_\-\-V}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-V}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-V}~(1$<$$<$13)}}\label{mm_8c_a74c261b86bd41bafb024ab40cf59a8a6}
+
+
+\-Definition at line 65 of file mm.\-c.
+
+\hypertarget{mm_8c_a60713873cb7a4b52bab0bdc28c67a712}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-V\-E@{\-S\-C\-T\-L\-R\-\_\-\-V\-E}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-V\-E@{\-S\-C\-T\-L\-R\-\_\-\-V\-E}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-V\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-V\-E}~(1$<$$<$24)}}\label{mm_8c_a60713873cb7a4b52bab0bdc28c67a712}
+
+
+\-Definition at line 59 of file mm.\-c.
+
+\hypertarget{mm_8c_a36a101e07390969e4dc8f697d21d9f26}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-W\-X\-N@{\-S\-C\-T\-L\-R\-\_\-\-W\-X\-N}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-W\-X\-N@{\-S\-C\-T\-L\-R\-\_\-\-W\-X\-N}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-W\-X\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-W\-X\-N}~(1$<$$<$19)}}\label{mm_8c_a36a101e07390969e4dc8f697d21d9f26}
+
+
+\-Definition at line 62 of file mm.\-c.
+
+\hypertarget{mm_8c_ad8d7b14b8e35c56f940185c098e8c014}{\index{mm.\-c@{mm.\-c}!\-S\-C\-T\-L\-R\-\_\-\-Z@{\-S\-C\-T\-L\-R\-\_\-\-Z}}
+\index{\-S\-C\-T\-L\-R\-\_\-\-Z@{\-S\-C\-T\-L\-R\-\_\-\-Z}!mm.c@{mm.\-c}}
+\subsubsection[{\-S\-C\-T\-L\-R\-\_\-\-Z}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-C\-T\-L\-R\-\_\-\-Z}~(1$<$$<$11)}}\label{mm_8c_ad8d7b14b8e35c56f940185c098e8c014}
+
+
+\-Definition at line 67 of file mm.\-c.
+
+\hypertarget{mm_8c_a81343c14ddcafbb7abd3d16a6611df84}{\index{mm.\-c@{mm.\-c}!\-U\-N\-C\-A\-C\-H\-E\-D@{\-U\-N\-C\-A\-C\-H\-E\-D}}
+\index{\-U\-N\-C\-A\-C\-H\-E\-D@{\-U\-N\-C\-A\-C\-H\-E\-D}!mm.c@{mm.\-c}}
+\subsubsection[{\-U\-N\-C\-A\-C\-H\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-U\-N\-C\-A\-C\-H\-E\-D}~0x0}}\label{mm_8c_a81343c14ddcafbb7abd3d16a6611df84}
+
+
+\-Definition at line 42 of file mm.\-c.
+
+\hypertarget{mm_8c_ab6911c59f148d9d2e657db52adbac25a}{\index{mm.\-c@{mm.\-c}!\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C@{\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}}
+\index{\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C@{\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}!mm.c@{mm.\-c}}
+\subsubsection[{\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}~0x7}}\label{mm_8c_ab6911c59f148d9d2e657db52adbac25a}
+
+
+\-Definition at line 47 of file mm.\-c.
+
+\hypertarget{mm_8c_a973016ed9f4fcee58ec1ae95d320c71c}{\index{mm.\-c@{mm.\-c}!\-W\-R\-I\-T\-E\-B\-A\-C\-K@{\-W\-R\-I\-T\-E\-B\-A\-C\-K}}
+\index{\-W\-R\-I\-T\-E\-B\-A\-C\-K@{\-W\-R\-I\-T\-E\-B\-A\-C\-K}!mm.c@{mm.\-c}}
+\subsubsection[{\-W\-R\-I\-T\-E\-B\-A\-C\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-W\-R\-I\-T\-E\-B\-A\-C\-K}~0x3}}\label{mm_8c_a973016ed9f4fcee58ec1ae95d320c71c}
+
+
+\-Definition at line 45 of file mm.\-c.
+
+\hypertarget{mm_8c_ad9a3fc93c9a019f279e92ffe8737f081}{\index{mm.\-c@{mm.\-c}!\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H@{\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}}
+\index{\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H@{\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}!mm.c@{mm.\-c}}
+\subsubsection[{\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}~0x2}}\label{mm_8c_ad9a3fc93c9a019f279e92ffe8737f081}
+
+
+\-Definition at line 44 of file mm.\-c.
+
+
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{mm_8c_aa508dd61e627680e57643837d292d89f}{\index{mm.\-c@{mm.\-c}!\-Align@{\-Align}}
+\index{\-Align@{\-Align}!mm.c@{mm.\-c}}
+\subsubsection[{\-Align}]{\setlength{\rightskip}{0pt plus 5cm}typedef long {\bf \-Align}}}\label{mm_8c_aa508dd61e627680e57643837d292d89f}
+
+
+\-Definition at line 118 of file mm.\-c.
+
+\hypertarget{mm_8c_a725658198c30a10bfdcc6bf6cf30f121}{\index{mm.\-c@{mm.\-c}!fl\-\_\-bheader@{fl\-\_\-bheader}}
+\index{fl\-\_\-bheader@{fl\-\_\-bheader}!mm.c@{mm.\-c}}
+\subsubsection[{fl\-\_\-bheader}]{\setlength{\rightskip}{0pt plus 5cm}typedef union {\bf header} {\bf fl\-\_\-bheader}}}\label{mm_8c_a725658198c30a10bfdcc6bf6cf30f121}
+
+
+\-Definition at line 128 of file mm.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{mm_8c_a935d72a577c3ab62f2b2626c52091115}{\index{mm.\-c@{mm.\-c}!\-\_\-\-\_\-attribute@{\-\_\-\-\_\-attribute}}
+\index{\-\_\-\-\_\-attribute@{\-\_\-\-\_\-attribute}!mm.c@{mm.\-c}}
+\subsubsection[{\-\_\-\-\_\-attribute}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf lpaed\-\_\-t} \-\_\-hmm\-\_\-pgtable \mbox{[}{\bf \-H\-M\-M\-\_\-\-L1\-\_\-\-P\-T\-E\-\_\-\-N\-U\-M}\mbox{]} {\bf \-\_\-\-\_\-attribute} (
+\begin{DoxyParamCaption}
+\item[{(\-\_\-\-\_\-aligned\-\_\-\-\_\-(4096))}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{mm_8c_a935d72a577c3ab62f2b2626c52091115}
+\hypertarget{mm_8c_aa82c7756438b1aa5429be9ee49aea5ed}{\index{mm.\-c@{mm.\-c}!\-\_\-hmm\-\_\-init@{\-\_\-hmm\-\_\-init}}
+\index{\-\_\-hmm\-\_\-init@{\-\_\-hmm\-\_\-init}!mm.c@{mm.\-c}}
+\subsubsection[{\-\_\-hmm\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-hmm\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{mm_8c_aa82c7756438b1aa5429be9ee49aea5ed}
+
+
+\-Definition at line 151 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i, j;
+    uint64_t pa = 0x00000000ULL;
+    /*
+     * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - DEV_SHARED
+     * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - UNCACHED
+     * Partition 2: 0x80000000 ~ 0xBFFFFFFF - Guest      - UNCACHED
+     * Partition 3: 0xC0000000 ~ 0xFFFFFFFF - Monitor    - LV2 translation
+       table address
+     */
+    _hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED); pa += 0x40000000;
+    uart_print( "&_hmm_pgtable[0]:"); uart_print_hex32((uint32_t) &_hmm_pgtable
+      [0]); uart_print("\n\r");
+    uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[0].bits); uart_print("
+      \n\r");
+    _hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+    uart_print( "&_hmm_pgtable[1]:"); uart_print_hex32((uint32_t) &_hmm_pgtable
+      [1]); uart_print("\n\r");
+    uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[1].bits); uart_print("
+      \n\r");
+    _hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+    uart_print( "&_hmm_pgtable[2]:"); uart_print_hex32((uint32_t) &_hmm_pgtable
+      [2]); uart_print("\n\r");
+    uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[2].bits); uart_print("
+      \n\r");
+    /* _hmm_pgtable[3] refers Lv2 page table address. */
+    _hmm_pgtable[3] = hvmm_mm_lpaed_l1_table((uint32_t) _hmm_pgtable_l2); 
+    uart_print( "&_hmm_pgtable[3]:"); uart_print_hex32((uint32_t) &_hmm_pgtable
+      [3]); uart_print("\n\r");
+    uart_print( "lpaed:"); uart_print_hex64(_hmm_pgtable[3].bits); uart_print("
+      \n\r");
+    for( i = 0; i <HMM_L2_PTE_NUM; i++){
+        /* _hvmm_pgtable_lv2[i] refers Lv3 page table address. each element
+       correspond 2MB */
+        _hmm_pgtable_l2[i] = hvmm_mm_lpaed_l2_table((uint32_t) _hmm_pgtable_l3[
+      i]); 
+        /* _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB */
+        for(j = 0; j < HMM_L3_PTE_NUM; pa += 0x1000 ,j++){
+            /* 0xF2000000 ~ 0xFF000000 - Heap memory 208MB */
+            if(pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE){
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, WRITEALLOC, 
+      0);
+            }
+            else{
+                _hmm_pgtable_l3[i][j] = hvmm_mm_lpaed_l3_table(pa, UNCACHED, 1)
+      ;
+            }
+        }
+    }
+    for ( i = 4; i < HMM_L1_PTE_NUM; i++ ) {
+        _hmm_pgtable[i].pt.valid = 0;
+    }
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=314pt]{mm_8c_aa82c7756438b1aa5429be9ee49aea5ed_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8c_a8c6819b2416a9da42da9a5ac8d1a9d51}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-flush\-T\-L\-B@{hmm\-\_\-flush\-T\-L\-B}}
+\index{hmm\-\_\-flush\-T\-L\-B@{hmm\-\_\-flush\-T\-L\-B}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-flush\-T\-L\-B}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-flush\-T\-L\-B} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_a8c6819b2416a9da42da9a5ac8d1a9d51}
+
+
+\-Definition at line 301 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* Invalidate entire unified TLB */
+    invalidate_unified_tlb(0);
+    asm volatile("dsb");
+    asm volatile("isb");
+}
+\end{DoxyCode}
+\hypertarget{mm_8c_ab7237ca6c0b383d215c263b9f1855388}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-free@{hmm\-\_\-free}}
+\index{hmm\-\_\-free@{hmm\-\_\-free}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-free} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ap}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_ab7237ca6c0b383d215c263b9f1855388}
+
+
+\-Definition at line 374 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    fl_bheader *bp, *p;
+    bp = (fl_bheader *)ap - 1; /* point to block header */
+    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr){
+        if(p >= p->s.ptr && (bp > p || bp < p->s.ptr)){
+            break; /* freed block at start or end of arena */
+        }
+    }
+    if(bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
+        bp->s.size += p->s.ptr->s.size;
+        bp->s.ptr = p->s.ptr->s.ptr;
+    } else
+        bp->s.ptr = p->s.ptr;
+    if (p + p->s.size == bp) {      /* join to lower nbr */
+        p->s.size += bp->s.size;
+        p->s.ptr = bp->s.ptr;
+    } else
+        p->s.ptr = bp;
+    freep = p;
+}
+\end{DoxyCode}
+\hypertarget{mm_8c_a2474e37847535a7ab59fcef069a3b63a}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry@{hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry}}
+\index{hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry@{hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t}$\ast$ {\bf hmm\-\_\-get\-\_\-l3\-\_\-table\-\_\-entry} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{virt, }
+\item[{unsigned long}]{npages}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_a2474e37847535a7ab59fcef069a3b63a}
+
+
+\-Definition at line 309 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
+    int l3_index = (virt >> L3_SHIFT) & L3_ENTRY_MASK;
+    int maxsize = ((HMM_L2_PTE_NUM * HMM_L3_PTE_NUM) - ( (l2_index + 1) * (
+      l3_index + 1) ) + 1);
+    if( maxsize < npages ) {
+        printh("%s[%d] : Map size \"pages\" is exceeded memory size\n", 
+      __FUNCTION__, __LINE__);
+        if(maxsize > 0){
+            printh("%s[%d] : Available pages are %d\n", maxsize); 
+        }
+        else{
+            printh("%s[%d] : Do not have available pages for map\n");
+        }
+        return 0;
+    }
+    return &_hmm_pgtable_l3[l2_index][l3_index];
+}
+\end{DoxyCode}
+\hypertarget{mm_8c_a7c9c4518af771f7f39434b5dcc41d1d4}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-heap\-\_\-init@{hmm\-\_\-heap\-\_\-init}}
+\index{hmm\-\_\-heap\-\_\-init@{hmm\-\_\-heap\-\_\-init}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-heap\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-heap\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_a7c9c4518af771f7f39434b5dcc41d1d4}
+
+
+\-Definition at line 137 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    mm_break = HEAP_ADDR;
+    mm_prev_break = HEAP_ADDR;
+    last_valid_address = HEAP_ADDR;
+    freep = 0;
+} 
+\end{DoxyCode}
+\hypertarget{mm_8c_a3421aed4792b89e78be604efbae319dc}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-malloc@{hmm\-\_\-malloc}}
+\index{hmm\-\_\-malloc@{hmm\-\_\-malloc}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-malloc}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf hmm\-\_\-malloc} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{size}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_a3421aed4792b89e78be604efbae319dc}
+
+
+\-Definition at line 411 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    fl_bheader *p, *prevp;
+    unsigned int nunits; 
+    nunits = (size + sizeof(fl_bheader) - 1)/sizeof(fl_bheader) + 1;
+    if(nunits < 2){
+        return 0;
+    }
+    
+    if ((prevp = freep) == 0 ) { /* no free list yet */
+        freep_base.s.ptr = freep = prevp = &freep_base;
+        freep_base.s.size = 0;
+    }
+    for ( p = prevp->s.ptr; ; prevp = p, p = p->s.ptr) {
+        if ( p->s.size >= nunits ) { /* big enough */
+            if ( p->s.size == nunits ) /* exactly */
+                prevp->s.ptr = p->s.ptr;
+            else {                    /* allocate tail end */
+                p->s.size -= nunits;
+                p += p->s.size;
+                p->s.size = nunits;
+            }
+            freep = prevp;
+            return (void *)(p+1);
+    }
+    if ( p == freep )   /* wrapped around free list */
+        if (( p = morecore(nunits)) == 0 )
+                return 0;  /* none avaliable memory left */
+    }
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8c_a3421aed4792b89e78be604efbae319dc_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8c_addc0cbf4f901eef091961846460ab81f}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-map@{hmm\-\_\-map}}
+\index{hmm\-\_\-map@{hmm\-\_\-map}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-map}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-map} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{phys, }
+\item[{unsigned long}]{virt, }
+\item[{unsigned long}]{npages}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_addc0cbf4f901eef091961846460ab81f}
+
+
+\-Definition at line 337 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( virt, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_conf_l3_table( &map_table_p[i], (uint64_t)phys, 1 );
+    }
+    hmm_flushTLB();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=316pt]{mm_8c_addc0cbf4f901eef091961846460ab81f_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8c_aed9cb3337e230955ad366c56c50f1c9e}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-sbrk@{hmm\-\_\-sbrk}}
+\index{hmm\-\_\-sbrk@{hmm\-\_\-sbrk}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-sbrk}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf hmm\-\_\-sbrk} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{incr}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_aed9cb3337e230955ad366c56c50f1c9e}
+
+
+\-Definition at line 350 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    unsigned int required_addr;
+    unsigned int virt;
+    unsigned int required_pages = 0;
+
+    mm_prev_break = mm_break;
+    virt = mm_break;
+    mm_break += incr;
+    if( mm_break > last_valid_address ){
+        required_addr = mm_break - last_valid_address;
+        for( ;required_addr > 0x0; required_addr -= 0x1000){
+            if( last_valid_address + 0x1000 > HEAP_END_ADDR ){
+                printh("%s[%d] required address is exceeded heap memory size\n"
+      , __FUNCTION__, __LINE__);
+                return (void *)-1;
+            }
+            last_valid_address += 0x1000;
+            required_pages++;
+        }
+        hmm_map(virt, virt, required_pages);
+    }
+    return (void *)mm_prev_break;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8c_aed9cb3337e230955ad366c56c50f1c9e_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8c_a4ca7bdd94dcc4cfff4b534b6ba0c7493}{\index{mm.\-c@{mm.\-c}!hmm\-\_\-umap@{hmm\-\_\-umap}}
+\index{hmm\-\_\-umap@{hmm\-\_\-umap}!mm.c@{mm.\-c}}
+\subsubsection[{hmm\-\_\-umap}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-umap} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{virt, }
+\item[{unsigned long}]{npages}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_a4ca7bdd94dcc4cfff4b534b6ba0c7493}
+
+
+\-Definition at line 327 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{ 
+    int  i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( virt, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_disable_l3_table( &map_table_p[i] );
+    }
+    hmm_flushTLB();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=334pt]{mm_8c_a4ca7bdd94dcc4cfff4b534b6ba0c7493_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8c_ae8f2b7d0b30b5fa78b50cee688872d93}{\index{mm.\-c@{mm.\-c}!hvmm\-\_\-mm\-\_\-init@{hvmm\-\_\-mm\-\_\-init}}
+\index{hvmm\-\_\-mm\-\_\-init@{hvmm\-\_\-mm\-\_\-init}!mm.c@{mm.\-c}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf hvmm\-\_\-mm\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{mm_8c_ae8f2b7d0b30b5fa78b50cee688872d93}
+
+
+\-Definition at line 193 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+/*
+ *  MAIR0, MAIR1
+ *  HMAIR0, HMAIR1
+ *  HTCR
+ *  HTCTLR
+ *  HTTBR
+ *  HTCTLR
+ */
+    uint32_t mair, htcr, hsctlr, hcr;
+    uint64_t httbr;
+    uart_print( "[mm] mm_init: enter\n\r" );
+    
+    vmm_init();
+    _hmm_init();
+
+    // MAIR/HMAIR
+    uart_print(" --- MAIR ----\n\r" );
+    mair = read_mair0(); uart_print( "mair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_mair1(); uart_print( "mair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair0(); uart_print( "hmair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair1(); uart_print( "hmair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+
+    write_mair0( INITIAL_MAIR0VAL );
+    write_mair1( INITIAL_MAIR1VAL );
+    write_hmair0( INITIAL_MAIR0VAL );
+    write_hmair1( INITIAL_MAIR1VAL );
+
+    mair = read_mair0(); uart_print( "mair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_mair1(); uart_print( "mair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair0(); uart_print( "hmair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair1(); uart_print( "hmair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+
+    // HTCR
+    uart_print(" --- HTCR ----\n\r" );
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); 
+      uart_print("\n\r");
+    write_htcr( 0x80002500 );
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); 
+      uart_print("\n\r");
+
+    // HSCTLR
+    // i-Cache and Alignment Checking Enabled
+    // MMU, D-cache, Write-implies-XN, Low-latency IRQs Disabled
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+    hsctlr = HSCTLR_BASE | SCTLR_A;
+    write_hsctlr( hsctlr );
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+
+
+// HCR
+    hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("
+      \n\r");
+
+// HTCR
+    /*
+     * Shareability - SH0[13:12] = 0 - Not shared
+     * Outer Cacheability - ORGN0[11:10] = 11b - Write Back no Write Allocate
+       Cacheable
+     * Inner Cacheability - IRGN0[9:8] = 11b - Same
+     * T0SZ[2:0] = 0 - 2^32 Input Address 
+     */
+    /* Untested code commented */
+/*
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr);
+       uart_print("\n\r");
+    htcr &= ~HTCR_SH0_MASK;
+    htcr |= (0x0 << HTCR_SH0_SHIFT) & HTCR_SH0_MASK;
+    htcr &= ~HTCR_ORGN0_MASK;
+    htcr |= (0x3 << HTCR_ORGN0_SHIFT) & HTCR_ORGN0_MASK;
+    htcr &= ~VTCR_IRGN0_MASK;
+    htcr |= (0x3 << HTCR_IRGN0_SHIFT) & HTCR_IRGN0_MASK;
+    htcr &= ~VTCR_T0SZ_MASK;
+    htcr |= (0x0 << HTCR_T0SZ_SHIFT) & HTCR_T0SZ_MASK;
+    write_htcr( htcr );
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr);
+       uart_print("\n\r");
+*/
+
+    /* HTTBR = &__hmm_pgtable */
+    httbr = read_httbr(); uart_print( "httbr:" ); uart_print_hex64(httbr); 
+      uart_print("\n\r");
+    httbr &= 0xFFFFFFFF00000000ULL;
+    httbr |= (uint32_t) &_hmm_pgtable;
+    httbr &= HTTBR_BADDR_MASK;
+    uart_print( "writing httbr:" ); uart_print_hex64(httbr); uart_print("\n\r")
+      ;
+    write_httbr( httbr );
+    httbr = read_httbr(); uart_print( "read back httbr:" ); uart_print_hex64(
+      httbr); uart_print("\n\r");
+
+    /* Enable PL2 Stage 1 MMU */
+
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+
+    /* HSCTLR Enable MMU and D-cache */
+    // hsctlr |= (SCTLR_M |SCTLR_C);
+    hsctlr |= (SCTLR_M);
+    
+    /* Flush PTE writes */
+    asm("dsb");
+
+    write_hsctlr( hsctlr );
+
+    /* Flush iCache */
+    asm("isb");
+
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+
+    hmm_heap_init();
+
+    uart_print( "[mm] mm_init: exit\n\r" );
+
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8c_ae8f2b7d0b30b5fa78b50cee688872d93_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8c_a50b17e6b64d9c0892bce1d8585e4f6a7}{\index{mm.\-c@{mm.\-c}!morecore@{morecore}}
+\index{morecore@{morecore}!mm.c@{mm.\-c}}
+\subsubsection[{morecore}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf fl\-\_\-bheader}$\ast$ {\bf morecore} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{nu}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{mm_8c_a50b17e6b64d9c0892bce1d8585e4f6a7}
+
+
+\-Definition at line 396 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    char *cp;
+    fl_bheader *up;
+    if ( nu < NALLOC )
+        nu = NALLOC;
+    cp = hmm_sbrk(nu * sizeof(fl_bheader));
+    if ( cp == (char *) -1 ) /* no space at all */
+        return 0;
+    up = (fl_bheader *)cp;
+    up->s.size = nu;
+    hmm_free((void*)(up+1));
+    return freep;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8c_a50b17e6b64d9c0892bce1d8585e4f6a7_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{mm_8c_a2af201098f51c02f77e15cd9c8e010eb}{\index{mm.\-c@{mm.\-c}!freep@{freep}}
+\index{freep@{freep}!mm.c@{mm.\-c}}
+\subsubsection[{freep}]{\setlength{\rightskip}{0pt plus 5cm}{\bf fl\-\_\-bheader}$\ast$ {\bf freep}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{mm_8c_a2af201098f51c02f77e15cd9c8e010eb}
+
+
+\-Definition at line 134 of file mm.\-c.
+
+\hypertarget{mm_8c_a793c43e1bf8501fea23668a2ab7a7021}{\index{mm.\-c@{mm.\-c}!freep\-\_\-base@{freep\-\_\-base}}
+\index{freep\-\_\-base@{freep\-\_\-base}!mm.c@{mm.\-c}}
+\subsubsection[{freep\-\_\-base}]{\setlength{\rightskip}{0pt plus 5cm}{\bf fl\-\_\-bheader} {\bf freep\-\_\-base}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{mm_8c_a793c43e1bf8501fea23668a2ab7a7021}
+
+
+\-Definition at line 133 of file mm.\-c.
+
+\hypertarget{mm_8c_aa3abe9a33212c2a76ad5a5b311d9fdfb}{\index{mm.\-c@{mm.\-c}!last\-\_\-valid\-\_\-address@{last\-\_\-valid\-\_\-address}}
+\index{last\-\_\-valid\-\_\-address@{last\-\_\-valid\-\_\-address}!mm.c@{mm.\-c}}
+\subsubsection[{last\-\_\-valid\-\_\-address}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf last\-\_\-valid\-\_\-address}}}\label{mm_8c_aa3abe9a33212c2a76ad5a5b311d9fdfb}
+
+
+\-Definition at line 132 of file mm.\-c.
+
+\hypertarget{mm_8c_aaeb50616cf303a81199782dccfe98461}{\index{mm.\-c@{mm.\-c}!mm\-\_\-break@{mm\-\_\-break}}
+\index{mm\-\_\-break@{mm\-\_\-break}!mm.c@{mm.\-c}}
+\subsubsection[{mm\-\_\-break}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf mm\-\_\-break}}}\label{mm_8c_aaeb50616cf303a81199782dccfe98461}
+
+
+\-Definition at line 130 of file mm.\-c.
+
+\hypertarget{mm_8c_a382bf173e93d5b52f7387b81913ddec5}{\index{mm.\-c@{mm.\-c}!mm\-\_\-prev\-\_\-break@{mm\-\_\-prev\-\_\-break}}
+\index{mm\-\_\-prev\-\_\-break@{mm\-\_\-prev\-\_\-break}!mm.c@{mm.\-c}}
+\subsubsection[{mm\-\_\-prev\-\_\-break}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf mm\-\_\-prev\-\_\-break}}}\label{mm_8c_a382bf173e93d5b52f7387b81913ddec5}
+
+
+\-Definition at line 131 of file mm.\-c.
+

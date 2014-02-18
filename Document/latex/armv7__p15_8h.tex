@@ -1,0 +1,1384 @@
+\hypertarget{armv7__p15_8h}{\section{include/armv7\-\_\-p15.h \-File \-Reference}
+\label{armv7__p15_8h}\index{include/armv7\-\_\-p15.\-h@{include/armv7\-\_\-p15.\-h}}
+}
+{\ttfamily \#include \char`\"{}arch\-\_\-types.\-h\char`\"{}}\*
+\-Include dependency graph for armv7\-\_\-p15.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=186pt]{armv7__p15_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{armv7__p15_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{armv7__p15_8h_ace8367d12c7d122830035d2c9708f3ed}{read\-\_\-cpsr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a0c86d33c8981873c7ecad9fc9f8aceaf}{read\-\_\-vbar}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a4e31e0e9a65d81a76a699f5acfac2679}{write\-\_\-vbar}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a2aa0eef043f2325faf7e08f0c22aa9ed}{\-H\-C\-R\-\_\-\-F\-M\-O}~0x8
+\item 
+\#define \hyperlink{armv7__p15_8h_a8d290f53f0e3d6ec4eb4ea9326dfb238}{\-H\-C\-R\-\_\-\-I\-M\-O}~0x10
+\item 
+\#define \hyperlink{armv7__p15_8h_a7f64ef8930b21947c90bf648774c6d7a}{\-H\-C\-R\-\_\-\-V\-I}~(0x1 $<$$<$ 7)
+\item 
+\#define \hyperlink{armv7__p15_8h_a4ccd5f7d934e0e5d70f2efa015f24826}{read\-\_\-ttbr0}()
+\item 
+\#define \hyperlink{armv7__p15_8h_aef4ad3f99a91f73dd5ea72a9f08c684d}{write\-\_\-ttbr0}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a0f00f0b592454cc49a97e37135bae154}{read\-\_\-ttbr1}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a3113363b11bd015751a6fac65457c3ef}{write\-\_\-ttbr1}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_ab108290b06009cda35888c4e3cf0e186}{read\-\_\-ttbcr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a7a2b03678768ed709e85cf17ff7177e0}{write\-\_\-ttbcr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a9be943306a7c8c92e242d7b0c528c104}{read\-\_\-mair0}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a4c688b4baf4bb99717ab883ec98731e3}{write\-\_\-mair0}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a4202580631120ea819013536d1764714}{read\-\_\-mair1}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a95ccc5e9e75f16d92e86e8c5e8795021}{write\-\_\-mair1}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_ad0f95cce118c43e27e56c573d2474589}{read\-\_\-hmair0}()
+\item 
+\#define \hyperlink{armv7__p15_8h_aceed5bc8f6ff935f285f0151d02984f4}{write\-\_\-hmair0}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a9c20c8c67832c7220daa6decf3716d3a}{read\-\_\-hmair1}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a28ff414c50b9d208a74c509495c03798}{write\-\_\-hmair1}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_aa41bd8bfa37a46e776d56ce2d7e4d083}{read\-\_\-hsr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a3a6bae959f288dba466eaf69ddb942af}{read\-\_\-htcr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_ac82f4f6d095d646b4c5dfe8ada9fb08b}{write\-\_\-htcr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a13913f74bb5cce3c362082e705da87db}{read\-\_\-hsctlr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a94fd8feb077baacec23b5626e75052d2}{write\-\_\-hsctlr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_ad17d4af13acc1a347d253dcc32c25881}{read\-\_\-sctlr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_ae7e49f9effb0c96c1045ceddae9cadf5}{write\-\_\-sctlr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a814b3bae099b30c902bcd707bb4293a1}{read\-\_\-httbr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_aadd0a0d0ee622916cac09b282b6b30ac}{write\-\_\-httbr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a228f19aa25c4d23dee8a0be5b41691d9}{read\-\_\-vtcr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a3982aeb15e1c94c960d0d0fdec2a4486}{write\-\_\-vtcr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a4e4681628f215ab9436d9376e67ec931}{read\-\_\-vttbr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_af3a68551ffa6743c517c720afea598a6}{write\-\_\-vttbr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a3b7662f2d5a21a8a49f06da2a29483ec}{read\-\_\-hcr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_ab2fd766fe3ad6974730d990af8af1aad}{write\-\_\-hcr}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a9a17b04c7e79b8a7c7a088d6e9f9c2f8}{read\-\_\-midr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_ae7a3ffe94082726164ef99da5c940198}{read\-\_\-mpidr}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a22dc1998cdb4bde4c7fb58dbdf4c61b7}{read\-\_\-cntfrq}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a36916f645a1d1af13328e2760a6e758b}{write\-\_\-cntfrq}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_afb75f009f97a77ef70a8af5af59e9b51}{read\-\_\-cnthctl}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a45db513be8ffc7a00ccaf1ff2faab49d}{write\-\_\-cnthctl}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_aa6a9055f0f8ef1f1c31a64d934f2fcc1}{read\-\_\-cnthp\-\_\-ctl}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a419fbc198bfa7aed2fdc2b3bf8a80c75}{write\-\_\-cnthp\-\_\-ctl}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a25fd6098094a06ac618bdf5a03411747}{read\-\_\-cnthp\-\_\-cval}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a858012a8a45700f96e58971a6fd318e6}{write\-\_\-cnthp\-\_\-cval}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_af447e860889e18fa7aeb645ce7f6d328}{read\-\_\-cnthp\-\_\-tval}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a317588a5fac9e97233e604c8e43716f4}{write\-\_\-cnthp\-\_\-tval}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a0fa1be710f0b34cded7d854664ca0892}{read\-\_\-cntkctl}()
+\item 
+\#define \hyperlink{armv7__p15_8h_aab3ac35bac93fb1d81d77043bf9feba3}{write\-\_\-cntkctl}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a62454f186d32571ba5b0ef9501d1a780}{read\-\_\-cntp\-\_\-ctl}()
+\item 
+\#define \hyperlink{armv7__p15_8h_ab6947eb7aa7224ff40daf1641196c4f7}{write\-\_\-cntp\-\_\-ctl}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a6af8a4385ce10e17702b7f2db00aecd0}{read\-\_\-cntp\-\_\-cval}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a59cd6778741b413df8b81a46a4e621f2}{write\-\_\-cntp\-\_\-cval}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a2b8d99e8ddfcce1608f762994ea80e2e}{read\-\_\-cntp\-\_\-tval}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a0940385a164613a8b2864940683b4fb2}{write\-\_\-cntp\-\_\-tval}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a4939c99e7b83a6fbef2867ab52240464}{read\-\_\-cntpct}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a1b415ea5f339065c53f4db29a7e21af2}{read\-\_\-cntv\-\_\-ctl}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a8a9b7c864d5560d421e8a3c3bc8dca84}{write\-\_\-cntv\-\_\-ctl}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a26c9aea7ac28377126ecc15ea29dd6bc}{read\-\_\-cntv\-\_\-cval}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a2f39865e58552372917fb13d964cc4c3}{write\-\_\-cntv\-\_\-cval}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a2fcd5fc1f26aefe55daa5ce989f88b46}{read\-\_\-cntv\-\_\-tval}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a7c703e3a685054390f3220697504961c}{write\-\_\-cntv\-\_\-tval}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a12e577d17891dc46fcc76e72f6bbd9f0}{read\-\_\-cntvct}()
+\item 
+\#define \hyperlink{armv7__p15_8h_afd7fe5fb860932b7a45f3bdad5973408}{read\-\_\-cntvoff}()
+\item 
+\#define \hyperlink{armv7__p15_8h_ab6c927f0e1c9f7293b06d710d6142fc2}{write\-\_\-cntvoff}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a2c835cd674781985c210053d70b64e0d}{read\-\_\-hdfar}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a91e91a685893da52c1f120e7f98a1280}{write\-\_\-hdfar}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a491b0104eb0e24c25285c8e90e101cd1}{read\-\_\-hifar}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a3aef95a08f0a64a8f8c485927edc3873}{write\-\_\-hifar}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a8e2ca9957a561bdfab81184207fb9166}{read\-\_\-hpfar}()
+\item 
+\#define \hyperlink{armv7__p15_8h_a4068a00c498d7bf185423870909d0642}{write\-\_\-hpfar}(val)
+\item 
+\#define \hyperlink{armv7__p15_8h_a8983432e251fc0069019ae2e253e1765}{invalidate\-\_\-unified\-\_\-tlb}(val)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{armv7__p15_8h_a2aa0eef043f2325faf7e08f0c22aa9ed}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!\-H\-C\-R\-\_\-\-F\-M\-O@{\-H\-C\-R\-\_\-\-F\-M\-O}}
+\index{\-H\-C\-R\-\_\-\-F\-M\-O@{\-H\-C\-R\-\_\-\-F\-M\-O}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{\-H\-C\-R\-\_\-\-F\-M\-O}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-C\-R\-\_\-\-F\-M\-O}~0x8}}\label{armv7__p15_8h_a2aa0eef043f2325faf7e08f0c22aa9ed}
+
+
+\-Definition at line 18 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a8d290f53f0e3d6ec4eb4ea9326dfb238}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!\-H\-C\-R\-\_\-\-I\-M\-O@{\-H\-C\-R\-\_\-\-I\-M\-O}}
+\index{\-H\-C\-R\-\_\-\-I\-M\-O@{\-H\-C\-R\-\_\-\-I\-M\-O}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{\-H\-C\-R\-\_\-\-I\-M\-O}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-C\-R\-\_\-\-I\-M\-O}~0x10}}\label{armv7__p15_8h_a8d290f53f0e3d6ec4eb4ea9326dfb238}
+
+
+\-Definition at line 19 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a7f64ef8930b21947c90bf648774c6d7a}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!\-H\-C\-R\-\_\-\-V\-I@{\-H\-C\-R\-\_\-\-V\-I}}
+\index{\-H\-C\-R\-\_\-\-V\-I@{\-H\-C\-R\-\_\-\-V\-I}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{\-H\-C\-R\-\_\-\-V\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-H\-C\-R\-\_\-\-V\-I}~(0x1 $<$$<$ 7)}}\label{armv7__p15_8h_a7f64ef8930b21947c90bf648774c6d7a}
+
+
+\-Definition at line 20 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a8983432e251fc0069019ae2e253e1765}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!invalidate\-\_\-unified\-\_\-tlb@{invalidate\-\_\-unified\-\_\-tlb}}
+\index{invalidate\-\_\-unified\-\_\-tlb@{invalidate\-\_\-unified\-\_\-tlb}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{invalidate\-\_\-unified\-\_\-tlb}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf invalidate\-\_\-unified\-\_\-tlb}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a8983432e251fc0069019ae2e253e1765}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                " mcr     p15, 0, %0, c8, c7, 0\n\t" \
+                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 301 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a22dc1998cdb4bde4c7fb58dbdf4c61b7}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntfrq@{read\-\_\-cntfrq}}
+\index{read\-\_\-cntfrq@{read\-\_\-cntfrq}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntfrq}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntfrq}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a22dc1998cdb4bde4c7fb58dbdf4c61b7}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c14, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 152 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_afb75f009f97a77ef70a8af5af59e9b51}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cnthctl@{read\-\_\-cnthctl}}
+\index{read\-\_\-cnthctl@{read\-\_\-cnthctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cnthctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cnthctl}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_afb75f009f97a77ef70a8af5af59e9b51}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c14, c1, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 160 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_aa6a9055f0f8ef1f1c31a64d934f2fcc1}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cnthp\-\_\-ctl@{read\-\_\-cnthp\-\_\-ctl}}
+\index{read\-\_\-cnthp\-\_\-ctl@{read\-\_\-cnthp\-\_\-ctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cnthp\-\_\-ctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cnthp\-\_\-ctl}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_aa6a9055f0f8ef1f1c31a64d934f2fcc1}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c14, c2, 1\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 168 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a25fd6098094a06ac618bdf5a03411747}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cnthp\-\_\-cval@{read\-\_\-cnthp\-\_\-cval}}
+\index{read\-\_\-cnthp\-\_\-cval@{read\-\_\-cnthp\-\_\-cval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cnthp\-\_\-cval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cnthp\-\_\-cval}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a25fd6098094a06ac618bdf5a03411747}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 6, %0, %1, c14\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 176 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_af447e860889e18fa7aeb645ce7f6d328}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cnthp\-\_\-tval@{read\-\_\-cnthp\-\_\-tval}}
+\index{read\-\_\-cnthp\-\_\-tval@{read\-\_\-cnthp\-\_\-tval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cnthp\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cnthp\-\_\-tval}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_af447e860889e18fa7aeb645ce7f6d328}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c14, c2, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 186 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a0fa1be710f0b34cded7d854664ca0892}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntkctl@{read\-\_\-cntkctl}}
+\index{read\-\_\-cntkctl@{read\-\_\-cntkctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntkctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntkctl}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a0fa1be710f0b34cded7d854664ca0892}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c14, c1, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 194 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a62454f186d32571ba5b0ef9501d1a780}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntp\-\_\-ctl@{read\-\_\-cntp\-\_\-ctl}}
+\index{read\-\_\-cntp\-\_\-ctl@{read\-\_\-cntp\-\_\-ctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntp\-\_\-ctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntp\-\_\-ctl}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a62454f186d32571ba5b0ef9501d1a780}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c14, c2, 1\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 202 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a6af8a4385ce10e17702b7f2db00aecd0}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntp\-\_\-cval@{read\-\_\-cntp\-\_\-cval}}
+\index{read\-\_\-cntp\-\_\-cval@{read\-\_\-cntp\-\_\-cval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntp\-\_\-cval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntp\-\_\-cval}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a6af8a4385ce10e17702b7f2db00aecd0}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 2, %0, %1, c14\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 210 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a2b8d99e8ddfcce1608f762994ea80e2e}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntp\-\_\-tval@{read\-\_\-cntp\-\_\-tval}}
+\index{read\-\_\-cntp\-\_\-tval@{read\-\_\-cntp\-\_\-tval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntp\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntp\-\_\-tval}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a2b8d99e8ddfcce1608f762994ea80e2e}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c14, c2, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 220 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4939c99e7b83a6fbef2867ab52240464}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntpct@{read\-\_\-cntpct}}
+\index{read\-\_\-cntpct@{read\-\_\-cntpct}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntpct}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntpct}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4939c99e7b83a6fbef2867ab52240464}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 0, %0, %1, c14\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 228 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a1b415ea5f339065c53f4db29a7e21af2}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntv\-\_\-ctl@{read\-\_\-cntv\-\_\-ctl}}
+\index{read\-\_\-cntv\-\_\-ctl@{read\-\_\-cntv\-\_\-ctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntv\-\_\-ctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntv\-\_\-ctl}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a1b415ea5f339065c53f4db29a7e21af2}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c14, c3, 1\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 233 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a26c9aea7ac28377126ecc15ea29dd6bc}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntv\-\_\-cval@{read\-\_\-cntv\-\_\-cval}}
+\index{read\-\_\-cntv\-\_\-cval@{read\-\_\-cntv\-\_\-cval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntv\-\_\-cval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntv\-\_\-cval}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a26c9aea7ac28377126ecc15ea29dd6bc}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 3, %0, %1, c14\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 241 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a2fcd5fc1f26aefe55daa5ce989f88b46}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntv\-\_\-tval@{read\-\_\-cntv\-\_\-tval}}
+\index{read\-\_\-cntv\-\_\-tval@{read\-\_\-cntv\-\_\-tval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntv\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntv\-\_\-tval}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a2fcd5fc1f26aefe55daa5ce989f88b46}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c14, c3, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 251 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a12e577d17891dc46fcc76e72f6bbd9f0}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntvct@{read\-\_\-cntvct}}
+\index{read\-\_\-cntvct@{read\-\_\-cntvct}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntvct}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntvct}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a12e577d17891dc46fcc76e72f6bbd9f0}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 1, %0, %1, c14\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 259 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_afd7fe5fb860932b7a45f3bdad5973408}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cntvoff@{read\-\_\-cntvoff}}
+\index{read\-\_\-cntvoff@{read\-\_\-cntvoff}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cntvoff}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cntvoff}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_afd7fe5fb860932b7a45f3bdad5973408}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 4, %0, %1, c14\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 264 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ace8367d12c7d122830035d2c9708f3ed}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-cpsr@{read\-\_\-cpsr}}
+\index{read\-\_\-cpsr@{read\-\_\-cpsr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-cpsr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cpsr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ace8367d12c7d122830035d2c9708f3ed}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrs     %0, cpsr\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 7 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a3b7662f2d5a21a8a49f06da2a29483ec}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hcr@{read\-\_\-hcr}}
+\index{read\-\_\-hcr@{read\-\_\-hcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hcr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a3b7662f2d5a21a8a49f06da2a29483ec}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c1, c1, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 134 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a2c835cd674781985c210053d70b64e0d}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hdfar@{read\-\_\-hdfar}}
+\index{read\-\_\-hdfar@{read\-\_\-hdfar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hdfar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hdfar}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a2c835cd674781985c210053d70b64e0d}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c6, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 274 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a491b0104eb0e24c25285c8e90e101cd1}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hifar@{read\-\_\-hifar}}
+\index{read\-\_\-hifar@{read\-\_\-hifar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hifar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hifar}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a491b0104eb0e24c25285c8e90e101cd1}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c6, c0, 2\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 282 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ad0f95cce118c43e27e56c573d2474589}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hmair0@{read\-\_\-hmair0}}
+\index{read\-\_\-hmair0@{read\-\_\-hmair0}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hmair0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hmair0}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ad0f95cce118c43e27e56c573d2474589}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c10, c2, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 63 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a9c20c8c67832c7220daa6decf3716d3a}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hmair1@{read\-\_\-hmair1}}
+\index{read\-\_\-hmair1@{read\-\_\-hmair1}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hmair1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hmair1}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a9c20c8c67832c7220daa6decf3716d3a}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c10, c2, 1\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 71 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a8e2ca9957a561bdfab81184207fb9166}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hpfar@{read\-\_\-hpfar}}
+\index{read\-\_\-hpfar@{read\-\_\-hpfar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hpfar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hpfar}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a8e2ca9957a561bdfab81184207fb9166}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c6, c0, 4\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 290 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a13913f74bb5cce3c362082e705da87db}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hsctlr@{read\-\_\-hsctlr}}
+\index{read\-\_\-hsctlr@{read\-\_\-hsctlr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hsctlr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hsctlr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a13913f74bb5cce3c362082e705da87db}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c1, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 90 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_aa41bd8bfa37a46e776d56ce2d7e4d083}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-hsr@{read\-\_\-hsr}}
+\index{read\-\_\-hsr@{read\-\_\-hsr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-hsr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-hsr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_aa41bd8bfa37a46e776d56ce2d7e4d083}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c5, c2, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 79 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a3a6bae959f288dba466eaf69ddb942af}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-htcr@{read\-\_\-htcr}}
+\index{read\-\_\-htcr@{read\-\_\-htcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-htcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-htcr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a3a6bae959f288dba466eaf69ddb942af}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c2, c0, 2\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 82 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a814b3bae099b30c902bcd707bb4293a1}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-httbr@{read\-\_\-httbr}}
+\index{read\-\_\-httbr@{read\-\_\-httbr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-httbr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-httbr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a814b3bae099b30c902bcd707bb4293a1}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 4, %0, %1, c2\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 106 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a9be943306a7c8c92e242d7b0c528c104}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-mair0@{read\-\_\-mair0}}
+\index{read\-\_\-mair0@{read\-\_\-mair0}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-mair0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-mair0}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a9be943306a7c8c92e242d7b0c528c104}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c10, c2, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 47 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4202580631120ea819013536d1764714}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-mair1@{read\-\_\-mair1}}
+\index{read\-\_\-mair1@{read\-\_\-mair1}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-mair1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-mair1}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4202580631120ea819013536d1764714}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c10, c2, 1\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 55 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a9a17b04c7e79b8a7c7a088d6e9f9c2f8}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-midr@{read\-\_\-midr}}
+\index{read\-\_\-midr@{read\-\_\-midr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-midr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-midr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a9a17b04c7e79b8a7c7a088d6e9f9c2f8}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c0, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 142 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ae7a3ffe94082726164ef99da5c940198}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-mpidr@{read\-\_\-mpidr}}
+\index{read\-\_\-mpidr@{read\-\_\-mpidr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-mpidr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-mpidr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ae7a3ffe94082726164ef99da5c940198}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c0, c0, 5\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 146 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ad17d4af13acc1a347d253dcc32c25881}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-sctlr@{read\-\_\-sctlr}}
+\index{read\-\_\-sctlr@{read\-\_\-sctlr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-sctlr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-sctlr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ad17d4af13acc1a347d253dcc32c25881}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c1, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 98 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ab108290b06009cda35888c4e3cf0e186}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-ttbcr@{read\-\_\-ttbcr}}
+\index{read\-\_\-ttbcr@{read\-\_\-ttbcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-ttbcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-ttbcr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ab108290b06009cda35888c4e3cf0e186}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c2, c0, 2\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 39 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4ccd5f7d934e0e5d70f2efa015f24826}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-ttbr0@{read\-\_\-ttbr0}}
+\index{read\-\_\-ttbr0@{read\-\_\-ttbr0}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-ttbr0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-ttbr0}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4ccd5f7d934e0e5d70f2efa015f24826}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c2, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 23 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a0f00f0b592454cc49a97e37135bae154}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-ttbr1@{read\-\_\-ttbr1}}
+\index{read\-\_\-ttbr1@{read\-\_\-ttbr1}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-ttbr1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-ttbr1}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a0f00f0b592454cc49a97e37135bae154}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c2, c0, 1\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 31 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a0c86d33c8981873c7ecad9fc9f8aceaf}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-vbar@{read\-\_\-vbar}}
+\index{read\-\_\-vbar@{read\-\_\-vbar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-vbar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-vbar}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a0c86d33c8981873c7ecad9fc9f8aceaf}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 0, %0, c12, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 10 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a228f19aa25c4d23dee8a0be5b41691d9}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-vtcr@{read\-\_\-vtcr}}
+\index{read\-\_\-vtcr@{read\-\_\-vtcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-vtcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-vtcr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a228f19aa25c4d23dee8a0be5b41691d9}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c2, c1, 2\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 116 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4e4681628f215ab9436d9376e67ec931}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!read\-\_\-vttbr@{read\-\_\-vttbr}}
+\index{read\-\_\-vttbr@{read\-\_\-vttbr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{read\-\_\-vttbr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-vttbr}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4e4681628f215ab9436d9376e67ec931}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t v1, v2; asm volatile(\
+                                " mrrc     p15, 6, %0, %1, c2\n\t" \
+                                : "=r" (v1), "=r" (v2) : : "memory", "cc"); \
+                                (((uint64_t)v2 << 32) + (uint64_t)v1);})
+\end{DoxyCode}
+
+
+\-Definition at line 124 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a36916f645a1d1af13328e2760a6e758b}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntfrq@{write\-\_\-cntfrq}}
+\index{write\-\_\-cntfrq@{write\-\_\-cntfrq}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntfrq}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntfrq}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a36916f645a1d1af13328e2760a6e758b}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c14, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 156 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a45db513be8ffc7a00ccaf1ff2faab49d}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cnthctl@{write\-\_\-cnthctl}}
+\index{write\-\_\-cnthctl@{write\-\_\-cnthctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cnthctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cnthctl}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a45db513be8ffc7a00ccaf1ff2faab49d}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c14, c1, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 164 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a419fbc198bfa7aed2fdc2b3bf8a80c75}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cnthp\-\_\-ctl@{write\-\_\-cnthp\-\_\-ctl}}
+\index{write\-\_\-cnthp\-\_\-ctl@{write\-\_\-cnthp\-\_\-ctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cnthp\-\_\-ctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cnthp\-\_\-ctl}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a419fbc198bfa7aed2fdc2b3bf8a80c75}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c14, c2, 1\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 172 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a858012a8a45700f96e58971a6fd318e6}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cnthp\-\_\-cval@{write\-\_\-cnthp\-\_\-cval}}
+\index{write\-\_\-cnthp\-\_\-cval@{write\-\_\-cnthp\-\_\-cval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cnthp\-\_\-cval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cnthp\-\_\-cval}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a858012a8a45700f96e58971a6fd318e6}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcrr     p15, 6, %0, %1, c14\n\t" \
+                                :: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) 
+      \
+                                : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 181 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a317588a5fac9e97233e604c8e43716f4}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cnthp\-\_\-tval@{write\-\_\-cnthp\-\_\-tval}}
+\index{write\-\_\-cnthp\-\_\-tval@{write\-\_\-cnthp\-\_\-tval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cnthp\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cnthp\-\_\-tval}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a317588a5fac9e97233e604c8e43716f4}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c14, c2, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 190 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_aab3ac35bac93fb1d81d77043bf9feba3}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntkctl@{write\-\_\-cntkctl}}
+\index{write\-\_\-cntkctl@{write\-\_\-cntkctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntkctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntkctl}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_aab3ac35bac93fb1d81d77043bf9feba3}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c14, c1, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 198 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ab6947eb7aa7224ff40daf1641196c4f7}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntp\-\_\-ctl@{write\-\_\-cntp\-\_\-ctl}}
+\index{write\-\_\-cntp\-\_\-ctl@{write\-\_\-cntp\-\_\-ctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntp\-\_\-ctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntp\-\_\-ctl}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ab6947eb7aa7224ff40daf1641196c4f7}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c14, c2, 1\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 206 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a59cd6778741b413df8b81a46a4e621f2}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntp\-\_\-cval@{write\-\_\-cntp\-\_\-cval}}
+\index{write\-\_\-cntp\-\_\-cval@{write\-\_\-cntp\-\_\-cval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntp\-\_\-cval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntp\-\_\-cval}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a59cd6778741b413df8b81a46a4e621f2}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcrr     p15, 2, %0, %1, c14\n\t" \
+                                :: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) 
+      \
+                                : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 215 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a0940385a164613a8b2864940683b4fb2}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntp\-\_\-tval@{write\-\_\-cntp\-\_\-tval}}
+\index{write\-\_\-cntp\-\_\-tval@{write\-\_\-cntp\-\_\-tval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntp\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntp\-\_\-tval}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a0940385a164613a8b2864940683b4fb2}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c14, c2, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 224 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a8a9b7c864d5560d421e8a3c3bc8dca84}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntv\-\_\-ctl@{write\-\_\-cntv\-\_\-ctl}}
+\index{write\-\_\-cntv\-\_\-ctl@{write\-\_\-cntv\-\_\-ctl}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntv\-\_\-ctl}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntv\-\_\-ctl}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a8a9b7c864d5560d421e8a3c3bc8dca84}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c14, c3, 1\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 237 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a2f39865e58552372917fb13d964cc4c3}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntv\-\_\-cval@{write\-\_\-cntv\-\_\-cval}}
+\index{write\-\_\-cntv\-\_\-cval@{write\-\_\-cntv\-\_\-cval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntv\-\_\-cval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntv\-\_\-cval}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a2f39865e58552372917fb13d964cc4c3}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcrr     p15, 3, %0, %1, c14\n\t" \
+                                :: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) 
+      \
+                                : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 246 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a7c703e3a685054390f3220697504961c}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntv\-\_\-tval@{write\-\_\-cntv\-\_\-tval}}
+\index{write\-\_\-cntv\-\_\-tval@{write\-\_\-cntv\-\_\-tval}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntv\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntv\-\_\-tval}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a7c703e3a685054390f3220697504961c}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c14, c3, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 255 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ab6c927f0e1c9f7293b06d710d6142fc2}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-cntvoff@{write\-\_\-cntvoff}}
+\index{write\-\_\-cntvoff@{write\-\_\-cntvoff}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-cntvoff}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-cntvoff}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ab6c927f0e1c9f7293b06d710d6142fc2}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcrr     p15, 4, %0, %1, c14\n\t" \
+                                :: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) 
+      \
+                                : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 269 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ab2fd766fe3ad6974730d990af8af1aad}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hcr@{write\-\_\-hcr}}
+\index{write\-\_\-hcr@{write\-\_\-hcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hcr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ab2fd766fe3ad6974730d990af8af1aad}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c1, c1, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 138 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a91e91a685893da52c1f120e7f98a1280}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hdfar@{write\-\_\-hdfar}}
+\index{write\-\_\-hdfar@{write\-\_\-hdfar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hdfar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hdfar}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a91e91a685893da52c1f120e7f98a1280}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c6, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 278 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a3aef95a08f0a64a8f8c485927edc3873}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hifar@{write\-\_\-hifar}}
+\index{write\-\_\-hifar@{write\-\_\-hifar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hifar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hifar}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a3aef95a08f0a64a8f8c485927edc3873}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c6, c0, 2\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 286 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_aceed5bc8f6ff935f285f0151d02984f4}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hmair0@{write\-\_\-hmair0}}
+\index{write\-\_\-hmair0@{write\-\_\-hmair0}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hmair0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hmair0}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_aceed5bc8f6ff935f285f0151d02984f4}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c10, c2, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 67 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a28ff414c50b9d208a74c509495c03798}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hmair1@{write\-\_\-hmair1}}
+\index{write\-\_\-hmair1@{write\-\_\-hmair1}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hmair1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hmair1}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a28ff414c50b9d208a74c509495c03798}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c10, c2, 1\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 75 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4068a00c498d7bf185423870909d0642}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hpfar@{write\-\_\-hpfar}}
+\index{write\-\_\-hpfar@{write\-\_\-hpfar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hpfar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hpfar}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4068a00c498d7bf185423870909d0642}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c6, c0, 4\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 294 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a94fd8feb077baacec23b5626e75052d2}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-hsctlr@{write\-\_\-hsctlr}}
+\index{write\-\_\-hsctlr@{write\-\_\-hsctlr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-hsctlr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-hsctlr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a94fd8feb077baacec23b5626e75052d2}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c1, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 94 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ac82f4f6d095d646b4c5dfe8ada9fb08b}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-htcr@{write\-\_\-htcr}}
+\index{write\-\_\-htcr@{write\-\_\-htcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-htcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-htcr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ac82f4f6d095d646b4c5dfe8ada9fb08b}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c2, c0, 2\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 86 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_aadd0a0d0ee622916cac09b282b6b30ac}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-httbr@{write\-\_\-httbr}}
+\index{write\-\_\-httbr@{write\-\_\-httbr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-httbr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-httbr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_aadd0a0d0ee622916cac09b282b6b30ac}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcrr     p15, 4, %0, %1, c2\n\t" \
+                                :: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) 
+      \
+                                : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 111 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4c688b4baf4bb99717ab883ec98731e3}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-mair0@{write\-\_\-mair0}}
+\index{write\-\_\-mair0@{write\-\_\-mair0}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-mair0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-mair0}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4c688b4baf4bb99717ab883ec98731e3}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c10, c2, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 51 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a95ccc5e9e75f16d92e86e8c5e8795021}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-mair1@{write\-\_\-mair1}}
+\index{write\-\_\-mair1@{write\-\_\-mair1}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-mair1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-mair1}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a95ccc5e9e75f16d92e86e8c5e8795021}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c10, c2, 1\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 59 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_ae7e49f9effb0c96c1045ceddae9cadf5}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-sctlr@{write\-\_\-sctlr}}
+\index{write\-\_\-sctlr@{write\-\_\-sctlr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-sctlr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-sctlr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_ae7e49f9effb0c96c1045ceddae9cadf5}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c1, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 102 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a7a2b03678768ed709e85cf17ff7177e0}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-ttbcr@{write\-\_\-ttbcr}}
+\index{write\-\_\-ttbcr@{write\-\_\-ttbcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-ttbcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-ttbcr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a7a2b03678768ed709e85cf17ff7177e0}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c2, c0, 2\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 43 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_aef4ad3f99a91f73dd5ea72a9f08c684d}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-ttbr0@{write\-\_\-ttbr0}}
+\index{write\-\_\-ttbr0@{write\-\_\-ttbr0}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-ttbr0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-ttbr0}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_aef4ad3f99a91f73dd5ea72a9f08c684d}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c2, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 27 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a3113363b11bd015751a6fac65457c3ef}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-ttbr1@{write\-\_\-ttbr1}}
+\index{write\-\_\-ttbr1@{write\-\_\-ttbr1}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-ttbr1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-ttbr1}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a3113363b11bd015751a6fac65457c3ef}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c2, c0, 1\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 35 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a4e31e0e9a65d81a76a699f5acfac2679}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-vbar@{write\-\_\-vbar}}
+\index{write\-\_\-vbar@{write\-\_\-vbar}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-vbar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-vbar}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a4e31e0e9a65d81a76a699f5acfac2679}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 0, %0, c12, c0, 0\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 13 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_a3982aeb15e1c94c960d0d0fdec2a4486}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-vtcr@{write\-\_\-vtcr}}
+\index{write\-\_\-vtcr@{write\-\_\-vtcr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-vtcr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-vtcr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_a3982aeb15e1c94c960d0d0fdec2a4486}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcr     p15, 4, %0, c2, c1, 2\n\t" \
+                                :: "r" ((val)) : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 120 of file armv7\-\_\-p15.\-h.
+
+\hypertarget{armv7__p15_8h_af3a68551ffa6743c517c720afea598a6}{\index{armv7\-\_\-p15.\-h@{armv7\-\_\-p15.\-h}!write\-\_\-vttbr@{write\-\_\-vttbr}}
+\index{write\-\_\-vttbr@{write\-\_\-vttbr}!armv7_p15.h@{armv7\-\_\-p15.\-h}}
+\subsubsection[{write\-\_\-vttbr}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf write\-\_\-vttbr}(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)}}\label{armv7__p15_8h_af3a68551ffa6743c517c720afea598a6}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+asm volatile(\
+                                " mcrr     p15, 6, %0, %1, c2\n\t" \
+                                :: "r" ((val) & 0xFFFFFFFF), "r" ((val) >> 32) 
+      \
+                                : "memory", "cc")
+\end{DoxyCode}
+
+
+\-Definition at line 129 of file armv7\-\_\-p15.\-h.
+

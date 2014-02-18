@@ -1,0 +1,24 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$gic_8c.html#a608941cbc8ab5a657834d451f0368a6e" title="gic_vgic_baseaddr" alt="" coords="157,219,288,248"/>
+<area shape="rect" id="node5" href="$vgic_8c.html#a66eca59dda59d2529191ca0c23094fc8" title="_vgic_valid_lr_mask" alt="" coords="153,272,292,301"/>
+<area shape="rect" id="node7" href="$vgic_8c.html#a896fa453c39e4d42fa37483b07c7d307" title="vgic_maintenance_irq_enable" alt="" coords="127,325,319,355"/>
+<area shape="rect" id="node38" href="$slotpirq_8c.html#a01b3ab3099b2a5512a07cb42a389d84f" title="slotpirq_init" alt="" coords="179,379,267,408"/>
+<area shape="rect" id="node40" href="$vgic_8c.html#aea2435da2d73a22a35b601508d6ea6da" title="_vgic_dump_status" alt="" coords="156,432,289,461"/>
+<area shape="rect" id="node42" href="$vgic_8c.html#abfca2f5be8dfbb355800d70dbda23b5e" title="_vgic_dump_regs" alt="" coords="161,485,284,515"/>
+<area shape="rect" id="node9" href="$gic_8c.html#aaee4d58fadbe09c39f45e8e114a4dd4d" title="gic_test_set_irq_handler" alt="" coords="375,165,537,195"/>
+<area shape="rect" id="node11" href="$vgic_8c.html#a8d083941ad4202604d2ec7161c8f6409" title="_vgic_isr_maintenance_irq" alt="" coords="368,219,544,248"/>
+<area shape="rect" id="node31" href="$gic_8c.html#acbe5581611f81cd00b58cebeda222edf" title="gic_test_configure_irq" alt="" coords="381,379,531,408"/>
+<area shape="rect" id="node33" href="$gic_8c.html#ac9a2d7f5ce83d3499113a8566f65fad0" title="gic_disable_irq" alt="" coords="612,379,719,408"/>
+<area shape="rect" id="node13" href="$context_8c.html#a525fcf860b6f33b4192443c9d66ba4f6" title="context_current_vmid" alt="" coords="592,5,739,35"/>
+<area shape="rect" id="node15" href="$slotpirq_8c.html#aa2a97d33b447c3cd1b54645301d67d06" title="slotpirq_get" alt="" coords="621,59,709,88"/>
+<area shape="rect" id="node17" href="$gic_8c.html#a7a8d9c8017d6bcc6fc377b52ed6b74c1" title="gic_deactivate_irq" alt="" coords="603,112,728,141"/>
+<area shape="rect" id="node19" href="$slotpirq_8c.html#a7796a08ae962d45173231eba6a4d6596" title="slotpirq_clear" alt="" coords="616,165,715,195"/>
+<area shape="rect" id="node23" href="$slotpirq_8c.html#afdec456416a60eafcb58f50c742d7de2" title="slotvirq_clear" alt="" coords="616,219,715,248"/>
+<area shape="rect" id="node27" href="$vgic_8c.html#a4cf554520738a7934bc4e6917853330c" title="vgic_enable" alt="" coords="620,272,711,301"/>
+<area shape="rect" id="node29" href="$vgic_8c.html#ae71b0763ed8149031b08ad13d8d687cb" title="vgic_injection_enable" alt="" coords="592,325,739,355"/>
+<area shape="rect" id="node21" href="$slotpirq_8c.html#aff1cbc822b730c991459afb793276fa6" title="slotpirq_set" alt="" coords="788,165,876,195"/>
+<area shape="rect" id="node25" href="$slotpirq_8c.html#aaad8058f8557950c87ce6e452e5a7223" title="slotvirq_set" alt="" coords="788,219,876,248"/>
+<area shape="rect" id="node35" href="$gic_8c.html#a53e36754e628b6624a760838e37fd9df" title="gic_enable_irq" alt="" coords="613,432,717,461"/>
+<area shape="rect" id="node44" href="$vgic_8c.html#ac1d43326139a3717d69ce1f876cd221c" title="vgic_is_free_slot" alt="" coords="396,485,516,515"/>
+<area shape="rect" id="node46" href="$vgic_8c.html#aab31fc8d2c44ebb938b78cfb1f7c975f" title="vgic_find_free_slot" alt="" coords="600,485,731,515"/>
+</map>

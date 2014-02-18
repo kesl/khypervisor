@@ -1,0 +1,15 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$vgic_8c.html#a2302c75a54486f179f199997b4a268b3" title="vgic_setcallback_virq_flush" alt="" coords="121,78,303,107"/>
+<area shape="rect" id="node5" href="$virq_8c.html#ab76bcaec8e983ed0c8ac21a738b7eb31" title="virq_flush" alt="" coords="173,131,251,161"/>
+<area shape="rect" id="node7" href="$vgic_8c.html#a93b048baf04857249e2ba3c24a82407f" title="vgic_inject_virq_hw" alt="" coords="352,25,488,54"/>
+<area shape="rect" id="node23" href="$slotpirq_8c.html#aff1cbc822b730c991459afb793276fa6" title="slotpirq_set" alt="" coords="376,78,464,107"/>
+<area shape="rect" id="node25" href="$vgic_8c.html#a6fa5c258f61efb0140f0b85175d25ff5" title="vgic_inject_virq_sw" alt="" coords="352,131,488,161"/>
+<area shape="rect" id="node29" href="$smp_8c.html#aa120cf745804d1aed1f2e3d19570ab43" title="smp_processor_id" alt="" coords="356,185,484,214"/>
+<area shape="rect" id="node31" href="$slotpirq_8c.html#aaad8058f8557950c87ce6e452e5a7223" title="slotvirq_set" alt="" coords="376,238,464,267"/>
+<area shape="rect" id="node9" href="$vgic_8c.html#aab31fc8d2c44ebb938b78cfb1f7c975f" title="vgic_find_free_slot" alt="" coords="1059,77,1189,106"/>
+<area shape="rect" id="node11" href="$vgic_8c.html#a6fb239504a0f9b77f78ca1f75318f78f" title="vgic_inject_virq" alt="" coords="536,78,648,107"/>
+<area shape="rect" id="node13" href="$vgic_8c.html#ac1d43326139a3717d69ce1f876cd221c" title="vgic_is_free_slot" alt="" coords="891,77,1011,106"/>
+<area shape="rect" id="node16" href="$vgic_8c.html#ae71b0763ed8149031b08ad13d8d687cb" title="vgic_injection_enable" alt="" coords="696,49,843,78"/>
+<area shape="rect" id="node18" href="$vgic_8c.html#a4cf554520738a7934bc4e6917853330c" title="vgic_enable" alt="" coords="724,102,815,131"/>
+<area shape="rect" id="node20" href="$vgic_8c.html#abfca2f5be8dfbb355800d70dbda23b5e" title="_vgic_dump_regs" alt="" coords="708,155,831,185"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$generic__timer_8c.html#ae4cbbf157ccf4126af25918bfc239918" title="generic_timer_disable_int" alt="" coords="208,5,376,35"/>
+<area shape="rect" id="node9" href="$timer_8c.html#a2d0ba1e2f2d1f8e831afdae609ccf3ae" title="_timer_each_callback_channel" alt="" coords="192,165,392,195"/>
+<area shape="rect" id="node11" href="$generic__timer_8c.html#a9c827fc2504de623842afa015a0791e2" title="generic_timer_set_tval" alt="" coords="216,112,368,141"/>
+<area shape="rect" id="node14" href="$generic__timer_8c.html#ac31d0e77e798fb55de96b4ff320c1a17" title="generic_timer_enable_int" alt="" coords="209,59,375,88"/>
+<area shape="rect" id="node5" href="$generic__timer__regs_8h.html#a076a2f37c8f342ce8d64fda8bf6cdc90" title="generic_timer_reg_read" alt="" coords="441,5,599,35"/>
+<area shape="rect" id="node7" href="$generic__timer__regs_8h.html#a21908c6f55add221caf5e3de30fe8f77" title="generic_timer_reg_write" alt="" coords="440,59,600,88"/>
+</map>

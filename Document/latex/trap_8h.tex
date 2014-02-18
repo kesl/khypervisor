@@ -1,0 +1,36 @@
+\hypertarget{trap_8h}{\section{trap.\-h \-File \-Reference}
+\label{trap_8h}\index{trap.\-h@{trap.\-h}}
+}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=194pt]{trap_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$ \hyperlink{trap_8h_a795de22500c2371c39b9275b38e10b91}{trap\-\_\-saved\-\_\-regs} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{trap_8h_a795de22500c2371c39b9275b38e10b91}{\index{trap.\-h@{trap.\-h}!trap\-\_\-saved\-\_\-regs@{trap\-\_\-saved\-\_\-regs}}
+\index{trap\-\_\-saved\-\_\-regs@{trap\-\_\-saved\-\_\-regs}!trap.h@{trap.\-h}}
+\subsubsection[{trap\-\_\-saved\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf arch\-\_\-regs}$\ast$ {\bf trap\-\_\-saved\-\_\-regs} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}read\mbox{]}}}}\label{trap_8h_a795de22500c2371c39b9275b38e10b91}
+
+
+\-Definition at line 151 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+    return _trap_hyp_saved_regs;
+}
+\end{DoxyCode}

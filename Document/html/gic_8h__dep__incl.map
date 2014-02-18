@@ -1,0 +1,13 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$context_8c.html" title="context.c" alt="" coords="5,160,80,189"/>
+<area shape="rect" id="node5" href="$gic_8c.html" title="gic/gic.c" alt="" coords="205,160,275,189"/>
+<area shape="rect" id="node7" href="$vgic_8c.html" title="gic/vgic.c" alt="" coords="256,83,333,112"/>
+<area shape="rect" id="node9" href="$generic__timer_8h.html" title="include/generic_timer.h" alt="" coords="357,83,512,112"/>
+<area shape="rect" id="node15" href="$interrupt_8c.html" title="interrupt.c" alt="" coords="536,83,616,112"/>
+<area shape="rect" id="node17" href="$trap_8c.html" title="trap.c" alt="" coords="640,83,693,112"/>
+<area shape="rect" id="node19" href="$virq_8c.html" title="virq.c" alt="" coords="717,83,771,112"/>
+<area shape="rect" id="node21" href="$virqmap_8h.html" title="virqmap.h" alt="" coords="104,83,181,112"/>
+<area shape="rect" id="node11" href="$generic__timer_8c.html" title="generic_timer/generic_timer.c" alt="" coords="319,160,511,189"/>
+<area shape="rect" id="node13" href="$timer_8c.html" title="timer.c" alt="" coords="535,160,596,189"/>
+<area shape="rect" id="node25" href="$virqmap_8c.html" title="virqmap.c" alt="" coords="104,160,181,189"/>
+</map>

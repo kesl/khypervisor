@@ -1,0 +1,71 @@
+\hypertarget{vdev__sample_8h}{\section{vdev/vdev\-\_\-sample.h \-File \-Reference}
+\label{vdev__sample_8h}\index{vdev/vdev\-\_\-sample.\-h@{vdev/vdev\-\_\-sample.\-h}}
+}
+{\ttfamily \#include $<$vdev.\-h$>$}\*
+\-Include dependency graph for vdev\-\_\-sample.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{vdev__sample_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=186pt]{vdev__sample_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__sample_8h_ae7bf575925e2277b4fc5f5a1855cd7bf}{vdev\-\_\-sample\-\_\-init} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} base\-\_\-addr)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev__sample_8h_ae7bf575925e2277b4fc5f5a1855cd7bf}{\index{vdev\-\_\-sample.\-h@{vdev\-\_\-sample.\-h}!vdev\-\_\-sample\-\_\-init@{vdev\-\_\-sample\-\_\-init}}
+\index{vdev\-\_\-sample\-\_\-init@{vdev\-\_\-sample\-\_\-init}!vdev_sample.h@{vdev\-\_\-sample.\-h}}
+\subsubsection[{vdev\-\_\-sample\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-sample\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{base\-\_\-addr}
+\end{DoxyParamCaption}
+)}}\label{vdev__sample_8h_ae7bf575925e2277b4fc5f5a1855cd7bf}
+
+
+\-Definition at line 56 of file vdev\-\_\-sample.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    _vdev_info.name     = "sample";
+    _vdev_info.base     = base_addr; 
+    _vdev_info.size     = sizeof(struct vdev_sample_regs);
+    _vdev_info.handler  = access_handler;
+
+    result = vdev_reg_device(&_vdev_info);
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
+    } else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, 
+      _vdev_info.name, result);
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev__sample_8h_ae7bf575925e2277b4fc5f5a1855cd7bf_cgraph}
+\end{center}
+\end{figure}
+
+

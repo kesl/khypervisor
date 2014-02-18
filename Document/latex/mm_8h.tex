@@ -1,0 +1,351 @@
+\hypertarget{mm_8h}{\section{mm.\-h \-File \-Reference}
+\label{mm_8h}\index{mm.\-h@{mm.\-h}}
+}
+{\ttfamily \#include $<$hvmm\-\_\-types.\-h$>$}\*
+{\ttfamily \#include \char`\"{}arch\-\_\-types.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}lpae.\-h\char`\"{}}\*
+\-Include dependency graph for mm.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{mm_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=194pt]{mm_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{mm_8h_ae8f2b7d0b30b5fa78b50cee688872d93}{hvmm\-\_\-mm\-\_\-init} (void)
+\item 
+void $\ast$ \hyperlink{mm_8h_a3421aed4792b89e78be604efbae319dc}{hmm\-\_\-malloc} (unsigned long size)
+\item 
+void \hyperlink{mm_8h_ac1edcf1771542874ebcf1a67ceb90a92}{hmm\-\_\-free} (void $\ast$addr)
+\item 
+void \hyperlink{mm_8h_a4ca7bdd94dcc4cfff4b534b6ba0c7493}{hmm\-\_\-umap} (unsigned long virt, unsigned long npages)
+\item 
+void \hyperlink{mm_8h_addc0cbf4f901eef091961846460ab81f}{hmm\-\_\-map} (unsigned long phys, unsigned long virt, unsigned long npages)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{mm_8h_ac1edcf1771542874ebcf1a67ceb90a92}{\index{mm.\-h@{mm.\-h}!hmm\-\_\-free@{hmm\-\_\-free}}
+\index{hmm\-\_\-free@{hmm\-\_\-free}!mm.h@{mm.\-h}}
+\subsubsection[{hmm\-\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-free} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{addr}
+\end{DoxyParamCaption}
+)}}\label{mm_8h_ac1edcf1771542874ebcf1a67ceb90a92}
+
+
+\-Definition at line 374 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    fl_bheader *bp, *p;
+    bp = (fl_bheader *)ap - 1; /* point to block header */
+    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr){
+        if(p >= p->s.ptr && (bp > p || bp < p->s.ptr)){
+            break; /* freed block at start or end of arena */
+        }
+    }
+    if(bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
+        bp->s.size += p->s.ptr->s.size;
+        bp->s.ptr = p->s.ptr->s.ptr;
+    } else
+        bp->s.ptr = p->s.ptr;
+    if (p + p->s.size == bp) {      /* join to lower nbr */
+        p->s.size += bp->s.size;
+        p->s.ptr = bp->s.ptr;
+    } else
+        p->s.ptr = bp;
+    freep = p;
+}
+\end{DoxyCode}
+\hypertarget{mm_8h_a3421aed4792b89e78be604efbae319dc}{\index{mm.\-h@{mm.\-h}!hmm\-\_\-malloc@{hmm\-\_\-malloc}}
+\index{hmm\-\_\-malloc@{hmm\-\_\-malloc}!mm.h@{mm.\-h}}
+\subsubsection[{hmm\-\_\-malloc}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf hmm\-\_\-malloc} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{size}
+\end{DoxyParamCaption}
+)}}\label{mm_8h_a3421aed4792b89e78be604efbae319dc}
+
+
+\-Definition at line 411 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    fl_bheader *p, *prevp;
+    unsigned int nunits; 
+    nunits = (size + sizeof(fl_bheader) - 1)/sizeof(fl_bheader) + 1;
+    if(nunits < 2){
+        return 0;
+    }
+    
+    if ((prevp = freep) == 0 ) { /* no free list yet */
+        freep_base.s.ptr = freep = prevp = &freep_base;
+        freep_base.s.size = 0;
+    }
+    for ( p = prevp->s.ptr; ; prevp = p, p = p->s.ptr) {
+        if ( p->s.size >= nunits ) { /* big enough */
+            if ( p->s.size == nunits ) /* exactly */
+                prevp->s.ptr = p->s.ptr;
+            else {                    /* allocate tail end */
+                p->s.size -= nunits;
+                p += p->s.size;
+                p->s.size = nunits;
+            }
+            freep = prevp;
+            return (void *)(p+1);
+    }
+    if ( p == freep )   /* wrapped around free list */
+        if (( p = morecore(nunits)) == 0 )
+                return 0;  /* none avaliable memory left */
+    }
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8h_a3421aed4792b89e78be604efbae319dc_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8h_addc0cbf4f901eef091961846460ab81f}{\index{mm.\-h@{mm.\-h}!hmm\-\_\-map@{hmm\-\_\-map}}
+\index{hmm\-\_\-map@{hmm\-\_\-map}!mm.h@{mm.\-h}}
+\subsubsection[{hmm\-\_\-map}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-map} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{phys, }
+\item[{unsigned long}]{virt, }
+\item[{unsigned long}]{npages}
+\end{DoxyParamCaption}
+)}}\label{mm_8h_addc0cbf4f901eef091961846460ab81f}
+
+
+\-Definition at line 337 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( virt, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_conf_l3_table( &map_table_p[i], (uint64_t)phys, 1 );
+    }
+    hmm_flushTLB();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=316pt]{mm_8h_addc0cbf4f901eef091961846460ab81f_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8h_a4ca7bdd94dcc4cfff4b534b6ba0c7493}{\index{mm.\-h@{mm.\-h}!hmm\-\_\-umap@{hmm\-\_\-umap}}
+\index{hmm\-\_\-umap@{hmm\-\_\-umap}!mm.h@{mm.\-h}}
+\subsubsection[{hmm\-\_\-umap}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf hmm\-\_\-umap} (
+\begin{DoxyParamCaption}
+\item[{unsigned long}]{virt, }
+\item[{unsigned long}]{npages}
+\end{DoxyParamCaption}
+)}}\label{mm_8h_a4ca7bdd94dcc4cfff4b534b6ba0c7493}
+
+
+\-Definition at line 327 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{ 
+    int  i;
+    lpaed_t* map_table_p = hmm_get_l3_table_entry( virt, npages );
+    for( i = 0; i < npages; i++){
+        lpaed_stage1_disable_l3_table( &map_table_p[i] );
+    }
+    hmm_flushTLB();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=334pt]{mm_8h_a4ca7bdd94dcc4cfff4b534b6ba0c7493_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{mm_8h_ae8f2b7d0b30b5fa78b50cee688872d93}{\index{mm.\-h@{mm.\-h}!hvmm\-\_\-mm\-\_\-init@{hvmm\-\_\-mm\-\_\-init}}
+\index{hvmm\-\_\-mm\-\_\-init@{hvmm\-\_\-mm\-\_\-init}!mm.h@{mm.\-h}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf hvmm\-\_\-mm\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{mm_8h_ae8f2b7d0b30b5fa78b50cee688872d93}
+
+
+\-Definition at line 193 of file mm.\-c.
+
+
+\begin{DoxyCode}
+{
+/*
+ *  MAIR0, MAIR1
+ *  HMAIR0, HMAIR1
+ *  HTCR
+ *  HTCTLR
+ *  HTTBR
+ *  HTCTLR
+ */
+    uint32_t mair, htcr, hsctlr, hcr;
+    uint64_t httbr;
+    uart_print( "[mm] mm_init: enter\n\r" );
+    
+    vmm_init();
+    _hmm_init();
+
+    // MAIR/HMAIR
+    uart_print(" --- MAIR ----\n\r" );
+    mair = read_mair0(); uart_print( "mair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_mair1(); uart_print( "mair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair0(); uart_print( "hmair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair1(); uart_print( "hmair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+
+    write_mair0( INITIAL_MAIR0VAL );
+    write_mair1( INITIAL_MAIR1VAL );
+    write_hmair0( INITIAL_MAIR0VAL );
+    write_hmair1( INITIAL_MAIR1VAL );
+
+    mair = read_mair0(); uart_print( "mair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_mair1(); uart_print( "mair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair0(); uart_print( "hmair0:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+    mair = read_hmair1(); uart_print( "hmair1:"); uart_print_hex32(mair); 
+      uart_print("\n\r");
+
+    // HTCR
+    uart_print(" --- HTCR ----\n\r" );
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); 
+      uart_print("\n\r");
+    write_htcr( 0x80002500 );
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr); 
+      uart_print("\n\r");
+
+    // HSCTLR
+    // i-Cache and Alignment Checking Enabled
+    // MMU, D-cache, Write-implies-XN, Low-latency IRQs Disabled
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+    hsctlr = HSCTLR_BASE | SCTLR_A;
+    write_hsctlr( hsctlr );
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+
+
+// HCR
+    hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("
+      \n\r");
+
+// HTCR
+    /*
+     * Shareability - SH0[13:12] = 0 - Not shared
+     * Outer Cacheability - ORGN0[11:10] = 11b - Write Back no Write Allocate
+       Cacheable
+     * Inner Cacheability - IRGN0[9:8] = 11b - Same
+     * T0SZ[2:0] = 0 - 2^32 Input Address 
+     */
+    /* Untested code commented */
+/*
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr);
+       uart_print("\n\r");
+    htcr &= ~HTCR_SH0_MASK;
+    htcr |= (0x0 << HTCR_SH0_SHIFT) & HTCR_SH0_MASK;
+    htcr &= ~HTCR_ORGN0_MASK;
+    htcr |= (0x3 << HTCR_ORGN0_SHIFT) & HTCR_ORGN0_MASK;
+    htcr &= ~VTCR_IRGN0_MASK;
+    htcr |= (0x3 << HTCR_IRGN0_SHIFT) & HTCR_IRGN0_MASK;
+    htcr &= ~VTCR_T0SZ_MASK;
+    htcr |= (0x0 << HTCR_T0SZ_SHIFT) & HTCR_T0SZ_MASK;
+    write_htcr( htcr );
+    htcr = read_htcr(); uart_print( "htcr:"); uart_print_hex32(htcr);
+       uart_print("\n\r");
+*/
+
+    /* HTTBR = &__hmm_pgtable */
+    httbr = read_httbr(); uart_print( "httbr:" ); uart_print_hex64(httbr); 
+      uart_print("\n\r");
+    httbr &= 0xFFFFFFFF00000000ULL;
+    httbr |= (uint32_t) &_hmm_pgtable;
+    httbr &= HTTBR_BADDR_MASK;
+    uart_print( "writing httbr:" ); uart_print_hex64(httbr); uart_print("\n\r")
+      ;
+    write_httbr( httbr );
+    httbr = read_httbr(); uart_print( "read back httbr:" ); uart_print_hex64(
+      httbr); uart_print("\n\r");
+
+    /* Enable PL2 Stage 1 MMU */
+
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+
+    /* HSCTLR Enable MMU and D-cache */
+    // hsctlr |= (SCTLR_M |SCTLR_C);
+    hsctlr |= (SCTLR_M);
+    
+    /* Flush PTE writes */
+    asm("dsb");
+
+    write_hsctlr( hsctlr );
+
+    /* Flush iCache */
+    asm("isb");
+
+    hsctlr = read_hsctlr(); uart_print( "hsctlr:"); uart_print_hex32(hsctlr); 
+      uart_print("\n\r");
+
+    hmm_heap_init();
+
+    uart_print( "[mm] mm_init: exit\n\r" );
+
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{mm_8h_ae8f2b7d0b30b5fa78b50cee688872d93_cgraph}
+\end{center}
+\end{figure}
+
+

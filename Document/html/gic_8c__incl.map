@@ -1,0 +1,15 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$gic_8h.html" title="gic.h" alt="" coords="483,160,533,189"/>
+<area shape="rect" id="node5" href="$hvmm__types_8h.html" title="hvmm_types.h" alt="" coords="5,237,112,267"/>
+<area shape="rect" id="node10" href="$smp_8h.html" title="smp.h" alt="" coords="475,237,533,267"/>
+<area shape="rect" id="node13" href="$armv7__p15_8h.html" title="armv7_p15.h" alt="" coords="608,237,704,267"/>
+<area shape="rect" id="node16" href="$a15__cp15__sysregs_8h.html" title="a15_cp15_sysregs.h" alt="" coords="728,237,869,267"/>
+<area shape="rect" id="node20" href="$context_8h.html" title="context.h" alt="" coords="228,83,303,112"/>
+<area shape="rect" id="node32" href="$hvmm__trace_8h.html" title="hvmm_trace.h" alt="" coords="789,160,893,189"/>
+<area shape="rect" id="node36" href="$gic__regs_8h.html" title="gic_regs.h" alt="" coords="760,83,843,112"/>
+<area shape="rect" id="node38" href="$virqmap_8h.html" title="virqmap.h" alt="" coords="507,83,584,112"/>
+<area shape="rect" id="node43" href="$virq_8h.html" title="virq.h" alt="" coords="29,160,83,189"/>
+<area shape="rect" id="node7" href="$arch__types_8h.html" title="arch_types.h" alt="" coords="389,315,485,344"/>
+<area shape="rect" id="node25" href="$vgic_8h.html" title="vgic.h" alt="" coords="107,160,163,189"/>
+<area shape="rect" id="node29" href="$lpae_8h.html" title="lpae.h" alt="" coords="237,160,293,189"/>
+</map>

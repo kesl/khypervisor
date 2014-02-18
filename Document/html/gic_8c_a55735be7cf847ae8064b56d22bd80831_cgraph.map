@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$virqmap_8c.html#a303ca0708bf2514bbd843c4aa2a8a829" title="virqmap_for_pirq" alt="" coords="148,5,265,35"/>
+<area shape="rect" id="node5" href="$virq_8c.html#a6bd895c43353871b1a0da7c40301215d" title="virq_inject" alt="" coords="167,59,247,88"/>
+<area shape="rect" id="node7" href="$slotpirq_8c.html#a384b4abb370436f02ed5b937f3690a6c" title="slotvirq_getslot" alt="" coords="316,59,425,88"/>
+</map>

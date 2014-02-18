@@ -1,0 +1,105 @@
+\hypertarget{vdev__timer_8h}{\section{vdev/vdev\-\_\-timer.h \-File \-Reference}
+\label{vdev__timer_8h}\index{vdev/vdev\-\_\-timer.\-h@{vdev/vdev\-\_\-timer.\-h}}
+}
+{\ttfamily \#include $<$vdev.\-h$>$}\*
+\-Include dependency graph for vdev\-\_\-timer.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{vdev__timer_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=176pt]{vdev__timer_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{vdev__timer_8h_a9f6b6471e80db7d8557992632c77be55}{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t} )(\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} status)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__timer_8h_aaeeeba29a45e3c702286a92c2e6f9a45}{vdev\-\_\-timer\-\_\-init} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} base\-\_\-addr)
+\item 
+void \hyperlink{vdev__timer_8h_a9750f965ecc4cb250d1489fb65b75894}{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status} (\hyperlink{vdev__timer_8h_a9f6b6471e80db7d8557992632c77be55}{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t} callback)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{vdev__timer_8h_a9f6b6471e80db7d8557992632c77be55}{\index{vdev\-\_\-timer.\-h@{vdev\-\_\-timer.\-h}!vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t@{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t}}
+\index{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t@{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t}!vdev_timer.h@{vdev\-\_\-timer.\-h}}
+\subsubsection[{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ {\bf vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t})({\bf vmid\-\_\-t} vmid, {\bf uint32\-\_\-t} status)}}\label{vdev__timer_8h_a9f6b6471e80db7d8557992632c77be55}
+
+
+\-Definition at line 7 of file vdev\-\_\-timer.\-h.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev__timer_8h_aaeeeba29a45e3c702286a92c2e6f9a45}{\index{vdev\-\_\-timer.\-h@{vdev\-\_\-timer.\-h}!vdev\-\_\-timer\-\_\-init@{vdev\-\_\-timer\-\_\-init}}
+\index{vdev\-\_\-timer\-\_\-init@{vdev\-\_\-timer\-\_\-init}!vdev_timer.h@{vdev\-\_\-timer.\-h}}
+\subsubsection[{vdev\-\_\-timer\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-timer\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{base\-\_\-addr}
+\end{DoxyParamCaption}
+)}}\label{vdev__timer_8h_aaeeeba29a45e3c702286a92c2e6f9a45}
+
+
+\-Definition at line 53 of file vdev\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    _vdev_info.name     = "vtimer";
+    _vdev_info.base     = base_addr; 
+    _vdev_info.size     = sizeof(struct vdev_timer_regs);
+    _vdev_info.handler  = access_handler;
+
+    result = vdev_reg_device(&_vdev_info);
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
+    } else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, 
+      _vdev_info.name, result);
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=290pt]{vdev__timer_8h_aaeeeba29a45e3c702286a92c2e6f9a45_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__timer_8h_a9750f965ecc4cb250d1489fb65b75894}{\index{vdev\-\_\-timer.\-h@{vdev\-\_\-timer.\-h}!vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status@{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status}}
+\index{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status@{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status}!vdev_timer.h@{vdev\-\_\-timer.\-h}}
+\subsubsection[{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{{\bf vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{vdev__timer_8h_a9750f965ecc4cb250d1489fb65b75894}
+
+
+\-Definition at line 15 of file vdev\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    _write_status = callback;
+}
+\end{DoxyCode}

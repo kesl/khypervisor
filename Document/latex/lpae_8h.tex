@@ -1,0 +1,630 @@
+\hypertarget{lpae_8h}{\section{lpae.\-h \-File \-Reference}
+\label{lpae_8h}\index{lpae.\-h@{lpae.\-h}}
+}
+{\ttfamily \#include $<$arch\-\_\-types.\-h$>$}\*
+\-Include dependency graph for lpae.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=152pt]{lpae_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{lpae_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structlpae__pt__t}{lpae\-\_\-pt\-\_\-t}
+\item 
+struct \hyperlink{structlpae__p2m__t}{lpae\-\_\-p2m\-\_\-t}
+\item 
+struct \hyperlink{structlpae__walk__t}{lpae\-\_\-walk\-\_\-t}
+\item 
+union \hyperlink{unionlpaed__t}{lpaed\-\_\-t}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{lpae_8h_a6befaab0b52e6cf5e8a38301caa9ef0c}{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T}~12
+\item 
+\#define \hyperlink{lpae_8h_aeb496b092ccc1c44143800ad41b19335}{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E}~(1$<$$<$\hyperlink{lpae_8h_a6befaab0b52e6cf5e8a38301caa9ef0c}{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T})
+\item 
+\#define \hyperlink{lpae_8h_a1021c5152799cbb76efce3bcbe05a018}{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K}~(0x\-F\-F\-F)
+\item 
+\#define \hyperlink{lpae_8h_af225cc22c2e7f987b80ee61da25ae26b}{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T}~21
+\item 
+\#define \hyperlink{lpae_8h_aac6ea8fa2a1d2cfff80c719c494f3f2e}{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E}~(1$<$$<$\hyperlink{lpae_8h_af225cc22c2e7f987b80ee61da25ae26b}{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T})
+\item 
+\#define \hyperlink{lpae_8h_a973e297107a6fb3776bc38ba8b1fafb6}{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K}~(0x1\-F\-F\-F\-F\-F)
+\item 
+\#define \hyperlink{lpae_8h_a95ca86b5fd6ce28a7695653bc71a0b3f}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D}~0x0
+\item 
+\#define \hyperlink{lpae_8h_a52bff4a3c8004ea63b8835025adeb28e}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}~0x1
+\item 
+\#define \hyperlink{lpae_8h_a88bd1a23eabbf2374187c467857d80b8}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}~0x2
+\item 
+\#define \hyperlink{lpae_8h_a479432bde5b8585ad9478a5b959aa687}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K}~0x3
+\item 
+\#define \hyperlink{lpae_8h_a315e5ac1c85e63396b31afaac40ab495}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}~0x4
+\item 
+\#define \hyperlink{lpae_8h_a7133cfc47d27db34bb5f9b75619f1c90}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}~0x7
+\item 
+\#define \hyperlink{lpae_8h_abd3f9c52eb9e0378e141fbc1919ad354}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}~\hyperlink{mm_8c_acd04a0327233a94fd9f0a88e04b14ef5}{\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}
+\item 
+\#define \hyperlink{lpae_8h_a908c8246252fe22a6917a0b4be09467f}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C}~\hyperlink{mm_8c_a320201c0180cde1303067f407f4d5390}{\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}
+\item 
+\#define \hyperlink{lpae_8h_aca56eb5562d9a4e0c1882838075d1d30}{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}~\hyperlink{mm_8c_a973016ed9f4fcee58ec1ae95d320c71c}{\-W\-R\-I\-T\-E\-B\-A\-C\-K}
+\end{DoxyCompactItemize}
+\subsection*{\-Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t} \{ \*
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ac472af591b2db33ce78fd34b838d99fa}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-S\-O} =  0x0, 
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a7fe0cff686aa9177ff5c624986e7fc12}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-D\-M} =  0x1, 
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ad372b89d1be3be319811b8093089c769}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-N\-C} =  0x4, 
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a199cb5d0ed2c3c8ff3ab2436ce6c0163}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-T} =  0x8, 
+\*
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a31d562adecd95f1e372bed8cb00661d0}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-B} =  0x\-C, 
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a4ddd75c821615133f05ba1f98c4886e0}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-N\-C} =  0x1, 
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a907daee7e55021342e4889c691d2bdda}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-T} =  0x2, 
+\hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ac140cae2daddb7bc4485e6a20438c9b6}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-B} =  0x3
+ \}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8h_aaa674eddb596444230e0aea1ba32e90e}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} attr\-\_\-idx)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8h_af1169c7fcd127aa56142bfd0314691ee}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t} mattr)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8h_a804b9089155c7bc74ccea12d009c36fd}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8h_a6dba6fbdc7725faf61722eff42e18bbc}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8h_a1f31704271c412a5077309bf60b83f86}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} attr\-\_\-idx, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8h_a7063374a9b74906e426f94dc544b132b}{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl3, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} baddr, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8h_a95996e46e11ae176d533eab9576ddc1a}{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2)
+\item 
+void \hyperlink{lpae_8h_aff0ed5c291334c705ddbd99f197e1247}{lpaed\-\_\-stage2\-\_\-map\-\_\-page} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$pte, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t} mattr)
+\item 
+void \hyperlink{lpae_8h_ae7e55ecf2bf23e4f97618e990b61159d}{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl1, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} baddr, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8h_ad87d6a55d9a4301257cc7efe32ad0153}{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} baddr, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8h_abfb766e3ac67185b6e435f24b3223527}{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2)
+\item 
+void \hyperlink{lpae_8h_adeb0f02a13e39ed3e5bab0574e89c13c}{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{lpae_8h_a52bff4a3c8004ea63b8835025adeb28e}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}~0x1}}\label{lpae_8h_a52bff4a3c8004ea63b8835025adeb28e}
+
+
+\-Definition at line 22 of file lpae.\-h.
+
+\hypertarget{lpae_8h_aca56eb5562d9a4e0c1882838075d1d30}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-C\-A\-C\-H\-E\-D}~{\bf \-W\-R\-I\-T\-E\-B\-A\-C\-K}}}\label{lpae_8h_aca56eb5562d9a4e0c1882838075d1d30}
+
+
+\-Definition at line 29 of file lpae.\-h.
+
+\hypertarget{lpae_8h_abd3f9c52eb9e0378e141fbc1919ad354}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-N\-O\-N\-S\-H\-A\-R\-E\-D}~{\bf \-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}}}\label{lpae_8h_abd3f9c52eb9e0378e141fbc1919ad354}
+
+
+\-Definition at line 27 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a315e5ac1c85e63396b31afaac40ab495}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-S\-H\-A\-R\-E\-D}~0x4}}\label{lpae_8h_a315e5ac1c85e63396b31afaac40ab495}
+
+
+\-Definition at line 25 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a908c8246252fe22a6917a0b4be09467f}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-D\-E\-V\-\_\-\-W\-C}~{\bf \-B\-U\-F\-F\-E\-R\-A\-B\-L\-E}}}\label{lpae_8h_a908c8246252fe22a6917a0b4be09467f}
+
+
+\-Definition at line 28 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a95ca86b5fd6ce28a7695653bc71a0b3f}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-U\-N\-C\-A\-C\-H\-E\-D}~0x0}}\label{lpae_8h_a95ca86b5fd6ce28a7695653bc71a0b3f}
+
+
+\-Definition at line 21 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a7133cfc47d27db34bb5f9b75619f1c90}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-A\-L\-L\-O\-C}~0x7}}\label{lpae_8h_a7133cfc47d27db34bb5f9b75619f1c90}
+
+
+\-Definition at line 26 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a479432bde5b8585ad9478a5b959aa687}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-B\-A\-C\-K}~0x3}}\label{lpae_8h_a479432bde5b8585ad9478a5b959aa687}
+
+
+\-Definition at line 24 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a88bd1a23eabbf2374187c467857d80b8}{\index{lpae.\-h@{lpae.\-h}!\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}}
+\index{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H@{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-T\-R\-\_\-\-I\-D\-X\-\_\-\-W\-R\-I\-T\-E\-T\-H\-R\-O\-U\-G\-H}~0x2}}\label{lpae_8h_a88bd1a23eabbf2374187c467857d80b8}
+
+
+\-Definition at line 23 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a973e297107a6fb3776bc38ba8b1fafb6}{\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K@{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K}}
+\index{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K@{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-M\-A\-S\-K}~(0x1\-F\-F\-F\-F\-F)}}\label{lpae_8h_a973e297107a6fb3776bc38ba8b1fafb6}
+
+
+\-Definition at line 11 of file lpae.\-h.
+
+\hypertarget{lpae_8h_af225cc22c2e7f987b80ee61da25ae26b}{\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T@{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T@{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T}~21}}\label{lpae_8h_af225cc22c2e7f987b80ee61da25ae26b}
+
+
+\-Definition at line 9 of file lpae.\-h.
+
+\hypertarget{lpae_8h_aac6ea8fa2a1d2cfff80c719c494f3f2e}{\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E@{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E}}
+\index{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E@{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-I\-Z\-E}~(1$<$$<${\bf \-L\-P\-A\-E\-\_\-\-B\-L\-O\-C\-K\-\_\-\-L2\-\_\-\-S\-H\-I\-F\-T})}}\label{lpae_8h_aac6ea8fa2a1d2cfff80c719c494f3f2e}
+
+
+\-Definition at line 10 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a1021c5152799cbb76efce3bcbe05a018}{\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K@{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K}}
+\index{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K@{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-M\-A\-S\-K}~(0x\-F\-F\-F)}}\label{lpae_8h_a1021c5152799cbb76efce3bcbe05a018}
+
+
+\-Definition at line 7 of file lpae.\-h.
+
+\hypertarget{lpae_8h_a6befaab0b52e6cf5e8a38301caa9ef0c}{\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T@{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T@{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T}~12}}\label{lpae_8h_a6befaab0b52e6cf5e8a38301caa9ef0c}
+
+
+\-Definition at line 5 of file lpae.\-h.
+
+\hypertarget{lpae_8h_aeb496b092ccc1c44143800ad41b19335}{\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E@{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E}}
+\index{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E@{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E}!lpae.h@{lpae.\-h}}
+\subsubsection[{\-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-I\-Z\-E}~(1$<$$<${\bf \-L\-P\-A\-E\-\_\-\-P\-A\-G\-E\-\_\-\-S\-H\-I\-F\-T})}}\label{lpae_8h_aeb496b092ccc1c44143800ad41b19335}
+
+
+\-Definition at line 6 of file lpae.\-h.
+
+
+
+\subsection{\-Enumeration \-Type \-Documentation}
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage2\-\_\-memattr\-\_\-t@{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}}
+\index{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t@{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}}}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}
+\begin{Desc}
+\item[\-Enumerator\-: ]\par
+\begin{description}
+\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-S\-O@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-S\-O}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-S\-O@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-S\-O}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ac472af591b2db33ce78fd34b838d99fa}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-S\-O}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ac472af591b2db33ce78fd34b838d99fa}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-D\-M@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-D\-M}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-D\-M@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-D\-M}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a7fe0cff686aa9177ff5c624986e7fc12}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-D\-M}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a7fe0cff686aa9177ff5c624986e7fc12}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-N\-C@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-N\-C}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-N\-C@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-N\-C}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ad372b89d1be3be319811b8093089c769}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-N\-C}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ad372b89d1be3be319811b8093089c769}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-T@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-T}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-T@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-T}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a199cb5d0ed2c3c8ff3ab2436ce6c0163}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-T}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a199cb5d0ed2c3c8ff3ab2436ce6c0163}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-B@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-B}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-B@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-B}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a31d562adecd95f1e372bed8cb00661d0}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-O\-W\-B}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a31d562adecd95f1e372bed8cb00661d0}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-N\-C@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-N\-C}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-N\-C@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-N\-C}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a4ddd75c821615133f05ba1f98c4886e0}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-N\-C}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a4ddd75c821615133f05ba1f98c4886e0}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-T@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-T}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-T@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-T}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a907daee7e55021342e4889c691d2bdda}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-T}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371a907daee7e55021342e4889c691d2bdda}
+}]\index{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-B@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-B}!lpae.\-h@{lpae.\-h}}\index{lpae.\-h@{lpae.\-h}!\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-B@{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-B}}\item[{\em 
+\hypertarget{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ac140cae2daddb7bc4485e6a20438c9b6}{\-L\-P\-A\-E\-D\-\_\-\-S\-T\-A\-G\-E2\-\_\-\-M\-E\-M\-A\-T\-T\-R\-\_\-\-N\-O\-R\-M\-A\-L\-\_\-\-I\-W\-B}\label{lpae_8h_a05d556a9b3ba68a3bafcc96839956371ac140cae2daddb7bc4485e6a20438c9b6}
+}]\end{description}
+\end{Desc}
+
+
+
+\-Definition at line 131 of file lpae.\-h.
+
+
+\begin{DoxyCode}
+             {
+    LPAED_STAGE2_MEMATTR_SO = 0x0,   /* Strongly Ordered */
+    LPAED_STAGE2_MEMATTR_DM = 0x1,   /* Device memory */
+    LPAED_STAGE2_MEMATTR_NORMAL_ONC = 0x4,  /* Outer Non-cacheable */
+    LPAED_STAGE2_MEMATTR_NORMAL_OWT = 0x8,
+    LPAED_STAGE2_MEMATTR_NORMAL_OWB = 0xC,
+    LPAED_STAGE2_MEMATTR_NORMAL_INC = 0x1,
+    LPAED_STAGE2_MEMATTR_NORMAL_IWT = 0x2,
+    LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,
+} lpaed_stage2_memattr_t;
+\end{DoxyCode}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{lpae_8h_aaa674eddb596444230e0aea1ba32e90e}{\index{lpae.\-h@{lpae.\-h}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block}!lpae.h@{lpae.\-h}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf uint8\-\_\-t}}]{attr\-\_\-idx}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_aaa674eddb596444230e0aea1ba32e90e}
+
+
+\-Definition at line 47 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* lpae.c */
+    lpaed_t lpaed;
+
+    printh( "[mm] hvmm_mm_lpaed_l1_block:\n\r" );
+    printh( " pa:"); uart_print_hex64(pa); printh("\n\r");
+    printh( " attr_idx:"); uart_print_hex32((uint32_t) attr_idx); printh("\n\r"
+      );
+
+    // Valid Block Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 0;
+
+    lpaed.bits &= ~TTBL_L1_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L1_OUTADDR_MASK;
+    lpaed.pt.sbz = 0;
+
+    // Lower block attributes
+    lpaed.pt.ai = attr_idx;
+    lpaed.pt.ns = 1;    // Allow Non-secure access
+    lpaed.pt.user = 1;
+    lpaed.pt.ro = 0;
+    lpaed.pt.sh = 2;    // Outher Shareable
+    lpaed.pt.af = 1;    // Access Flag set to 1?
+    lpaed.pt.ng = 1;
+
+    // Upper block attributes
+    lpaed.pt.hint = 0;
+    lpaed.pt.pxn = 0;
+    lpaed.pt.xn = 0;    // eXecute Never = 0
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_a804b9089155c7bc74ccea12d009c36fd}{\index{lpae.\-h@{lpae.\-h}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_a804b9089155c7bc74ccea12d009c36fd}
+
+
+\-Definition at line 134 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{  
+    lpaed_t lpaed;
+   
+    // Valid Table Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 1;
+ 
+    // Next-level table address [39:12]
+    lpaed.bits &= ~TTBL_L1_TABADDR_MASK;
+    lpaed.bits |= pa & TTBL_L1_TABADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    lpaed.pt.pxnt = 0;  // PXN limit for subsequent levels of lookup
+    lpaed.pt.xnt = 0;   // XN limit for subsequent levels of lookup
+    lpaed.pt.apt = 0;   // Access permissions limit for subsequent levels of
+       lookup
+    lpaed.pt.nst = 1;   // Table address is in the Non-secure physical address
+       space
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_af1169c7fcd127aa56142bfd0314691ee}{\index{lpae.\-h@{lpae.\-h}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block}!lpae.h@{lpae.\-h}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}}]{mattr}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_af1169c7fcd127aa56142bfd0314691ee}
+
+
+\-Definition at line 15 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* lpae.c */
+    lpaed_t lpaed;
+
+    // Valid Block Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 0;
+
+    lpaed.bits &= ~TTBL_L2_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L2_OUTADDR_MASK;
+    lpaed.p2m.sbz3 = 0;
+
+    // Lower block attributes
+    lpaed.p2m.mattr = mattr & 0x0F; 
+    lpaed.p2m.read = 1;     // Read/Write
+    lpaed.p2m.write = 1;        
+    lpaed.p2m.sh = 0;   // Non-shareable
+    lpaed.p2m.af = 1;   // Access Flag set to 1?
+    lpaed.p2m.sbz4 = 0;
+
+    // Upper block attributes
+    lpaed.p2m.hint = 0;
+    lpaed.p2m.sbz2 = 0;
+    lpaed.p2m.xn = 0;   // eXecute Never = 0
+
+    lpaed.p2m.sbz1 = 0;
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_a6dba6fbdc7725faf61722eff42e18bbc}{\index{lpae.\-h@{lpae.\-h}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_a6dba6fbdc7725faf61722eff42e18bbc}
+
+
+\-Definition at line 158 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{ 
+    lpaed_t lpaed;
+  
+    // Valid Table Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 1;
+
+    // Next-level table address [39:12]
+    lpaed.bits &= ~TTBL_L2_TABADDR_MASK;
+    lpaed.bits |= pa & TTBL_L2_TABADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    lpaed.pt.pxnt = 0;  // PXN limit for subsequent levels of lookup
+    lpaed.pt.xnt = 0;   // XN limit for subsequent levels of lookup
+    lpaed.pt.apt = 0;   // Access permissions limit for subsequent levels of
+       lookup
+    lpaed.pt.nst = 1;   // Table address is in the Non-secure physical address
+       space
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_a1f31704271c412a5077309bf60b83f86}{\index{lpae.\-h@{lpae.\-h}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf uint8\-\_\-t}}]{attr\-\_\-idx, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_a1f31704271c412a5077309bf60b83f86}
+
+
+\-Definition at line 182 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{ 
+    lpaed_t lpaed;
+  
+    // Valid Table Entry
+    lpaed.pt.valid = valid;
+    lpaed.pt.table = 1;
+
+    // 4KB physical address [39:12]
+    lpaed.bits &= ~TTBL_L3_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L3_OUTADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    //Lower page attributes
+    lpaed.pt.ai = attr_idx;
+    lpaed.pt.ns = 1;    // Allow Non-secure access
+    lpaed.pt.user = 1;
+    lpaed.pt.ro = 0;
+    lpaed.pt.sh = 2;    // Outher Shareable
+    lpaed.pt.af = 1;    // Access Flag set to 1?
+    lpaed.pt.ng = 1;
+
+    // Upper page attributes
+    lpaed.pt.hint = 0;
+    lpaed.pt.pxn = 0;
+    lpaed.pt.xn = 0;    // eXecute Never = 0
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_a7063374a9b74906e426f94dc544b132b}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table}}
+\index{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl3, }
+\item[{{\bf uint64\-\_\-t}}]{baddr, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_a7063374a9b74906e426f94dc544b132b}
+
+
+\-Definition at line 214 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl3->pt.valid = valid ? 1 : 0;
+    ttbl3->bits &= ~TTBL_L3_OUTADDR_MASK;
+    ttbl3->bits |= baddr & TTBL_L3_OUTADDR_MASK;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_a95996e46e11ae176d533eab9576ddc1a}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table}}
+\index{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_a95996e46e11ae176d533eab9576ddc1a}
+
+
+\-Definition at line 221 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl3->pt.valid = 0;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_ae7e55ecf2bf23e4f97618e990b61159d}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl1, }
+\item[{{\bf uint64\-\_\-t}}]{baddr, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_ae7e55ecf2bf23e4f97618e990b61159d}
+
+
+\-Definition at line 81 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl1->pt.valid = valid ? 1 : 0;
+    ttbl1->pt.table = valid ? 1 : 0;
+    ttbl1->bits &= ~TTBL_L1_TABADDR_MASK;
+    ttbl1->bits |= baddr & TTBL_L1_TABADDR_MASK;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_ad87d6a55d9a4301257cc7efe32ad0153}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2, }
+\item[{{\bf uint64\-\_\-t}}]{baddr, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_ad87d6a55d9a4301257cc7efe32ad0153}
+
+
+\-Definition at line 89 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl2->pt.valid = valid ? 1 : 0;
+    ttbl2->pt.table = valid ? 1 : 0;
+    ttbl2->bits &= ~TTBL_L2_TABADDR_MASK;
+    ttbl2->bits |= baddr & TTBL_L2_TABADDR_MASK;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_adeb0f02a13e39ed3e5bab0574e89c13c}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_adeb0f02a13e39ed3e5bab0574e89c13c}
+
+
+\-Definition at line 102 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl2->pt.valid = 0;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_abfb766e3ac67185b6e435f24b3223527}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_abfb766e3ac67185b6e435f24b3223527}
+
+
+\-Definition at line 97 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl2->pt.valid = 1;
+    ttbl2->pt.table = 1;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8h_aff0ed5c291334c705ddbd99f197e1247}{\index{lpae.\-h@{lpae.\-h}!lpaed\-\_\-stage2\-\_\-map\-\_\-page@{lpaed\-\_\-stage2\-\_\-map\-\_\-page}}
+\index{lpaed\-\_\-stage2\-\_\-map\-\_\-page@{lpaed\-\_\-stage2\-\_\-map\-\_\-page}!lpae.h@{lpae.\-h}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-map\-\_\-page}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-map\-\_\-page} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{pte, }
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}}]{mattr}
+\end{DoxyParamCaption}
+)}}\label{lpae_8h_aff0ed5c291334c705ddbd99f197e1247}
+
+
+\-Definition at line 107 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+
+    pte->pt.valid = 1;
+    pte->pt.table = 1;
+
+    pte->bits &= ~TTBL_L3_OUTADDR_MASK;
+    pte->bits |= pa & TTBL_L3_OUTADDR_MASK;
+    pte->p2m.sbz3 = 0;
+
+    // Lower block attributes
+    pte->p2m.mattr = mattr & 0x0F;  
+    pte->p2m.read = 1;      // Read/Write
+    pte->p2m.write = 1;     
+    pte->p2m.sh = 0;    // Non-shareable
+    pte->p2m.af = 1;    // Access Flag set to 1?
+    pte->p2m.sbz4 = 0;
+
+    // Upper block attributes
+    pte->p2m.hint = 0;
+    pte->p2m.sbz2 = 0;
+    pte->p2m.xn = 0;    // eXecute Never = 0
+
+    pte->p2m.sbz1 = 0;
+}
+\end{DoxyCode}

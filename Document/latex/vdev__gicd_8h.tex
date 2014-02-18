@@ -1,0 +1,107 @@
+\hypertarget{vdev__gicd_8h}{\section{vdev/vdev\-\_\-gicd.h \-File \-Reference}
+\label{vdev__gicd_8h}\index{vdev/vdev\-\_\-gicd.\-h@{vdev/vdev\-\_\-gicd.\-h}}
+}
+{\ttfamily \#include $<$hvmm\-\_\-types.\-h$>$}\*
+\-Include dependency graph for vdev\-\_\-gicd.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=172pt]{vdev__gicd_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=322pt]{vdev__gicd_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{vdev__gicd_8h_a721f4963c9e9da98e508f1a02ec49519}{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t} )(\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} istatus, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} word\-\_\-offset)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8h_a486b6cd2f61165a52985b53909512566}{vdev\-\_\-gicd\-\_\-init} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} base\-\_\-addr)
+\item 
+void \hyperlink{vdev__gicd_8h_a9c67f2f148d50faebdb7576ea03a5876}{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus} (\hyperlink{vdev__gicd_8h_a721f4963c9e9da98e508f1a02ec49519}{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t} callback)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{vdev__gicd_8h_a721f4963c9e9da98e508f1a02ec49519}{\index{vdev\-\_\-gicd.\-h@{vdev\-\_\-gicd.\-h}!vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t@{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t}}
+\index{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t@{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t}!vdev_gicd.h@{vdev\-\_\-gicd.\-h}}
+\subsubsection[{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ {\bf vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t})({\bf vmid\-\_\-t} vmid, {\bf uint32\-\_\-t} istatus, {\bf uint8\-\_\-t} word\-\_\-offset)}}\label{vdev__gicd_8h_a721f4963c9e9da98e508f1a02ec49519}
+
+
+\-Definition at line 7 of file vdev\-\_\-gicd.\-h.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev__gicd_8h_a486b6cd2f61165a52985b53909512566}{\index{vdev\-\_\-gicd.\-h@{vdev\-\_\-gicd.\-h}!vdev\-\_\-gicd\-\_\-init@{vdev\-\_\-gicd\-\_\-init}}
+\index{vdev\-\_\-gicd\-\_\-init@{vdev\-\_\-gicd\-\_\-init}!vdev_gicd.h@{vdev\-\_\-gicd.\-h}}
+\subsubsection[{vdev\-\_\-gicd\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-gicd\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{base\-\_\-addr}
+\end{DoxyParamCaption}
+)}}\label{vdev__gicd_8h_a486b6cd2f61165a52985b53909512566}
+
+
+\-Definition at line 433 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    vdev_gicd_reset_values();
+
+    _vdev_info.name     = "vgicd";
+    _vdev_info.base     = base_addr; 
+    _vdev_info.size     = 4096;
+    _vdev_info.handler  = access_handler;
+
+    result = vdev_reg_device(&_vdev_info);
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
+    } else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, 
+      _vdev_info.name, result);
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=318pt]{vdev__gicd_8h_a486b6cd2f61165a52985b53909512566_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8h_a9c67f2f148d50faebdb7576ea03a5876}{\index{vdev\-\_\-gicd.\-h@{vdev\-\_\-gicd.\-h}!vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus@{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus}}
+\index{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus@{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus}!vdev_gicd.h@{vdev\-\_\-gicd.\-h}}
+\subsubsection[{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus} (
+\begin{DoxyParamCaption}
+\item[{{\bf vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{vdev__gicd_8h_a9c67f2f148d50faebdb7576ea03a5876}
+
+
+\-Definition at line 166 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    _cb_changed_istatus = callback;
+}
+\end{DoxyCode}

@@ -1,0 +1,957 @@
+\hypertarget{vgic_8c}{\section{gic/vgic.c \-File \-Reference}
+\label{vgic_8c}\index{gic/vgic.\-c@{gic/vgic.\-c}}
+}
+{\ttfamily \#include $<$vgic.\-h$>$}\*
+{\ttfamily \#include $<$hvmm\-\_\-trace.\-h$>$}\*
+{\ttfamily \#include $<$armv7\-\_\-p15.\-h$>$}\*
+{\ttfamily \#include $<$gic.\-h$>$}\*
+{\ttfamily \#include $<$gic\-\_\-regs.\-h$>$}\*
+{\ttfamily \#include $<$slotpirq.\-h$>$}\*
+{\ttfamily \#include $<$context.\-h$>$}\*
+{\ttfamily \#include $<$k-\/hypervisor-\/config.\-h$>$}\*
+{\ttfamily \#include $<$asm-\/arm\-\_\-inline.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for vgic.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structvgic}{vgic}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{vgic_8c_a526061ee0fe28ae7bf22f0ba3c4a0d4c}{\-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-}
+\item 
+\#define \hyperlink{vgic_8c_a7b7b6f67ad514ac2101b96175a9ec29f}{\-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q}
+\item 
+\#define \hyperlink{vgic_8c_a75c7cfc017c76385de9ae23d3a003351}{\-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q}~25
+\item 
+\#define \hyperlink{vgic_8c_a07d069eab0ef3cee053462d7983e58fc}{\-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S}~\hyperlink{vgic_8h_abfdcf103267c36171a466d426374f51e}{\-V\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-S\-L\-O\-T\-S}
+\item 
+\#define \hyperlink{vgic_8c_ab069326a104b1d5b811b25aa42402dc3}{\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}~0x45108\-E\-A\-D
+\item 
+\#define \hyperlink{vgic_8c_ab8ea3db7e1235ef68503d53d964e35f8}{\-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y}()~(\-\_\-vgic.\-initialized == \hyperlink{vgic_8c_ab069326a104b1d5b811b25aa42402dc3}{\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D})
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_ae71b0763ed8149031b08ad13d8d687cb}{vgic\-\_\-injection\-\_\-enable} (\hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} enable)
+\item 
+static \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{vgic_8c_aab31fc8d2c44ebb938b78cfb1f7c975f}{vgic\-\_\-find\-\_\-free\-\_\-slot} (void)
+\item 
+static \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{vgic_8c_ac1d43326139a3717d69ce1f876cd221c}{vgic\-\_\-is\-\_\-free\-\_\-slot} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot)
+\item 
+static void \hyperlink{vgic_8c_aea2435da2d73a22a35b601508d6ea6da}{\-\_\-vgic\-\_\-dump\-\_\-status} (void)
+\item 
+static void \hyperlink{vgic_8c_abfca2f5be8dfbb355800d70dbda23b5e}{\-\_\-vgic\-\_\-dump\-\_\-regs} (void)
+\item 
+static void \hyperlink{vgic_8c_a8d083941ad4202604d2ec7161c8f6409}{\-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq} (int irq, void $\ast$pregs, void $\ast$pdata)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_a4cf554520738a7934bc4e6917853330c}{vgic\-\_\-enable} (\hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} enable)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{vgic_8c_a6fb239504a0f9b77f78ca1f75318f78f}{vgic\-\_\-inject\-\_\-virq} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} virq, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot, \hyperlink{vgic_8h_a7028e35242589b61104f1b59574e43df}{virq\-\_\-state\-\_\-t} state, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} priority, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} hw, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} physrc, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} maintenance)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{vgic_8c_a93b048baf04857249e2ba3c24a82407f}{vgic\-\_\-inject\-\_\-virq\-\_\-hw} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} virq, \hyperlink{vgic_8h_a7028e35242589b61104f1b59574e43df}{virq\-\_\-state\-\_\-t} state, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} priority, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} pirq)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{vgic_8c_a6fa5c258f61efb0140f0b85175d25ff5}{vgic\-\_\-inject\-\_\-virq\-\_\-sw} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} virq, \hyperlink{vgic_8h_a7028e35242589b61104f1b59574e43df}{virq\-\_\-state\-\_\-t} state, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} priority, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} cpuid, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} maintenance)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_a896fa453c39e4d42fa37483b07c7d307}{vgic\-\_\-maintenance\-\_\-irq\-\_\-enable} (\hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} enable)
+\item 
+static \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} \hyperlink{vgic_8c_a66eca59dda59d2529191ca0c23094fc8}{\-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} num\-\_\-lr)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_a2302c75a54486f179f199997b4a268b3}{vgic\-\_\-setcallback\-\_\-virq\-\_\-flush} (void($\ast$callback)(\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid))
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_a2e0db8f93d8d6a61d737de34aeeed516}{vgic\-\_\-init} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_ac901a925af53a53bf1840d9be9acd2e0}{vgic\-\_\-init\-\_\-status} (struct \hyperlink{structvgic__status}{vgic\-\_\-status} $\ast$status, \hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_aebad7b956b2c36d2bbe7acdbe333ae8a}{vgic\-\_\-save\-\_\-status} (struct \hyperlink{structvgic__status}{vgic\-\_\-status} $\ast$status, \hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_a70332a1790f88fbcb1a4c7014e6b6a02}{vgic\-\_\-restore\-\_\-status} (struct \hyperlink{structvgic__status}{vgic\-\_\-status} $\ast$status, \hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vgic_8c_acb00c28d2618d3581a7d26f8e265ccb8}{vgic\-\_\-flush\-\_\-virqs} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structvgic}{vgic} \hyperlink{vgic_8c_a5191716b54330506bb98f687550f2812}{\-\_\-vgic}
+\item 
+static void($\ast$ \hyperlink{vgic_8c_a91dbbb7f0fc3b51b2cc9482aaa444d39}{\-\_\-cb\-\_\-virq\-\_\-flush} )(\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)=0
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{vgic_8c_a526061ee0fe28ae7bf22f0ba3c4a0d4c}{\index{vgic.\-c@{vgic.\-c}!\-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-@{\-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-@{\-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-\_\-\-\_\-\-V\-G\-I\-C\-\_\-\-D\-I\-S\-A\-B\-L\-E\-\_\-\-T\-R\-A\-C\-E\-\_\-\-\_\-}}}\label{vgic_8c_a526061ee0fe28ae7bf22f0ba3c4a0d4c}
+
+
+\-Definition at line 14 of file vgic.\-c.
+
+\hypertarget{vgic_8c_a75c7cfc017c76385de9ae23d3a003351}{\index{vgic.\-c@{vgic.\-c}!\-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q@{\-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q}}
+\index{\-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q@{\-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-\_\-\-M\-A\-I\-N\-T\-E\-N\-A\-N\-C\-E\-\_\-\-I\-N\-T\-E\-R\-R\-U\-P\-T\-\_\-\-I\-R\-Q}~25}}\label{vgic_8c_a75c7cfc017c76385de9ae23d3a003351}
+
+
+\-Definition at line 29 of file vgic.\-c.
+
+\hypertarget{vgic_8c_a07d069eab0ef3cee053462d7983e58fc}{\index{vgic.\-c@{vgic.\-c}!\-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S@{\-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S}}
+\index{\-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S@{\-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-\_\-\-M\-A\-X\-\_\-\-L\-I\-S\-T\-R\-E\-G\-I\-S\-T\-E\-R\-S}~{\bf \-V\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-S\-L\-O\-T\-S}}}\label{vgic_8c_a07d069eab0ef3cee053462d7983e58fc}
+
+
+\-Definition at line 31 of file vgic.\-c.
+
+\hypertarget{vgic_8c_ab8ea3db7e1235ef68503d53d964e35f8}{\index{vgic.\-c@{vgic.\-c}!\-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y@{\-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y}}
+\index{\-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y@{\-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-\_\-\-R\-E\-A\-D\-Y}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~(\-\_\-vgic.\-initialized == {\bf \-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D})}}\label{vgic_8c_ab8ea3db7e1235ef68503d53d964e35f8}
+
+
+\-Definition at line 33 of file vgic.\-c.
+
+\hypertarget{vgic_8c_ab069326a104b1d5b811b25aa42402dc3}{\index{vgic.\-c@{vgic.\-c}!\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D@{\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}}
+\index{\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D@{\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-\_\-\-S\-I\-G\-N\-A\-T\-U\-R\-E\-\_\-\-I\-N\-I\-T\-I\-A\-L\-I\-Z\-E\-D}~0x45108\-E\-A\-D}}\label{vgic_8c_ab069326a104b1d5b811b25aa42402dc3}
+
+
+\-Definition at line 32 of file vgic.\-c.
+
+\hypertarget{vgic_8c_a7b7b6f67ad514ac2101b96175a9ec29f}{\index{vgic.\-c@{vgic.\-c}!\-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q@{\-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q}}
+\index{\-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q@{\-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-\_\-\-S\-I\-M\-U\-L\-A\-T\-E\-\_\-\-H\-W\-V\-I\-R\-Q}}}\label{vgic_8c_a7b7b6f67ad514ac2101b96175a9ec29f}
+
+
+\-Definition at line 15 of file vgic.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vgic_8c_abfca2f5be8dfbb355800d70dbda23b5e}{\index{vgic.\-c@{vgic.\-c}!\-\_\-vgic\-\_\-dump\-\_\-regs@{\-\_\-vgic\-\_\-dump\-\_\-regs}}
+\index{\-\_\-vgic\-\_\-dump\-\_\-regs@{\-\_\-vgic\-\_\-dump\-\_\-regs}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-vgic\-\_\-dump\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-vgic\-\_\-dump\-\_\-regs} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_abfca2f5be8dfbb355800d70dbda23b5e}
+
+
+\-Definition at line 162 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+#ifndef __VGIC_DISABLE_TRACE__
+    /*
+     * HCR * VTR * VMCR * MISR * EISR0 * EISR1 * ELSR0 * ELSR1 * APR * LR0~n
+     */
+    int i;
+    HVMM_TRACE_ENTER();
+
+    uart_print("  hcr:"); uart_print_hex32( _vgic.base[GICH_HCR] ); uart_print(
+      "\n\r");
+    uart_print("  vtr:"); uart_print_hex32( _vgic.base[GICH_VTR] ); uart_print(
+      "\n\r");
+    uart_print(" vmcr:"); uart_print_hex32( _vgic.base[GICH_VMCR] ); uart_print
+      ("\n\r");
+    uart_print(" misr:"); uart_print_hex32( _vgic.base[GICH_MISR] ); uart_print
+      ("\n\r");
+    uart_print("eisr0:"); uart_print_hex32( _vgic.base[GICH_EISR0] ); 
+      uart_print("\n\r");
+    uart_print("eisr1:"); uart_print_hex32( _vgic.base[GICH_EISR1] ); 
+      uart_print("\n\r");
+    uart_print("elsr0:"); uart_print_hex32( _vgic.base[GICH_ELSR0] ); 
+      uart_print("\n\r");
+    uart_print("elsr1:"); uart_print_hex32( _vgic.base[GICH_ELSR1] ); 
+      uart_print("\n\r");
+    uart_print("  apr:"); uart_print_hex32( _vgic.base[GICH_APR] ); uart_print(
+      "\n\r");
+
+    uart_print("   LR:\n\r"); 
+    for( i = 0; i < _vgic.num_lr; i++ ) {
+        if ( vgic_is_free_slot(i) != i ) {
+            uart_print_hex32( _vgic.base[GICH_LR + i] ); uart_print(" - "); 
+      uart_print_hex32(i); uart_print("\n\r");
+        }
+    }
+
+    HVMM_TRACE_EXIT();
+#endif
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_abfca2f5be8dfbb355800d70dbda23b5e_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_aea2435da2d73a22a35b601508d6ea6da}{\index{vgic.\-c@{vgic.\-c}!\-\_\-vgic\-\_\-dump\-\_\-status@{\-\_\-vgic\-\_\-dump\-\_\-status}}
+\index{\-\_\-vgic\-\_\-dump\-\_\-status@{\-\_\-vgic\-\_\-dump\-\_\-status}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-vgic\-\_\-dump\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-vgic\-\_\-dump\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_aea2435da2d73a22a35b601508d6ea6da}
+
+
+\-Definition at line 133 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    /*
+     * === VGIC Status Summary ===
+     * Initialized: Yes
+     * Num ListRegs: n
+     * Hypervisor Control
+     *  - Enabled: Yes
+     *  - EOICount: 
+     *  - Underflow:
+     *  - LRENPIE:
+     *  - NPIE:
+     *  - VGrp0EIE:
+     *  - VGrp0DIE:
+     *  - VGrp1EIE:
+     *  - VGrp1DIE:
+     * VGIC Type
+     *  - ListRegs:
+     *  - PREbits:
+     *  - PRIbits:
+     * Virtual Machine Control
+     *  - 
+     */
+    uart_print("=== VGIC Status ===\n\r");
+    uart_print(" Initialized:"); uart_print( ( VGIC_READY() ? "Yes" : "No" ) );
+       uart_print("\n\r");
+    uart_print(" Num ListRegs:"); uart_print_hex32( _vgic.num_lr ); uart_print(
+      "\n\r");
+    uart_print(" LR_MASK:"); uart_print_hex64( _vgic.valid_lr_mask ); 
+      uart_print("\n\r");
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_a8d083941ad4202604d2ec7161c8f6409}{\index{vgic.\-c@{vgic.\-c}!\-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq@{\-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq}}
+\index{\-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq@{\-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-vgic\-\_\-isr\-\_\-maintenance\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{int}]{irq, }
+\item[{void $\ast$}]{pregs, }
+\item[{void $\ast$}]{pdata}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_a8d083941ad4202604d2ec7161c8f6409}
+
+
+\-Definition at line 192 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    HVMM_TRACE_ENTER();
+
+    if ( _vgic.base[GICH_MISR] & GICH_MISR_EOI ) {
+        /* clean up invalid entries from List Registers */
+        uint32_t eisr = _vgic.base[GICH_EISR0];
+        uint32_t slot;
+        uint32_t pirq;
+        vmid_t vmid;
+
+        vmid = context_current_vmid();
+        while(eisr) {
+            slot = (31 - asm_clz(eisr));
+            eisr &= ~(1 << slot);
+            _vgic.base[GICH_LR + slot] = 0;
+
+            /* deactivate associated pirq at the slot */
+            pirq = slotpirq_get(vmid, slot);
+            if ( pirq != PIRQ_INVALID ) {
+                gic_deactivate_irq(pirq);
+                slotpirq_clear(vmid, slot);
+                printh( "vgic: deactivated pirq %d at slot %d\n", pirq, slot );
+            } else {
+                printh( "vgic: deactivated virq at slot %d\n", slot );
+            }
+            slotvirq_clear(vmid, slot);
+        }
+
+        eisr = _vgic.base[GICH_EISR1];
+        while(eisr) {
+            slot = (31 - asm_clz(eisr));
+            eisr &= ~(1 << slot);
+            _vgic.base[GICH_LR + slot + 32] = 0;
+
+            /* deactivate associated pirq at the slot */
+            pirq = slotpirq_get(vmid, slot + 32);
+            if ( pirq != PIRQ_INVALID ) {
+                gic_deactivate_irq(pirq);
+                slotpirq_clear(vmid, slot + 32);
+                printh( "vgic: deactivated pirq %d at slot %d\n", pirq, slot );
+            } else {
+                printh( "vgic: deactivated virq at slot %d\n", slot );
+            }
+            slotvirq_clear(vmid, slot);
+        }
+    }
+
+    if ( _vgic.base[GICH_MISR] & GICH_MISR_NP ) {
+        /* No pending virqs, no need to keep vgic enabled */
+        _vgic.base[GICH_HCR] &= ~(GICH_HCR_NPIE);
+        printh( "vgic: no pending virqs, disabling no pending interrupt\n" );
+        {
+            int i;
+            printh( "vgic: active virqs...\n" );
+            for (i = 0; i < _vgic.num_lr; i++ ) {
+                if ( _vgic.base[GICH_LR + i] & 0x20000000 ) {
+                    printh( "- lr[%d]: %x\n", i, _vgic.base[GICH_LR + i] );
+                }
+            }
+        }
+    }
+    
+    {
+      uint64_t elsr;
+      elsr = _vgic.base[GICH_ELSR1];
+      elsr <<= 32;
+      elsr |= _vgic.base[GICH_ELSR0];
+
+      if ( ((~elsr) & _vgic.valid_lr_mask) == 0 ) {
+        /* No valid interrupt */
+          vgic_enable(0);
+          vgic_injection_enable(0);
+          printh( "vgic: no valid virqs, disabling vgic\n" );
+     } else {
+          printh( "vgic:MISR:%x ELSR0:%x ELSR1:%x\n",
+               _vgic.base[GICH_MISR], 
+               _vgic.base[GICH_ELSR0],
+               _vgic.base[GICH_ELSR1]);
+        }
+    }
+
+    HVMM_TRACE_EXIT();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a8d083941ad4202604d2ec7161c8f6409_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_a66eca59dda59d2529191ca0c23094fc8}{\index{vgic.\-c@{vgic.\-c}!\-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask@{\-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask}}
+\index{\-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask@{\-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf uint64\-\_\-t} {\bf \-\_\-vgic\-\_\-valid\-\_\-lr\-\_\-mask} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{num\-\_\-lr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_a66eca59dda59d2529191ca0c23094fc8}
+
+
+\-Definition at line 425 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint64_t mask_valid_lr = 0xFFFFFFFFFFFFFFFFULL;
+    if ( num_lr < VGIC_MAX_LISTREGISTERS ) {
+        mask_valid_lr >>= num_lr;
+        mask_valid_lr <<= num_lr;
+        mask_valid_lr = ~mask_valid_lr;
+    }
+
+    return mask_valid_lr;
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_a4cf554520738a7934bc4e6917853330c}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-enable@{vgic\-\_\-enable}}
+\index{vgic\-\_\-enable@{vgic\-\_\-enable}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-enable}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-enable} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint8\-\_\-t}}]{enable}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a4cf554520738a7934bc4e6917853330c}
+
+
+\-Definition at line 277 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+
+    if ( VGIC_READY() ) {
+
+        if ( enable ) {
+            uint32_t hcr = _vgic.base[GICH_HCR];
+
+            hcr |= GICH_HCR_EN | GICH_HCR_NPIE;
+
+            _vgic.base[GICH_HCR] = hcr;
+        } else {
+            _vgic.base[GICH_HCR] &= ~(GICH_HCR_EN | GICH_HCR_NPIE);
+        }
+
+        result = HVMM_STATUS_SUCCESS;
+    } 
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_aab31fc8d2c44ebb938b78cfb1f7c975f}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-find\-\_\-free\-\_\-slot@{vgic\-\_\-find\-\_\-free\-\_\-slot}}
+\index{vgic\-\_\-find\-\_\-free\-\_\-slot@{vgic\-\_\-find\-\_\-free\-\_\-slot}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-find\-\_\-free\-\_\-slot}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf uint32\-\_\-t} {\bf vgic\-\_\-find\-\_\-free\-\_\-slot} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_aab31fc8d2c44ebb938b78cfb1f7c975f}
+
+
+\-Definition at line 82 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t slot;
+    uint32_t shift = 0;
+
+    slot = _vgic.base[GICH_ELSR0];
+    if ( slot == 0 && _vgic.num_lr > 32 ) {
+        /* first 32 slots are occupied, try the later */
+        slot = _vgic.base[GICH_ELSR1];
+        shift = 32;
+    }
+
+
+    if ( slot ) {
+        slot &= -(slot);
+        slot = (31 - asm_clz(slot));
+        slot += shift;
+    } else {
+        /* 64 slots are fully occupied */
+        slot = VGIC_SLOT_NOTFOUND;
+    }
+    return slot;
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_acb00c28d2618d3581a7d26f8e265ccb8}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-flush\-\_\-virqs@{vgic\-\_\-flush\-\_\-virqs}}
+\index{vgic\-\_\-flush\-\_\-virqs@{vgic\-\_\-flush\-\_\-virqs}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-flush\-\_\-virqs}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-flush\-\_\-virqs} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_acb00c28d2618d3581a7d26f8e265ccb8}
+
+
+\-Definition at line 530 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+    if ( _cb_virq_flush != 0 ) {
+        _cb_virq_flush(vmid);
+        result = HVMM_STATUS_SUCCESS;
+    }
+
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_a2e0db8f93d8d6a61d737de34aeeed516}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-init@{vgic\-\_\-init}}
+\index{vgic\-\_\-init@{vgic\-\_\-init}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a2e0db8f93d8d6a61d737de34aeeed516}
+
+
+\-Definition at line 451 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    HVMM_TRACE_ENTER();
+
+    _vgic.base = gic_vgic_baseaddr();
+    _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
+    _vgic.valid_lr_mask = _vgic_valid_lr_mask( _vgic.num_lr );
+    _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
+
+    vgic_maintenance_irq_enable(1);
+
+    slotpirq_init();
+
+    result = HVMM_STATUS_SUCCESS;
+
+    _vgic_dump_status();
+    _vgic_dump_regs();
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a2e0db8f93d8d6a61d737de34aeeed516_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_ac901a925af53a53bf1840d9be9acd2e0}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-init\-\_\-status@{vgic\-\_\-init\-\_\-status}}
+\index{vgic\-\_\-init\-\_\-status@{vgic\-\_\-init\-\_\-status}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-init\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-init\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf vgic\-\_\-status} $\ast$}]{status, }
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_ac901a925af53a53bf1840d9be9acd2e0}
+
+
+\-Definition at line 475 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
+    int i;
+
+    status->hcr = 0;
+    status->apr = 0;
+    status->vmcr = 0;
+    status->saved_once = 0;
+    for( i = 0; i < _vgic.num_lr; i++) {
+        status->lr[i] = 0;
+    }
+
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_a6fb239504a0f9b77f78ca1f75318f78f}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-inject\-\_\-virq@{vgic\-\_\-inject\-\_\-virq}}
+\index{vgic\-\_\-inject\-\_\-virq@{vgic\-\_\-inject\-\_\-virq}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-inject\-\_\-virq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf vgic\-\_\-inject\-\_\-virq} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{virq, }
+\item[{{\bf uint32\-\_\-t}}]{slot, }
+\item[{{\bf virq\-\_\-state\-\_\-t}}]{state, }
+\item[{{\bf uint32\-\_\-t}}]{priority, }
+\item[{{\bf uint8\-\_\-t}}]{hw, }
+\item[{{\bf uint32\-\_\-t}}]{physrc, }
+\item[{{\bf uint8\-\_\-t}}]{maintenance}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a6fb239504a0f9b77f78ca1f75318f78f}
+
+
+\-Definition at line 332 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t physicalid;
+    uint32_t lr_desc;
+
+    HVMM_TRACE_ENTER();
+
+    physicalid = (hw ? physrc : (maintenance << 9) | (physrc & 0x7)) << 
+      GICH_LR_PHYSICALID_SHIFT;
+    physicalid &= GICH_LR_PHYSICALID_MASK;
+
+
+    lr_desc = (GICH_LR_HW_MASK & (hw << GICH_LR_HW_SHIFT) ) |
+        /* (GICH_LR_GRP1_MASK & (1 << GICH_LR_GRP1_SHIFT) )| */
+        (GICH_LR_STATE_MASK & (state << GICH_LR_STATE_SHIFT) ) |
+        (GICH_LR_PRIORITY_MASK & ( (priority >> 3)  << GICH_LR_PRIORITY_SHIFT) 
+      ) |
+        physicalid |
+        (GICH_LR_VIRTUALID_MASK & virq );
+
+    slot = vgic_is_free_slot( slot );
+
+    HVMM_TRACE_HEX32("lr_desc:", lr_desc);
+    HVMM_TRACE_HEX32("free slot:", slot);
+
+    if ( slot != VGIC_SLOT_NOTFOUND ) {
+        _vgic.base[GICH_LR + slot] = lr_desc;
+        vgic_injection_enable(1);
+        vgic_enable(1);
+    }
+    _vgic_dump_regs();
+
+    HVMM_TRACE_EXIT();
+    return slot;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a6fb239504a0f9b77f78ca1f75318f78f_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_a93b048baf04857249e2ba3c24a82407f}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-inject\-\_\-virq\-\_\-hw@{vgic\-\_\-inject\-\_\-virq\-\_\-hw}}
+\index{vgic\-\_\-inject\-\_\-virq\-\_\-hw@{vgic\-\_\-inject\-\_\-virq\-\_\-hw}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-inject\-\_\-virq\-\_\-hw}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf vgic\-\_\-inject\-\_\-virq\-\_\-hw} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{virq, }
+\item[{{\bf virq\-\_\-state\-\_\-t}}]{state, }
+\item[{{\bf uint32\-\_\-t}}]{priority, }
+\item[{{\bf uint32\-\_\-t}}]{pirq}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a93b048baf04857249e2ba3c24a82407f}
+
+
+\-Definition at line 371 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t slot = VGIC_SLOT_NOTFOUND;
+    HVMM_TRACE_ENTER();
+
+    slot = vgic_find_free_slot();
+    HVMM_TRACE_HEX32("slot:", slot);
+    if ( slot != VGIC_SLOT_NOTFOUND ) {
+#ifdef VGIC_SIMULATE_HWVIRQ
+        slot = vgic_inject_virq( virq, slot, state, priority, 0, 0, 1 );
+#else
+        slot = vgic_inject_virq( virq, slot, state, priority, 1, pirq, 0 );
+#endif
+    }
+
+    HVMM_TRACE_EXIT();
+    return slot;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a93b048baf04857249e2ba3c24a82407f_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_a6fa5c258f61efb0140f0b85175d25ff5}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-inject\-\_\-virq\-\_\-sw@{vgic\-\_\-inject\-\_\-virq\-\_\-sw}}
+\index{vgic\-\_\-inject\-\_\-virq\-\_\-sw@{vgic\-\_\-inject\-\_\-virq\-\_\-sw}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-inject\-\_\-virq\-\_\-sw}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf vgic\-\_\-inject\-\_\-virq\-\_\-sw} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{virq, }
+\item[{{\bf virq\-\_\-state\-\_\-t}}]{state, }
+\item[{{\bf uint32\-\_\-t}}]{priority, }
+\item[{{\bf uint32\-\_\-t}}]{cpuid, }
+\item[{{\bf uint8\-\_\-t}}]{maintenance}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a6fa5c258f61efb0140f0b85175d25ff5}
+
+
+\-Definition at line 390 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t slot = VGIC_SLOT_NOTFOUND;
+    HVMM_TRACE_ENTER();
+
+    slot = vgic_find_free_slot();
+    HVMM_TRACE_HEX32("slot:", slot);
+    if ( slot != VGIC_SLOT_NOTFOUND ) {
+        slot = vgic_inject_virq( virq, slot, state, priority, 0, cpuid, 
+      maintenance );
+    }
+
+    HVMM_TRACE_EXIT();
+    return slot;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a6fa5c258f61efb0140f0b85175d25ff5_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_ae71b0763ed8149031b08ad13d8d687cb}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-injection\-\_\-enable@{vgic\-\_\-injection\-\_\-enable}}
+\index{vgic\-\_\-injection\-\_\-enable@{vgic\-\_\-injection\-\_\-enable}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-injection\-\_\-enable}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-injection\-\_\-enable} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint8\-\_\-t}}]{enable}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_ae71b0763ed8149031b08ad13d8d687cb}
+
+
+\-Definition at line 298 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t hcr;
+
+    hcr = read_hcr();
+    if ( enable ) {
+        if ( (hcr & HCR_VI) == 0 ) {
+            hcr |= HCR_VI;
+            write_hcr(hcr);
+        }
+    } else {
+        if ( hcr & HCR_VI ) {
+            hcr &= ~(HCR_VI);
+            write_hcr(hcr);
+        }
+    }
+
+    hcr = read_hcr();
+    printh( " updated hcr: %x\n", hcr);
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{vgic_8c_ac1d43326139a3717d69ce1f876cd221c}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-is\-\_\-free\-\_\-slot@{vgic\-\_\-is\-\_\-free\-\_\-slot}}
+\index{vgic\-\_\-is\-\_\-free\-\_\-slot@{vgic\-\_\-is\-\_\-free\-\_\-slot}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-is\-\_\-free\-\_\-slot}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf uint32\-\_\-t} {\bf vgic\-\_\-is\-\_\-free\-\_\-slot} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{slot}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_ac1d43326139a3717d69ce1f876cd221c}
+
+
+\-Definition at line 114 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t free_slot = VGIC_SLOT_NOTFOUND;
+    
+    if ( slot < 32 ) {
+        if ( _vgic.base[GICH_ELSR0] & (1 << slot) )
+            free_slot = slot;
+    } else {
+        if ( _vgic.base[GICH_ELSR1] & (1 << (slot - 32)) )
+            free_slot = slot;
+    }
+
+    if ( free_slot != slot ) {
+        free_slot = vgic_find_free_slot();
+    }
+
+    return free_slot;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=304pt]{vgic_8c_ac1d43326139a3717d69ce1f876cd221c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_a896fa453c39e4d42fa37483b07c7d307}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-maintenance\-\_\-irq\-\_\-enable@{vgic\-\_\-maintenance\-\_\-irq\-\_\-enable}}
+\index{vgic\-\_\-maintenance\-\_\-irq\-\_\-enable@{vgic\-\_\-maintenance\-\_\-irq\-\_\-enable}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-maintenance\-\_\-irq\-\_\-enable}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-maintenance\-\_\-irq\-\_\-enable} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint8\-\_\-t}}]{enable}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a896fa453c39e4d42fa37483b07c7d307}
+
+
+\-Definition at line 406 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t irq = VGIC_MAINTENANCE_INTERRUPT_IRQ;
+
+    HVMM_TRACE_ENTER();
+    if ( enable ) {
+        gic_test_set_irq_handler( irq, &_vgic_isr_maintenance_irq, 0 );
+        gic_test_configure_irq( irq,
+                GIC_INT_POLARITY_LEVEL,
+                gic_cpumask_current(),
+                GIC_INT_PRIORITY_DEFAULT );
+    } else {
+        gic_test_set_irq_handler( irq, 0, 0 );
+        gic_disable_irq( irq );
+    }
+    HVMM_TRACE_EXIT();
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a896fa453c39e4d42fa37483b07c7d307_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_a70332a1790f88fbcb1a4c7014e6b6a02}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-restore\-\_\-status@{vgic\-\_\-restore\-\_\-status}}
+\index{vgic\-\_\-restore\-\_\-status@{vgic\-\_\-restore\-\_\-status}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-restore\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-restore\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf vgic\-\_\-status} $\ast$}]{status, }
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a70332a1790f88fbcb1a4c7014e6b6a02}
+
+
+\-Definition at line 509 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    int i;
+
+    for( i = 0; i < _vgic.num_lr; i++) {
+        _vgic.base[GICH_LR + i] = status->lr[i];
+    }
+    _vgic.base[GICH_APR] = status->apr;
+    _vgic.base[GICH_VMCR] = status->vmcr;
+    _vgic.base[GICH_HCR] = status->hcr;
+
+    /* Inject queued virqs to the next guest */
+    vgic_flush_virqs(vmid);
+
+    _vgic_dump_regs();
+    result = HVMM_STATUS_SUCCESS;
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vgic_8c_a70332a1790f88fbcb1a4c7014e6b6a02_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_aebad7b956b2c36d2bbe7acdbe333ae8a}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-save\-\_\-status@{vgic\-\_\-save\-\_\-status}}
+\index{vgic\-\_\-save\-\_\-status@{vgic\-\_\-save\-\_\-status}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-save\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-save\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf vgic\-\_\-status} $\ast$}]{status, }
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_aebad7b956b2c36d2bbe7acdbe333ae8a}
+
+
+\-Definition at line 491 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
+    int i;
+
+
+    for( i = 0; i < _vgic.num_lr; i++ ) {
+        status->lr[i] = _vgic.base[GICH_LR + i];
+    }
+    status->hcr = _vgic.base[GICH_HCR];
+    status->apr = _vgic.base[GICH_APR];
+    status->vmcr = _vgic.base[GICH_VMCR];
+    status->saved_once = VGIC_SIGNATURE_INITIALIZED;
+
+    vgic_enable(0);
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=278pt]{vgic_8c_aebad7b956b2c36d2bbe7acdbe333ae8a_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vgic_8c_a2302c75a54486f179f199997b4a268b3}{\index{vgic.\-c@{vgic.\-c}!vgic\-\_\-setcallback\-\_\-virq\-\_\-flush@{vgic\-\_\-setcallback\-\_\-virq\-\_\-flush}}
+\index{vgic\-\_\-setcallback\-\_\-virq\-\_\-flush@{vgic\-\_\-setcallback\-\_\-virq\-\_\-flush}!vgic.c@{vgic.\-c}}
+\subsubsection[{vgic\-\_\-setcallback\-\_\-virq\-\_\-flush}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vgic\-\_\-setcallback\-\_\-virq\-\_\-flush} (
+\begin{DoxyParamCaption}
+\item[{void($\ast$)({\bf vmid\-\_\-t} vmid)}]{callback}
+\end{DoxyParamCaption}
+)}}\label{vgic_8c_a2302c75a54486f179f199997b4a268b3}
+
+
+\-Definition at line 440 of file vgic.\-c.
+
+
+\begin{DoxyCode}
+{
+    _cb_virq_flush = callback;
+    if ( _cb_virq_flush == 0 ) {
+        printh( "vgic: virq_flush() cleared\n" );
+    } else {
+        printh( "vgic: virq_flush() set to function at %x\n", (uint32_t) 
+      _cb_virq_flush );
+    }
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{vgic_8c_a91dbbb7f0fc3b51b2cc9482aaa444d39}{\index{vgic.\-c@{vgic.\-c}!\-\_\-cb\-\_\-virq\-\_\-flush@{\-\_\-cb\-\_\-virq\-\_\-flush}}
+\index{\-\_\-cb\-\_\-virq\-\_\-flush@{\-\_\-cb\-\_\-virq\-\_\-flush}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-cb\-\_\-virq\-\_\-flush}]{\setlength{\rightskip}{0pt plus 5cm}void($\ast$ {\bf \-\_\-cb\-\_\-virq\-\_\-flush})({\bf vmid\-\_\-t} vmid)=0\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_a91dbbb7f0fc3b51b2cc9482aaa444d39}
+
+
+\-Definition at line 80 of file vgic.\-c.
+
+\hypertarget{vgic_8c_a5191716b54330506bb98f687550f2812}{\index{vgic.\-c@{vgic.\-c}!\-\_\-vgic@{\-\_\-vgic}}
+\index{\-\_\-vgic@{\-\_\-vgic}!vgic.c@{vgic.\-c}}
+\subsubsection[{\-\_\-vgic}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf vgic} {\bf \-\_\-vgic}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vgic_8c_a5191716b54330506bb98f687550f2812}
+
+
+\-Definition at line 79 of file vgic.\-c.
+

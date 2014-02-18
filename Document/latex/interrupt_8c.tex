@@ -1,0 +1,78 @@
+\hypertarget{interrupt_8c}{\section{interrupt.\-c \-File \-Reference}
+\label{interrupt_8c}\index{interrupt.\-c@{interrupt.\-c}}
+}
+{\ttfamily \#include \char`\"{}hvmm\-\_\-types.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}gic.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}context.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}hvmm\-\_\-trace.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}vgic.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}virq.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+\-Include dependency graph for interrupt.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{interrupt_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{interrupt_8c_a684bacf4c9e7ced32242a2494d14d675}{hvmm\-\_\-interrupt\-\_\-init} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{interrupt_8c_a684bacf4c9e7ced32242a2494d14d675}{\index{interrupt.\-c@{interrupt.\-c}!hvmm\-\_\-interrupt\-\_\-init@{hvmm\-\_\-interrupt\-\_\-init}}
+\index{hvmm\-\_\-interrupt\-\_\-init@{hvmm\-\_\-interrupt\-\_\-init}!interrupt.c@{interrupt.\-c}}
+\subsubsection[{hvmm\-\_\-interrupt\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf hvmm\-\_\-interrupt\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{interrupt_8c_a684bacf4c9e7ced32242a2494d14d675}
+
+
+\-Definition at line 11 of file interrupt.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+
+    /* Route IRQ/IFQ to Hyp Exception Vector */
+    {
+        uint32_t hcr;
+
+        hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); 
+      uart_print("\n\r");
+        hcr |= HCR_IMO | HCR_FMO;
+        write_hcr( hcr );
+        hcr = read_hcr(); uart_print( "hcr:"); uart_print_hex32(hcr); 
+      uart_print("\n\r");
+    } 
+
+    /* Physical Interrupt: GIC Distributor & CPU Interface */
+    ret = gic_init();
+
+    /* Virtual Interrupt: GIC Virtual Interface Control */
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_init();
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = vgic_enable(1);
+    if ( ret == HVMM_STATUS_SUCCESS ) ret = virq_init();
+
+    return ret;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{interrupt_8c_a684bacf4c9e7ced32242a2494d14d675_cgraph}
+\end{center}
+\end{figure}
+
+

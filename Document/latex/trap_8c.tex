@@ -1,0 +1,297 @@
+\hypertarget{trap_8c}{\section{trap.\-c \-File \-Reference}
+\label{trap_8c}\index{trap.\-c@{trap.\-c}}
+}
+{\ttfamily \#include $<$hvmm\-\_\-trace.\-h$>$}\*
+{\ttfamily \#include $<$armv7\-\_\-p15.\-h$>$}\*
+{\ttfamily \#include \char`\"{}trap.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}context.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}gic.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}sched\-\_\-policy.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}trap\-\_\-dabort.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for trap.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{trap_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{trap_8c_ac5749b9e33b8d3e01753fa5c0a57d4e0}{\-\_\-hyp\-\_\-trap\-\_\-dabort} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{trap_8c_a3de51b0f93888070e12fff1b6a090567}{\-\_\-hyp\-\_\-trap\-\_\-irq} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{trap_8c_a34cedae5c2c129579de822c3542bd3fa}{\-\_\-hyp\-\_\-trap\-\_\-unhandled} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\item 
+static void \hyperlink{trap_8c_a85b7015b90d202ede9837d1e07cea6a6}{\-\_\-trap\-\_\-dump\-\_\-bregs} (void)
+\item 
+\hyperlink{context_8h_a5588893c974f2fb0f974e18a49110488}{hyp\-\_\-hvc\-\_\-result\-\_\-t} \hyperlink{trap_8c_a42d256f30a2bf8ef90ed868c166df734}{\-\_\-hyp\-\_\-hvc\-\_\-service} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\item 
+struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$ \hyperlink{trap_8c_a795de22500c2371c39b9275b38e10b91}{trap\-\_\-saved\-\_\-regs} (void)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$ \hyperlink{trap_8c_ab3877802f3e6b5d396f4b8e7c24033d6}{\-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{trap_8c_a42d256f30a2bf8ef90ed868c166df734}{\index{trap.\-c@{trap.\-c}!\-\_\-hyp\-\_\-hvc\-\_\-service@{\-\_\-hyp\-\_\-hvc\-\_\-service}}
+\index{\-\_\-hyp\-\_\-hvc\-\_\-service@{\-\_\-hyp\-\_\-hvc\-\_\-service}!trap.c@{trap.\-c}}
+\subsubsection[{\-\_\-hyp\-\_\-hvc\-\_\-service}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hyp\-\_\-hvc\-\_\-result\-\_\-t} {\bf \-\_\-hyp\-\_\-hvc\-\_\-service} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{trap_8c_a42d256f30a2bf8ef90ed868c166df734}
+
+
+\-Definition at line 80 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+        unsigned int hsr = read_hsr();
+        unsigned int iss = hsr & 0x1FFFFFF;
+        unsigned int ec = (hsr >> 26);
+
+        _trap_hyp_saved_regs = regs;
+
+        printh("[hvc] _hyp_hvc_service: enter\n\r");
+
+    if ( ec == 0x12 && ((iss & 0xFFFF) == 0xFFFF) ) {
+        /* Internal request to stay in hyp mode */
+        printh("[hvc] enter hyp\n\r");
+        context_dump_regs( regs );
+        return HYP_RESULT_STAY;
+    }
+
+    if ( ec == 0x24) {
+        /* Handle data abort at the priority */
+        printh("[hyp] data abort handler: hsr.iss=%x\n", iss);
+        _trap_dump_bregs();
+
+        if ( trap_hvc_dabort(iss, regs) != HVMM_STATUS_SUCCESS ) {
+            printh( "[hyp] === Unhandled dabort ===\n" );
+            printh( "[hyp] current guest vmid:%d\n", context_current_vmid() );
+            context_dump_regs( regs );
+
+            _trap_dump_bregs();
+
+            hyp_abort_infinite();
+        }
+        _trap_dump_bregs();
+    } else {
+        /* Handle the other cases */
+        switch( iss ) {
+            case 0xFFFE:
+                /* hyp_ping */
+                printh("[hyp] _hyp_hvc_service:ping\n\r");
+                context_dump_regs( regs );
+                break;
+            case 0xFFFD:
+                {
+                    /* hsvc_yield() */
+                    printh("[hyp] _hyp_hvc_service:yield\n\r");
+                    context_dump_regs( regs );
+                    context_switchto(sched_policy_determ_next());
+                }
+                break;
+            default:
+                if ( ec == 0x20 ) {
+                    // Prefetch Abort routed to Hyp mode
+                    printh( "[hyp]: prefetch abort routed to Hyp mode\n");
+                }
+    
+                printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
+                printh("[hyp] hsr.ec= %x\n", ec);
+                printh("[hyp] hsr= %x\n", hsr);
+                context_dump_regs( regs );
+                _trap_dump_bregs();
+                hyp_abort_infinite();
+                break;
+        }
+    }
+    printh("[hyp] _hyp_hvc_service: done\n\r");
+
+    context_perform_switch();
+    return HYP_RESULT_ERET;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{trap_8c_a42d256f30a2bf8ef90ed868c166df734_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{trap_8c_ac5749b9e33b8d3e01753fa5c0a57d4e0}{\index{trap.\-c@{trap.\-c}!\-\_\-hyp\-\_\-trap\-\_\-dabort@{\-\_\-hyp\-\_\-trap\-\_\-dabort}}
+\index{\-\_\-hyp\-\_\-trap\-\_\-dabort@{\-\_\-hyp\-\_\-trap\-\_\-dabort}!trap.c@{trap.\-c}}
+\subsubsection[{\-\_\-hyp\-\_\-trap\-\_\-dabort}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf \-\_\-hyp\-\_\-trap\-\_\-dabort} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{trap_8c_ac5749b9e33b8d3e01753fa5c0a57d4e0}
+
+
+\-Definition at line 20 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+
+    _trap_hyp_saved_regs = regs;
+
+    context_dump_regs( regs );
+    hyp_abort_infinite();
+
+    return HVMM_STATUS_UNKNOWN_ERROR;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{trap_8c_ac5749b9e33b8d3e01753fa5c0a57d4e0_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{trap_8c_a3de51b0f93888070e12fff1b6a090567}{\index{trap.\-c@{trap.\-c}!\-\_\-hyp\-\_\-trap\-\_\-irq@{\-\_\-hyp\-\_\-trap\-\_\-irq}}
+\index{\-\_\-hyp\-\_\-trap\-\_\-irq@{\-\_\-hyp\-\_\-trap\-\_\-irq}!trap.c@{trap.\-c}}
+\subsubsection[{\-\_\-hyp\-\_\-trap\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf \-\_\-hyp\-\_\-trap\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{trap_8c_a3de51b0f93888070e12fff1b6a090567}
+
+
+\-Definition at line 31 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+
+    _trap_hyp_saved_regs = regs;
+
+    gic_interrupt(0, regs);
+
+    context_perform_switch();
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{trap_8c_a3de51b0f93888070e12fff1b6a090567_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{trap_8c_a34cedae5c2c129579de822c3542bd3fa}{\index{trap.\-c@{trap.\-c}!\-\_\-hyp\-\_\-trap\-\_\-unhandled@{\-\_\-hyp\-\_\-trap\-\_\-unhandled}}
+\index{\-\_\-hyp\-\_\-trap\-\_\-unhandled@{\-\_\-hyp\-\_\-trap\-\_\-unhandled}!trap.c@{trap.\-c}}
+\subsubsection[{\-\_\-hyp\-\_\-trap\-\_\-unhandled}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf \-\_\-hyp\-\_\-trap\-\_\-unhandled} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{trap_8c_a34cedae5c2c129579de822c3542bd3fa}
+
+
+\-Definition at line 42 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+    _trap_hyp_saved_regs = regs;
+
+    context_dump_regs( regs );
+    hyp_abort_infinite();
+
+    return HVMM_STATUS_UNKNOWN_ERROR;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{trap_8c_a34cedae5c2c129579de822c3542bd3fa_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{trap_8c_a85b7015b90d202ede9837d1e07cea6a6}{\index{trap.\-c@{trap.\-c}!\-\_\-trap\-\_\-dump\-\_\-bregs@{\-\_\-trap\-\_\-dump\-\_\-bregs}}
+\index{\-\_\-trap\-\_\-dump\-\_\-bregs@{\-\_\-trap\-\_\-dump\-\_\-bregs}!trap.c@{trap.\-c}}
+\subsubsection[{\-\_\-trap\-\_\-dump\-\_\-bregs}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-trap\-\_\-dump\-\_\-bregs} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{trap_8c_a85b7015b90d202ede9837d1e07cea6a6}
+
+
+\-Definition at line 52 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t spsr, lr, sp;
+    printh( " - banked regs\n" );
+    asm volatile (" mrs     %0, sp_usr\n\t" :"=r" (sp)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_usr\n\t" :"=r" (lr)::"memory", "cc");
+    printh( " - usr: sp:%x lr:%x\n", sp, lr );
+
+    asm volatile (" mrs     %0, spsr_svc\n\t" :"=r" (spsr)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_svc\n\t" :"=r" (sp)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_svc\n\t" :"=r" (lr)::"memory", "cc");
+    printh( " - svc: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
+
+    asm volatile (" mrs     %0, spsr_irq\n\t" :"=r" (spsr)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_irq\n\t" :"=r" (sp)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_irq\n\t" :"=r" (lr)::"memory", "cc");
+    printh( " - irq: spsr:%x sp:%x lr:%x\n", spsr, sp, lr );
+}
+\end{DoxyCode}
+\hypertarget{trap_8c_a795de22500c2371c39b9275b38e10b91}{\index{trap.\-c@{trap.\-c}!trap\-\_\-saved\-\_\-regs@{trap\-\_\-saved\-\_\-regs}}
+\index{trap\-\_\-saved\-\_\-regs@{trap\-\_\-saved\-\_\-regs}!trap.c@{trap.\-c}}
+\subsubsection[{trap\-\_\-saved\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf arch\-\_\-regs}$\ast$ {\bf trap\-\_\-saved\-\_\-regs} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}read\mbox{]}}}}\label{trap_8c_a795de22500c2371c39b9275b38e10b91}
+
+
+\-Definition at line 151 of file trap.\-c.
+
+
+\begin{DoxyCode}
+{
+    return _trap_hyp_saved_regs;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{trap_8c_ab3877802f3e6b5d396f4b8e7c24033d6}{\index{trap.\-c@{trap.\-c}!\-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs@{\-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs}}
+\index{\-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs@{\-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs}!trap.c@{trap.\-c}}
+\subsubsection[{\-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf arch\-\_\-regs}$\ast$ {\bf \-\_\-trap\-\_\-hyp\-\_\-saved\-\_\-regs} = 0\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{trap_8c_ab3877802f3e6b5d396f4b8e7c24033d6}
+
+
+\-Definition at line 18 of file trap.\-c.
+

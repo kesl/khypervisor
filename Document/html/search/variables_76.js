@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['va',['va',['../structmemmap__desc.html#a95ee4f2c3d5eef08e655768b207f5d61',1,'memmap_desc']]],
+  ['valid',['valid',['../structlpae__pt__t.html#a7bcbc21e402fb9e3dc07789d414ef17c',1,'lpae_pt_t::valid()'],['../structlpae__p2m__t.html#a7bcbc21e402fb9e3dc07789d414ef17c',1,'lpae_p2m_t::valid()'],['../structlpae__walk__t.html#a7bcbc21e402fb9e3dc07789d414ef17c',1,'lpae_walk_t::valid()'],['../structvirq__entry.html#a75adb1881fa5da948723d7b8807b78cd',1,'virq_entry::valid()']]],
+  ['valid_5flr_5fmask',['valid_lr_mask',['../structvgic.html#a4d94225ddadd984b2a9c8184c960902c',1,'vgic']]],
+  ['vbar',['vbar',['../structarch__regs__cop.html#a335ee10c53de8aea54ce9cd9bc56d4e0',1,'arch_regs_cop']]],
+  ['vdev_5flist',['vdev_list',['../vdev_8c.html#a3bfa6c46dd6af2369f9ca4a2625b884b',1,'vdev.c']]],
+  ['vgic_5fstatus',['vgic_status',['../structhyp__guest__context.html#aaf1e3e694ca7bf2cbda2d9817f3e9389',1,'hyp_guest_context']]],
+  ['video_5fcols',['video_cols',['../structatag__videotext.html#abd7a24d04c2e3a051bd316e44d025bbd',1,'atag_videotext']]],
+  ['video_5fega_5fbx',['video_ega_bx',['../structatag__videotext.html#a4fd68ac4ef39d5a73df67c42479b7380',1,'atag_videotext']]],
+  ['video_5fisvga',['video_isvga',['../structatag__videotext.html#a8705641c3e6bd566573a2afe3bb66569',1,'atag_videotext']]],
+  ['video_5flines',['video_lines',['../structatag__videotext.html#a63e3f823f9549fdb1ad1237f128afc56',1,'atag_videotext']]],
+  ['video_5fmode',['video_mode',['../structatag__videotext.html#a1180b6b69ea36c4403ecfac38a3325db',1,'atag_videotext']]],
+  ['video_5fpage',['video_page',['../structatag__videotext.html#ac6354ba51fe0fff7ac457ff0e4bf7c68',1,'atag_videotext']]],
+  ['video_5fpoints',['video_points',['../structatag__videotext.html#afe98e092bcb87124948444d17b59727b',1,'atag_videotext']]],
+  ['videolfb',['videolfb',['../structatag.html#acb9829613674a77c810583283cf73210',1,'atag']]],
+  ['videotext',['videotext',['../structatag.html#a7ad6fedc71b884606da461f8c80aed71',1,'atag']]],
+  ['virq',['virq',['../structvirq__entry.html#a76a7da8e942ab20e51e638d71b9735db',1,'virq_entry::virq()'],['../structvirqmap__entry.html#a76a7da8e942ab20e51e638d71b9735db',1,'virqmap_entry::virq()']]],
+  ['vmcr',['vmcr',['../structvgic__status.html#aa53861e93b1392d32bab7bac03ff47fc',1,'vgic_status']]],
+  ['vmid',['vmid',['../structhyp__guest__context.html#a5aaea0584ec137718b51152ba747628b',1,'hyp_guest_context::vmid()'],['../structvirqmap__entry.html#a5aaea0584ec137718b51152ba747628b',1,'virqmap_entry::vmid()']]]
+];

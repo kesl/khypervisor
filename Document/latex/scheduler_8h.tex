@@ -1,0 +1,110 @@
+\hypertarget{scheduler_8h}{\section{scheduler.\-h \-File \-Reference}
+\label{scheduler_8h}\index{scheduler.\-h@{scheduler.\-h}}
+}
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}context.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}timer.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+\-Include dependency graph for scheduler.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=220pt]{scheduler_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{scheduler_8h_aa9b85490d49dcef645721409a6f8d1e2}{scheduler\-\_\-next\-\_\-event} (int irq, void $\ast$pdata)
+\item 
+void \hyperlink{scheduler_8h_aa3169e9d9358f4b130ab51385699a09a}{scheduler\-\_\-test\-\_\-scheduling} (void)
+\item 
+void \hyperlink{scheduler_8h_a77a8b5ba12b2f014b4b3bf554648bd46}{scheduler\-\_\-schedule} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{scheduler_8h_aa9b85490d49dcef645721409a6f8d1e2}{\index{scheduler.\-h@{scheduler.\-h}!scheduler\-\_\-next\-\_\-event@{scheduler\-\_\-next\-\_\-event}}
+\index{scheduler\-\_\-next\-\_\-event@{scheduler\-\_\-next\-\_\-event}!scheduler.h@{scheduler.\-h}}
+\subsubsection[{scheduler\-\_\-next\-\_\-event}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf scheduler\-\_\-next\-\_\-event} (
+\begin{DoxyParamCaption}
+\item[{int}]{irq, }
+\item[{void $\ast$}]{pdata}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8h_aa9b85490d49dcef645721409a6f8d1e2}
+\hypertarget{scheduler_8h_a77a8b5ba12b2f014b4b3bf554648bd46}{\index{scheduler.\-h@{scheduler.\-h}!scheduler\-\_\-schedule@{scheduler\-\_\-schedule}}
+\index{scheduler\-\_\-schedule@{scheduler\-\_\-schedule}!scheduler.h@{scheduler.\-h}}
+\subsubsection[{scheduler\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf scheduler\-\_\-schedule} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8h_a77a8b5ba12b2f014b4b3bf554648bd46}
+
+
+\-Definition at line 5 of file scheduler.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* Switch request, actually performed at trap exit */
+    context_switchto(sched_policy_determ_next());
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8h_a77a8b5ba12b2f014b4b3bf554648bd46_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{scheduler_8h_aa3169e9d9358f4b130ab51385699a09a}{\index{scheduler.\-h@{scheduler.\-h}!scheduler\-\_\-test\-\_\-scheduling@{scheduler\-\_\-test\-\_\-scheduling}}
+\index{scheduler\-\_\-test\-\_\-scheduling@{scheduler\-\_\-test\-\_\-scheduling}!scheduler.h@{scheduler.\-h}}
+\subsubsection[{scheduler\-\_\-test\-\_\-scheduling}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf scheduler\-\_\-test\-\_\-scheduling} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8h_aa3169e9d9358f4b130ab51385699a09a}
+
+
+\-Definition at line 36 of file scheduler.\-c.
+
+
+\begin{DoxyCode}
+                                {
+    void scheduler_test_switch_to_next_guest(void *pdata);
+    timer_init(timer_sched);
+    /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
+    timer_set_interval(timer_sched, 100000);
+    timer_add_callback(timer_sched, &scheduler_test_switch_to_next_guest);
+    timer_start(timer_sched);
+
+
+    timer_add_callback(timer_sched, &extra_timer_callback);
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8h_aa3169e9d9358f4b130ab51385699a09a_cgraph}
+\end{center}
+\end{figure}
+
+

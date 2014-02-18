@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$generic__timer__regs_8h.html" title="generic_timer/generic_timer_regs.h" alt="" coords="5,83,229,112"/>
+<area shape="rect" id="node7" href="$vgic_8c.html" title="gic/vgic.c" alt="" coords="253,83,331,112"/>
+<area shape="rect" id="node9" href="$virqmap_8c.html" title="virqmap.c" alt="" coords="355,83,432,112"/>
+<area shape="rect" id="node5" href="$generic__timer_8c.html" title="generic_timer/generic_timer.c" alt="" coords="21,160,213,189"/>
+</map>

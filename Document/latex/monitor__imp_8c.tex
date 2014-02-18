@@ -1,0 +1,39 @@
+\hypertarget{monitor__imp_8c}{\section{monitor\-\_\-imp.\-c \-File \-Reference}
+\label{monitor__imp_8c}\index{monitor\-\_\-imp.\-c@{monitor\-\_\-imp.\-c}}
+}
+{\ttfamily \#include \char`\"{}monitor\-\_\-private.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+\-Include dependency graph for monitor\-\_\-imp.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=270pt]{monitor__imp_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{monitor__imp_8c_a4ec58a1f8d7da8034e261292fece7271}{mon\-\_\-enter\-\_\-hyp} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{monitor__imp_8c_a4ec58a1f8d7da8034e261292fece7271}{\index{monitor\-\_\-imp.\-c@{monitor\-\_\-imp.\-c}!mon\-\_\-enter\-\_\-hyp@{mon\-\_\-enter\-\_\-hyp}}
+\index{mon\-\_\-enter\-\_\-hyp@{mon\-\_\-enter\-\_\-hyp}!monitor_imp.c@{monitor\-\_\-imp.\-c}}
+\subsubsection[{mon\-\_\-enter\-\_\-hyp}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf mon\-\_\-enter\-\_\-hyp} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{monitor__imp_8c_a4ec58a1f8d7da8034e261292fece7271}
+
+
+\-Definition at line 5 of file monitor\-\_\-imp.\-c.
+
+
+\begin{DoxyCode}
+{
+    uart_print("[monitor] enter_hyp: entering hyp mode. not coming back\n\r");
+    __mon_enter_hyp();
+}
+\end{DoxyCode}

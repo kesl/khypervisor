@@ -1,0 +1,351 @@
+\hypertarget{loadlinux_8c}{\section{loadlinux.\-c \-File \-Reference}
+\label{loadlinux_8c}\index{loadlinux.\-c@{loadlinux.\-c}}
+}
+{\ttfamily \#include \char`\"{}loadlinux.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/string.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for loadlinux.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=305pt]{loadlinux_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structatag__header}{atag\-\_\-header}
+\item 
+struct \hyperlink{structatag__core}{atag\-\_\-core}
+\item 
+struct \hyperlink{structatag__mem}{atag\-\_\-mem}
+\item 
+struct \hyperlink{structatag__serialnr}{atag\-\_\-serialnr}
+\item 
+struct \hyperlink{structatag__revision}{atag\-\_\-revision}
+\item 
+struct \hyperlink{structatag__cmdline}{atag\-\_\-cmdline}
+\item 
+struct \hyperlink{structatag__ramdisk}{atag\-\_\-ramdisk}
+\item 
+struct \hyperlink{structatag__videotext}{atag\-\_\-videotext}
+\item 
+struct \hyperlink{structatag__initrd2}{atag\-\_\-initrd2}
+\item 
+struct \hyperlink{structatag__videolfb}{atag\-\_\-videolfb}
+\item 
+struct \hyperlink{structatag}{atag}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{loadlinux_8c_a809ac181fa8530736c9e90d7872b8ed2}{\-A\-T\-A\-G\-\_\-\-N\-O\-N\-E}~0x00000000
+\item 
+\#define \hyperlink{loadlinux_8c_aed6d1dd088a7d40acf0b66b7688a0ed0}{\-A\-T\-A\-G\-\_\-\-C\-O\-R\-E}~0x54410001
+\item 
+\#define \hyperlink{loadlinux_8c_a872604f526afa365ffac2e796afe4a79}{\-A\-T\-A\-G\-\_\-\-M\-E\-M}~0x54410002
+\item 
+\#define \hyperlink{loadlinux_8c_afa693361f668c7870d5d3839316a53f8}{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T}~0x54410003
+\item 
+\#define \hyperlink{loadlinux_8c_adee27a6b169a793527b61f242841d58f}{\-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K}~0x54410004
+\item 
+\#define \hyperlink{loadlinux_8c_af4630249103cea80137f8947b63605ad}{\-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2}~0x54420005
+\item 
+\#define \hyperlink{loadlinux_8c_ab5a9e6f72abaae1b90fdee5217002309}{\-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L}~0x54410006
+\item 
+\#define \hyperlink{loadlinux_8c_a0fac65799c02974f82d1954c452a7952}{\-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N}~0x54410007
+\item 
+\#define \hyperlink{loadlinux_8c_a4ff4668465e93f5294e21a82f4802e1c}{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B}~0x54410008
+\item 
+\#define \hyperlink{loadlinux_8c_ac85aa406ee1c70ab2ff1cdfac59a0e83}{\-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E}~0x54410009
+\item 
+\#define \hyperlink{loadlinux_8c_a4068f14def7a9aa365beeab3a0ca11bf}{tag\-\_\-next}(t)~((struct \hyperlink{structatag}{atag} $\ast$)((\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$)(t) + (t)-\/$>$hdr.\-size))
+\item 
+\#define \hyperlink{loadlinux_8c_ab8e5c8b5ebd328ad58214b3d8f98c57c}{tag\-\_\-size}(type)~((sizeof(struct \hyperlink{structatag__header}{atag\-\_\-header}) + sizeof(struct type)) $>$$>$ 2)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{loadlinux_8c_a10904ac070605f86d3606ba299f64b49}{setup\-\_\-core\-\_\-tag} (void $\ast$address, long pagesize)
+\item 
+static void \hyperlink{loadlinux_8c_a9c037ad7fb55ab7bd4472f24f37497e9}{setup\-\_\-revision\-\_\-tag} (void)
+\item 
+static void \hyperlink{loadlinux_8c_a1a183928400cc8188e5b66f19998fd5c}{setup\-\_\-cmdline\-\_\-tag} (const char $\ast$line)
+\item 
+static void \hyperlink{loadlinux_8c_a60b7de4ae0bfc8c455be4e08cd9f62bf}{setup\-\_\-mem\-\_\-tag} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} start, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} len)
+\item 
+static void \hyperlink{loadlinux_8c_a1792ccde316d08f0860e600a061f8a74}{setup\-\_\-end\-\_\-tag} (void)
+\item 
+void \hyperlink{loadlinux_8c_a2a6cc0b74cefed5f4e51dad4629113b6}{loadlinux\-\_\-setup\-\_\-tags} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$src)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structatag}{atag} $\ast$ \hyperlink{loadlinux_8c_af32932952697f118981d75443c6af010}{\-\_\-params}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{loadlinux_8c_ac85aa406ee1c70ab2ff1cdfac59a0e83}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E@{\-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E}}
+\index{\-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E@{\-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-C\-M\-D\-L\-I\-N\-E}~0x54410009}}\label{loadlinux_8c_ac85aa406ee1c70ab2ff1cdfac59a0e83}
+
+
+\-Definition at line 15 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_aed6d1dd088a7d40acf0b66b7688a0ed0}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-C\-O\-R\-E@{\-A\-T\-A\-G\-\_\-\-C\-O\-R\-E}}
+\index{\-A\-T\-A\-G\-\_\-\-C\-O\-R\-E@{\-A\-T\-A\-G\-\_\-\-C\-O\-R\-E}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-C\-O\-R\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-C\-O\-R\-E}~0x54410001}}\label{loadlinux_8c_aed6d1dd088a7d40acf0b66b7688a0ed0}
+
+
+\-Definition at line 7 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_af4630249103cea80137f8947b63605ad}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2@{\-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2}}
+\index{\-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2@{\-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-I\-N\-I\-T\-R\-D2}~0x54420005}}\label{loadlinux_8c_af4630249103cea80137f8947b63605ad}
+
+
+\-Definition at line 11 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_a872604f526afa365ffac2e796afe4a79}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-M\-E\-M@{\-A\-T\-A\-G\-\_\-\-M\-E\-M}}
+\index{\-A\-T\-A\-G\-\_\-\-M\-E\-M@{\-A\-T\-A\-G\-\_\-\-M\-E\-M}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-M\-E\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-M\-E\-M}~0x54410002}}\label{loadlinux_8c_a872604f526afa365ffac2e796afe4a79}
+
+
+\-Definition at line 8 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_a809ac181fa8530736c9e90d7872b8ed2}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-N\-O\-N\-E@{\-A\-T\-A\-G\-\_\-\-N\-O\-N\-E}}
+\index{\-A\-T\-A\-G\-\_\-\-N\-O\-N\-E@{\-A\-T\-A\-G\-\_\-\-N\-O\-N\-E}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-N\-O\-N\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-N\-O\-N\-E}~0x00000000}}\label{loadlinux_8c_a809ac181fa8530736c9e90d7872b8ed2}
+
+
+\-Definition at line 6 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_adee27a6b169a793527b61f242841d58f}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K@{\-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K}}
+\index{\-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K@{\-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-R\-A\-M\-D\-I\-S\-K}~0x54410004}}\label{loadlinux_8c_adee27a6b169a793527b61f242841d58f}
+
+
+\-Definition at line 10 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_a0fac65799c02974f82d1954c452a7952}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N@{\-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N}}
+\index{\-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N@{\-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-R\-E\-V\-I\-S\-I\-O\-N}~0x54410007}}\label{loadlinux_8c_a0fac65799c02974f82d1954c452a7952}
+
+
+\-Definition at line 13 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_ab5a9e6f72abaae1b90fdee5217002309}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L@{\-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L}}
+\index{\-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L@{\-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-S\-E\-R\-I\-A\-L}~0x54410006}}\label{loadlinux_8c_ab5a9e6f72abaae1b90fdee5217002309}
+
+
+\-Definition at line 12 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_a4ff4668465e93f5294e21a82f4802e1c}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B@{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B}}
+\index{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B@{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-L\-F\-B}~0x54410008}}\label{loadlinux_8c_a4ff4668465e93f5294e21a82f4802e1c}
+
+
+\-Definition at line 14 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_afa693361f668c7870d5d3839316a53f8}{\index{loadlinux.\-c@{loadlinux.\-c}!\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T@{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T}}
+\index{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T@{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-A\-T\-A\-G\-\_\-\-V\-I\-D\-E\-O\-T\-E\-X\-T}~0x54410003}}\label{loadlinux_8c_afa693361f668c7870d5d3839316a53f8}
+
+
+\-Definition at line 9 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_a4068f14def7a9aa365beeab3a0ca11bf}{\index{loadlinux.\-c@{loadlinux.\-c}!tag\-\_\-next@{tag\-\_\-next}}
+\index{tag\-\_\-next@{tag\-\_\-next}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{tag\-\_\-next}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf tag\-\_\-next}(
+\begin{DoxyParamCaption}
+\item[{}]{t}
+\end{DoxyParamCaption}
+)~((struct {\bf atag} $\ast$)(({\bf uint32\-\_\-t} $\ast$)(t) + (t)-\/$>$hdr.\-size))}}\label{loadlinux_8c_a4068f14def7a9aa365beeab3a0ca11bf}
+
+
+\-Definition at line 17 of file loadlinux.\-c.
+
+\hypertarget{loadlinux_8c_ab8e5c8b5ebd328ad58214b3d8f98c57c}{\index{loadlinux.\-c@{loadlinux.\-c}!tag\-\_\-size@{tag\-\_\-size}}
+\index{tag\-\_\-size@{tag\-\_\-size}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{tag\-\_\-size}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf tag\-\_\-size}(
+\begin{DoxyParamCaption}
+\item[{}]{type}
+\end{DoxyParamCaption}
+)~((sizeof(struct {\bf atag\-\_\-header}) + sizeof(struct type)) $>$$>$ 2)}}\label{loadlinux_8c_ab8e5c8b5ebd328ad58214b3d8f98c57c}
+
+
+\-Definition at line 18 of file loadlinux.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{loadlinux_8c_a2a6cc0b74cefed5f4e51dad4629113b6}{\index{loadlinux.\-c@{loadlinux.\-c}!loadlinux\-\_\-setup\-\_\-tags@{loadlinux\-\_\-setup\-\_\-tags}}
+\index{loadlinux\-\_\-setup\-\_\-tags@{loadlinux\-\_\-setup\-\_\-tags}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{loadlinux\-\_\-setup\-\_\-tags}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf loadlinux\-\_\-setup\-\_\-tags} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t} $\ast$}]{src}
+\end{DoxyParamCaption}
+)}}\label{loadlinux_8c_a2a6cc0b74cefed5f4e51dad4629113b6}
+
+
+\-Definition at line 154 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    char *commandline = "root=/dev/ram rw earlyprintk console=ttyAMA0 mem=256M
+       rdinit=/sbin/init";
+    setup_core_tag(src+(0x100/4), 4096);       /* standard core tag 4k pagesize
+       */
+    setup_cmdline_tag(commandline);    /* commandline setting root device */
+    setup_revision_tag();
+    setup_mem_tag((uint32_t)(src-(0x20000000/4)), 0x10000000);
+    /* end of tags */
+    setup_end_tag();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=322pt]{loadlinux_8c_a2a6cc0b74cefed5f4e51dad4629113b6_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{loadlinux_8c_a1a183928400cc8188e5b66f19998fd5c}{\index{loadlinux.\-c@{loadlinux.\-c}!setup\-\_\-cmdline\-\_\-tag@{setup\-\_\-cmdline\-\_\-tag}}
+\index{setup\-\_\-cmdline\-\_\-tag@{setup\-\_\-cmdline\-\_\-tag}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{setup\-\_\-cmdline\-\_\-tag}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf setup\-\_\-cmdline\-\_\-tag} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{line}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{loadlinux_8c_a1a183928400cc8188e5b66f19998fd5c}
+
+
+\-Definition at line 121 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    int linelen = strlen(line);
+
+    if(!linelen)
+        return;                             /* do not insert a tag for an empty
+       commandline */
+
+    _params->hdr.tag = ATAG_CMDLINE;         /* Commandline tag */
+    _params->hdr.size = (sizeof(struct atag_header) + linelen + 1 + 4) >> 2;
+
+    strcpy(_params->u.cmdline.cmdline,line); /* place commandline into tag */
+
+    _params = tag_next(_params);              /* move pointer to next tag */
+}
+\end{DoxyCode}
+\hypertarget{loadlinux_8c_a10904ac070605f86d3606ba299f64b49}{\index{loadlinux.\-c@{loadlinux.\-c}!setup\-\_\-core\-\_\-tag@{setup\-\_\-core\-\_\-tag}}
+\index{setup\-\_\-core\-\_\-tag@{setup\-\_\-core\-\_\-tag}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{setup\-\_\-core\-\_\-tag}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf setup\-\_\-core\-\_\-tag} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{address, }
+\item[{long}]{pagesize}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{loadlinux_8c_a10904ac070605f86d3606ba299f64b49}
+
+
+\-Definition at line 100 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    _params = (struct atag *)address;         /* Initialise parameters to start
+       at given address */
+
+    _params->hdr.tag = ATAG_CORE;            /* start with the core tag */
+    _params->hdr.size = tag_size(atag_core); /* size the tag */
+    _params->u.core.flags = 1;               /* ensure read-only */
+    _params->u.core.pagesize = pagesize;     /* systems pagesize (4k) */
+    _params->u.core.rootdev = 0;             /* zero root device (typicaly
+       overidden from commandline )*/
+
+    _params = tag_next(_params);              /* move pointer to next tag */
+}
+\end{DoxyCode}
+\hypertarget{loadlinux_8c_a1792ccde316d08f0860e600a061f8a74}{\index{loadlinux.\-c@{loadlinux.\-c}!setup\-\_\-end\-\_\-tag@{setup\-\_\-end\-\_\-tag}}
+\index{setup\-\_\-end\-\_\-tag@{setup\-\_\-end\-\_\-tag}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{setup\-\_\-end\-\_\-tag}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf setup\-\_\-end\-\_\-tag} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{loadlinux_8c_a1792ccde316d08f0860e600a061f8a74}
+
+
+\-Definition at line 148 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    _params->hdr.tag = ATAG_NONE;            /* Empty tag ends list */
+    _params->hdr.size = 0;                   /* zero length */
+}
+\end{DoxyCode}
+\hypertarget{loadlinux_8c_a60b7de4ae0bfc8c455be4e08cd9f62bf}{\index{loadlinux.\-c@{loadlinux.\-c}!setup\-\_\-mem\-\_\-tag@{setup\-\_\-mem\-\_\-tag}}
+\index{setup\-\_\-mem\-\_\-tag@{setup\-\_\-mem\-\_\-tag}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{setup\-\_\-mem\-\_\-tag}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf setup\-\_\-mem\-\_\-tag} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{start, }
+\item[{{\bf uint32\-\_\-t}}]{len}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{loadlinux_8c_a60b7de4ae0bfc8c455be4e08cd9f62bf}
+
+
+\-Definition at line 136 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    printh("setup_mem_tag start :  %x len : %x\n", start, len);
+    _params->hdr.tag = ATAG_MEM;             /* Memory tag */
+    _params->hdr.size = tag_size(atag_mem);  /* size tag */
+
+    _params->u.mem.start = start;            /* Start of memory area (physical
+       address) */
+    _params->u.mem.size = len;               /* Length of area */
+
+    _params = tag_next(_params);              /* move pointer to next tag */
+}
+\end{DoxyCode}
+\hypertarget{loadlinux_8c_a9c037ad7fb55ab7bd4472f24f37497e9}{\index{loadlinux.\-c@{loadlinux.\-c}!setup\-\_\-revision\-\_\-tag@{setup\-\_\-revision\-\_\-tag}}
+\index{setup\-\_\-revision\-\_\-tag@{setup\-\_\-revision\-\_\-tag}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{setup\-\_\-revision\-\_\-tag}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf setup\-\_\-revision\-\_\-tag} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{loadlinux_8c_a9c037ad7fb55ab7bd4472f24f37497e9}
+
+
+\-Definition at line 113 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    _params->hdr.tag = ATAG_REVISION;
+    _params->hdr.size = tag_size (atag_revision);
+    _params->u.revision.rev = 0xcfdfdfdf;
+    _params = tag_next (_params);
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{loadlinux_8c_af32932952697f118981d75443c6af010}{\index{loadlinux.\-c@{loadlinux.\-c}!\-\_\-params@{\-\_\-params}}
+\index{\-\_\-params@{\-\_\-params}!loadlinux.c@{loadlinux.\-c}}
+\subsubsection[{\-\_\-params}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf atag}$\ast$ {\bf \-\_\-params}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{loadlinux_8c_af32932952697f118981d75443c6af010}
+
+
+\-Definition at line 98 of file loadlinux.\-c.
+

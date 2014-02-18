@@ -1,0 +1,158 @@
+\hypertarget{scheduler_8c}{\section{scheduler.\-c \-File \-Reference}
+\label{scheduler_8c}\index{scheduler.\-c@{scheduler.\-c}}
+}
+{\ttfamily \#include \char`\"{}scheduler.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}hvmm\-\_\-trace.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}sched\-\_\-policy.\-h\char`\"{}}\*
+\-Include dependency graph for scheduler.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{scheduler_8c_a77a8b5ba12b2f014b4b3bf554648bd46}{scheduler\-\_\-schedule} (void)
+\item 
+void \hyperlink{scheduler_8c_a48d44e052726283e6931e284d8ee04a2}{scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest} (void $\ast$pdata)
+\item 
+void \hyperlink{scheduler_8c_a526a3fccdbd15f3d98c26295e2c701db}{extra\-\_\-timer\-\_\-callback} (void $\ast$pdata)
+\item 
+void \hyperlink{scheduler_8c_abf4312fa4f0d29c7afbefc5ce43a31b7}{scheduler\-\_\-test\-\_\-scheduling} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{scheduler_8c_a526a3fccdbd15f3d98c26295e2c701db}{\index{scheduler.\-c@{scheduler.\-c}!extra\-\_\-timer\-\_\-callback@{extra\-\_\-timer\-\_\-callback}}
+\index{extra\-\_\-timer\-\_\-callback@{extra\-\_\-timer\-\_\-callback}!scheduler.c@{scheduler.\-c}}
+\subsubsection[{extra\-\_\-timer\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf extra\-\_\-timer\-\_\-callback} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{pdata}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8c_a526a3fccdbd15f3d98c26295e2c701db}
+
+
+\-Definition at line 31 of file scheduler.\-c.
+
+
+\begin{DoxyCode}
+{
+
+}
+\end{DoxyCode}
+\hypertarget{scheduler_8c_a77a8b5ba12b2f014b4b3bf554648bd46}{\index{scheduler.\-c@{scheduler.\-c}!scheduler\-\_\-schedule@{scheduler\-\_\-schedule}}
+\index{scheduler\-\_\-schedule@{scheduler\-\_\-schedule}!scheduler.c@{scheduler.\-c}}
+\subsubsection[{scheduler\-\_\-schedule}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf scheduler\-\_\-schedule} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8c_a77a8b5ba12b2f014b4b3bf554648bd46}
+
+
+\-Definition at line 5 of file scheduler.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* Switch request, actually performed at trap exit */
+    context_switchto(sched_policy_determ_next());
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8c_a77a8b5ba12b2f014b4b3bf554648bd46_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{scheduler_8c_abf4312fa4f0d29c7afbefc5ce43a31b7}{\index{scheduler.\-c@{scheduler.\-c}!scheduler\-\_\-test\-\_\-scheduling@{scheduler\-\_\-test\-\_\-scheduling}}
+\index{scheduler\-\_\-test\-\_\-scheduling@{scheduler\-\_\-test\-\_\-scheduling}!scheduler.c@{scheduler.\-c}}
+\subsubsection[{scheduler\-\_\-test\-\_\-scheduling}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf scheduler\-\_\-test\-\_\-scheduling} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8c_abf4312fa4f0d29c7afbefc5ce43a31b7}
+
+
+\-Definition at line 36 of file scheduler.\-c.
+
+
+\begin{DoxyCode}
+                                {
+    void scheduler_test_switch_to_next_guest(void *pdata);
+    timer_init(timer_sched);
+    /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
+    timer_set_interval(timer_sched, 100000);
+    timer_add_callback(timer_sched, &scheduler_test_switch_to_next_guest);
+    timer_start(timer_sched);
+
+
+    timer_add_callback(timer_sched, &extra_timer_callback);
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8c_abf4312fa4f0d29c7afbefc5ce43a31b7_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{scheduler_8c_a48d44e052726283e6931e284d8ee04a2}{\index{scheduler.\-c@{scheduler.\-c}!scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest@{scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest}}
+\index{scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest@{scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest}!scheduler.c@{scheduler.\-c}}
+\subsubsection[{scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf scheduler\-\_\-test\-\_\-switch\-\_\-to\-\_\-next\-\_\-guest} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{pdata}
+\end{DoxyParamCaption}
+)}}\label{scheduler_8c_a48d44e052726283e6931e284d8ee04a2}
+
+
+\-Definition at line 11 of file scheduler.\-c.
+
+
+\begin{DoxyCode}
+                                                     {
+    struct arch_regs *regs = pdata;
+#if 0 /* ignore message due to flood log message */
+    uint64_t pct = read_cntpct();
+    uint32_t tval = read_cnthp_tval();
+
+    uart_print( "cntpct:"); uart_print_hex64(pct); uart_print("\n\r");
+    uart_print( "cnth_tval:"); uart_print_hex32(tval); uart_print("\n\r");
+#endif
+
+    /* Note: As of context_switchto() and context_perform_switch() are
+       available,
+       no need to test if trapped from Hyp mode.
+       context_perform_switch() takes care of it
+     */
+    /* Test guest context switch */
+    if ( (regs->cpsr & 0x1F) != 0x1A ) {
+        scheduler_schedule();
+    }
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{scheduler_8c_a48d44e052726283e6931e284d8ee04a2_cgraph}
+\end{center}
+\end{figure}
+
+

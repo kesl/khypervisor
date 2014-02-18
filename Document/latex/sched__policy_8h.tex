@@ -1,0 +1,59 @@
+\hypertarget{sched__policy_8h}{\section{sched\-\_\-policy.\-h \-File \-Reference}
+\label{sched__policy_8h}\index{sched\-\_\-policy.\-h@{sched\-\_\-policy.\-h}}
+}
+{\ttfamily \#include $<$hvmm\-\_\-types.\-h$>$}\*
+\-Include dependency graph for sched\-\_\-policy.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=162pt]{sched__policy_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=304pt]{sched__policy_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{sched__policy_8h_a1163c64573f2559944de8b62e2c49a72}{sched\-\_\-policy\-\_\-determ\-\_\-next} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{sched__policy_8h_a1163c64573f2559944de8b62e2c49a72}{\index{sched\-\_\-policy.\-h@{sched\-\_\-policy.\-h}!sched\-\_\-policy\-\_\-determ\-\_\-next@{sched\-\_\-policy\-\_\-determ\-\_\-next}}
+\index{sched\-\_\-policy\-\_\-determ\-\_\-next@{sched\-\_\-policy\-\_\-determ\-\_\-next}!sched_policy.h@{sched\-\_\-policy.\-h}}
+\subsubsection[{sched\-\_\-policy\-\_\-determ\-\_\-next}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf sched\-\_\-policy\-\_\-determ\-\_\-next} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{sched__policy_8h_a1163c64573f2559944de8b62e2c49a72}
+
+
+\-Definition at line 4 of file sched\-\_\-policy.\-c.
+
+
+\begin{DoxyCode}
+{
+    vmid_t next = context_next_vmid(context_current_vmid());
+    if ( next == VMID_INVALID ) next = context_first_vmid();
+    return next;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{sched__policy_8h_a1163c64573f2559944de8b62e2c49a72_cgraph}
+\end{center}
+\end{figure}
+
+

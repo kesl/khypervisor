@@ -1,0 +1,201 @@
+\hypertarget{vdev__timer_8c}{\section{vdev/vdev\-\_\-timer.c \-File \-Reference}
+\label{vdev__timer_8c}\index{vdev/vdev\-\_\-timer.\-c@{vdev/vdev\-\_\-timer.\-c}}
+}
+{\ttfamily \#include \char`\"{}vdev\-\_\-timer.\-h\char`\"{}}\*
+{\ttfamily \#include $<$context.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for vdev\-\_\-timer.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev__timer_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structvdev__timer__regs}{vdev\-\_\-timer\-\_\-regs}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{vdev__timer_8c_a9750f965ecc4cb250d1489fb65b75894}{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status} (\hyperlink{vdev__timer_8h_a9f6b6471e80db7d8557992632c77be55}{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t} callback)
+\item 
+static void \hyperlink{vdev__timer_8c_a8a4584026e6cc743319326ed30a15287}{vtimer\-\_\-changed\-\_\-status} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} status)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__timer_8c_a857b27e797cea331cdde921c472a3285}{access\-\_\-handler} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__timer_8c_aaeeeba29a45e3c702286a92c2e6f9a45}{vdev\-\_\-timer\-\_\-init} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} base\-\_\-addr)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structvdev__info__t}{vdev\-\_\-info\-\_\-t} \hyperlink{vdev__timer_8c_ad12ce613d7928c78f9c72f2d902d61b6}{\-\_\-vdev\-\_\-info}
+\item 
+static struct \hyperlink{structvdev__timer__regs}{vdev\-\_\-timer\-\_\-regs} \hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs} \mbox{[}\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}
+\item 
+static \*
+\hyperlink{vdev__timer_8h_a9f6b6471e80db7d8557992632c77be55}{vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t} \hyperlink{vdev__timer_8c_a58bc45217ba7dc9f05ece233272d1f9f}{\-\_\-write\-\_\-status} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev__timer_8c_a857b27e797cea331cdde921c472a3285}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!access\-\_\-handler@{access\-\_\-handler}}
+\index{access\-\_\-handler@{access\-\_\-handler}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{access\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf access\-\_\-handler} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__timer_8c_a857b27e797cea331cdde921c472a3285}
+
+
+\-Definition at line 27 of file vdev\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    printh( "%s: %s offset:%d value:%x\n", __FUNCTION__, write ? "write" : "
+      read", offset, write ? *pvalue : (uint32_t) pvalue );
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    unsigned int vmid = context_current_vmid();
+    if (!write) {
+        // READ
+        switch (offset){
+        case 0x0:
+            *pvalue = regs[vmid].timer_mask;
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    } else { 
+        //WRITE
+        switch (offset){
+        case 0x0:
+            regs[vmid].timer_mask = *pvalue;
+            vtimer_changed_status(vmid, *pvalue);
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=320pt]{vdev__timer_8c_a857b27e797cea331cdde921c472a3285_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__timer_8c_aaeeeba29a45e3c702286a92c2e6f9a45}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!vdev\-\_\-timer\-\_\-init@{vdev\-\_\-timer\-\_\-init}}
+\index{vdev\-\_\-timer\-\_\-init@{vdev\-\_\-timer\-\_\-init}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{vdev\-\_\-timer\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-timer\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{base\-\_\-addr}
+\end{DoxyParamCaption}
+)}}\label{vdev__timer_8c_aaeeeba29a45e3c702286a92c2e6f9a45}
+
+
+\-Definition at line 53 of file vdev\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    _vdev_info.name     = "vtimer";
+    _vdev_info.base     = base_addr; 
+    _vdev_info.size     = sizeof(struct vdev_timer_regs);
+    _vdev_info.handler  = access_handler;
+
+    result = vdev_reg_device(&_vdev_info);
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
+    } else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, 
+      _vdev_info.name, result);
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=290pt]{vdev__timer_8c_aaeeeba29a45e3c702286a92c2e6f9a45_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__timer_8c_a8a4584026e6cc743319326ed30a15287}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!vtimer\-\_\-changed\-\_\-status@{vtimer\-\_\-changed\-\_\-status}}
+\index{vtimer\-\_\-changed\-\_\-status@{vtimer\-\_\-changed\-\_\-status}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{vtimer\-\_\-changed\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf vtimer\-\_\-changed\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{status}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__timer_8c_a8a4584026e6cc743319326ed30a15287}
+
+
+\-Definition at line 20 of file vdev\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    if( _write_status != 0 ) {
+        _write_status( vmid, status );
+    }
+}
+\end{DoxyCode}
+\hypertarget{vdev__timer_8c_a9750f965ecc4cb250d1489fb65b75894}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status@{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status}}
+\index{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status@{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vtimer\-\_\-set\-\_\-callback\-\_\-chagned\-\_\-status} (
+\begin{DoxyParamCaption}
+\item[{{\bf vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{vdev__timer_8c_a9750f965ecc4cb250d1489fb65b75894}
+
+
+\-Definition at line 15 of file vdev\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    _write_status = callback;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{vdev__timer_8c_ad12ce613d7928c78f9c72f2d902d61b6}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!\-\_\-vdev\-\_\-info@{\-\_\-vdev\-\_\-info}}
+\index{\-\_\-vdev\-\_\-info@{\-\_\-vdev\-\_\-info}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{\-\_\-vdev\-\_\-info}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vdev\-\_\-info\-\_\-t} {\bf \-\_\-vdev\-\_\-info}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__timer_8c_ad12ce613d7928c78f9c72f2d902d61b6}
+
+
+\-Definition at line 10 of file vdev\-\_\-timer.\-c.
+
+\hypertarget{vdev__timer_8c_a58bc45217ba7dc9f05ece233272d1f9f}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!\-\_\-write\-\_\-status@{\-\_\-write\-\_\-status}}
+\index{\-\_\-write\-\_\-status@{\-\_\-write\-\_\-status}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{\-\_\-write\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vtimer\-\_\-changed\-\_\-status\-\_\-callback\-\_\-t} {\bf \-\_\-write\-\_\-status} = 0\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__timer_8c_a58bc45217ba7dc9f05ece233272d1f9f}
+
+
+\-Definition at line 13 of file vdev\-\_\-timer.\-c.
+
+\hypertarget{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{\index{vdev\-\_\-timer.\-c@{vdev\-\_\-timer.\-c}!regs@{regs}}
+\index{regs@{regs}!vdev_timer.c@{vdev\-\_\-timer.\-c}}
+\subsubsection[{regs}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf vdev\-\_\-timer\-\_\-regs} {\bf regs}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}
+
+
+\-Definition at line 11 of file vdev\-\_\-timer.\-c.
+

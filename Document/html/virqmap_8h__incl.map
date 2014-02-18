@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$arch__types_8h.html" title="arch_types.h" alt="" coords="176,237,272,267"/>
+<area shape="rect" id="node5" href="$hvmm__trace_8h.html" title="hvmm_trace.h" alt="" coords="36,83,140,112"/>
+<area shape="rect" id="node9" href="$gic_8h.html" title="gic.h" alt="" coords="204,83,255,112"/>
+<area shape="rect" id="node11" href="$hvmm__types_8h.html" title="hvmm_types.h" alt="" coords="216,160,323,189"/>
+<area shape="rect" id="node15" href="$smp_8h.html" title="smp.h" alt="" coords="347,160,406,189"/>
+</map>

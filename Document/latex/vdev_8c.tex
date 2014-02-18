@@ -1,0 +1,191 @@
+\hypertarget{vdev_8c}{\section{vdev/vdev.c \-File \-Reference}
+\label{vdev_8c}\index{vdev/vdev.\-c@{vdev/vdev.\-c}}
+}
+{\ttfamily \#include $<$context.\-h$>$}\*
+{\ttfamily \#include $<$vdev.\-h$>$}\*
+{\ttfamily \#include $<$hvmm\-\_\-trace.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for vdev.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{vdev_8c_a76bfe31de763d04c313eab85d2691bc2}{\-M\-A\-X\-\_\-\-V\-D\-E\-V}~5
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{vdev_8c_ae5a6fee7377fe25c30418c102674e153}{vdev\-\_\-init} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev_8c_adef10b9bd7b82e079ca0b60b6a555d09}{vdev\-\_\-reg\-\_\-device} (\hyperlink{structvdev__info__t}{vdev\-\_\-info\-\_\-t} $\ast$new\-\_\-vdev)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev_8c_a1564c6d30e83e68553a0fce874f7d169}{vdev\-\_\-emulate} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} fipa, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} wnr, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} srt, struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structvdev__info__t}{vdev\-\_\-info\-\_\-t} \hyperlink{vdev_8c_a3bfa6c46dd6af2369f9ca4a2625b884b}{vdev\-\_\-list} \mbox{[}\hyperlink{vdev_8c_a76bfe31de763d04c313eab85d2691bc2}{\-M\-A\-X\-\_\-\-V\-D\-E\-V}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{vdev_8c_a76bfe31de763d04c313eab85d2691bc2}{\index{vdev.\-c@{vdev.\-c}!\-M\-A\-X\-\_\-\-V\-D\-E\-V@{\-M\-A\-X\-\_\-\-V\-D\-E\-V}}
+\index{\-M\-A\-X\-\_\-\-V\-D\-E\-V@{\-M\-A\-X\-\_\-\-V\-D\-E\-V}!vdev.c@{vdev.\-c}}
+\subsubsection[{\-M\-A\-X\-\_\-\-V\-D\-E\-V}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-M\-A\-X\-\_\-\-V\-D\-E\-V}~5}}\label{vdev_8c_a76bfe31de763d04c313eab85d2691bc2}
+
+
+\-Definition at line 7 of file vdev.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev_8c_a1564c6d30e83e68553a0fce874f7d169}{\index{vdev.\-c@{vdev.\-c}!vdev\-\_\-emulate@{vdev\-\_\-emulate}}
+\index{vdev\-\_\-emulate@{vdev\-\_\-emulate}!vdev.c@{vdev.\-c}}
+\subsubsection[{vdev\-\_\-emulate}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-emulate} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{fipa, }
+\item[{{\bf uint32\-\_\-t}}]{wnr, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size, }
+\item[{{\bf uint32\-\_\-t}}]{srt, }
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{vdev_8c_a1564c6d30e83e68553a0fce874f7d169}
+
+
+\-Definition at line 49 of file vdev.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_NOT_FOUND;
+    int i = 0;
+    uint32_t offset;
+    uint8_t isize = 4;
+
+    HVMM_TRACE_ENTER();
+    if ( regs->cpsr & 0x20 ) {
+        /* Thumb */
+        isize = 2;
+    }
+
+    for (i = 0; i < MAX_VDEV; i++){
+        if ( vdev_list[i].base == 0 ) break;
+
+        offset = fipa - vdev_list[i].base;
+        if ( fipa >= vdev_list[i].base && offset < vdev_list[i].size && 
+      vdev_list[i].handler != 0) {
+            /* fipa is in the rage: base ~ base + size */
+            printh("vdev: found %s for fipa %x srt:%x gpr[srt]:%x write:%d
+       vmid:%d\n", vdev_list[i].name, fipa, srt, regs->gpr[srt], wnr, context_current_vmid(
+      ) );
+            result = vdev_list[i].handler(wnr, offset, &(regs->gpr[srt]), 
+      access_size);
+            if ( wnr == 0 ) {
+                printh("vdev: result:%x\n", regs->gpr[srt] );
+            }
+
+            /* Update PC regardless handling result */
+            regs->pc += isize;
+            break;
+        } else {
+            printh("vdev: fipa %x base %x not matched\n", fipa, vdev_list[i].
+      base );
+        }
+    }
+    HVMM_TRACE_EXIT();
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=304pt]{vdev_8c_a1564c6d30e83e68553a0fce874f7d169_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev_8c_ae5a6fee7377fe25c30418c102674e153}{\index{vdev.\-c@{vdev.\-c}!vdev\-\_\-init@{vdev\-\_\-init}}
+\index{vdev\-\_\-init@{vdev\-\_\-init}!vdev.c@{vdev.\-c}}
+\subsubsection[{vdev\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vdev\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{vdev_8c_ae5a6fee7377fe25c30418c102674e153}
+
+
+\-Definition at line 11 of file vdev.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i = 0;
+    for (i = 0; i < MAX_VDEV; i++) {
+        vdev_list[i].name = 0;
+        vdev_list[i].base = 0;
+        vdev_list[i].size = 0;
+        vdev_list[i].handler = 0x0;
+    }
+}
+\end{DoxyCode}
+\hypertarget{vdev_8c_adef10b9bd7b82e079ca0b60b6a555d09}{\index{vdev.\-c@{vdev.\-c}!vdev\-\_\-reg\-\_\-device@{vdev\-\_\-reg\-\_\-device}}
+\index{vdev\-\_\-reg\-\_\-device@{vdev\-\_\-reg\-\_\-device}!vdev.c@{vdev.\-c}}
+\subsubsection[{vdev\-\_\-reg\-\_\-device}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-reg\-\_\-device} (
+\begin{DoxyParamCaption}
+\item[{{\bf vdev\-\_\-info\-\_\-t} $\ast$}]{new\-\_\-vdev}
+\end{DoxyParamCaption}
+)}}\label{vdev_8c_adef10b9bd7b82e079ca0b60b6a555d09}
+
+
+\-Definition at line 22 of file vdev.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+    int i = 0;
+
+    HVMM_TRACE_ENTER();
+    for (i = 0; i < MAX_VDEV; i++) {
+        if (vdev_list[i].handler == 0x0 ) {
+            vdev_list[i].name = new_vdev->name;
+            vdev_list[i].base = new_vdev->base;
+            vdev_list[i].size = new_vdev->size;
+            vdev_list[i].handler = new_vdev->handler;
+            printh("vdev:Registered vdev '%s' at index %d\n", vdev_list[i].name
+      , i);
+
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    }
+
+    if ( result != HVMM_STATUS_SUCCESS ) {
+        printh("vdev:Failed registering vdev '%s', max %d full \n", new_vdev->
+      name, MAX_VDEV);
+    }
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{vdev_8c_a3bfa6c46dd6af2369f9ca4a2625b884b}{\index{vdev.\-c@{vdev.\-c}!vdev\-\_\-list@{vdev\-\_\-list}}
+\index{vdev\-\_\-list@{vdev\-\_\-list}!vdev.c@{vdev.\-c}}
+\subsubsection[{vdev\-\_\-list}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vdev\-\_\-info\-\_\-t} {\bf vdev\-\_\-list}\mbox{[}{\bf \-M\-A\-X\-\_\-\-V\-D\-E\-V}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev_8c_a3bfa6c46dd6af2369f9ca4a2625b884b}
+
+
+\-Definition at line 9 of file vdev.\-c.
+

@@ -1,0 +1,244 @@
+\hypertarget{slotpirq_8c}{\section{gic/slotpirq.c \-File \-Reference}
+\label{slotpirq_8c}\index{gic/slotpirq.\-c@{gic/slotpirq.\-c}}
+}
+{\ttfamily \#include $<$slotpirq.\-h$>$}\*
+{\ttfamily \#include $<$k-\/hypervisor-\/config.\-h$>$}\*
+{\ttfamily \#include $<$vgic.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for slotpirq.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{slotpirq_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{slotpirq_8c_a01b3ab3099b2a5512a07cb42a389d84f}{slotpirq\-\_\-init} (void)
+\item 
+void \hyperlink{slotpirq_8c_aff1cbc822b730c991459afb793276fa6}{slotpirq\-\_\-set} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} pirq)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{slotpirq_8c_aa2a97d33b447c3cd1b54645301d67d06}{slotpirq\-\_\-get} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot)
+\item 
+void \hyperlink{slotpirq_8c_a7796a08ae962d45173231eba6a4d6596}{slotpirq\-\_\-clear} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot)
+\item 
+void \hyperlink{slotpirq_8c_aaad8058f8557950c87ce6e452e5a7223}{slotvirq\-\_\-set} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} virq)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{slotpirq_8c_a384b4abb370436f02ed5b937f3690a6c}{slotvirq\-\_\-getslot} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} virq)
+\item 
+void \hyperlink{slotpirq_8c_afdec456416a60eafcb58f50c742d7de2}{slotvirq\-\_\-clear} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} slot)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{slotpirq_8c_ae2bea4a5c120f4ea6fd57dc685c0c3a1}{\-\_\-guest\-\_\-pirqatslot} \mbox{[}\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\mbox{[}\hyperlink{vgic_8h_abfdcf103267c36171a466d426374f51e}{\-V\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-S\-L\-O\-T\-S}\mbox{]}
+\item 
+static \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{slotpirq_8c_a30a5e8d32abb941237bf77f56eb36e70}{\-\_\-guest\-\_\-virqatslot} \mbox{[}\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\mbox{[}\hyperlink{vgic_8h_abfdcf103267c36171a466d426374f51e}{\-V\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-S\-L\-O\-T\-S}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{slotpirq_8c_a7796a08ae962d45173231eba6a4d6596}{\index{slotpirq.\-c@{slotpirq.\-c}!slotpirq\-\_\-clear@{slotpirq\-\_\-clear}}
+\index{slotpirq\-\_\-clear@{slotpirq\-\_\-clear}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotpirq\-\_\-clear}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf slotpirq\-\_\-clear} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{slot}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_a7796a08ae962d45173231eba6a4d6596}
+
+
+\-Definition at line 40 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    slotpirq_set(vmid, slot, PIRQ_INVALID);
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{slotpirq_8c_a7796a08ae962d45173231eba6a4d6596_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{slotpirq_8c_aa2a97d33b447c3cd1b54645301d67d06}{\index{slotpirq.\-c@{slotpirq.\-c}!slotpirq\-\_\-get@{slotpirq\-\_\-get}}
+\index{slotpirq\-\_\-get@{slotpirq\-\_\-get}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotpirq\-\_\-get}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf slotpirq\-\_\-get} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{slot}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_aa2a97d33b447c3cd1b54645301d67d06}
+
+
+\-Definition at line 29 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t pirq = PIRQ_INVALID;
+
+    if ( vmid < NUM_GUESTS_STATIC ) {
+        pirq = _guest_pirqatslot[vmid][slot];
+        printh( "vgic: reading vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq );
+    }
+    return pirq;
+}
+\end{DoxyCode}
+\hypertarget{slotpirq_8c_a01b3ab3099b2a5512a07cb42a389d84f}{\index{slotpirq.\-c@{slotpirq.\-c}!slotpirq\-\_\-init@{slotpirq\-\_\-init}}
+\index{slotpirq\-\_\-init@{slotpirq\-\_\-init}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotpirq\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf slotpirq\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_a01b3ab3099b2a5512a07cb42a389d84f}
+
+
+\-Definition at line 10 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i, j;
+    for( i = 0; i < NUM_GUESTS_STATIC; i++ ) {
+        for( j = 0; j < VGIC_NUM_MAX_SLOTS; j++ ) {
+            _guest_pirqatslot[i][j] = PIRQ_INVALID;
+            _guest_virqatslot[i][j] = VIRQ_INVALID;
+        }
+    }
+}
+\end{DoxyCode}
+\hypertarget{slotpirq_8c_aff1cbc822b730c991459afb793276fa6}{\index{slotpirq.\-c@{slotpirq.\-c}!slotpirq\-\_\-set@{slotpirq\-\_\-set}}
+\index{slotpirq\-\_\-set@{slotpirq\-\_\-set}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotpirq\-\_\-set}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf slotpirq\-\_\-set} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{slot, }
+\item[{{\bf uint32\-\_\-t}}]{pirq}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_aff1cbc822b730c991459afb793276fa6}
+
+
+\-Definition at line 21 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    if ( vmid < NUM_GUESTS_STATIC ) {
+        printh( "vgic: setting vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq );
+        _guest_pirqatslot[vmid][slot] = pirq;
+    }
+}
+\end{DoxyCode}
+\hypertarget{slotpirq_8c_afdec456416a60eafcb58f50c742d7de2}{\index{slotpirq.\-c@{slotpirq.\-c}!slotvirq\-\_\-clear@{slotvirq\-\_\-clear}}
+\index{slotvirq\-\_\-clear@{slotvirq\-\_\-clear}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotvirq\-\_\-clear}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf slotvirq\-\_\-clear} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{slot}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_afdec456416a60eafcb58f50c742d7de2}
+
+
+\-Definition at line 72 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    slotvirq_set(vmid, slot, VIRQ_INVALID);
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{slotpirq_8c_afdec456416a60eafcb58f50c742d7de2_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{slotpirq_8c_a384b4abb370436f02ed5b937f3690a6c}{\index{slotpirq.\-c@{slotpirq.\-c}!slotvirq\-\_\-getslot@{slotvirq\-\_\-getslot}}
+\index{slotvirq\-\_\-getslot@{slotvirq\-\_\-getslot}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotvirq\-\_\-getslot}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf slotvirq\-\_\-getslot} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{virq}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_a384b4abb370436f02ed5b937f3690a6c}
+
+
+\-Definition at line 55 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t slot = SLOT_INVALID;
+    int i;
+
+    if ( vmid < NUM_GUESTS_STATIC ) {
+        for ( i = 0; i < VGIC_NUM_MAX_SLOTS; i++ ) {
+            if ( _guest_virqatslot[vmid][i] == virq ) {
+                slot = i;
+                printh( "vgic: reading vmid:%d slot:%d virq:%d\n", vmid, slot, 
+      virq );
+                break;
+            }
+        }
+    }
+    return slot;
+}
+\end{DoxyCode}
+\hypertarget{slotpirq_8c_aaad8058f8557950c87ce6e452e5a7223}{\index{slotpirq.\-c@{slotpirq.\-c}!slotvirq\-\_\-set@{slotvirq\-\_\-set}}
+\index{slotvirq\-\_\-set@{slotvirq\-\_\-set}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{slotvirq\-\_\-set}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf slotvirq\-\_\-set} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{slot, }
+\item[{{\bf uint32\-\_\-t}}]{virq}
+\end{DoxyParamCaption}
+)}}\label{slotpirq_8c_aaad8058f8557950c87ce6e452e5a7223}
+
+
+\-Definition at line 45 of file slotpirq.\-c.
+
+
+\begin{DoxyCode}
+{
+    if ( vmid < NUM_GUESTS_STATIC ) {
+        printh( "vgic: setting vmid:%d slot:%d virq:%d\n", vmid, slot, virq );
+        _guest_virqatslot[vmid][slot] = virq;
+    } else {
+        printh( "vgic: not setting invalid vmid:%d slot:%d virq:%d\n", vmid, 
+      slot, virq );
+    }
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{slotpirq_8c_ae2bea4a5c120f4ea6fd57dc685c0c3a1}{\index{slotpirq.\-c@{slotpirq.\-c}!\-\_\-guest\-\_\-pirqatslot@{\-\_\-guest\-\_\-pirqatslot}}
+\index{\-\_\-guest\-\_\-pirqatslot@{\-\_\-guest\-\_\-pirqatslot}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{\-\_\-guest\-\_\-pirqatslot}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf \-\_\-guest\-\_\-pirqatslot}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\mbox{[}{\bf \-V\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-S\-L\-O\-T\-S}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{slotpirq_8c_ae2bea4a5c120f4ea6fd57dc685c0c3a1}
+
+
+\-Definition at line 7 of file slotpirq.\-c.
+
+\hypertarget{slotpirq_8c_a30a5e8d32abb941237bf77f56eb36e70}{\index{slotpirq.\-c@{slotpirq.\-c}!\-\_\-guest\-\_\-virqatslot@{\-\_\-guest\-\_\-virqatslot}}
+\index{\-\_\-guest\-\_\-virqatslot@{\-\_\-guest\-\_\-virqatslot}!slotpirq.c@{slotpirq.\-c}}
+\subsubsection[{\-\_\-guest\-\_\-virqatslot}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf \-\_\-guest\-\_\-virqatslot}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\mbox{[}{\bf \-V\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-S\-L\-O\-T\-S}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{slotpirq_8c_a30a5e8d32abb941237bf77f56eb36e70}
+
+
+\-Definition at line 8 of file slotpirq.\-c.
+

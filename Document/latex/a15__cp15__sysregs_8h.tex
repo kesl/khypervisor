@@ -1,0 +1,45 @@
+\hypertarget{a15__cp15__sysregs_8h}{\section{include/a15\-\_\-cp15\-\_\-sysregs.h \-File \-Reference}
+\label{a15__cp15__sysregs_8h}\index{include/a15\-\_\-cp15\-\_\-sysregs.\-h@{include/a15\-\_\-cp15\-\_\-sysregs.\-h}}
+}
+{\ttfamily \#include \char`\"{}arch\-\_\-types.\-h\char`\"{}}\*
+\-Include dependency graph for a15\-\_\-cp15\-\_\-sysregs.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=220pt]{a15__cp15__sysregs_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=220pt]{a15__cp15__sysregs_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{a15__cp15__sysregs_8h_a3f300d071bd93f39214079dbe23891bc}{read\-\_\-cbar}()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{a15__cp15__sysregs_8h_a3f300d071bd93f39214079dbe23891bc}{\index{a15\-\_\-cp15\-\_\-sysregs.\-h@{a15\-\_\-cp15\-\_\-sysregs.\-h}!read\-\_\-cbar@{read\-\_\-cbar}}
+\index{read\-\_\-cbar@{read\-\_\-cbar}!a15_cp15_sysregs.h@{a15\-\_\-cp15\-\_\-sysregs.\-h}}
+\subsubsection[{read\-\_\-cbar}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf read\-\_\-cbar}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{a15__cp15__sysregs_8h_a3f300d071bd93f39214079dbe23891bc}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c15, c0, 0\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 26 of file a15\-\_\-cp15\-\_\-sysregs.\-h.
+

@@ -1,0 +1,1133 @@
+\hypertarget{context_8c}{\section{context.\-c \-File \-Reference}
+\label{context_8c}\index{context.\-c@{context.\-c}}
+}
+{\ttfamily \#include $<$armv7\-\_\-p15.\-h$>$}\*
+{\ttfamily \#include $<$arch\-\_\-types.\-h$>$}\*
+{\ttfamily \#include $<$k-\/hypervisor-\/config.\-h$>$}\*
+{\ttfamily \#include $<$mm.\-h$>$}\*
+{\ttfamily \#include $<$gic.\-h$>$}\*
+{\ttfamily \#include $<$interrupt.\-h$>$}\*
+{\ttfamily \#include $<$context.\-h$>$}\*
+{\ttfamily \#include $<$scheduler.\-h$>$}\*
+{\ttfamily \#include $<$hvmm\-\_\-trace.\-h$>$}\*
+{\ttfamily \#include $<$vdev.\-h$>$}\*
+{\ttfamily \#include $<$vdev/vdev\-\_\-gicd.\-h$>$}\*
+{\ttfamily \#include $<$gic\-\_\-regs.\-h$>$}\*
+{\ttfamily \#include $<$virqmap.\-h$>$}\*
+{\ttfamily \#include $<$trap.\-h$>$}\*
+{\ttfamily \#include $<$vmm.\-h$>$}\*
+{\ttfamily \#include $<$string.\-h$>$}\*
+{\ttfamily \#include \char`\"{}loadlinux.\-h\char`\"{}}\*
+{\ttfamily \#include $<$config/cfg\-\_\-platform.\-h$>$}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+{\ttfamily \#include $<$test/tests.\-h$>$}\*
+{\ttfamily \#include $<$version.\-h$>$}\*
+\-Include dependency graph for context.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{context_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{context_8c_acf4405f8c387893e69eadc140804d0a4}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}~\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}
+\item 
+\#define \hyperlink{context_8c_ac2acf5f304ad2586db8ac74f73583192}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R}~0x10
+\item 
+\#define \hyperlink{context_8c_a60a6474fca8951df30ee82637a052343}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q}~0x11
+\item 
+\#define \hyperlink{context_8c_a08f87658898e94f8dd95e9c5399e4b9f}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q}~0x12
+\item 
+\#define \hyperlink{context_8c_a22cbc694995e613968671515fed868e3}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C}~0x13
+\item 
+\#define \hyperlink{context_8c_a09e3f1abdea736a92287ad2e6e34b140}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N}~0x16
+\item 
+\#define \hyperlink{context_8c_a9ba0ca5c2cb76845b52e65858e685aa0}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T}~0x17
+\item 
+\#define \hyperlink{context_8c_a8ea2c78389eb5876f60019865169ec9b}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P}~0x1\-A
+\item 
+\#define \hyperlink{context_8c_ab9d61d021a43fac1fe42e6aafd2d79b4}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D}~0x1\-B
+\item 
+\#define \hyperlink{context_8c_a482d96e0df0946aa10ec155ae5284c43}{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S}~0x1\-F
+\item 
+\#define \hyperlink{context_8c_a53af5b93b8ac73356843a760d8b31944}{\-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-}
+\item 
+\#define \hyperlink{context_8c_a6523708467fd815ab3dad9638219c7c2}{\-\_\-valid\-\_\-vmid}(vmid)~( \hyperlink{context_8h_a891f8f7028b04322da205990de1a8f5b}{context\-\_\-first\-\_\-vmid}() $<$= vmid \&\& \hyperlink{context_8h_ad48a9977fdb537cc020b451e08dfc590}{context\-\_\-last\-\_\-vmid}() $>$= vmid )
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{context_8c_a86f464d89297ef8121c2f36141c221a7}{\-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\item 
+static void \hyperlink{context_8c_a3a2da2487bde91bb02d3363bd17d905a}{\-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage} (void)
+\item 
+void \hyperlink{context_8c_aa662295d6861cedca861f13c4ad5ece4}{context\-\_\-dump\-\_\-regs} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$\hyperlink{vdev__timer_8c_a514d7f36beee4b3e39da305e12d39d0a}{regs})
+\item 
+static void \hyperlink{context_8c_a58e0589f3c325fe4e8cd8cdd215d1e8b}{context\-\_\-copy\-\_\-regs} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$regs\-\_\-dst, struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$regs\-\_\-src)
+\item 
+void \hyperlink{context_8c_a6daf5c209647b93b848801070e6e30ef}{context\-\_\-init\-\_\-banked} (struct \hyperlink{structarch__regs__banked}{arch\-\_\-regs\-\_\-banked} $\ast$regs\-\_\-banked)
+\item 
+void \hyperlink{context_8c_a57af844ae7e83a33d88a4c36eee930eb}{context\-\_\-save\-\_\-banked} (struct \hyperlink{structarch__regs__banked}{arch\-\_\-regs\-\_\-banked} $\ast$regs\-\_\-banked)
+\item 
+void \hyperlink{context_8c_a94bb8d6785586134cc873c061076d323}{context\-\_\-restore\-\_\-banked} (struct \hyperlink{structarch__regs__banked}{arch\-\_\-regs\-\_\-banked} $\ast$regs\-\_\-banked)
+\item 
+void \hyperlink{context_8c_a3b7e34c1497427e5fdcc9b059fb813be}{context\-\_\-init\-\_\-cops} (struct \hyperlink{structarch__regs__cop}{arch\-\_\-regs\-\_\-cop} $\ast$regs\-\_\-cop)
+\item 
+void \hyperlink{context_8c_a9a5bddd4742fe9c4cc8ee9fa50cf03bf}{context\-\_\-save\-\_\-cops} (struct \hyperlink{structarch__regs__cop}{arch\-\_\-regs\-\_\-cop} $\ast$regs\-\_\-cop)
+\item 
+void \hyperlink{context_8c_a2d3fdf44ea523c8f4978cf9c33107768}{context\-\_\-restore\-\_\-cops} (struct \hyperlink{structarch__regs__cop}{arch\-\_\-regs\-\_\-cop} $\ast$regs\-\_\-cop)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{context_8c_adbcfdbfe8d61021879f1622e2c6dc29c}{context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs} (struct \hyperlink{structarch__regs}{arch\-\_\-regs} $\ast$regs\-\_\-current, \hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} next\-\_\-vmid)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{context_8c_a77fe269a194f9dcfcd0a599a9b6e3bfb}{context\-\_\-perform\-\_\-switch} (void)
+\item 
+void \hyperlink{context_8c_a39db644c82cc9c99ef78feb58d57b58c}{context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest} (void)
+\item 
+void \hyperlink{context_8c_a0abdd106a2b654464230b622b4c9877e}{context\-\_\-init\-\_\-guests} (void)
+\item 
+struct \hyperlink{structhyp__guest__context}{hyp\-\_\-guest\-\_\-context} $\ast$ \hyperlink{context_8c_ae8e692844cf2c76f7661088f7a7be817}{context\-\_\-atvmid} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{context_8c_a891f8f7028b04322da205990de1a8f5b}{context\-\_\-first\-\_\-vmid} (void)
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{context_8c_ad48a9977fdb537cc020b451e08dfc590}{context\-\_\-last\-\_\-vmid} (void)
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{context_8c_a5719d5d4a8d98b9784d0f24a2023f05f}{context\-\_\-next\-\_\-vmid} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} ofvmid)
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{context_8c_a525fcf860b6f33b4192443c9d66ba4f6}{context\-\_\-current\-\_\-vmid} (void)
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{context_8c_a3fd5aa68bf14823442fcc5fda4cb6a51}{context\-\_\-waiting\-\_\-vmid} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{context_8c_aaa75f8a973764763b44ca823e02f4406}{context\-\_\-switchto} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{context_8c_a00b56df45d0ef16d93040b667bb025ef}{context\-\_\-switchto\-\_\-lock} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} locked)
+\item 
+void \hyperlink{context_8c_a83895de158b7efc9456e7475528e42d4}{start\-\_\-guest\-\_\-os} (void)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structhyp__guest__context}{hyp\-\_\-guest\-\_\-context} \hyperlink{context_8c_a7a55b222a2790b315eaf5dbe7a12c407}{guest\-\_\-contexts} \mbox{[}\hyperlink{context_8c_acf4405f8c387893e69eadc140804d0a4}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}\mbox{]}
+\item 
+static int \hyperlink{context_8c_a5de72a0d4dd972c7d7d8c9d08272d9e8}{\-\_\-current\-\_\-guest\-\_\-vmid} = \hyperlink{hvmm__types_8h_a286d5f39683a49a6e5d4ef92043b3c9f}{\-V\-M\-I\-D\-\_\-\-I\-N\-V\-A\-L\-I\-D}
+\item 
+static int \hyperlink{context_8c_a5f1b0bb9a3d788646bb83d32d12419f3}{\-\_\-next\-\_\-guest\-\_\-vmid} = \hyperlink{hvmm__types_8h_a286d5f39683a49a6e5d4ef92043b3c9f}{\-V\-M\-I\-D\-\_\-\-I\-N\-V\-A\-L\-I\-D}
+\item 
+static \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} \hyperlink{context_8c_a345440f03deca2090efe13b08eaead89}{\-\_\-switch\-\_\-locked} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{context_8c_a53af5b93b8ac73356843a760d8b31944}{\index{context.\-c@{context.\-c}!\-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-@{\-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-}}
+\index{\-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-@{\-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-\_\-\-\_\-\-C\-O\-N\-T\-E\-X\-T\-\_\-\-T\-R\-A\-C\-E\-\_\-\-V\-E\-R\-B\-O\-S\-E\-\_\-\-\_\-}}}\label{context_8c_a53af5b93b8ac73356843a760d8b31944}
+
+
+\-Definition at line 44 of file context.\-c.
+
+\hypertarget{context_8c_a6523708467fd815ab3dad9638219c7c2}{\index{context.\-c@{context.\-c}!\-\_\-valid\-\_\-vmid@{\-\_\-valid\-\_\-vmid}}
+\index{\-\_\-valid\-\_\-vmid@{\-\_\-valid\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-valid\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-\_\-valid\-\_\-vmid}(
+\begin{DoxyParamCaption}
+\item[{}]{vmid}
+\end{DoxyParamCaption}
+)~( {\bf context\-\_\-first\-\_\-vmid}() $<$= vmid \&\& {\bf context\-\_\-last\-\_\-vmid}() $>$= vmid )}}\label{context_8c_a6523708467fd815ab3dad9638219c7c2}
+
+
+\-Definition at line 45 of file context.\-c.
+
+\hypertarget{context_8c_a9ba0ca5c2cb76845b52e65858e685aa0}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-A\-B\-T}~0x17}}\label{context_8c_a9ba0ca5c2cb76845b52e65858e685aa0}
+
+
+\-Definition at line 39 of file context.\-c.
+
+\hypertarget{context_8c_a60a6474fca8951df30ee82637a052343}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-F\-I\-Q}~0x11}}\label{context_8c_a60a6474fca8951df30ee82637a052343}
+
+
+\-Definition at line 35 of file context.\-c.
+
+\hypertarget{context_8c_a8ea2c78389eb5876f60019865169ec9b}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-H\-Y\-P}~0x1\-A}}\label{context_8c_a8ea2c78389eb5876f60019865169ec9b}
+
+
+\-Definition at line 40 of file context.\-c.
+
+\hypertarget{context_8c_a08f87658898e94f8dd95e9c5399e4b9f}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-I\-R\-Q}~0x12}}\label{context_8c_a08f87658898e94f8dd95e9c5399e4b9f}
+
+
+\-Definition at line 36 of file context.\-c.
+
+\hypertarget{context_8c_a09e3f1abdea736a92287ad2e6e34b140}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-M\-O\-N}~0x16}}\label{context_8c_a09e3f1abdea736a92287ad2e6e34b140}
+
+
+\-Definition at line 38 of file context.\-c.
+
+\hypertarget{context_8c_a22cbc694995e613968671515fed868e3}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-V\-C}~0x13}}\label{context_8c_a22cbc694995e613968671515fed868e3}
+
+
+\-Definition at line 37 of file context.\-c.
+
+\hypertarget{context_8c_a482d96e0df0946aa10ec155ae5284c43}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-S\-Y\-S}~0x1\-F}}\label{context_8c_a482d96e0df0946aa10ec155ae5284c43}
+
+
+\-Definition at line 42 of file context.\-c.
+
+\hypertarget{context_8c_ab9d61d021a43fac1fe42e6aafd2d79b4}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-N\-D}~0x1\-B}}\label{context_8c_ab9d61d021a43fac1fe42e6aafd2d79b4}
+
+
+\-Definition at line 41 of file context.\-c.
+
+\hypertarget{context_8c_ac2acf5f304ad2586db8ac74f73583192}{\index{context.\-c@{context.\-c}!\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R}}
+\index{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R@{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R}!context.c@{context.\-c}}
+\subsubsection[{\-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-P\-S\-R\-\_\-\-M\-O\-D\-E\-\_\-\-U\-S\-E\-R}~0x10}}\label{context_8c_ac2acf5f304ad2586db8ac74f73583192}
+
+
+\-Definition at line 34 of file context.\-c.
+
+\hypertarget{context_8c_acf4405f8c387893e69eadc140804d0a4}{\index{context.\-c@{context.\-c}!\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S@{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}}
+\index{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S@{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}!context.c@{context.\-c}}
+\subsubsection[{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}~{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}}}\label{context_8c_acf4405f8c387893e69eadc140804d0a4}
+
+
+\-Definition at line 32 of file context.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{context_8c_a86f464d89297ef8121c2f36141c221a7}{\index{context.\-c@{context.\-c}!\-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context@{\-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context}}
+\index{\-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context@{\-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-\_\-\-\_\-mon\-\_\-switch\-\_\-to\-\_\-guest\-\_\-context} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a86f464d89297ef8121c2f36141c221a7}
+\hypertarget{context_8c_a3a2da2487bde91bb02d3363bd17d905a}{\index{context.\-c@{context.\-c}!\-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage@{\-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage}}
+\index{\-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage@{\-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-hyp\-\_\-guest0\-\_\-copy\-\_\-zimage} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_a3a2da2487bde91bb02d3363bd17d905a}
+
+
+\-Definition at line 59 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    extern uint32_t guest_bin_start;
+    extern uint32_t guest_bin_end;
+
+    uint32_t *src = &guest_bin_start;
+    uint32_t *end = &guest_bin_end;
+    uint32_t *dst = &guest_bin_start + (0x20008000/4);
+
+    HVMM_TRACE_ENTER();
+
+    uart_print("Copying guest0 image to guest1\n\r");
+    uart_print(" src:");uart_print_hex32((uint32_t)src); 
+    uart_print(" dst:");uart_print_hex32((uint32_t)dst); 
+    uart_print(" size:");uart_print_hex32( (uint32_t)(end - src) * sizeof(
+      uint32_t));uart_print("\n\r");
+
+    while(src < end ) {
+        *dst++ = *src++;
+    }
+    uart_print("=== done ===\n\r");
+    HVMM_TRACE_EXIT();
+}
+\end{DoxyCode}
+\hypertarget{context_8c_ae8e692844cf2c76f7661088f7a7be817}{\index{context.\-c@{context.\-c}!context\-\_\-atvmid@{context\-\_\-atvmid}}
+\index{context\-\_\-atvmid@{context\-\_\-atvmid}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-atvmid}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf hyp\-\_\-guest\-\_\-context}$\ast$ {\bf context\-\_\-atvmid} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}read\mbox{]}}}}\label{context_8c_ae8e692844cf2c76f7661088f7a7be817}
+
+
+\-Definition at line 526 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    struct hyp_guest_context * result = 0;
+
+    if ( vmid < NUM_GUEST_CONTEXTS ) {
+        result = &guest_contexts[vmid];
+    }
+
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a58e0589f3c325fe4e8cd8cdd215d1e8b}{\index{context.\-c@{context.\-c}!context\-\_\-copy\-\_\-regs@{context\-\_\-copy\-\_\-regs}}
+\index{context\-\_\-copy\-\_\-regs@{context\-\_\-copy\-\_\-regs}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-copy\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf context\-\_\-copy\-\_\-regs} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs\-\_\-dst, }
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs\-\_\-src}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_a58e0589f3c325fe4e8cd8cdd215d1e8b}
+
+
+\-Definition at line 163 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    regs_dst->cpsr = regs_src->cpsr;
+    regs_dst->pc = regs_src->pc;
+    regs_dst->lr = regs_src->lr;
+    for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+        regs_dst->gpr[i] = regs_src->gpr[i];
+    }
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a525fcf860b6f33b4192443c9d66ba4f6}{\index{context.\-c@{context.\-c}!context\-\_\-current\-\_\-vmid@{context\-\_\-current\-\_\-vmid}}
+\index{context\-\_\-current\-\_\-vmid@{context\-\_\-current\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-current\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf context\-\_\-current\-\_\-vmid} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a525fcf860b6f33b4192443c9d66ba4f6}
+
+
+\-Definition at line 562 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    return _current_guest_vmid;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_aa662295d6861cedca861f13c4ad5ece4}{\index{context.\-c@{context.\-c}!context\-\_\-dump\-\_\-regs@{context\-\_\-dump\-\_\-regs}}
+\index{context\-\_\-dump\-\_\-regs@{context\-\_\-dump\-\_\-regs}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-dump\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-dump\-\_\-regs} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs}
+\end{DoxyParamCaption}
+)}}\label{context_8c_aa662295d6861cedca861f13c4ad5ece4}
+
+
+\-Definition at line 145 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+#ifdef DEBUG
+    uart_print( "cpsr:" ); uart_print_hex32( regs->cpsr ); uart_print( "\n\r" )
+      ;
+    uart_print( "  pc:" ); uart_print_hex32( regs->pc ); uart_print( "\n\r" );
+    uart_print( "  lr:" ); uart_print_hex32( regs->lr ); uart_print( "\n\r" );
+
+#ifdef __CONTEXT_TRACE_VERBOSE__
+    {
+        int i;
+        uart_print( " gpr:\n\r" );
+        for( i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+            uart_print( "     " ); uart_print_hex32( regs->gpr[i] ); uart_print
+      ( "\n\r" );
+        }
+    }
+#endif
+#endif
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a891f8f7028b04322da205990de1a8f5b}{\index{context.\-c@{context.\-c}!context\-\_\-first\-\_\-vmid@{context\-\_\-first\-\_\-vmid}}
+\index{context\-\_\-first\-\_\-vmid@{context\-\_\-first\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-first\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf context\-\_\-first\-\_\-vmid} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a891f8f7028b04322da205990de1a8f5b}
+
+
+\-Definition at line 538 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* FIXME:Hardcoded for now */
+    return 0;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a6daf5c209647b93b848801070e6e30ef}{\index{context.\-c@{context.\-c}!context\-\_\-init\-\_\-banked@{context\-\_\-init\-\_\-banked}}
+\index{context\-\_\-init\-\_\-banked@{context\-\_\-init\-\_\-banked}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-init\-\_\-banked}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-init\-\_\-banked} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs\-\_\-banked} $\ast$}]{regs\-\_\-banked}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a6daf5c209647b93b848801070e6e30ef}
+
+
+\-Definition at line 176 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    regs_banked->sp_usr = 0;
+    regs_banked->spsr_svc = 0;
+    regs_banked->sp_svc = 0;
+    regs_banked->lr_svc = 0;
+    regs_banked->spsr_abt = 0;
+    regs_banked->sp_abt = 0;
+    regs_banked->lr_abt = 0;
+    regs_banked->spsr_und = 0;
+    regs_banked->sp_und = 0;
+    regs_banked->lr_und = 0;
+    regs_banked->spsr_irq = 0;
+    regs_banked->sp_irq = 0;
+    regs_banked->lr_irq = 0;
+    regs_banked->spsr_fiq = 0;
+    regs_banked->lr_fiq = 0;
+    regs_banked->r8_fiq = 0;
+    regs_banked->r9_fiq = 0;
+    regs_banked->r10_fiq = 0;
+    regs_banked->r11_fiq = 0;
+    regs_banked->r12_fiq = 0;
+    //Cortex-A15 processor does not support sp_fiq
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a3b7e34c1497427e5fdcc9b059fb813be}{\index{context.\-c@{context.\-c}!context\-\_\-init\-\_\-cops@{context\-\_\-init\-\_\-cops}}
+\index{context\-\_\-init\-\_\-cops@{context\-\_\-init\-\_\-cops}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-init\-\_\-cops}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-init\-\_\-cops} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs\-\_\-cop} $\ast$}]{regs\-\_\-cop}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a3b7e34c1497427e5fdcc9b059fb813be}
+
+
+\-Definition at line 313 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    regs_cop->vbar = 0;
+    regs_cop->ttbr0 = 0;
+    regs_cop->ttbr1 = 0;
+    regs_cop->ttbcr = 0;
+    regs_cop->sctlr = 0;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a0abdd106a2b654464230b622b4c9877e}{\index{context.\-c@{context.\-c}!context\-\_\-init\-\_\-guests@{context\-\_\-init\-\_\-guests}}
+\index{context\-\_\-init\-\_\-guests@{context\-\_\-init\-\_\-guests}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-init\-\_\-guests}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-init\-\_\-guests} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a0abdd106a2b654464230b622b4c9877e}
+
+
+\-Definition at line 468 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    struct hyp_guest_context *context;
+    struct arch_regs *regs = 0;
+
+    
+    uart_print("[hyp] init_guests: enter\n\r");
+
+
+    /* Guest 1 @guest_bin_start */
+    context = &guest_contexts[0];
+    regs = &context->regs;
+    regs->cpsr = 0x1d3;         // supervisor, interrupt disabled
+#if defined (LINUX_GUEST)
+    regs->pc = 0xA0008000;      // PA:0xA0008000, where zImage is
+    regs->gpr[1] = CFG_MACHINE_NUMBER;
+    regs->gpr[2] = 0x80000100;  //src+(0x100/4);
+#else
+    regs->pc = 0x80000000;      // PA:0xA0000000, default entry for bmguest
+#endif
+
+    /* regs->gpr[] = whatever */
+    context->vmid = 0;
+    context->ttbl = vmm_vmid_ttbl(context->vmid);
+    context_init_cops( &context->regs_cop );
+    context_init_banked( &context->regs_banked );
+    vgic_init_status( &context->vgic_status, context->vmid );
+
+    /* Guest 2 @guest2_bin_start */
+    context = &guest_contexts[1];
+    regs = &context->regs;
+    regs->pc = 0x80000000;  // PA: 0xB0000000
+    regs->cpsr = 0x1d3; // supervisor, interrupt disabled
+
+    /* regs->gpr[] = whatever */
+    context->vmid = 1;
+    context->ttbl = vmm_vmid_ttbl(context->vmid);
+    context_init_cops( &context->regs_cop );
+    context_init_banked( &context->regs_banked );
+    vgic_init_status( &context->vgic_status, context->vmid );
+
+#if defined (LINUX_GUEST)
+    _hyp_guest0_copy_zimage();
+#elif defined (BAREMETAL_GUEST) 
+    /* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
+    _hyp_fixup_unloaded_guest();
+#endif
+
+#if defined (LINUX_GUEST)
+    {
+        extern uint32_t guest_bin_start;
+        uint32_t *src = &guest_bin_start;
+        loadlinux_setup_tags(src);
+    }
+#endif
+    uart_print("[hyp] init_guests: return\n\r");
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{context_8c_a0abdd106a2b654464230b622b4c9877e_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{context_8c_ad48a9977fdb537cc020b451e08dfc590}{\index{context.\-c@{context.\-c}!context\-\_\-last\-\_\-vmid@{context\-\_\-last\-\_\-vmid}}
+\index{context\-\_\-last\-\_\-vmid@{context\-\_\-last\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-last\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf context\-\_\-last\-\_\-vmid} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_ad48a9977fdb537cc020b451e08dfc590}
+
+
+\-Definition at line 544 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* FIXME:Hardcoded for now */
+    return 1;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a5719d5d4a8d98b9784d0f24a2023f05f}{\index{context.\-c@{context.\-c}!context\-\_\-next\-\_\-vmid@{context\-\_\-next\-\_\-vmid}}
+\index{context\-\_\-next\-\_\-vmid@{context\-\_\-next\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-next\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf context\-\_\-next\-\_\-vmid} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{ofvmid}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a5719d5d4a8d98b9784d0f24a2023f05f}
+
+
+\-Definition at line 550 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    vmid_t next = VMID_INVALID;
+    if ( ofvmid == VMID_INVALID ) {
+        next = context_first_vmid();
+    } else if ( ofvmid < context_last_vmid() ) {
+        /* FIXME:Hardcoded */
+        next = ofvmid + 1;
+    }
+    return next;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=314pt]{context_8c_a5719d5d4a8d98b9784d0f24a2023f05f_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{context_8c_a77fe269a194f9dcfcd0a599a9b6e3bfb}{\index{context.\-c@{context.\-c}!context\-\_\-perform\-\_\-switch@{context\-\_\-perform\-\_\-switch}}
+\index{context\-\_\-perform\-\_\-switch@{context\-\_\-perform\-\_\-switch}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-perform\-\_\-switch}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf context\-\_\-perform\-\_\-switch} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a77fe269a194f9dcfcd0a599a9b6e3bfb}
+
+
+\-Definition at line 419 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+
+    if ( _current_guest_vmid == VMID_INVALID ) {
+        printh("context: launching the first guest\n");
+        /* very first time, to the default first guest */
+        result = context_perform_switch_to_guest_regs( 0, _next_guest_vmid );
+        /* DOES NOT COME BACK HERE */
+    } else if ( _next_guest_vmid != VMID_INVALID && _current_guest_vmid != 
+      _next_guest_vmid ) {
+        struct arch_regs *regs = trap_saved_regs();
+        if ( (regs->cpsr & 0x1F) != 0x1A ) {
+            printh("curr: %x\n", _current_guest_vmid);
+            printh("next: %x\n", _next_guest_vmid);
+
+            /* Only if not from Hyp */
+            result = context_perform_switch_to_guest_regs( regs, 
+      _next_guest_vmid );
+            _next_guest_vmid = VMID_INVALID;
+        }
+    } else {
+        /* Staying at the currently active guest. Flush out queued virqs since
+       we didn't have a chance to switch the context, where virq flush takes place, 
+       this time */
+        vgic_flush_virqs(_current_guest_vmid);
+    }
+
+    _switch_locked = 0;
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{context_8c_a77fe269a194f9dcfcd0a599a9b6e3bfb_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{context_8c_adbcfdbfe8d61021879f1622e2c6dc29c}{\index{context.\-c@{context.\-c}!context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs@{context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs}}
+\index{context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs@{context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf context\-\_\-perform\-\_\-switch\-\_\-to\-\_\-guest\-\_\-regs} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs} $\ast$}]{regs\-\_\-current, }
+\item[{{\bf vmid\-\_\-t}}]{next\-\_\-vmid}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_adbcfdbfe8d61021879f1622e2c6dc29c}
+
+
+\-Definition at line 345 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* _curreng_guest_vmid -> next_vmid */
+
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+    struct hyp_guest_context *context = 0;
+    struct arch_regs *regs = 0;
+    
+    HVMM_TRACE_ENTER();
+
+    if ( _current_guest_vmid == next_vmid ) {
+        /* the same guest? WTF? */
+        return HVMM_STATUS_IGNORED;
+    }
+
+    /*
+     * We assume VTCR has been configured and initialized in the memory
+       management module
+     */
+    /* Disable Stage 2 Translation: HCR.VM = 0 */
+    vmm_stage2_enable(0);
+
+    if ( regs_current != 0 ) {
+        /* save the current guest's context */
+        context = &guest_contexts[_current_guest_vmid];
+        regs = &context->regs;
+        context_copy_regs( regs, regs_current );
+        context_save_cops( &context->regs_cop );
+        context_save_banked( &context->regs_banked );
+        vgic_save_status( &context->vgic_status, context->vmid );
+        printh( "context: saving vmid[%d] mode(%x):%s pc:0x%x\n", 
+                _current_guest_vmid, 
+                regs->cpsr & 0x1F, 
+                _modename(regs->cpsr & 0x1F),
+                regs->pc
+       );
+    }
+
+    /* The context of the next guest */
+    context = &guest_contexts[next_vmid];
+
+    /* Restore Translation Table for the next guest and Enable Stage 2
+       Translation */
+    vmm_set_vmid_ttbl( context->vmid, context->ttbl );
+    vmm_stage2_enable(1);
+    vgic_restore_status( &context->vgic_status, context->vmid );
+    
+    {
+        uint32_t lr = 0;
+        asm volatile( "mov  %0, lr" : "=r" (lr) : : "memory", "cc");
+        printh( "context: restoring vmid[%d] mode(%x):%s pc:0x%x lr:0x%x\n", 
+            next_vmid, 
+            context->regs.cpsr & 0x1F, 
+            _modename(context->regs.cpsr & 0x1F),
+            context->regs.pc, lr
+        );
+    }
+
+    /* The next becomes the current */
+    _current_guest_vmid = next_vmid;
+    if ( regs_current == 0 ) {
+        /* init -> hyp mode -> guest */
+        /* The actual context switching (Hyp to Normal mode) handled in the asm
+       code */
+        __mon_switch_to_guest_context( &context->regs );
+    } else {
+        /* guest -> hyp -> guest */
+        context_copy_regs( regs_current, &context->regs );
+        context_restore_cops( &context->regs_cop );
+        context_restore_banked( &context->regs_banked );
+    }
+
+    result = HVMM_STATUS_SUCCESS;
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{context_8c_adbcfdbfe8d61021879f1622e2c6dc29c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{context_8c_a94bb8d6785586134cc873c061076d323}{\index{context.\-c@{context.\-c}!context\-\_\-restore\-\_\-banked@{context\-\_\-restore\-\_\-banked}}
+\index{context\-\_\-restore\-\_\-banked@{context\-\_\-restore\-\_\-banked}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-restore\-\_\-banked}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-restore\-\_\-banked} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs\-\_\-banked} $\ast$}]{regs\-\_\-banked}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a94bb8d6785586134cc873c061076d323}
+
+
+\-Definition at line 257 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* USR banked register */
+    asm volatile (" msr    sp_usr, %0\n\t"
+                          ::"r" (regs_banked->sp_usr) :"memory", "cc");
+
+    /* SVC banked register */
+    asm volatile (" msr    spsr_svc, %0\n\t"
+                          ::"r" (regs_banked->spsr_svc) :"memory", "cc");
+    asm volatile (" msr    sp_svc, %0\n\t"
+                          ::"r" (regs_banked->sp_svc) :"memory", "cc");
+    asm volatile (" msr    lr_svc, %0\n\t"
+                          ::"r" (regs_banked->lr_svc) :"memory", "cc");
+
+    /* ABT banked register */
+    asm volatile (" msr    spsr_abt, %0\n\t"
+                          ::"r" (regs_banked->spsr_abt) :"memory", "cc");
+    asm volatile (" msr    sp_abt, %0\n\t"
+                          ::"r" (regs_banked->sp_abt) :"memory", "cc");
+    asm volatile (" msr    lr_abt, %0\n\t"
+                          ::"r" (regs_banked->lr_abt) :"memory", "cc");
+
+    /* UND banked register */
+    asm volatile (" msr    spsr_und, %0\n\t"
+                          ::"r" (regs_banked->spsr_und) :"memory", "cc");
+    asm volatile (" msr    sp_und, %0\n\t"
+                          ::"r" (regs_banked->sp_und) :"memory", "cc");
+    asm volatile (" msr    lr_und, %0\n\t"
+                          ::"r" (regs_banked->lr_und) :"memory", "cc");
+
+    /* IRQ banked register */
+    asm volatile (" msr     spsr_irq, %0\n\t"
+                          ::"r" (regs_banked->spsr_irq) :"memory", "cc");
+    asm volatile (" msr     sp_irq, %0\n\t"
+                          ::"r" (regs_banked->sp_irq) :"memory", "cc");
+    asm volatile (" msr     lr_irq, %0\n\t"
+                          ::"r" (regs_banked->lr_irq) :"memory", "cc");
+
+    /* FIQ banked register */
+    asm volatile (" msr     spsr_fiq, %0\n\t"
+                          ::"r" (regs_banked->spsr_fiq) :"memory", "cc");
+    asm volatile (" msr     lr_fiq, %0\n\t"
+                          ::"r" (regs_banked->lr_fiq) :"memory", "cc");
+    asm volatile (" msr    r8_fiq, %0\n\t"
+                          ::"r" (regs_banked->r8_fiq) :"memory", "cc");
+    asm volatile (" msr    r9_fiq, %0\n\t"
+                          ::"r" (regs_banked->r9_fiq) :"memory", "cc");
+    asm volatile (" msr    r10_fiq, %0\n\t"
+                          ::"r" (regs_banked->r10_fiq) :"memory", "cc");
+    asm volatile (" msr    r11_fiq, %0\n\t"
+                          ::"r" (regs_banked->r11_fiq) :"memory", "cc");
+    asm volatile (" msr    r12_fiq, %0\n\t"
+                          ::"r" (regs_banked->r12_fiq) :"memory", "cc");
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a2d3fdf44ea523c8f4978cf9c33107768}{\index{context.\-c@{context.\-c}!context\-\_\-restore\-\_\-cops@{context\-\_\-restore\-\_\-cops}}
+\index{context\-\_\-restore\-\_\-cops@{context\-\_\-restore\-\_\-cops}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-restore\-\_\-cops}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-restore\-\_\-cops} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs\-\_\-cop} $\ast$}]{regs\-\_\-cop}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a2d3fdf44ea523c8f4978cf9c33107768}
+
+
+\-Definition at line 331 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    write_vbar(regs_cop->vbar);
+    write_ttbr0(regs_cop->ttbr0);
+    write_ttbr1(regs_cop->ttbr1);
+    write_ttbcr(regs_cop->ttbcr);
+    write_sctlr(regs_cop->sctlr);
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a57af844ae7e83a33d88a4c36eee930eb}{\index{context.\-c@{context.\-c}!context\-\_\-save\-\_\-banked@{context\-\_\-save\-\_\-banked}}
+\index{context\-\_\-save\-\_\-banked@{context\-\_\-save\-\_\-banked}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-save\-\_\-banked}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-save\-\_\-banked} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs\-\_\-banked} $\ast$}]{regs\-\_\-banked}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a57af844ae7e83a33d88a4c36eee930eb}
+
+
+\-Definition at line 201 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* USR banked register */
+    asm volatile (" mrs     %0, sp_usr\n\t"
+                          :"=r" (regs_banked->sp_usr)::"memory", "cc");
+
+    /* SVC banked register */
+    asm volatile (" mrs     %0, spsr_svc\n\t"
+                          :"=r" (regs_banked->spsr_svc)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_svc\n\t"
+                          :"=r" (regs_banked->sp_svc)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_svc\n\t"
+                          :"=r" (regs_banked->lr_svc)::"memory", "cc");
+
+    /* ABT banked register */
+    asm volatile (" mrs     %0, spsr_abt\n\t"
+                          :"=r" (regs_banked->spsr_abt)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_abt\n\t"
+                          :"=r" (regs_banked->sp_abt)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_abt\n\t"
+                          :"=r" (regs_banked->lr_abt)::"memory", "cc");
+
+    /* UND banked register */
+    asm volatile (" mrs     %0, spsr_und\n\t"
+                          :"=r" (regs_banked->spsr_und)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_und\n\t"
+                          :"=r" (regs_banked->sp_und)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_und\n\t"
+                          :"=r" (regs_banked->lr_und)::"memory", "cc");
+
+    /* IRQ banked register */
+    asm volatile (" mrs     %0, spsr_irq\n\t"
+                          :"=r" (regs_banked->spsr_irq)::"memory", "cc");
+    asm volatile (" mrs     %0, sp_irq\n\t"
+                          :"=r" (regs_banked->sp_irq)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_irq\n\t"
+                          :"=r" (regs_banked->lr_irq)::"memory", "cc");
+
+    /* FIQ banked register  R8_fiq ~ R12_fiq, LR and SPSR */
+    asm volatile (" mrs     %0, spsr_fiq\n\t"
+                          :"=r" (regs_banked->spsr_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, lr_fiq\n\t"
+                          :"=r" (regs_banked->lr_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r8_fiq\n\t"
+                          :"=r" (regs_banked->r8_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r9_fiq\n\t"
+                          :"=r" (regs_banked->r9_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r10_fiq\n\t"
+                          :"=r" (regs_banked->r10_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r11_fiq\n\t"
+                          :"=r" (regs_banked->r11_fiq)::"memory", "cc");
+    asm volatile (" mrs     %0, r12_fiq\n\t"
+                          :"=r" (regs_banked->r12_fiq)::"memory", "cc");
+
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a9a5bddd4742fe9c4cc8ee9fa50cf03bf}{\index{context.\-c@{context.\-c}!context\-\_\-save\-\_\-cops@{context\-\_\-save\-\_\-cops}}
+\index{context\-\_\-save\-\_\-cops@{context\-\_\-save\-\_\-cops}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-save\-\_\-cops}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-save\-\_\-cops} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf arch\-\_\-regs\-\_\-cop} $\ast$}]{regs\-\_\-cop}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a9a5bddd4742fe9c4cc8ee9fa50cf03bf}
+
+
+\-Definition at line 322 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    regs_cop->vbar = read_vbar();
+    regs_cop->ttbr0 = read_ttbr0();
+    regs_cop->ttbr1 = read_ttbr1();
+    regs_cop->ttbcr = read_ttbcr();
+    regs_cop->sctlr = read_sctlr();
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a39db644c82cc9c99ef78feb58d57b58c}{\index{context.\-c@{context.\-c}!context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest@{context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest}}
+\index{context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest@{context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf context\-\_\-switch\-\_\-to\-\_\-initial\-\_\-guest} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a39db644c82cc9c99ef78feb58d57b58c}
+
+
+\-Definition at line 447 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    struct hyp_guest_context *context = 0;
+    struct arch_regs *regs = 0;
+
+    uart_print("[hyp] switch_to_initial_guest:\n\r");
+
+    /* Select the first guest context to switch to. */
+    _current_guest_vmid = VMID_INVALID;
+    context = &guest_contexts[0];
+
+    /* Dump the initial register values of the guest for debugging purpose */
+    regs = &context->regs;
+    context_dump_regs( regs );
+
+    /* Context Switch with current context == none */
+    context_switchto(0);
+    context_perform_switch();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{context_8c_a39db644c82cc9c99ef78feb58d57b58c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{context_8c_aaa75f8a973764763b44ca823e02f4406}{\index{context.\-c@{context.\-c}!context\-\_\-switchto@{context\-\_\-switchto}}
+\index{context\-\_\-switchto@{context\-\_\-switchto}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-switchto}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf context\-\_\-switchto} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid}
+\end{DoxyParamCaption}
+)}}\label{context_8c_aaa75f8a973764763b44ca823e02f4406}
+
+
+\-Definition at line 572 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    return context_switchto_lock(vmid, 0);
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=322pt]{context_8c_aaa75f8a973764763b44ca823e02f4406_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{context_8c_a00b56df45d0ef16d93040b667bb025ef}{\index{context.\-c@{context.\-c}!context\-\_\-switchto\-\_\-lock@{context\-\_\-switchto\-\_\-lock}}
+\index{context\-\_\-switchto\-\_\-lock@{context\-\_\-switchto\-\_\-lock}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-switchto\-\_\-lock}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf context\-\_\-switchto\-\_\-lock} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint8\-\_\-t}}]{locked}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a00b56df45d0ef16d93040b667bb025ef}
+
+
+\-Definition at line 577 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+
+    HVMM_TRACE_ENTER();
+
+    /* valid and not current vmid, switch */
+    if (_switch_locked == 0) {
+        if ( !_valid_vmid(vmid) ) {
+            result = HVMM_STATUS_BAD_ACCESS;
+        } else {
+            _next_guest_vmid = vmid;
+            result = HVMM_STATUS_SUCCESS;
+
+            printh("switching to vmid: %x\n", (uint32_t)vmid);
+        }
+    } else {
+        printh("context: next vmid locked to %d\n", _next_guest_vmid );
+    }
+
+    if ( locked )
+        _switch_locked = locked;
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a3fd5aa68bf14823442fcc5fda4cb6a51}{\index{context.\-c@{context.\-c}!context\-\_\-waiting\-\_\-vmid@{context\-\_\-waiting\-\_\-vmid}}
+\index{context\-\_\-waiting\-\_\-vmid@{context\-\_\-waiting\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{context\-\_\-waiting\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf context\-\_\-waiting\-\_\-vmid} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a3fd5aa68bf14823442fcc5fda4cb6a51}
+
+
+\-Definition at line 567 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    return _next_guest_vmid;
+}
+\end{DoxyCode}
+\hypertarget{context_8c_a83895de158b7efc9456e7475528e42d4}{\index{context.\-c@{context.\-c}!start\-\_\-guest\-\_\-os@{start\-\_\-guest\-\_\-os}}
+\index{start\-\_\-guest\-\_\-os@{start\-\_\-guest\-\_\-os}!context.c@{context.\-c}}
+\subsubsection[{start\-\_\-guest\-\_\-os}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf start\-\_\-guest\-\_\-os} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{context_8c_a83895de158b7efc9456e7475528e42d4}
+
+
+\-Definition at line 604 of file context.\-c.
+
+
+\begin{DoxyCode}
+{
+    init_print();
+
+    hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+    printh("[%s : %d] Starting...\n", __FUNCTION__, __LINE__);
+
+    /* Initialize Memory Management */
+    ret = hvmm_mm_init();
+
+    /* Initialize Interrupt Management */
+    ret = hvmm_interrupt_init();
+    if ( ret != HVMM_STATUS_SUCCESS ) {
+        uart_print("[hyp_main] interrupt initialization failed...\n\r");
+    }
+
+    /* Initialize Guests */
+    context_init_guests();
+
+    /* Initialize Virtual Devices */
+    vdev_init();
+
+    /* Virtual GIC Distributor */
+    printh( "tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA |
+       GIC_OFFSET_GICD);
+    vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
+
+    /* Initialize PIRQ to VIRQ mapping */
+    virqmap_init();
+
+    /* Start Scheduling */
+    scheduler_test_scheduling();
+
+    /* Begin running test code for newly implemented features */
+    hvmm_tests_main();
+
+    /* Print Banner */
+    printH("%s", BANNER_STRING);
+
+    /* Switch to the first guest */
+    context_switch_to_initial_guest();
+
+    /* The code flow must not reach here */
+    uart_print("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n\r");
+    hyp_abort_infinite();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{context_8c_a83895de158b7efc9456e7475528e42d4_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{context_8c_a5de72a0d4dd972c7d7d8c9d08272d9e8}{\index{context.\-c@{context.\-c}!\-\_\-current\-\_\-guest\-\_\-vmid@{\-\_\-current\-\_\-guest\-\_\-vmid}}
+\index{\-\_\-current\-\_\-guest\-\_\-vmid@{\-\_\-current\-\_\-guest\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-current\-\_\-guest\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-\_\-current\-\_\-guest\-\_\-vmid} = {\bf \-V\-M\-I\-D\-\_\-\-I\-N\-V\-A\-L\-I\-D}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_a5de72a0d4dd972c7d7d8c9d08272d9e8}
+
+
+\-Definition at line 50 of file context.\-c.
+
+\hypertarget{context_8c_a5f1b0bb9a3d788646bb83d32d12419f3}{\index{context.\-c@{context.\-c}!\-\_\-next\-\_\-guest\-\_\-vmid@{\-\_\-next\-\_\-guest\-\_\-vmid}}
+\index{\-\_\-next\-\_\-guest\-\_\-vmid@{\-\_\-next\-\_\-guest\-\_\-vmid}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-next\-\_\-guest\-\_\-vmid}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-\_\-next\-\_\-guest\-\_\-vmid} = {\bf \-V\-M\-I\-D\-\_\-\-I\-N\-V\-A\-L\-I\-D}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_a5f1b0bb9a3d788646bb83d32d12419f3}
+
+
+\-Definition at line 51 of file context.\-c.
+
+\hypertarget{context_8c_a345440f03deca2090efe13b08eaead89}{\index{context.\-c@{context.\-c}!\-\_\-switch\-\_\-locked@{\-\_\-switch\-\_\-locked}}
+\index{\-\_\-switch\-\_\-locked@{\-\_\-switch\-\_\-locked}!context.c@{context.\-c}}
+\subsubsection[{\-\_\-switch\-\_\-locked}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint8\-\_\-t} {\bf \-\_\-switch\-\_\-locked} = 0\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_a345440f03deca2090efe13b08eaead89}
+
+
+\-Definition at line 52 of file context.\-c.
+
+\hypertarget{context_8c_a7a55b222a2790b315eaf5dbe7a12c407}{\index{context.\-c@{context.\-c}!guest\-\_\-contexts@{guest\-\_\-contexts}}
+\index{guest\-\_\-contexts@{guest\-\_\-contexts}!context.c@{context.\-c}}
+\subsubsection[{guest\-\_\-contexts}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf hyp\-\_\-guest\-\_\-context} {\bf guest\-\_\-contexts}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-\_\-\-C\-O\-N\-T\-E\-X\-T\-S}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{context_8c_a7a55b222a2790b315eaf5dbe7a12c407}
+
+
+\-Definition at line 49 of file context.\-c.
+
