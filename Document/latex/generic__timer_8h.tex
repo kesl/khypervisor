@@ -1,0 +1,305 @@
+\hypertarget{generic__timer_8h}{\section{include/generic\-\_\-timer.h \-File \-Reference}
+\label{generic__timer_8h}\index{include/generic\-\_\-timer.\-h@{include/generic\-\_\-timer.\-h}}
+}
+{\ttfamily \#include \char`\"{}armv7\-\_\-p15.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}gic.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+\-Include dependency graph for generic\-\_\-timer.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{generic__timer_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=288pt]{generic__timer_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{generic__timer_8h_abc1b1dc35e32f7380f3f22624cb3b6e0}{generic\-\_\-timer\-\_\-callback\-\_\-t} )(void $\ast$pdata)
+\end{DoxyCompactItemize}
+\subsection*{\-Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{generic\-\_\-timer\-\_\-type\-\_\-t} \{ \hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca07029040e63b5bb3ad9468bc9dc9059e}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-H\-Y\-P}, 
+\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bcae33ad5d209b3465096373a48a296afc8}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-V\-I\-R}, 
+\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca4ecd797798e6597b435b8beb0179626a}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-S\-P}, 
+\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca2a64bfa046f4766b301a15628ab6e764}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-T\-Y\-P\-E\-S}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{generic__timer_8h_abc62af83e49119c8a1e22606340fcc31}{generic\-\_\-timer\-\_\-init} ()
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{generic__timer_8h_ac31d0e77e798fb55de96b4ff320c1a17}{generic\-\_\-timer\-\_\-enable\-\_\-int} (\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{generic\-\_\-timer\-\_\-type\-\_\-t} type)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{generic__timer_8h_ae4cbbf157ccf4126af25918bfc239918}{generic\-\_\-timer\-\_\-disable\-\_\-int} (\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{generic\-\_\-timer\-\_\-type\-\_\-t} type)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{generic__timer_8h_a9c827fc2504de623842afa015a0791e2}{generic\-\_\-timer\-\_\-set\-\_\-tval} (\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{generic\-\_\-timer\-\_\-type\-\_\-t} type, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} tval)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{generic__timer_8h_a7adf47a410958220c1df75a9edbc253c}{generic\-\_\-timer\-\_\-enable\-\_\-irq} (\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{generic\-\_\-timer\-\_\-type\-\_\-t} type)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{generic__timer_8h_a26fcbba99e1dbf1ac9e06b91e3bc3ab6}{generic\-\_\-timer\-\_\-set\-\_\-callback} (\hyperlink{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{generic\-\_\-timer\-\_\-type\-\_\-t} type, \hyperlink{generic__timer_8h_abc1b1dc35e32f7380f3f22624cb3b6e0}{generic\-\_\-timer\-\_\-callback\-\_\-t} callback)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{generic__timer_8h_abc1b1dc35e32f7380f3f22624cb3b6e0}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-callback\-\_\-t@{generic\-\_\-timer\-\_\-callback\-\_\-t}}
+\index{generic\-\_\-timer\-\_\-callback\-\_\-t@{generic\-\_\-timer\-\_\-callback\-\_\-t}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-callback\-\_\-t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ {\bf generic\-\_\-timer\-\_\-callback\-\_\-t})(void $\ast$pdata)}}\label{generic__timer_8h_abc1b1dc35e32f7380f3f22624cb3b6e0}
+
+
+\-Definition at line 16 of file generic\-\_\-timer.\-h.
+
+
+
+\subsection{\-Enumeration \-Type \-Documentation}
+\hypertarget{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-type\-\_\-t@{generic\-\_\-timer\-\_\-type\-\_\-t}}
+\index{generic\-\_\-timer\-\_\-type\-\_\-t@{generic\-\_\-timer\-\_\-type\-\_\-t}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-type\-\_\-t}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf generic\-\_\-timer\-\_\-type\-\_\-t}}}\label{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bc}
+\begin{Desc}
+\item[\-Enumerator\-: ]\par
+\begin{description}
+\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-H\-Y\-P@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-H\-Y\-P}!generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}}\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-H\-Y\-P@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-H\-Y\-P}}\item[{\em 
+\hypertarget{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca07029040e63b5bb3ad9468bc9dc9059e}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-H\-Y\-P}\label{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca07029040e63b5bb3ad9468bc9dc9059e}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-V\-I\-R@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-V\-I\-R}!generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}}\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-V\-I\-R@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-V\-I\-R}}\item[{\em 
+\hypertarget{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bcae33ad5d209b3465096373a48a296afc8}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-V\-I\-R}\label{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bcae33ad5d209b3465096373a48a296afc8}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-S\-P@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-S\-P}!generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}}\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-S\-P@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-S\-P}}\item[{\em 
+\hypertarget{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca4ecd797798e6597b435b8beb0179626a}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-S\-P}\label{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca4ecd797798e6597b435b8beb0179626a}
+}]\index{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-T\-Y\-P\-E\-S@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-T\-Y\-P\-E\-S}!generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}}\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-T\-Y\-P\-E\-S@{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-T\-Y\-P\-E\-S}}\item[{\em 
+\hypertarget{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca2a64bfa046f4766b301a15628ab6e764}{\-G\-E\-N\-E\-R\-I\-C\-\_\-\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-T\-Y\-P\-E\-S}\label{generic__timer_8h_a1070f2e7b73c8b78be519eb9dc26e5bca2a64bfa046f4766b301a15628ab6e764}
+}]\end{description}
+\end{Desc}
+
+
+
+\-Definition at line 9 of file generic\-\_\-timer.\-h.
+
+
+\begin{DoxyCode}
+             {
+    GENERIC_TIMER_HYP,      /* IRQ 26 */
+    GENERIC_TIMER_VIR,      /* IRQ 27 */
+    GENERIC_TIMER_NSP,      /* IRQ 30 */
+    GENERIC_TIMER_NUM_TYPES
+} generic_timer_type_t;
+\end{DoxyCode}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{generic__timer_8h_ae4cbbf157ccf4126af25918bfc239918}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-disable\-\_\-int@{generic\-\_\-timer\-\_\-disable\-\_\-int}}
+\index{generic\-\_\-timer\-\_\-disable\-\_\-int@{generic\-\_\-timer\-\_\-disable\-\_\-int}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-disable\-\_\-int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf generic\-\_\-timer\-\_\-disable\-\_\-int} (
+\begin{DoxyParamCaption}
+\item[{{\bf generic\-\_\-timer\-\_\-type\-\_\-t}}]{type}
+\end{DoxyParamCaption}
+)}}\label{generic__timer_8h_ae4cbbf157ccf4126af25918bfc239918}
+
+
+\-Definition at line 54 of file generic\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t ctrl;
+    hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+    if ( type == GENERIC_TIMER_HYP ) {
+        ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
+        ctrl &= ~GENERIC_TIMER_CTRL_ENABLE;
+        ctrl |= GENERIC_TIMER_CTRL_IMASK;
+
+        generic_timer_reg_write(GENERIC_TIMER_REG_HYP_CTRL, ctrl);
+        result = HVMM_STATUS_SUCCESS;
+    }
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{generic__timer_8h_ae4cbbf157ccf4126af25918bfc239918_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{generic__timer_8h_ac31d0e77e798fb55de96b4ff320c1a17}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-enable\-\_\-int@{generic\-\_\-timer\-\_\-enable\-\_\-int}}
+\index{generic\-\_\-timer\-\_\-enable\-\_\-int@{generic\-\_\-timer\-\_\-enable\-\_\-int}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-enable\-\_\-int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf generic\-\_\-timer\-\_\-enable\-\_\-int} (
+\begin{DoxyParamCaption}
+\item[{{\bf generic\-\_\-timer\-\_\-type\-\_\-t}}]{type}
+\end{DoxyParamCaption}
+)}}\label{generic__timer_8h_ac31d0e77e798fb55de96b4ff320c1a17}
+
+
+\-Definition at line 37 of file generic\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t ctrl;
+    hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+    if ( type == GENERIC_TIMER_HYP ) {
+        ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
+        ctrl |= GENERIC_TIMER_CTRL_ENABLE;      
+        ctrl &= ~GENERIC_TIMER_CTRL_IMASK;
+    
+        generic_timer_reg_write(GENERIC_TIMER_REG_HYP_CTRL, ctrl);
+        result = HVMM_STATUS_SUCCESS;
+    }
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{generic__timer_8h_ac31d0e77e798fb55de96b4ff320c1a17_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{generic__timer_8h_a7adf47a410958220c1df75a9edbc253c}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-enable\-\_\-irq@{generic\-\_\-timer\-\_\-enable\-\_\-irq}}
+\index{generic\-\_\-timer\-\_\-enable\-\_\-irq@{generic\-\_\-timer\-\_\-enable\-\_\-irq}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-enable\-\_\-irq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf generic\-\_\-timer\-\_\-enable\-\_\-irq} (
+\begin{DoxyParamCaption}
+\item[{{\bf generic\-\_\-timer\-\_\-type\-\_\-t}}]{type}
+\end{DoxyParamCaption}
+)}}\label{generic__timer_8h_a7adf47a410958220c1df75a9edbc253c}
+
+
+\-Definition at line 76 of file generic\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+    if ( type == GENERIC_TIMER_HYP ) {
+        uint32_t irq = _timer_irqs[type];
+
+        gic_test_set_irq_handler(irq, &_generic_timer_hyp_irq_handler, 0);
+
+        gic_test_configure_irq(irq,
+            GIC_INT_POLARITY_LEVEL, 
+            gic_cpumask_current(),
+            GIC_INT_PRIORITY_DEFAULT );
+
+        result = HVMM_STATUS_SUCCESS;
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{generic__timer_8h_a7adf47a410958220c1df75a9edbc253c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{generic__timer_8h_abc62af83e49119c8a1e22606340fcc31}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-init@{generic\-\_\-timer\-\_\-init}}
+\index{generic\-\_\-timer\-\_\-init@{generic\-\_\-timer\-\_\-init}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf generic\-\_\-timer\-\_\-init} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{generic__timer_8h_abc62af83e49119c8a1e22606340fcc31}
+
+
+\-Definition at line 13 of file generic\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    _timer_irqs[GENERIC_TIMER_HYP] = 26;
+    _timer_irqs[GENERIC_TIMER_NSP] = 27;
+    _timer_irqs[GENERIC_TIMER_VIR] = 30;
+
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{generic__timer_8h_a26fcbba99e1dbf1ac9e06b91e3bc3ab6}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-set\-\_\-callback@{generic\-\_\-timer\-\_\-set\-\_\-callback}}
+\index{generic\-\_\-timer\-\_\-set\-\_\-callback@{generic\-\_\-timer\-\_\-set\-\_\-callback}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-set\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf generic\-\_\-timer\-\_\-set\-\_\-callback} (
+\begin{DoxyParamCaption}
+\item[{{\bf generic\-\_\-timer\-\_\-type\-\_\-t}}]{type, }
+\item[{{\bf generic\-\_\-timer\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{generic__timer_8h_a26fcbba99e1dbf1ac9e06b91e3bc3ab6}
+
+
+\-Definition at line 95 of file generic\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    HVMM_TRACE_ENTER();
+
+    _callback[type] = callback;
+
+    HVMM_TRACE_EXIT();
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+\hypertarget{generic__timer_8h_a9c827fc2504de623842afa015a0791e2}{\index{generic\-\_\-timer.\-h@{generic\-\_\-timer.\-h}!generic\-\_\-timer\-\_\-set\-\_\-tval@{generic\-\_\-timer\-\_\-set\-\_\-tval}}
+\index{generic\-\_\-timer\-\_\-set\-\_\-tval@{generic\-\_\-timer\-\_\-set\-\_\-tval}!generic_timer.h@{generic\-\_\-timer.\-h}}
+\subsubsection[{generic\-\_\-timer\-\_\-set\-\_\-tval}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf generic\-\_\-timer\-\_\-set\-\_\-tval} (
+\begin{DoxyParamCaption}
+\item[{{\bf generic\-\_\-timer\-\_\-type\-\_\-t}}]{type, }
+\item[{{\bf uint32\-\_\-t}}]{tval}
+\end{DoxyParamCaption}
+)}}\label{generic__timer_8h_a9c827fc2504de623842afa015a0791e2}
+
+
+\-Definition at line 23 of file generic\-\_\-timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+    if ( type == GENERIC_TIMER_HYP) {
+        _tvals[type] = tval;
+        generic_timer_reg_write(GENERIC_TIMER_REG_HYP_TVAL, tval);
+        result = HVMM_STATUS_SUCCESS;
+    } else {
+    }
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{generic__timer_8h_a9c827fc2504de623842afa015a0791e2_cgraph}
+\end{center}
+\end{figure}
+
+

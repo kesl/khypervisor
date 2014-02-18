@@ -1,0 +1,75 @@
+\hypertarget{asm-arm__inline_8h}{\section{include/asm-\/arm\-\_\-inline.h \-File \-Reference}
+\label{asm-arm__inline_8h}\index{include/asm-\/arm\-\_\-inline.\-h@{include/asm-\/arm\-\_\-inline.\-h}}
+}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{asm-arm__inline_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb}()~asm volatile(\char`\"{}isb\char`\"{} \-: \-: \-: \char`\"{}memory\char`\"{})
+\item 
+\#define \hyperlink{asm-arm__inline_8h_a394753c117a76e258bf17fa55a67b1bf}{dsb}()~asm volatile(\char`\"{}dsb\char`\"{} \-: \-: \-: \char`\"{}memory\char`\"{})
+\item 
+\#define \hyperlink{asm-arm__inline_8h_a6a0439b28db6fee1e7eb3d1b56d3294a}{irq\-\_\-enable}()~asm volatile(\char`\"{}cpsie i\char`\"{} \-: \-: \-: \char`\"{}memory\char`\"{})
+\item 
+\#define \hyperlink{asm-arm__inline_8h_a00f1b8fe0a7060c1e5385c8187115597}{asm\-\_\-clz}(x)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{asm-arm__inline_8h_a00f1b8fe0a7060c1e5385c8187115597}{\index{asm-\/arm\-\_\-inline.\-h@{asm-\/arm\-\_\-inline.\-h}!asm\-\_\-clz@{asm\-\_\-clz}}
+\index{asm\-\_\-clz@{asm\-\_\-clz}!asm-arm_inline.h@{asm-\/arm\-\_\-inline.\-h}}
+\subsubsection[{asm\-\_\-clz}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf asm\-\_\-clz}(
+\begin{DoxyParamCaption}
+\item[{}]{x}
+\end{DoxyParamCaption}
+)}}\label{asm-arm__inline_8h_a00f1b8fe0a7060c1e5385c8187115597}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+({ uint32_t rval; asm volatile(\
+                                " clz %0, %1\n\t" \
+                                : "=r" (rval) : "r" (x) :); rval;})
+\end{DoxyCode}
+
+
+\-Definition at line 7 of file asm-\/arm\-\_\-inline.\-h.
+
+\hypertarget{asm-arm__inline_8h_a394753c117a76e258bf17fa55a67b1bf}{\index{asm-\/arm\-\_\-inline.\-h@{asm-\/arm\-\_\-inline.\-h}!dsb@{dsb}}
+\index{dsb@{dsb}!asm-arm_inline.h@{asm-\/arm\-\_\-inline.\-h}}
+\subsubsection[{dsb}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf dsb}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~asm volatile(\char`\"{}dsb\char`\"{} \-: \-: \-: \char`\"{}memory\char`\"{})}}\label{asm-arm__inline_8h_a394753c117a76e258bf17fa55a67b1bf}
+
+
+\-Definition at line 5 of file asm-\/arm\-\_\-inline.\-h.
+
+\hypertarget{asm-arm__inline_8h_a6a0439b28db6fee1e7eb3d1b56d3294a}{\index{asm-\/arm\-\_\-inline.\-h@{asm-\/arm\-\_\-inline.\-h}!irq\-\_\-enable@{irq\-\_\-enable}}
+\index{irq\-\_\-enable@{irq\-\_\-enable}!asm-arm_inline.h@{asm-\/arm\-\_\-inline.\-h}}
+\subsubsection[{irq\-\_\-enable}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf irq\-\_\-enable}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~asm volatile(\char`\"{}cpsie i\char`\"{} \-: \-: \-: \char`\"{}memory\char`\"{})}}\label{asm-arm__inline_8h_a6a0439b28db6fee1e7eb3d1b56d3294a}
+
+
+\-Definition at line 6 of file asm-\/arm\-\_\-inline.\-h.
+
+\hypertarget{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{\index{asm-\/arm\-\_\-inline.\-h@{asm-\/arm\-\_\-inline.\-h}!isb@{isb}}
+\index{isb@{isb}!asm-arm_inline.h@{asm-\/arm\-\_\-inline.\-h}}
+\subsubsection[{isb}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf isb}(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~asm volatile(\char`\"{}isb\char`\"{} \-: \-: \-: \char`\"{}memory\char`\"{})}}\label{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}
+
+
+\-Definition at line 4 of file asm-\/arm\-\_\-inline.\-h.
+

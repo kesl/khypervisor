@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$structarch__regs__banked.html" title="{arch_regs_banked\n|+ sp_usr\l+ spsr_svc\l+ sp_svc\l+ lr_svc\l+ spsr_abt\l+ sp_abt\l+ lr_abt\l+ spsr_und\l+ sp_und\l+ lr_und\land 9 more...|}" alt="" coords="5,331,133,589"/>
+<area shape="rect" id="node4" href="$structarch__regs.html" title="{arch_regs\n|+ cpsr\l+ pc\l+ lr\l+ gpr\l|}" alt="" coords="157,391,235,529"/>
+<area shape="rect" id="node6" href="$unionlpaed__t.html" title="{lpaed_t\n|+ bits\l+ pt\l+ p2m\l+ walk\l|}" alt="" coords="259,391,323,529"/>
+<area shape="rect" id="node8" href="$structlpae__pt__t.html" title="{lpae_pt_t\n|+ valid\l+ table\l+ ai\l+ ns\l+ user\l+ ro\l+ sh\l+ af\l+ ng\l+ base\land 8 more...|}" alt="" coords="119,5,217,264"/>
+<area shape="rect" id="node10" href="$structlpae__p2m__t.html" title="{lpae_p2m_t\n|+ valid\l+ table\l+ mattr\l+ read\l+ write\l+ sh\l+ af\l+ sbz4\l+ base\l+ sbz3\land 4 more...|}" alt="" coords="241,5,340,264"/>
+<area shape="rect" id="node12" href="$structlpae__walk__t.html" title="{lpae_walk_t\n|+ valid\l+ table\l+ pad2\l+ base\l+ pad1\l|}" alt="" coords="364,57,455,212"/>
+<area shape="rect" id="node14" href="$structarch__regs__cop.html" title="{arch_regs_cop\n|+ vbar\l+ ttbr0\l+ ttbr1\l+ ttbcr\l+ sctlr\l|}" alt="" coords="347,383,453,537"/>
+<area shape="rect" id="node16" href="$structvgic__status.html" title="{vgic_status\n|+ saved_once\l+ lr\l+ hcr\l+ apr\l+ vmcr\l|}" alt="" coords="477,383,581,537"/>
+</map>

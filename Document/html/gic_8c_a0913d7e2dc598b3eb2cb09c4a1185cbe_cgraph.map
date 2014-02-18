@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$gic_8c.html#ac9cad87ffdf3a3e1cde6002ea3f347a9" title="gic_init_baseaddr" alt="" coords="124,5,247,35"/>
+<area shape="rect" id="node7" href="$gic_8c.html#a355755273aee03b63c4a9aa6e7e4a95e" title="gic_dump_registers" alt="" coords="119,59,252,88"/>
+<area shape="rect" id="node9" href="$gic_8c.html#a592c46444cc3e5696daa78bedbbe31f3" title="gic_init_dist" alt="" coords="140,112,231,141"/>
+<area shape="rect" id="node13" href="$gic_8c.html#a8395d48667bdc01bce88521812a39f53" title="gic_init_cpui" alt="" coords="139,165,232,195"/>
+<area shape="rect" id="node5" href="$gic_8c.html#a571d07e36235ca9d298c086e117e2bb1" title="gic_periphbase_pa" alt="" coords="301,5,432,35"/>
+<area shape="rect" id="node11" href="$smp_8c.html#aa120cf745804d1aed1f2e3d19570ab43" title="smp_processor_id" alt="" coords="303,112,431,141"/>
+</map>

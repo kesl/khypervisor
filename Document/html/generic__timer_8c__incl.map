@@ -1,0 +1,11 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$generic__timer_8h.html" title="generic_timer.h" alt="" coords="139,83,248,112"/>
+<area shape="rect" id="node20" href="$hvmm__trace_8h.html" title="hvmm_trace.h" alt="" coords="11,83,115,112"/>
+<area shape="rect" id="node23" href="$generic__timer__regs_8h.html" title="generic_timer_regs.h" alt="" coords="272,83,413,112"/>
+<area shape="rect" id="node5" href="$armv7__p15_8h.html" title="armv7_p15.h" alt="" coords="215,160,311,189"/>
+<area shape="rect" id="node9" href="$gic_8h.html" title="gic.h" alt="" coords="140,160,191,189"/>
+<area shape="rect" id="node7" href="$arch__types_8h.html" title="arch_types.h" alt="" coords="184,315,280,344"/>
+<area shape="rect" id="node11" href="$hvmm__types_8h.html" title="hvmm_types.h" alt="" coords="5,237,112,267"/>
+<area shape="rect" id="node15" href="$smp_8h.html" title="smp.h" alt="" coords="136,237,195,267"/>
+<area shape="rect" id="node25" href="$asm-arm__inline_8h.html" title="asm&#45;arm_inline.h" alt="" coords="335,160,455,189"/>
+</map>

@@ -1,0 +1,23 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$context_8c.html#aa662295d6861cedca861f13c4ad5ece4" title="context_dump_regs" alt="" coords="272,272,408,301"/>
+<area shape="rect" id="node5" href="$context_8c.html#aaa75f8a973764763b44ca823e02f4406" title="context_switchto" alt="" coords="280,325,400,355"/>
+<area shape="rect" id="node9" href="$context_8c.html#a77fe269a194f9dcfcd0a599a9b6e3bfb" title="context_perform_switch" alt="" coords="260,484,420,513"/>
+<area shape="rect" id="node7" href="$context_8c.html#a00b56df45d0ef16d93040b667bb025ef" title="context_switchto_lock" alt="" coords="519,245,671,275"/>
+<area shape="rect" id="node11" href="$context_8c.html#adbcfdbfe8d61021879f1622e2c6dc29c" title="context_perform_switch_to_guest_regs" alt="" coords="469,299,720,328"/>
+<area shape="rect" id="node29" href="$vgic_8c.html#acb00c28d2618d3581a7d26f8e265ccb8" title="vgic_flush_virqs" alt="" coords="1035,459,1149,488"/>
+<area shape="rect" id="node43" href="$trap_8c.html#a795de22500c2371c39b9275b38e10b91" title="trap_saved_regs" alt="" coords="536,589,653,619"/>
+<area shape="rect" id="node13" href="$vmm_8c.html#aad790266948b8b547025a7a62006f0da" title="vmm_stage2_enable" alt="" coords="804,5,945,35"/>
+<area shape="rect" id="node15" href="$context_8c.html#a58e0589f3c325fe4e8cd8cdd215d1e8b" title="context_copy_regs" alt="" coords="809,59,940,88"/>
+<area shape="rect" id="node17" href="$context_8c.html#a9a5bddd4742fe9c4cc8ee9fa50cf03bf" title="context_save_cops" alt="" coords="808,112,941,141"/>
+<area shape="rect" id="node19" href="$context_8c.html#a57af844ae7e83a33d88a4c36eee930eb" title="context_save_banked" alt="" coords="800,165,949,195"/>
+<area shape="rect" id="node21" href="$vgic_8c.html#aebad7b956b2c36d2bbe7acdbe333ae8a" title="vgic_save_status" alt="" coords="813,219,936,248"/>
+<area shape="rect" id="node25" href="$vmm_8c.html#afee733063f1c9c6f9fa314492d1ffb11" title="vmm_set_vmid_ttbl" alt="" coords="807,272,943,301"/>
+<area shape="rect" id="node27" href="$vgic_8c.html#a70332a1790f88fbcb1a4c7014e6b6a02" title="vgic_restore_status" alt="" coords="807,325,943,355"/>
+<area shape="rect" id="node37" href="$context_8c.html#a86f464d89297ef8121c2f36141c221a7" title="__mon_switch_to_guest_context" alt="" coords="768,379,981,408"/>
+<area shape="rect" id="node39" href="$context_8c.html#a2d3fdf44ea523c8f4978cf9c33107768" title="context_restore_cops" alt="" coords="801,432,948,461"/>
+<area shape="rect" id="node41" href="$context_8c.html#a94bb8d6785586134cc873c061076d323" title="context_restore_banked" alt="" coords="795,485,955,515"/>
+<area shape="rect" id="node23" href="$vgic_8c.html#a4cf554520738a7934bc4e6917853330c" title="vgic_enable" alt="" coords="1047,219,1137,248"/>
+<area shape="rect" id="node31" href="$vgic_8c.html#abfca2f5be8dfbb355800d70dbda23b5e" title="_vgic_dump_regs" alt="" coords="1031,325,1153,355"/>
+<area shape="rect" id="node33" href="$vgic_8c.html#ac1d43326139a3717d69ce1f876cd221c" title="vgic_is_free_slot" alt="" coords="1203,325,1323,355"/>
+<area shape="rect" id="node35" href="$vgic_8c.html#aab31fc8d2c44ebb938b78cfb1f7c975f" title="vgic_find_free_slot" alt="" coords="1371,325,1501,355"/>
+</map>

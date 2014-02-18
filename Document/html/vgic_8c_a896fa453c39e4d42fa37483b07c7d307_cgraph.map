@@ -1,0 +1,16 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$gic_8c.html#aaee4d58fadbe09c39f45e8e114a4dd4d" title="gic_test_set_irq_handler" alt="" coords="255,165,417,195"/>
+<area shape="rect" id="node5" href="$vgic_8c.html#a8d083941ad4202604d2ec7161c8f6409" title="_vgic_isr_maintenance_irq" alt="" coords="248,219,424,248"/>
+<area shape="rect" id="node25" href="$gic_8c.html#acbe5581611f81cd00b58cebeda222edf" title="gic_test_configure_irq" alt="" coords="261,379,411,408"/>
+<area shape="rect" id="node27" href="$gic_8c.html#ac9a2d7f5ce83d3499113a8566f65fad0" title="gic_disable_irq" alt="" coords="492,379,599,408"/>
+<area shape="rect" id="node7" href="$context_8c.html#a525fcf860b6f33b4192443c9d66ba4f6" title="context_current_vmid" alt="" coords="472,5,619,35"/>
+<area shape="rect" id="node9" href="$slotpirq_8c.html#aa2a97d33b447c3cd1b54645301d67d06" title="slotpirq_get" alt="" coords="501,59,589,88"/>
+<area shape="rect" id="node11" href="$gic_8c.html#a7a8d9c8017d6bcc6fc377b52ed6b74c1" title="gic_deactivate_irq" alt="" coords="483,112,608,141"/>
+<area shape="rect" id="node13" href="$slotpirq_8c.html#a7796a08ae962d45173231eba6a4d6596" title="slotpirq_clear" alt="" coords="496,165,595,195"/>
+<area shape="rect" id="node17" href="$slotpirq_8c.html#afdec456416a60eafcb58f50c742d7de2" title="slotvirq_clear" alt="" coords="496,219,595,248"/>
+<area shape="rect" id="node21" href="$vgic_8c.html#a4cf554520738a7934bc4e6917853330c" title="vgic_enable" alt="" coords="500,272,591,301"/>
+<area shape="rect" id="node23" href="$vgic_8c.html#ae71b0763ed8149031b08ad13d8d687cb" title="vgic_injection_enable" alt="" coords="472,325,619,355"/>
+<area shape="rect" id="node15" href="$slotpirq_8c.html#aff1cbc822b730c991459afb793276fa6" title="slotpirq_set" alt="" coords="668,165,756,195"/>
+<area shape="rect" id="node19" href="$slotpirq_8c.html#aaad8058f8557950c87ce6e452e5a7223" title="slotvirq_set" alt="" coords="668,219,756,248"/>
+<area shape="rect" id="node29" href="$gic_8c.html#a53e36754e628b6624a760838e37fd9df" title="gic_enable_irq" alt="" coords="493,432,597,461"/>
+</map>

@@ -1,0 +1,65 @@
+\hypertarget{loadlinux_8h}{\section{loadlinux.\-h \-File \-Reference}
+\label{loadlinux_8h}\index{loadlinux.\-h@{loadlinux.\-h}}
+}
+{\ttfamily \#include \char`\"{}arch\-\_\-types.\-h\char`\"{}}\*
+\-Include dependency graph for loadlinux.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=152pt]{loadlinux_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=216pt]{loadlinux_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{loadlinux_8h_a2a6cc0b74cefed5f4e51dad4629113b6}{loadlinux\-\_\-setup\-\_\-tags} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$src)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{loadlinux_8h_a2a6cc0b74cefed5f4e51dad4629113b6}{\index{loadlinux.\-h@{loadlinux.\-h}!loadlinux\-\_\-setup\-\_\-tags@{loadlinux\-\_\-setup\-\_\-tags}}
+\index{loadlinux\-\_\-setup\-\_\-tags@{loadlinux\-\_\-setup\-\_\-tags}!loadlinux.h@{loadlinux.\-h}}
+\subsubsection[{loadlinux\-\_\-setup\-\_\-tags}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf loadlinux\-\_\-setup\-\_\-tags} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t} $\ast$}]{src}
+\end{DoxyParamCaption}
+)}}\label{loadlinux_8h_a2a6cc0b74cefed5f4e51dad4629113b6}
+
+
+\-Definition at line 154 of file loadlinux.\-c.
+
+
+\begin{DoxyCode}
+{
+    char *commandline = "root=/dev/ram rw earlyprintk console=ttyAMA0 mem=256M
+       rdinit=/sbin/init";
+    setup_core_tag(src+(0x100/4), 4096);       /* standard core tag 4k pagesize
+       */
+    setup_cmdline_tag(commandline);    /* commandline setting root device */
+    setup_revision_tag();
+    setup_mem_tag((uint32_t)(src-(0x20000000/4)), 0x10000000);
+    /* end of tags */
+    setup_end_tag();
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=322pt]{loadlinux_8h_a2a6cc0b74cefed5f4e51dad4629113b6_cgraph}
+\end{center}
+\end{figure}
+
+

@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$virqmap_8c.html#a12dba040e471900a7b385b9c3a0e4c85" title="virqmap_pirq" alt="" coords="392,5,488,35"/>
+<area shape="rect" id="node5" href="$gic_8c.html#acbe5581611f81cd00b58cebeda222edf" title="gic_test_configure_irq" alt="" coords="365,109,515,139"/>
+<area shape="rect" id="node7" href="$gic_8c.html#ac9a2d7f5ce83d3499113a8566f65fad0" title="gic_disable_irq" alt="" coords="564,57,671,87"/>
+<area shape="rect" id="node9" href="$gic_8c.html#a53e36754e628b6624a760838e37fd9df" title="gic_enable_irq" alt="" coords="565,111,669,140"/>
+</map>

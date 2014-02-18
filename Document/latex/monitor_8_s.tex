@@ -1,0 +1,96 @@
+\hypertarget{monitor_8_s}{\section{monitor.\-S \-File \-Reference}
+\label{monitor_8_s}\index{monitor.\-S@{monitor.\-S}}
+}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+global \hyperlink{monitor_8_s_a4ef4efb0188af1c1fb8dddad7636fc8a}{monitor\-\_\-hyp\-\_\-vectors} \*
+align \hyperlink{monitor_8_s_a4ef4efb0188af1c1fb8dddad7636fc8a}{monitor\-\_\-hyp\-\_\-vectors}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+global \hyperlink{monitor_8_s_a4ef4efb0188af1c1fb8dddad7636fc8a}{monitor\-\_\-hyp\-\_\-vectors} \*
+align \hyperlink{monitor_8_s_a12f8aefcae70cf8def5efce7fa6e8ecf}{spsr\-\_\-hyp} mrs \hyperlink{monitor_8_s_aef776bba48a0f8bc4defd2244e15bf63}{r1}
+\item 
+sp bl \hyperlink{trap_8c_a42d256f30a2bf8ef90ed868c166df734}{\-\_\-hyp\-\_\-hvc\-\_\-service} \hyperlink{monitor_8_s_ad1c67bb474f6fe7f892f43e3b42fcbcd}{r0}
+\item 
+sp bl \hyperlink{trap_8c_a42d256f30a2bf8ef90ed868c166df734}{\-\_\-hyp\-\_\-hvc\-\_\-service} if \hyperlink{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}{return}
+\item 
+sp bl \hyperlink{trap_8c_a42d256f30a2bf8ef90ed868c166df734}{\-\_\-hyp\-\_\-hvc\-\_\-service} if \hyperlink{monitor__secure_8_s_a52d1ac37c436f49666d8e195af78d552}{r0} msr \hyperlink{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}{elr\-\_\-hyp}
+\item 
+msrne \hyperlink{monitor_8_s_a12f8aefcae70cf8def5efce7fa6e8ecf}{spsr\-\_\-hyp}
+\item 
+\hyperlink{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}{elr\-\_\-hyp} mov \hyperlink{monitor_8_s_a9c0336e2400aaea86bf8157c919459bc}{pc}
+\item 
+\hyperlink{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}{elr\-\_\-hyp} mov \hyperlink{context_8h_a6ced3f4007bb60daf12191c058e55b8c}{lr} \hyperlink{monitor_8_s_a81814ef2d4e0eec675fbcdd2fc5d771b}{trap\-\_\-dabt}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}{\index{monitor.\-S@{monitor.\-S}!elr\-\_\-hyp@{elr\-\_\-hyp}}
+\index{elr\-\_\-hyp@{elr\-\_\-hyp}!monitor.S@{monitor.\-S}}
+\subsubsection[{elr\-\_\-hyp}]{\setlength{\rightskip}{0pt plus 5cm}{\bf r1} msr {\bf elr\-\_\-hyp}}}\label{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}
+
+
+\-Definition at line 43 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_a4ef4efb0188af1c1fb8dddad7636fc8a}{\index{monitor.\-S@{monitor.\-S}!monitor\-\_\-hyp\-\_\-vectors@{monitor\-\_\-hyp\-\_\-vectors}}
+\index{monitor\-\_\-hyp\-\_\-vectors@{monitor\-\_\-hyp\-\_\-vectors}!monitor.S@{monitor.\-S}}
+\subsubsection[{monitor\-\_\-hyp\-\_\-vectors}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text global {\bf monitor\-\_\-hyp\-\_\-vectors} align {\bf monitor\-\_\-hyp\-\_\-vectors}}}\label{monitor_8_s_a4ef4efb0188af1c1fb8dddad7636fc8a}
+
+
+\-Definition at line 33 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_a9c0336e2400aaea86bf8157c919459bc}{\index{monitor.\-S@{monitor.\-S}!pc@{pc}}
+\index{pc@{pc}!monitor.S@{monitor.\-S}}
+\subsubsection[{pc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf elr\-\_\-hyp} mov {\bf pc}}}\label{monitor_8_s_a9c0336e2400aaea86bf8157c919459bc}
+
+
+\-Definition at line 43 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_ad1c67bb474f6fe7f892f43e3b42fcbcd}{\index{monitor.\-S@{monitor.\-S}!r0@{r0}}
+\index{r0@{r0}!monitor.S@{monitor.\-S}}
+\subsubsection[{r0}]{\setlength{\rightskip}{0pt plus 5cm}{\bf r1} msr r3 ldm {\bf r0}}}\label{monitor_8_s_ad1c67bb474f6fe7f892f43e3b42fcbcd}
+
+
+\-Definition at line 33 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_aef776bba48a0f8bc4defd2244e15bf63}{\index{monitor.\-S@{monitor.\-S}!r1@{r1}}
+\index{r1@{r1}!monitor.S@{monitor.\-S}}
+\subsubsection[{r1}]{\setlength{\rightskip}{0pt plus 5cm}{\bf spsr\-\_\-hyp} mrs {\bf r1}}}\label{monitor_8_s_aef776bba48a0f8bc4defd2244e15bf63}
+
+
+\-Definition at line 33 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}{\index{monitor.\-S@{monitor.\-S}!return@{return}}
+\index{return@{return}!monitor.S@{monitor.\-S}}
+\subsubsection[{return}]{\setlength{\rightskip}{0pt plus 5cm}sp bl {\bf \-\_\-hyp\-\_\-hvc\-\_\-service} if {\bf return}}}\label{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+= HYP_RET_STAY -> stay in Hyp mode 
+    bne 1f          
+    
+    @ Pop registers
+    pop     {r0-r1, lr}
+    msr     spsr_hyp
+\end{DoxyCode}
+
+
+\-Definition at line 43 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_a12f8aefcae70cf8def5efce7fa6e8ecf}{\index{monitor.\-S@{monitor.\-S}!spsr\-\_\-hyp@{spsr\-\_\-hyp}}
+\index{spsr\-\_\-hyp@{spsr\-\_\-hyp}!monitor.S@{monitor.\-S}}
+\subsubsection[{spsr\-\_\-hyp}]{\setlength{\rightskip}{0pt plus 5cm}sp bl {\bf \-\_\-hyp\-\_\-trap\-\_\-unhandled} {\bf lr} msr {\bf spsr\-\_\-hyp}}}\label{monitor_8_s_a12f8aefcae70cf8def5efce7fa6e8ecf}
+
+
+\-Definition at line 43 of file monitor.\-S.
+
+\hypertarget{monitor_8_s_a81814ef2d4e0eec675fbcdd2fc5d771b}{\index{monitor.\-S@{monitor.\-S}!trap\-\_\-dabt@{trap\-\_\-dabt}}
+\index{trap\-\_\-dabt@{trap\-\_\-dabt}!monitor.S@{monitor.\-S}}
+\subsubsection[{trap\-\_\-dabt}]{\setlength{\rightskip}{0pt plus 5cm}{\bf elr\-\_\-hyp} mov {\bf lr} {\bf trap\-\_\-dabt}}}\label{monitor_8_s_a81814ef2d4e0eec675fbcdd2fc5d771b}
+
+
+\-Definition at line 43 of file monitor.\-S.
+

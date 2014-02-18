@@ -1,0 +1,841 @@
+\hypertarget{vdev__gicd_8c}{\section{vdev/vdev\-\_\-gicd.c \-File \-Reference}
+\label{vdev__gicd_8c}\index{vdev/vdev\-\_\-gicd.\-c@{vdev/vdev\-\_\-gicd.\-c}}
+}
+{\ttfamily \#include \char`\"{}vdev\-\_\-gicd.\-h\char`\"{}}\*
+{\ttfamily \#include $<$context.\-h$>$}\*
+{\ttfamily \#include $<$gic\-\_\-regs.\-h$>$}\*
+{\ttfamily \#include $<$vdev.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for vdev\-\_\-gicd.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev__gicd_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Data \-Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structgicd__regs}{gicd\-\_\-regs}
+\item 
+struct \hyperlink{structgicd__handler__entry}{gicd\-\_\-handler\-\_\-entry}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{vdev__gicd_8c_a137c1046fccc01fd1e9d046006336f95}{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}~128
+\item 
+\#define \hyperlink{vdev__gicd_8c_ab23970ec7aa6d2e867b750ec17b5f0ef}{\-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}~((\hyperlink{vdev__gicd_8c_a137c1046fccc01fd1e9d046006336f95}{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M} $>$$>$ 5) -\/ 1)
+\item 
+\#define \hyperlink{vdev__gicd_8c_a5e6328f6763741583dcf679a487a5ae5}{\-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}~(0x43\-B)
+\item 
+\#define \hyperlink{vdev__gicd_8c_a42979379639a7d5140a52d3e31b42a65}{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R}~(\hyperlink{vdev__gicd_8c_a137c1046fccc01fd1e9d046006336f95}{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}/32)
+\item 
+\#define \hyperlink{vdev__gicd_8c_a8038057967cc824ffecd9dacca6ff322}{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R}~(\hyperlink{vdev__gicd_8c_a137c1046fccc01fd1e9d046006336f95}{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}/32)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a94c623e91b5a121f9a28bd7d81b12df2}{handler\-\_\-000} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a01502bf66945a3ed4f47bcfa9d727717}{handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a69dc809cfe7263b20ac92903cfdbd766}{handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_ae3dd7dcd5418e5ca5679596194841d49}{handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a617f27765b87dba9bf6d6dbd70ac73a1}{handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_ad1f4e77c9bd752dc051abdce906272cd}{handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_af364ad4bf111db26c519a70c70788471}{handler\-\_\-\-I\-C\-F\-G\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a1460386e5620ab43d2d5fa470f30f956}{handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_afb32128dbc8c43242b180c31a8ea09b9}{handler\-\_\-\-N\-S\-A\-C\-R} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a06d4463c129a9bc1f0fc0d8b39472014}{handler\-\_\-\-F00} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+static \hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a857b27e797cea331cdde921c472a3285}{access\-\_\-handler} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} write, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} offset, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} $\ast$pvalue, \hyperlink{vdev_8h_ad6282c1758c5e6605fbac6d3007ae9d5}{vdev\-\_\-access\-\_\-size\-\_\-t} access\-\_\-size)
+\item 
+void \hyperlink{vdev__gicd_8c_a9c67f2f148d50faebdb7576ea03a5876}{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus} (\hyperlink{vdev__gicd_8h_a721f4963c9e9da98e508f1a02ec49519}{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t} callback)
+\item 
+void \hyperlink{vdev__gicd_8c_ab8803dd5abaa4ce51155fb7913423b59}{vgicd\-\_\-changed\-\_\-istatus} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} istatus, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} word\-\_\-offset)
+\item 
+static void \hyperlink{vdev__gicd_8c_ad4d5cd73ffb5f68c2f5d6f9b8ee920bc}{vdev\-\_\-gicd\-\_\-reset\-\_\-values} (void)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{vdev__gicd_8c_a486b6cd2f61165a52985b53909512566}{vdev\-\_\-gicd\-\_\-init} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} base\-\_\-addr)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{vdev__gicd_8h_a721f4963c9e9da98e508f1a02ec49519}{vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t} \hyperlink{vdev__gicd_8c_a2f1914d399c2ace7998243bc1d2b21a6}{\-\_\-cb\-\_\-changed\-\_\-istatus} = 0
+\item 
+static \hyperlink{structvdev__info__t}{vdev\-\_\-info\-\_\-t} \hyperlink{vdev__gicd_8c_ad12ce613d7928c78f9c72f2d902d61b6}{\-\_\-vdev\-\_\-info}
+\item 
+static struct \hyperlink{structgicd__regs}{gicd\-\_\-regs} \hyperlink{vdev__gicd_8c_a495629d641dda63efaec19e3cfd649ea}{\-\_\-regs} \mbox{[}\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}
+\item 
+static struct \hyperlink{structgicd__handler__entry}{gicd\-\_\-handler\-\_\-entry} \hyperlink{vdev__gicd_8c_a03916642590de361d7b83a91533fce29}{\-\_\-handler\-\_\-map} \mbox{[}0x10\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{vdev__gicd_8c_a5e6328f6763741583dcf679a487a5ae5}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T@{\-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}}
+\index{\-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T@{\-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}~(0x43\-B)}}\label{vdev__gicd_8c_a5e6328f6763741583dcf679a487a5ae5}
+
+
+\-Definition at line 10 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_a137c1046fccc01fd1e9d046006336f95}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M@{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}}
+\index{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M@{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}~128}}\label{vdev__gicd_8c_a137c1046fccc01fd1e9d046006336f95}
+
+
+\-Definition at line 8 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_a8038057967cc824ffecd9dacca6ff322}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R@{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R}}
+\index{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R@{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-E\-N\-A\-B\-L\-E\-R}~({\bf \-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}/32)}}\label{vdev__gicd_8c_a8038057967cc824ffecd9dacca6ff322}
+
+
+\-Definition at line 12 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_a42979379639a7d5140a52d3e31b42a65}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R@{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R}}
+\index{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R@{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-D\-\_\-\-N\-U\-M\-\_\-\-I\-G\-R\-O\-U\-P\-R}~({\bf \-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M}/32)}}\label{vdev__gicd_8c_a42979379639a7d5140a52d3e31b42a65}
+
+
+\-Definition at line 11 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_ab23970ec7aa6d2e867b750ec17b5f0ef}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T@{\-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}}
+\index{\-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T@{\-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-V\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R\-\_\-\-D\-E\-F\-A\-U\-L\-T}~(({\bf \-V\-G\-I\-C\-D\-\_\-\-I\-T\-L\-I\-N\-E\-S\-N\-U\-M} $>$$>$ 5) -\/ 1)}}\label{vdev__gicd_8c_ab23970ec7aa6d2e867b750ec17b5f0ef}
+
+
+\-Definition at line 9 of file vdev\-\_\-gicd.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{vdev__gicd_8c_a857b27e797cea331cdde921c472a3285}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!access\-\_\-handler@{access\-\_\-handler}}
+\index{access\-\_\-handler@{access\-\_\-handler}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{access\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf access\-\_\-handler} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a857b27e797cea331cdde921c472a3285}
+
+
+\-Definition at line 96 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    printh( "%s: %s offset:%d value:%x\n", __FUNCTION__, write ? "write" : "
+      read", offset, write ? *pvalue : (uint32_t) pvalue );
+
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    uint8_t offsetidx = (uint8_t) ((offset & 0xF00) >> 8);
+    result = _handler_map[offsetidx].handler(write, offset, pvalue, access_size
+      );
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_a94c623e91b5a121f9a28bd7d81b12df2}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-000@{handler\-\_\-000}}
+\index{handler\-\_\-000@{handler\-\_\-000}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-000}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-000} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a94c623e91b5a121f9a28bd7d81b12df2}
+
+
+\-Definition at line 108 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    //CTLR;              /*0x000 RW*/
+    //TYPER;             /*      RO*/
+    //IIDR;              /*      RO*/
+    //IGROUPR[32];       /* 0x080 ~ 0x0FF */
+
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid = context_current_vmid();
+    struct gicd_regs *regs = &_regs[vmid];
+    uint32_t woffset = offset/4;
+
+    switch(woffset) {
+        case GICD_CTLR: /* RW */
+            if ( write ) {
+                regs->CTLR = *pvalue;
+            } else {
+                *pvalue = regs->CTLR;
+            }
+            result = HVMM_STATUS_SUCCESS;
+            break;
+
+        case GICD_TYPER:    /* RO */
+            if ( write == 0 ) {
+                *pvalue = VGICD_TYPER_DEFAULT;
+                result = HVMM_STATUS_SUCCESS;
+            }
+            break;
+
+        case GICD_IIDR:     /* RO */
+            if ( write == 0 ) {
+                *pvalue = VGICD_IIDR_DEFAULT;
+                result = HVMM_STATUS_SUCCESS;
+            }
+            break;
+
+        default:            /* RW GICD_IGROUPR */
+            {
+                int igroup = woffset - GICD_IGROUPR;
+                if ( igroup >= 0 && igroup < VGICD_NUM_IGROUPR ) {
+                    if ( write ) {
+                        regs->IGROUPR[igroup] = *pvalue;
+                    } else {
+                        *pvalue = regs->IGROUPR[igroup];
+                    }
+                    result = HVMM_STATUS_SUCCESS;
+                }
+            }
+            break;
+    }
+
+    if ( result != HVMM_STATUS_SUCCESS ) {
+        printh("vgicd: invalid access offset:%x write:%d\n", offset, write );
+    }
+
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=296pt]{vdev__gicd_8c_a94c623e91b5a121f9a28bd7d81b12df2_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_a06d4463c129a9bc1f0fc0d8b39472014}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-F00@{handler\-\_\-\-F00}}
+\index{handler\-\_\-\-F00@{handler\-\_\-\-F00}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-F00}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-F00} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a06d4463c129a9bc1f0fc0d8b39472014}
+
+
+\-Definition at line 412 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_af364ad4bf111db26c519a70c70788471}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-I\-C\-F\-G\-R@{handler\-\_\-\-I\-C\-F\-G\-R}}
+\index{handler\-\_\-\-I\-C\-F\-G\-R@{handler\-\_\-\-I\-C\-F\-G\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-I\-C\-F\-G\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-I\-C\-F\-G\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_af364ad4bf111db26c519a70c70788471}
+
+
+\-Definition at line 375 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t *preg;
+
+    vmid = context_current_vmid();
+    regs = &_regs[vmid];
+
+    /* FIXME: Support 8/16/32bit access */
+    offset >>= 2;
+    preg = &(regs->ICFGR[offset - GICD_ICFGR]);
+    if ( write ) {
+        *preg = *pvalue;
+    } else {
+        *pvalue = *preg;
+    }
+
+    result = HVMM_STATUS_SUCCESS;
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=312pt]{vdev__gicd_8c_af364ad4bf111db26c519a70c70788471_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_a617f27765b87dba9bf6d6dbd70ac73a1}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R@{handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}}
+\index{handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R@{handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a617f27765b87dba9bf6d6dbd70ac73a1}
+
+
+\-Definition at line 307 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t *preg;
+
+    vmid = context_current_vmid();
+    regs = &_regs[vmid];
+
+    /* FIXME: Support 8/16/32bit access */
+    offset >>= 2;
+    preg = &(regs->ICFGR[offset - GICD_IPRIORITYR]);
+    if ( write ) {
+        *preg = *pvalue;
+    } else {
+        *pvalue = *preg;
+    }
+
+    result = HVMM_STATUS_SUCCESS;
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=338pt]{vdev__gicd_8c_a617f27765b87dba9bf6d6dbd70ac73a1_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_ae3dd7dcd5418e5ca5679596194841d49}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R@{handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R}}
+\index{handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R@{handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-I\-S\-C\-A\-C\-T\-I\-V\-E\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_ae3dd7dcd5418e5ca5679596194841d49}
+
+
+\-Definition at line 300 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_a01502bf66945a3ed4f47bcfa9d727717}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R@{handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R}}
+\index{handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R@{handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-I\-S\-C\-E\-N\-A\-B\-L\-E\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a01502bf66945a3ed4f47bcfa9d727717}
+
+
+\-Definition at line 179 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid = context_current_vmid();
+    struct gicd_regs *regs = &_regs[vmid];
+    uint32_t *preg_s;
+    uint32_t *preg_c;
+    if( write && *pvalue == 0) {
+        /* Writes 0 -> Has no effect. */
+        result = HVMM_STATUS_SUCCESS; 
+        return result;
+    }
+    
+    preg_s = &(regs->ISCENABLER[(offset >> 2 ) - GICD_ISENABLER]);
+    preg_c = &(regs->ISCENABLER[(offset >> 2 ) - GICD_ICENABLER]);
+
+    if ( access_size == VDEV_ACCESS_WORD ) {
+        if ( (offset >> 2 ) < (GICD_ISENABLER + VGICD_NUM_IENABLER) ) {
+        /* ISENABLER */
+            if ( write ) {
+                *preg_s |= *pvalue;     
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - 
+      GICD_ISENABLER );
+            } else {
+                *pvalue = *preg_s;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if ( (offset >> 2 ) >= GICD_ICENABLER && (offset >> 2 ) < (
+      GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
+            /* ICENABLER */
+            if ( write ){
+                *preg_c &= ~(*pvalue);
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - 
+      GICD_ICENABLER );
+            } else {
+                *pvalue = *preg_c;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        }
+    } else if ( access_size == VDEV_ACCESS_HWORD ) {
+        if ( (offset >> 2) < ( GICD_ISENABLER + VGICD_NUM_IENABLER) )  {
+            uint16_t *preg_s16 = (uint16_t *)preg_s;
+            preg_s16 += (offset & 0x3) >> 1;
+            if ( write ) {
+                *preg_s16 |= (uint16_t)(*pvalue & 0xFFFF);
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - 
+      GICD_ISENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_s16;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if ( (offset >> 2 ) >= GICD_ICENABLER && (offset >> 2 ) < (
+      GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
+            uint16_t *preg_c16 = (uint16_t *)preg_c;
+            preg_c16 += (offset & 0x3) >> 1;
+            if( write ){
+                *preg_c16 &= ~((uint16_t)(*pvalue & 0xFFFF));
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - 
+      GICD_ICENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_c16;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        }
+
+    } else if ( access_size == VDEV_ACCESS_BYTE ) {
+        if ( (offset >> 2) < ( GICD_ISENABLER + VGICD_NUM_IENABLER) )  {
+            uint8_t *preg_s8 = (uint8_t *)preg_s;
+            preg_s8 += (offset & 0x3);
+            if ( write ) {
+                *preg_s8 |= (uint8_t)(*pvalue & 0xFF);
+                vgicd_changed_istatus(vmid, *preg_s, (offset >> 2) - 
+      GICD_ISENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_s8;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if( ( offset >> 2 ) >= GICD_ICENABLER && ( offset >> 2 ) < (
+      GICD_ICENABLER + VGICD_NUM_IENABLER) ) {
+            uint8_t *preg_c8 = (uint8_t *)preg_c;
+            preg_c8 += ( offset & 0x3 );
+            if ( write ){
+                *preg_c8 &= ~((uint8_t)(*pvalue & 0xFF));
+                vgicd_changed_istatus(vmid, *preg_c, (offset >> 2) - 
+      GICD_ICENABLER );
+            } else {
+                *pvalue = (uint32_t)*preg_c8;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        }
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{vdev__gicd_8c_a01502bf66945a3ed4f47bcfa9d727717_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_a69dc809cfe7263b20ac92903cfdbd766}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R@{handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R}}
+\index{handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R@{handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-I\-S\-C\-P\-E\-N\-D\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a69dc809cfe7263b20ac92903cfdbd766}
+
+
+\-Definition at line 264 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid = context_current_vmid();
+    struct gicd_regs *regs = &_regs[vmid];
+    uint32_t *preg_s;
+    uint32_t *preg_c;  
+
+    preg_s = &(regs->ISPENDR[(offset >> 2 ) - GICD_ISPENDR]);
+    preg_c = &(regs->ISPENDR[(offset >> 2 ) - GICD_ICPENDR]);
+    offset >>= 2;
+
+    if ( access_size == VDEV_ACCESS_WORD ) {
+        if ( (offset >> 2 ) < (GICD_ISPENDR + VGICD_NUM_IENABLER) ) {
+        /* ISPEND */
+            if ( write ) {
+                *preg_s |= *pvalue;     
+            } else {
+                *pvalue = *preg_s;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        } else if ( (offset >> 2 ) >= GICD_ICPENDR && (offset >> 2 ) < (
+      GICD_ICPENDR + VGICD_NUM_IENABLER) ) {
+            /* ICPEND */
+            if ( write ){
+                *preg_c &= ~(*pvalue);
+            } else {
+                *pvalue = *preg_c;
+            }
+            result = HVMM_STATUS_SUCCESS;
+        }
+    } 
+
+    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=334pt]{vdev__gicd_8c_a69dc809cfe7263b20ac92903cfdbd766_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_ad1f4e77c9bd752dc051abdce906272cd}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R@{handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}}
+\index{handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R@{handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_ad1f4e77c9bd752dc051abdce906272cd}
+
+
+\-Definition at line 330 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t *preg;
+
+    vmid = context_current_vmid();
+    regs = &_regs[vmid];
+
+    preg = &(regs->ITARGETSR[(offset >>2) - GICD_ITARGETSR]);
+    if ( access_size == VDEV_ACCESS_WORD ) {
+        offset >>= 2;
+        if ( write ) {
+            if ( offset > (GICD_ITARGETSR + 7) ) {
+                /* RO: ITARGETSR0 ~ 7 */
+                *preg = *pvalue;
+            }
+        } else {
+            *pvalue = *preg;
+        }
+    } else if ( access_size == VDEV_ACCESS_HWORD ) {
+        uint16_t *preg16 = (uint16_t *) preg;
+        preg16 += (offset & 0x3) >> 1;
+        if ( write ) {
+            if ( (offset >>2) > (GICD_ITARGETSR + 7) )
+                *preg16 = (uint16_t) (*pvalue & 0xFFFF);
+        } else {
+            *pvalue = (uint32_t) *preg16;
+        }
+    } else if ( access_size == VDEV_ACCESS_BYTE ) {
+        uint8_t *preg8 = (uint8_t *) preg;
+        preg8 += (offset & 0x3);
+        if ( write ) {
+            if ( (offset >>2) > (GICD_ITARGETSR + 7) )
+                *preg8 = (uint8_t) (*pvalue & 0xFF);
+        } else {
+            *pvalue = (uint32_t) *preg8;
+        }
+    }
+
+    result = HVMM_STATUS_SUCCESS;
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=338pt]{vdev__gicd_8c_ad1f4e77c9bd752dc051abdce906272cd_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_afb32128dbc8c43242b180c31a8ea09b9}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-N\-S\-A\-C\-R@{handler\-\_\-\-N\-S\-A\-C\-R}}
+\index{handler\-\_\-\-N\-S\-A\-C\-R@{handler\-\_\-\-N\-S\-A\-C\-R}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-N\-S\-A\-C\-R}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-N\-S\-A\-C\-R} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_afb32128dbc8c43242b180c31a8ea09b9}
+
+
+\-Definition at line 405 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_a1460386e5620ab43d2d5fa470f30f956}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15@{handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15}}
+\index{handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15@{handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf hvmm\-\_\-status\-\_\-t} {\bf handler\-\_\-\-P\-P\-I\-S\-P\-I\-S\-R\-\_\-\-C\-A15} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{write, }
+\item[{{\bf uint32\-\_\-t}}]{offset, }
+\item[{{\bf uint32\-\_\-t} $\ast$}]{pvalue, }
+\item[{{\bf vdev\-\_\-access\-\_\-size\-\_\-t}}]{access\-\_\-size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a1460386e5620ab43d2d5fa470f30f956}
+
+
+\-Definition at line 398 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    printh( "vgicd:%s: not implemented\n", __FUNCTION__ );
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_a486b6cd2f61165a52985b53909512566}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!vdev\-\_\-gicd\-\_\-init@{vdev\-\_\-gicd\-\_\-init}}
+\index{vdev\-\_\-gicd\-\_\-init@{vdev\-\_\-gicd\-\_\-init}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{vdev\-\_\-gicd\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf vdev\-\_\-gicd\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{base\-\_\-addr}
+\end{DoxyParamCaption}
+)}}\label{vdev__gicd_8c_a486b6cd2f61165a52985b53909512566}
+
+
+\-Definition at line 433 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    vdev_gicd_reset_values();
+
+    _vdev_info.name     = "vgicd";
+    _vdev_info.base     = base_addr; 
+    _vdev_info.size     = 4096;
+    _vdev_info.handler  = access_handler;
+
+    result = vdev_reg_device(&_vdev_info);
+    if ( result == HVMM_STATUS_SUCCESS ) {
+        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
+    } else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, 
+      _vdev_info.name, result);
+    }
+    return result;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=318pt]{vdev__gicd_8c_a486b6cd2f61165a52985b53909512566_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{vdev__gicd_8c_ad4d5cd73ffb5f68c2f5d6f9b8ee920bc}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!vdev\-\_\-gicd\-\_\-reset\-\_\-values@{vdev\-\_\-gicd\-\_\-reset\-\_\-values}}
+\index{vdev\-\_\-gicd\-\_\-reset\-\_\-values@{vdev\-\_\-gicd\-\_\-reset\-\_\-values}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{vdev\-\_\-gicd\-\_\-reset\-\_\-values}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf vdev\-\_\-gicd\-\_\-reset\-\_\-values} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_ad4d5cd73ffb5f68c2f5d6f9b8ee920bc}
+
+
+\-Definition at line 419 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    for (i = 0; i < NUM_GUESTS_STATIC; i++ ) {
+        /* ITARGETS[0~ 7], CPU Targets are set to 0, due to current single-core
+       support design */
+        int j = 0;
+        for ( j = 0; j < 7; j++ ) {
+            _regs[i].ITARGETSR[j] = 0;
+        }
+
+    }
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_ab8803dd5abaa4ce51155fb7913423b59}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!vgicd\-\_\-changed\-\_\-istatus@{vgicd\-\_\-changed\-\_\-istatus}}
+\index{vgicd\-\_\-changed\-\_\-istatus@{vgicd\-\_\-changed\-\_\-istatus}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{vgicd\-\_\-changed\-\_\-istatus}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vgicd\-\_\-changed\-\_\-istatus} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{istatus, }
+\item[{{\bf uint8\-\_\-t}}]{word\-\_\-offset}
+\end{DoxyParamCaption}
+)}}\label{vdev__gicd_8c_ab8803dd5abaa4ce51155fb7913423b59}
+
+
+\-Definition at line 171 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    if ( _cb_changed_istatus != 0 ) {
+        _cb_changed_istatus( vmid, istatus, word_offset );
+    }
+
+}
+\end{DoxyCode}
+\hypertarget{vdev__gicd_8c_a9c67f2f148d50faebdb7576ea03a5876}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus@{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus}}
+\index{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus@{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf vgicd\-\_\-set\-\_\-callback\-\_\-changed\-\_\-istatus} (
+\begin{DoxyParamCaption}
+\item[{{\bf vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{vdev__gicd_8c_a9c67f2f148d50faebdb7576ea03a5876}
+
+
+\-Definition at line 166 of file vdev\-\_\-gicd.\-c.
+
+
+\begin{DoxyCode}
+{
+    _cb_changed_istatus = callback;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{vdev__gicd_8c_a2f1914d399c2ace7998243bc1d2b21a6}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-\_\-cb\-\_\-changed\-\_\-istatus@{\-\_\-cb\-\_\-changed\-\_\-istatus}}
+\index{\-\_\-cb\-\_\-changed\-\_\-istatus@{\-\_\-cb\-\_\-changed\-\_\-istatus}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-\_\-cb\-\_\-changed\-\_\-istatus}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-t} {\bf \-\_\-cb\-\_\-changed\-\_\-istatus} = 0}}\label{vdev__gicd_8c_a2f1914d399c2ace7998243bc1d2b21a6}
+
+
+\-Definition at line 71 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_a03916642590de361d7b83a91533fce29}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-\_\-handler\-\_\-map@{\-\_\-handler\-\_\-map}}
+\index{\-\_\-handler\-\_\-map@{\-\_\-handler\-\_\-map}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-\_\-handler\-\_\-map}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf gicd\-\_\-handler\-\_\-entry} {\bf \-\_\-handler\-\_\-map}\mbox{[}0x10\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a03916642590de361d7b83a91533fce29}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+
+    { 0x00, handler_000 },              
+    { 0x01, handler_ISCENABLER },       
+    { 0x02, handler_ISCPENDR },         
+    { 0x03, handler_ISCACTIVER },       
+    { 0x04, handler_IPRIORITYR },       
+    { 0x05, handler_IPRIORITYR },  
+    { 0x06, handler_IPRIORITYR },  
+    { 0x07, handler_IPRIORITYR },
+    { 0x08, handler_ITARGETSR },        
+    { 0x09, handler_ITARGETSR },
+    { 0x0A, handler_ITARGETSR },
+    { 0x0B, handler_ITARGETSR },
+    { 0x0C, handler_ICFGR },            
+    { 0x0D, handler_PPISPISR_CA15 },    
+    { 0x0E, handler_NSACR },            
+    { 0x0F, handler_F00 },              
+}
+\end{DoxyCode}
+
+
+\-Definition at line 76 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_a495629d641dda63efaec19e3cfd649ea}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-\_\-regs@{\-\_\-regs}}
+\index{\-\_\-regs@{\-\_\-regs}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-\_\-regs}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf gicd\-\_\-regs} {\bf \-\_\-regs}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_a495629d641dda63efaec19e3cfd649ea}
+
+
+\-Definition at line 74 of file vdev\-\_\-gicd.\-c.
+
+\hypertarget{vdev__gicd_8c_ad12ce613d7928c78f9c72f2d902d61b6}{\index{vdev\-\_\-gicd.\-c@{vdev\-\_\-gicd.\-c}!\-\_\-vdev\-\_\-info@{\-\_\-vdev\-\_\-info}}
+\index{\-\_\-vdev\-\_\-info@{\-\_\-vdev\-\_\-info}!vdev_gicd.c@{vdev\-\_\-gicd.\-c}}
+\subsubsection[{\-\_\-vdev\-\_\-info}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vdev\-\_\-info\-\_\-t} {\bf \-\_\-vdev\-\_\-info}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{vdev__gicd_8c_ad12ce613d7928c78f9c72f2d902d61b6}
+
+
+\-Definition at line 73 of file vdev\-\_\-gicd.\-c.
+

@@ -1,0 +1,190 @@
+\hypertarget{monitor__secure_8_s}{\section{monitor\-\_\-secure.\-S \-File \-Reference}
+\label{monitor__secure_8_s}\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}}
+}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \hyperlink{monitor__secure_8_s_ab6ea2e389efb51db2c662047a8c2d198}{c1}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \hyperlink{monitor__secure_8_s_a371ca5bf2f81d00215d5d65d975819b3}{p15}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \*
+\hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb} \-Use \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors} \*
+as temporary \-Hyp exception \*
+vector for \-Hyp mode entrance \*
+ldr \hyperlink{monitor__secure_8_s_ae1450584a05b000986bddb6b03665f0d}{c12}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \*
+\hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb} \-Use \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors} \*
+as temporary \-Hyp exception \*
+vector for \-Hyp mode entrance \*
+ldr \hyperlink{monitor__secure_8_s_ab27b8b5969509d6e2728aa7e458a4d9b}{c0}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \*
+\hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb} \-Use \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors} \*
+as temporary \-Hyp exception \*
+vector for \-Hyp mode entrance \*
+ldr \hyperlink{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}{return} in \-N\-S state movs \hyperlink{monitor__secure_8_s_a27468faba76ab3fb5458fb06c0f2af8a}{pc}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \*
+\hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb} \-Use \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors} \*
+as temporary \-Hyp exception \*
+vector for \-Hyp mode entrance \*
+ldr \hyperlink{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}{return} in \-N\-S state movs \hyperlink{context_8h_a6ced3f4007bb60daf12191c058e55b8c}{lr} \hyperlink{monitor__secure_8_s_a6d2d563d2b5c45de176f478b60b4111e}{trap\-\_\-hyp\-\_\-entry}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \*
+\hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb} \-Use \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors} \*
+as temporary \-Hyp exception \*
+vector for \-Hyp mode entrance \*
+ldr \hyperlink{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}{return} in \-N\-S state movs \hyperlink{context_8h_a6ced3f4007bb60daf12191c058e55b8c}{lr} \*
+\hyperlink{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}{elr\-\_\-hyp} mov \hyperlink{context_8h_a6ced3f4007bb60daf12191c058e55b8c}{lr} \hyperlink{monitor__secure_8_s_ac8b690ca33483cbcbeccd0541a1b8edd}{trap\-\_\-secure\-\_\-unhandled}
+\item 
+syntax unified arch\-\_\-extension \*
+sec arch\-\_\-extension virt text \*
+align \-S\-C\-R \hyperlink{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{r10} bic ldr \hyperlink{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{r11} mcr \*
+\hyperlink{asm-arm__inline_8h_a14f7cb726dd83983648772947d1e60d8}{isb} \-Use \hyperlink{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{monitor\-\_\-secure\-\_\-vectors} \*
+as temporary \-Hyp exception \*
+vector for \-Hyp mode entrance \*
+ldr \hyperlink{monitor_8_s_afb820df2c9dbd34b23c1372ce18de4a8}{return} in \-N\-S state movs \hyperlink{context_8h_a6ced3f4007bb60daf12191c058e55b8c}{lr} \*
+\hyperlink{monitor_8_s_ad6a37adf2074ccea5c6cd85fe6676b30}{elr\-\_\-hyp} mov \hyperlink{context_8h_a6ced3f4007bb60daf12191c058e55b8c}{lr} spsr\-\_\-mon mov \hyperlink{monitor__secure_8_s_a9936d57a6e416957ad6f37e2a80f3757}{r1}
+\item 
+function global \hyperlink{monitor__private_8h_a69164ae8f2dca08eb80cf308869f4945}{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} \hyperlink{monitor__secure_8_s_ac1d64f875232fc25f9d484f96ee38159}{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp}
+\item 
+function global \hyperlink{monitor__private_8h_a69164ae8f2dca08eb80cf308869f4945}{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} \hyperlink{monitor__secure_8_s_a52d1ac37c436f49666d8e195af78d552}{r0}
+\item 
+function global \*
+\hyperlink{monitor__private_8h_a69164ae8f2dca08eb80cf308869f4945}{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} bl main never \*
+come \hyperlink{monitor__secure_8_s_a0352f684605c42dc5f2fff2984dd68d3}{back}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{monitor__secure_8_s_ac1d64f875232fc25f9d484f96ee38159}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp@{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp}}
+\index{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp@{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{\-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp}]{\setlength{\rightskip}{0pt plus 5cm}function global {\bf \-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} {\bf \-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp}}}\label{monitor__secure_8_s_ac1d64f875232fc25f9d484f96ee38159}
+
+
+\-Definition at line 77 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a0352f684605c42dc5f2fff2984dd68d3}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!back@{back}}
+\index{back@{back}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{back}]{\setlength{\rightskip}{0pt plus 5cm}function global {\bf \-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} bl main never come {\bf back}}}\label{monitor__secure_8_s_a0352f684605c42dc5f2fff2984dd68d3}
+
+
+\-Definition at line 91 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_ab27b8b5969509d6e2728aa7e458a4d9b}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!c0@{c0}}
+\index{c0@{c0}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{c0}]{\setlength{\rightskip}{0pt plus 5cm}function global {\bf \-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} {\bf c0}}}\label{monitor__secure_8_s_ab27b8b5969509d6e2728aa7e458a4d9b}
+
+
+\-Definition at line 40 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_ab6ea2e389efb51db2c662047a8c2d198}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!c1@{c1}}
+\index{c1@{c1}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{c1}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r11} mcr {\bf c1}}}\label{monitor__secure_8_s_ab6ea2e389efb51db2c662047a8c2d198}
+
+
+\-Definition at line 32 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_ae1450584a05b000986bddb6b03665f0d}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!c12@{c12}}
+\index{c12@{c12}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{c12}]{\setlength{\rightskip}{0pt plus 5cm}function global {\bf \-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} {\bf c12}}}\label{monitor__secure_8_s_ae1450584a05b000986bddb6b03665f0d}
+
+
+\-Definition at line 40 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!monitor\-\_\-secure\-\_\-vectors@{monitor\-\_\-secure\-\_\-vectors}}
+\index{monitor\-\_\-secure\-\_\-vectors@{monitor\-\_\-secure\-\_\-vectors}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{monitor\-\_\-secure\-\_\-vectors}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align {\bf monitor\-\_\-secure\-\_\-vectors}}}\label{monitor__secure_8_s_a4d354f7295ddc2f288384d4e03458837}
+
+
+\-Definition at line 32 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a371ca5bf2f81d00215d5d65d975819b3}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!p15@{p15}}
+\index{p15@{p15}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{p15}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r11} mcr {\bf p15}}}\label{monitor__secure_8_s_a371ca5bf2f81d00215d5d65d975819b3}
+
+
+\-Definition at line 34 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a27468faba76ab3fb5458fb06c0f2af8a}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!pc@{pc}}
+\index{pc@{pc}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{pc}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r11} mcr {\bf isb} \-Use {\bf monitor\-\_\-secure\-\_\-vectors} as temporary \-Hyp exception vector for \-Hyp mode entrance ldr {\bf return} in \-N\-S state movs {\bf lr} {\bf elr\-\_\-hyp} mov {\bf pc}}}\label{monitor__secure_8_s_a27468faba76ab3fb5458fb06c0f2af8a}
+
+
+\-Definition at line 40 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a52d1ac37c436f49666d8e195af78d552}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!r0@{r0}}
+\index{r0@{r0}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{r0}]{\setlength{\rightskip}{0pt plus 5cm}function global {\bf \-\_\-\-\_\-mon\-\_\-enter\-\_\-hyp} {\bf r0}}}\label{monitor__secure_8_s_a52d1ac37c436f49666d8e195af78d552}
+
+
+\-Definition at line 91 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a9936d57a6e416957ad6f37e2a80f3757}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!r1@{r1}}
+\index{r1@{r1}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{r1}]{\setlength{\rightskip}{0pt plus 5cm}{\bf r1}}}\label{monitor__secure_8_s_a9936d57a6e416957ad6f37e2a80f3757}
+
+
+\-Definition at line 47 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!r10@{r10}}
+\index{r10@{r10}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{r10}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r10}}}\label{monitor__secure_8_s_ac3bf51173e39a81ec089049af2b9b854}
+
+
+\-Definition at line 32 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!r11@{r11}}
+\index{r11@{r11}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{r11}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r11} mcr {\bf isb} \-Use {\bf monitor\-\_\-secure\-\_\-vectors} as temporary \-Hyp exception vector for \-Hyp mode entrance ldr {\bf r11}}}\label{monitor__secure_8_s_a8788e5e3f963472b5ed8405a3340c314}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+monitor_secure_vectors
+    mcr p15
+\end{DoxyCode}
+
+
+\-Definition at line 32 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_a6d2d563d2b5c45de176f478b60b4111e}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!trap\-\_\-hyp\-\_\-entry@{trap\-\_\-hyp\-\_\-entry}}
+\index{trap\-\_\-hyp\-\_\-entry@{trap\-\_\-hyp\-\_\-entry}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{trap\-\_\-hyp\-\_\-entry}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r11} mcr {\bf isb} \-Use {\bf monitor\-\_\-secure\-\_\-vectors} as temporary \-Hyp exception vector for \-Hyp mode entrance ldr {\bf return} in \-N\-S state movs {\bf lr} {\bf trap\-\_\-hyp\-\_\-entry}}}\label{monitor__secure_8_s_a6d2d563d2b5c45de176f478b60b4111e}
+
+
+\-Definition at line 40 of file monitor\-\_\-secure.\-S.
+
+\hypertarget{monitor__secure_8_s_ac8b690ca33483cbcbeccd0541a1b8edd}{\index{monitor\-\_\-secure.\-S@{monitor\-\_\-secure.\-S}!trap\-\_\-secure\-\_\-unhandled@{trap\-\_\-secure\-\_\-unhandled}}
+\index{trap\-\_\-secure\-\_\-unhandled@{trap\-\_\-secure\-\_\-unhandled}!monitor_secure.S@{monitor\-\_\-secure.\-S}}
+\subsubsection[{trap\-\_\-secure\-\_\-unhandled}]{\setlength{\rightskip}{0pt plus 5cm}syntax unified arch\-\_\-extension sec arch\-\_\-extension virt text align \-S\-C\-R {\bf r10} bic ldr {\bf r11} mcr {\bf isb} \-Use {\bf monitor\-\_\-secure\-\_\-vectors} as temporary \-Hyp exception vector for \-Hyp mode entrance ldr {\bf return} in \-N\-S state movs {\bf lr} {\bf elr\-\_\-hyp} mov {\bf lr} {\bf trap\-\_\-secure\-\_\-unhandled}}}\label{monitor__secure_8_s_ac8b690ca33483cbcbeccd0541a1b8edd}
+
+
+\-Definition at line 47 of file monitor\-\_\-secure.\-S.
+

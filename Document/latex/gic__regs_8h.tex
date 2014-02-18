@@ -1,0 +1,701 @@
+\hypertarget{gic__regs_8h}{\section{include/gic\-\_\-regs.h \-File \-Reference}
+\label{gic__regs_8h}\index{include/gic\-\_\-regs.\-h@{include/gic\-\_\-regs.\-h}}
+}
+\-This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{gic__regs_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{gic__regs_8h_a9588f04e7045a677e620fe2f23bdb0a2}{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D}~0x1000
+\item 
+\#define \hyperlink{gic__regs_8h_ae9e41e25f98e66be21a156b394839973}{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C}~0x2000
+\item 
+\#define \hyperlink{gic__regs_8h_abc1647b5765e50f60e8c736f5b90d452}{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H}~0x4000
+\item 
+\#define \hyperlink{gic__regs_8h_aad962f0d9d9441c64c933d48c962da66}{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V}~0x5000
+\item 
+\#define \hyperlink{gic__regs_8h_a10eb2dce6311a3b3d12715747916539a}{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I}~0x6000
+\item 
+\#define \hyperlink{gic__regs_8h_a00f17ebce4b31e38e18375340fdf3826}{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R}~0x000
+\item 
+\#define \hyperlink{gic__regs_8h_a1b97217a477f13f173ff4a22c0aeeef6}{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R}~(0x004/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a88abd454e14abb10903e32cc83649e07}{\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R}~(0x008/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a995349f3bfdd895c60b8eb63bc176d18}{\-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R}~(0x080/4)
+\item 
+\#define \hyperlink{gic__regs_8h_ad6013481a4c73be9ba10c48b63c0b4b3}{\-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R}~(0x100/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a93b67ba2b0e625f47ef7371672c4a763}{\-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R}~(0x180/4)
+\item 
+\#define \hyperlink{gic__regs_8h_adcfba29d834be7844951c0db7a9706c8}{\-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R}~(0x200/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a249bdc6117c2852af6101081463ac0f8}{\-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R}~(0x280/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a54223891ce5bf421ec198ea84855490a}{\-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}~(0x400/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a9128764019e69b9d5ec839ecd583dd87}{\-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}~(0x800/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a19a431597ba16fd0c9522a9220ecec4c}{\-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R}~(0x\-C00/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a11871e15a62cbfcc1e54f3dd2ce21e74}{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-R}~(0x0000/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a8d72b8216b091c1d148b5812bc46e7d4}{\-G\-I\-C\-C\-\_\-\-P\-M\-R}~(0x0004/4)
+\item 
+\#define \hyperlink{gic__regs_8h_acef579bca73eb22cc132808fcfede353}{\-G\-I\-C\-C\-\_\-\-B\-P\-R}~(0x0008/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a61672c3cde5301e076793c2ad904cdb9}{\-G\-I\-C\-C\-\_\-\-I\-A\-R}~(0x000\-C/4)
+\item 
+\#define \hyperlink{gic__regs_8h_af92519fe60b0cf2183a6100bea15dd43}{\-G\-I\-C\-C\-\_\-\-E\-O\-I\-R}~(0x0010/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a542b74becd5c8256884fdbf9b5ca1ab2}{\-G\-I\-C\-C\-\_\-\-D\-I\-R}~(0x1000/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a018f8ae1d66ea0b7314624508083913a}{\-G\-I\-C\-H\-\_\-\-H\-C\-R}~(0x00/4)
+\item 
+\#define \hyperlink{gic__regs_8h_aa65dcc61040fd019a6bc6c30a767979f}{\-G\-I\-C\-H\-\_\-\-V\-T\-R}~(0x04/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a5ec2e00ce6c5100fa7bab0e0d374bad7}{\-G\-I\-C\-H\-\_\-\-V\-M\-C\-R}~(0x08/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a3b551f14f253b7b2097b00fcb2cd63b6}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R}~(0x10/4)
+\item 
+\#define \hyperlink{gic__regs_8h_ab9cd0d06831c065b4b0c7e94a6386f31}{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0}~(0x20/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a183b475449f66b9b1be0b4b7ac80ef36}{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1}~(0x24/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a8c7361b80f272afe0278b49fed3542b0}{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0}~(0x30/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a3a773aa920659930d64f6972f9fb2c29}{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1}~(0x34/4)
+\item 
+\#define \hyperlink{gic__regs_8h_ad0ec4cda8dcd4034188398c15060ca19}{\-G\-I\-C\-H\-\_\-\-A\-P\-R}~(0x\-F0/4)
+\item 
+\#define \hyperlink{gic__regs_8h_a17660fd19c0085b478615973834cd56d}{\-G\-I\-C\-H\-\_\-\-L\-R}~(0x100/4)    /$\ast$ L\-R0 $\sim$ L\-Rn, n\-:\-G\-I\-C\-H\-\_\-\-V\-T\-R.\-List\-Regs $\ast$/
+\item 
+\#define \hyperlink{gic__regs_8h_a73b910c7d5343064b5733d6b5d35fbd9}{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E}~0x1
+\item 
+\#define \hyperlink{gic__regs_8h_a92a5281e2f32e5e5bdc4e046690e83fb}{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K}~0x01f
+\item 
+\#define \hyperlink{gic__regs_8h_a18ccc82f0000057094f2fadcbd6531df}{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K}~0x0e0
+\item 
+\#define \hyperlink{gic__regs_8h_ac0d4985feda19f8604f5112578d0c1e5}{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T}~5
+\item 
+\#define \hyperlink{gic__regs_8h_a70513024b3f9c4914dcbb84471ddad5a}{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E}~0x1
+\item 
+\#define \hyperlink{gic__regs_8h_a82fef6e589b929cd50188bca76fec632}{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I}~(0x1 $<$$<$ 9)
+\item 
+\#define \hyperlink{gic__regs_8h_ac16a00181dbbc6aa54d13dcf958ff0d1}{\-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K}~0x03ff
+\item 
+\#define \hyperlink{gic__regs_8h_adf32bb985faf608f423782fed1cf053c}{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N}~0x1
+\item 
+\#define \hyperlink{gic__regs_8h_a00d3c1e4238b12687f567095488ce624}{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E}~(0x1 $<$$<$ 3)
+\item 
+\#define \hyperlink{gic__regs_8h_a7d50589abeefaef527f8496507603542}{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E}~(0x1 $<$$<$ 2)
+\item 
+\#define \hyperlink{gic__regs_8h_aad7ebfa594beb0912bdb2ae72280abd8}{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E}~(0x1 $<$$<$ 1)
+\item 
+\#define \hyperlink{gic__regs_8h_a56c9045299b8897a36ec7a2f2ca61955}{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}~29
+\item 
+\#define \hyperlink{gic__regs_8h_a83c7da9618809dc16c9ee79281314cf1}{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}~(0x7 $<$$<$ G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-V\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a11cc8a37cc3cc577f6280e7c8f719370}{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}~26
+\item 
+\#define \hyperlink{gic__regs_8h_afce32131718d56774e16504202554a95}{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}~(0x7 $<$$<$ G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-V\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_abd5d62cbbddf5e1bdb48d4c314af4946}{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K}~0x3f
+\item 
+\#define \hyperlink{gic__regs_8h_a103e2ad583b2fb6f8fc98806ed8efe2e}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}~0
+\item 
+\#define \hyperlink{gic__regs_8h_aec90c180b09793d32f95b10c097be140}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}~(0x3ff $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a4566b9ddcf247cf54fc5f82780f9ff4d}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}~10
+\item 
+\#define \hyperlink{gic__regs_8h_acf278d163ba9f5e3ea3da440188a0903}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}~(0x3ff $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_acf5b6f2368b8609af66517d0d313a936}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T}~10
+\item 
+\#define \hyperlink{gic__regs_8h_abb60940a66bc9b54980e6ed490ba7dde}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K}~(0x7 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_ac304080366db5b4a9ffae6ef292d8f7e}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T}~19
+\item 
+\#define \hyperlink{gic__regs_8h_ae78b44e6147ce61a052d3b2a4267035f}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_ac8019eac059178eda60484a0330461a6}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a5a30f7f8a5a41552f78d9586e18e90e1}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T}~23
+\item 
+\#define \hyperlink{gic__regs_8h_ae90bda4cc92d9fd8af023e13816dceb6}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K}~(0x1f $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a673398abcaa361155cb66b95eb96de4b}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T}~28
+\item 
+\#define \hyperlink{gic__regs_8h_a19e18de5811196cd693a36df5326da0b}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K}~(0x3 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a7b5d89d721389302857ced53d2d9a0c3}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E}~( 0x0 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )
+\item 
+\#define \hyperlink{gic__regs_8h_a83c4eac919c074664c2a64c2d6c42e0a}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G}~( 0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )
+\item 
+\#define \hyperlink{gic__regs_8h_a26ef06ace63f055ffdeb1e7c10e6dd77}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E}~( 0x2 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )
+\item 
+\#define \hyperlink{gic__regs_8h_a2ab0ca8b1981d34e6570a25d43850619}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E}~( 0x3 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )
+\item 
+\#define \hyperlink{gic__regs_8h_a7bd65f22d717ea3b184cad081f940c03}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T}~30
+\item 
+\#define \hyperlink{gic__regs_8h_a6fd732d2f14127b72c94ff86a7c2ae52}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_ae4e77f791ee2419b644d4dafae53ca6f}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a0b3d50f35e08636896f2f07ee5e18851}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T}~31
+\item 
+\#define \hyperlink{gic__regs_8h_aefe0c790ff778105b2c121bdfab352cb}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a538d636fcc508d0353c0cc5d6fe25d8b}{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T)
+\item 
+\#define \hyperlink{gic__regs_8h_a4a56cf5833bc3e70dc1bcb96fcfc29c7}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I}~(1)
+\item 
+\#define \hyperlink{gic__regs_8h_a90caf6ea221753e28f4b4a071a6db31c}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T}~(1)
+\item 
+\#define \hyperlink{gic__regs_8h_aec1db3e4d6a9de8f3ddb86143aeca135}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U}~(1 $<$$<$ \hyperlink{gic__regs_8h_a90caf6ea221753e28f4b4a071a6db31c}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T})
+\item 
+\#define \hyperlink{gic__regs_8h_a48605a2f1393cde539dc06a366fb0af0}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T}~(3)
+\item 
+\#define \hyperlink{gic__regs_8h_a2fa43094e70ad68deaae85af7a8fd92e}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P}~(1 $<$$<$ \hyperlink{gic__regs_8h_a48605a2f1393cde539dc06a366fb0af0}{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T})
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{gic__regs_8h_ae9e41e25f98e66be21a156b394839973}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C}}
+\index{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-C}~0x2000}}\label{gic__regs_8h_ae9e41e25f98e66be21a156b394839973}
+
+
+\-Definition at line 6 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a9588f04e7045a677e620fe2f23bdb0a2}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D}}
+\index{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-D}~0x1000}}\label{gic__regs_8h_a9588f04e7045a677e620fe2f23bdb0a2}
+
+
+\-Definition at line 5 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_abc1647b5765e50f60e8c736f5b90d452}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H}}
+\index{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-H}~0x4000}}\label{gic__regs_8h_abc1647b5765e50f60e8c736f5b90d452}
+
+
+\-Definition at line 7 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_aad962f0d9d9441c64c933d48c962da66}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V}}
+\index{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V}~0x5000}}\label{gic__regs_8h_aad962f0d9d9441c64c933d48c962da66}
+
+
+\-Definition at line 8 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a10eb2dce6311a3b3d12715747916539a}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I}}
+\index{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I@{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-\_\-\-O\-F\-F\-S\-E\-T\-\_\-\-G\-I\-C\-V\-I}~0x6000}}\label{gic__regs_8h_a10eb2dce6311a3b3d12715747916539a}
+
+
+\-Definition at line 9 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_acef579bca73eb22cc132808fcfede353}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-B\-P\-R@{\-G\-I\-C\-C\-\_\-\-B\-P\-R}}
+\index{\-G\-I\-C\-C\-\_\-\-B\-P\-R@{\-G\-I\-C\-C\-\_\-\-B\-P\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-B\-P\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-B\-P\-R}~(0x0008/4)}}\label{gic__regs_8h_acef579bca73eb22cc132808fcfede353}
+
+
+\-Definition at line 27 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a70513024b3f9c4914dcbb84471ddad5a}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E@{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E}}
+\index{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E@{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-N\-A\-B\-L\-E}~0x1}}\label{gic__regs_8h_a70513024b3f9c4914dcbb84471ddad5a}
+
+
+\-Definition at line 52 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a82fef6e589b929cd50188bca76fec632}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I@{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I}}
+\index{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I@{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-C\-T\-L\-\_\-\-E\-O\-I}~(0x1 $<$$<$ 9)}}\label{gic__regs_8h_a82fef6e589b929cd50188bca76fec632}
+
+
+\-Definition at line 53 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a11871e15a62cbfcc1e54f3dd2ce21e74}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-C\-T\-L\-R@{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-R}}
+\index{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-R@{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-C\-T\-L\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-C\-T\-L\-R}~(0x0000/4)}}\label{gic__regs_8h_a11871e15a62cbfcc1e54f3dd2ce21e74}
+
+
+\-Definition at line 25 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a542b74becd5c8256884fdbf9b5ca1ab2}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-D\-I\-R@{\-G\-I\-C\-C\-\_\-\-D\-I\-R}}
+\index{\-G\-I\-C\-C\-\_\-\-D\-I\-R@{\-G\-I\-C\-C\-\_\-\-D\-I\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-D\-I\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-D\-I\-R}~(0x1000/4)}}\label{gic__regs_8h_a542b74becd5c8256884fdbf9b5ca1ab2}
+
+
+\-Definition at line 30 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_af92519fe60b0cf2183a6100bea15dd43}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-E\-O\-I\-R@{\-G\-I\-C\-C\-\_\-\-E\-O\-I\-R}}
+\index{\-G\-I\-C\-C\-\_\-\-E\-O\-I\-R@{\-G\-I\-C\-C\-\_\-\-E\-O\-I\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-E\-O\-I\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-E\-O\-I\-R}~(0x0010/4)}}\label{gic__regs_8h_af92519fe60b0cf2183a6100bea15dd43}
+
+
+\-Definition at line 29 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a61672c3cde5301e076793c2ad904cdb9}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-I\-A\-R@{\-G\-I\-C\-C\-\_\-\-I\-A\-R}}
+\index{\-G\-I\-C\-C\-\_\-\-I\-A\-R@{\-G\-I\-C\-C\-\_\-\-I\-A\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-I\-A\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-I\-A\-R}~(0x000\-C/4)}}\label{gic__regs_8h_a61672c3cde5301e076793c2ad904cdb9}
+
+
+\-Definition at line 28 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ac16a00181dbbc6aa54d13dcf958ff0d1}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-I\-A\-R\-\_\-\-I\-N\-T\-I\-D\-\_\-\-M\-A\-S\-K}~0x03ff}}\label{gic__regs_8h_ac16a00181dbbc6aa54d13dcf958ff0d1}
+
+
+\-Definition at line 54 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a8d72b8216b091c1d148b5812bc46e7d4}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-C\-\_\-\-P\-M\-R@{\-G\-I\-C\-C\-\_\-\-P\-M\-R}}
+\index{\-G\-I\-C\-C\-\_\-\-P\-M\-R@{\-G\-I\-C\-C\-\_\-\-P\-M\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-C\-\_\-\-P\-M\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-C\-\_\-\-P\-M\-R}~(0x0004/4)}}\label{gic__regs_8h_a8d72b8216b091c1d148b5812bc46e7d4}
+
+
+\-Definition at line 26 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a00f17ebce4b31e38e18375340fdf3826}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R@{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R@{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-C\-T\-L\-R}~0x000}}\label{gic__regs_8h_a00f17ebce4b31e38e18375340fdf3826}
+
+
+\-Definition at line 12 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a73b910c7d5343064b5733d6b5d35fbd9}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E@{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E}}
+\index{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E@{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-C\-T\-L\-R\-\_\-\-E\-N\-A\-B\-L\-E}~0x1}}\label{gic__regs_8h_a73b910c7d5343064b5733d6b5d35fbd9}
+
+
+\-Definition at line 46 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a93b67ba2b0e625f47ef7371672c4a763}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R@{\-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R@{\-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-C\-E\-N\-A\-B\-L\-E\-R}~(0x180/4)}}\label{gic__regs_8h_a93b67ba2b0e625f47ef7371672c4a763}
+
+
+\-Definition at line 17 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a19a431597ba16fd0c9522a9220ecec4c}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R@{\-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R@{\-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-C\-F\-G\-R}~(0x\-C00/4)}}\label{gic__regs_8h_a19a431597ba16fd0c9522a9220ecec4c}
+
+
+\-Definition at line 22 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a249bdc6117c2852af6101081463ac0f8}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R@{\-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R@{\-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-C\-P\-E\-N\-D\-R}~(0x280/4)}}\label{gic__regs_8h_a249bdc6117c2852af6101081463ac0f8}
+
+
+\-Definition at line 19 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a995349f3bfdd895c60b8eb63bc176d18}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R@{\-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R@{\-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-G\-R\-O\-U\-P\-R}~(0x080/4)}}\label{gic__regs_8h_a995349f3bfdd895c60b8eb63bc176d18}
+
+
+\-Definition at line 15 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a88abd454e14abb10903e32cc83649e07}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R@{\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R@{\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-I\-D\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-I\-D\-R}~(0x008/4)}}\label{gic__regs_8h_a88abd454e14abb10903e32cc83649e07}
+
+
+\-Definition at line 14 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a54223891ce5bf421ec198ea84855490a}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R@{\-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R@{\-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-P\-R\-I\-O\-R\-I\-T\-Y\-R}~(0x400/4)}}\label{gic__regs_8h_a54223891ce5bf421ec198ea84855490a}
+
+
+\-Definition at line 20 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ad6013481a4c73be9ba10c48b63c0b4b3}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R@{\-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R@{\-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-S\-E\-N\-A\-B\-L\-E\-R}~(0x100/4)}}\label{gic__regs_8h_ad6013481a4c73be9ba10c48b63c0b4b3}
+
+
+\-Definition at line 16 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_adcfba29d834be7844951c0db7a9706c8}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R@{\-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R@{\-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-S\-P\-E\-N\-D\-R}~(0x200/4)}}\label{gic__regs_8h_adcfba29d834be7844951c0db7a9706c8}
+
+
+\-Definition at line 18 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a9128764019e69b9d5ec839ecd583dd87}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R@{\-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R@{\-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-I\-T\-A\-R\-G\-E\-T\-S\-R}~(0x800/4)}}\label{gic__regs_8h_a9128764019e69b9d5ec839ecd583dd87}
+
+
+\-Definition at line 21 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a18ccc82f0000057094f2fadcbd6531df}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-M\-A\-S\-K}~0x0e0}}\label{gic__regs_8h_a18ccc82f0000057094f2fadcbd6531df}
+
+
+\-Definition at line 48 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ac0d4985feda19f8604f5112578d0c1e5}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-C\-P\-U\-S\-\_\-\-S\-H\-I\-F\-T}~5}}\label{gic__regs_8h_ac0d4985feda19f8604f5112578d0c1e5}
+
+
+\-Definition at line 49 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a92a5281e2f32e5e5bdc4e046690e83fb}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-\_\-\-L\-I\-N\-E\-S\-\_\-\-M\-A\-S\-K}~0x01f}}\label{gic__regs_8h_a92a5281e2f32e5e5bdc4e046690e83fb}
+
+
+\-Definition at line 47 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a1b97217a477f13f173ff4a22c0aeeef6}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R}}
+\index{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R@{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-D\-\_\-\-T\-Y\-P\-E\-R}~(0x004/4)}}\label{gic__regs_8h_a1b97217a477f13f173ff4a22c0aeeef6}
+
+
+\-Definition at line 13 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ad0ec4cda8dcd4034188398c15060ca19}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-A\-P\-R@{\-G\-I\-C\-H\-\_\-\-A\-P\-R}}
+\index{\-G\-I\-C\-H\-\_\-\-A\-P\-R@{\-G\-I\-C\-H\-\_\-\-A\-P\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-A\-P\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-A\-P\-R}~(0x\-F0/4)}}\label{gic__regs_8h_ad0ec4cda8dcd4034188398c15060ca19}
+
+
+\-Definition at line 41 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ab9cd0d06831c065b4b0c7e94a6386f31}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0@{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0}}
+\index{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0@{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-E\-I\-S\-R0}~(0x20/4)}}\label{gic__regs_8h_ab9cd0d06831c065b4b0c7e94a6386f31}
+
+
+\-Definition at line 37 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a183b475449f66b9b1be0b4b7ac80ef36}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1@{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1}}
+\index{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1@{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-E\-I\-S\-R1}~(0x24/4)}}\label{gic__regs_8h_a183b475449f66b9b1be0b4b7ac80ef36}
+
+
+\-Definition at line 38 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a8c7361b80f272afe0278b49fed3542b0}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0@{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0}}
+\index{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0@{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-E\-L\-S\-R0}~(0x30/4)}}\label{gic__regs_8h_a8c7361b80f272afe0278b49fed3542b0}
+
+
+\-Definition at line 39 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a3a773aa920659930d64f6972f9fb2c29}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1@{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1}}
+\index{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1@{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-E\-L\-S\-R1}~(0x34/4)}}\label{gic__regs_8h_a3a773aa920659930d64f6972f9fb2c29}
+
+
+\-Definition at line 40 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a018f8ae1d66ea0b7314624508083913a}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-H\-C\-R@{\-G\-I\-C\-H\-\_\-\-H\-C\-R}}
+\index{\-G\-I\-C\-H\-\_\-\-H\-C\-R@{\-G\-I\-C\-H\-\_\-\-H\-C\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-H\-C\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-H\-C\-R}~(0x00/4)}}\label{gic__regs_8h_a018f8ae1d66ea0b7314624508083913a}
+
+
+\-Definition at line 33 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_adf32bb985faf608f423782fed1cf053c}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N}}
+\index{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-E\-N}~0x1}}\label{gic__regs_8h_adf32bb985faf608f423782fed1cf053c}
+
+
+\-Definition at line 57 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a7d50589abeefaef527f8496507603542}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E}}
+\index{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-L\-R\-E\-N\-P\-I\-E}~(0x1 $<$$<$ 2)}}\label{gic__regs_8h_a7d50589abeefaef527f8496507603542}
+
+
+\-Definition at line 59 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a00d3c1e4238b12687f567095488ce624}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E}}
+\index{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-N\-P\-I\-E}~(0x1 $<$$<$ 3)}}\label{gic__regs_8h_a00d3c1e4238b12687f567095488ce624}
+
+
+\-Definition at line 58 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_aad7ebfa594beb0912bdb2ae72280abd8}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E}}
+\index{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E@{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-H\-C\-R\-\_\-\-U\-I\-E}~(0x1 $<$$<$ 1)}}\label{gic__regs_8h_aad7ebfa594beb0912bdb2ae72280abd8}
+
+
+\-Definition at line 60 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a17660fd19c0085b478615973834cd56d}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R@{\-G\-I\-C\-H\-\_\-\-L\-R}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R@{\-G\-I\-C\-H\-\_\-\-L\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R}~(0x100/4)    /$\ast$ L\-R0 $\sim$ L\-Rn, n\-:\-G\-I\-C\-H\-\_\-\-V\-T\-R.\-List\-Regs $\ast$/}}\label{gic__regs_8h_a17660fd19c0085b478615973834cd56d}
+
+
+\-Definition at line 42 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_abb60940a66bc9b54980e6ed490ba7dde}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-M\-A\-S\-K}~(0x7 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_abb60940a66bc9b54980e6ed490ba7dde}
+
+
+\-Definition at line 73 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_acf5b6f2368b8609af66517d0d313a936}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-C\-P\-U\-I\-D\-\_\-\-S\-H\-I\-F\-T}~10}}\label{gic__regs_8h_acf5b6f2368b8609af66517d0d313a936}
+
+
+\-Definition at line 72 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ac8019eac059178eda60484a0330461a6}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_ac8019eac059178eda60484a0330461a6}
+
+
+\-Definition at line 76 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ae78b44e6147ce61a052d3b2a4267035f}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-M\-A\-S\-K}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_ae78b44e6147ce61a052d3b2a4267035f}
+
+
+\-Definition at line 75 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ac304080366db5b4a9ffae6ef292d8f7e}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-E\-O\-I\-\_\-\-S\-H\-I\-F\-T}~19}}\label{gic__regs_8h_ac304080366db5b4a9ffae6ef292d8f7e}
+
+
+\-Definition at line 74 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ae4e77f791ee2419b644d4dafae53ca6f}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_ae4e77f791ee2419b644d4dafae53ca6f}
+
+
+\-Definition at line 87 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a6fd732d2f14127b72c94ff86a7c2ae52}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-M\-A\-S\-K}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_a6fd732d2f14127b72c94ff86a7c2ae52}
+
+
+\-Definition at line 86 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a7bd65f22d717ea3b184cad081f940c03}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-G\-R\-P1\-\_\-\-S\-H\-I\-F\-T}~30}}\label{gic__regs_8h_a7bd65f22d717ea3b184cad081f940c03}
+
+
+\-Definition at line 85 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a538d636fcc508d0353c0cc5d6fe25d8b}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_a538d636fcc508d0353c0cc5d6fe25d8b}
+
+
+\-Definition at line 90 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_aefe0c790ff778105b2c121bdfab352cb}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-M\-A\-S\-K}~(0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_aefe0c790ff778105b2c121bdfab352cb}
+
+
+\-Definition at line 89 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a0b3d50f35e08636896f2f07ee5e18851}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-H\-W\-\_\-\-S\-H\-I\-F\-T}~31}}\label{gic__regs_8h_a0b3d50f35e08636896f2f07ee5e18851}
+
+
+\-Definition at line 88 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_acf278d163ba9f5e3ea3da440188a0903}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}~(0x3ff $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_acf278d163ba9f5e3ea3da440188a0903}
+
+
+\-Definition at line 71 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a4566b9ddcf247cf54fc5f82780f9ff4d}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-H\-Y\-S\-I\-C\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}~10}}\label{gic__regs_8h_a4566b9ddcf247cf54fc5f82780f9ff4d}
+
+
+\-Definition at line 70 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_ae90bda4cc92d9fd8af023e13816dceb6}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-M\-A\-S\-K}~(0x1f $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_ae90bda4cc92d9fd8af023e13816dceb6}
+
+
+\-Definition at line 78 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a5a30f7f8a5a41552f78d9586e18e90e1}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-P\-R\-I\-O\-R\-I\-T\-Y\-\_\-\-S\-H\-I\-F\-T}~23}}\label{gic__regs_8h_a5a30f7f8a5a41552f78d9586e18e90e1}
+
+
+\-Definition at line 77 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a26ef06ace63f055ffdeb1e7c10e6dd77}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-A\-C\-T\-I\-V\-E}~( 0x2 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )}}\label{gic__regs_8h_a26ef06ace63f055ffdeb1e7c10e6dd77}
+
+
+\-Definition at line 83 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a7b5d89d721389302857ced53d2d9a0c3}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-I\-N\-A\-C\-T\-I\-V\-E}~( 0x0 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )}}\label{gic__regs_8h_a7b5d89d721389302857ced53d2d9a0c3}
+
+
+\-Definition at line 81 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a19e18de5811196cd693a36df5326da0b}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-M\-A\-S\-K}~(0x3 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_a19e18de5811196cd693a36df5326da0b}
+
+
+\-Definition at line 80 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a83c4eac919c074664c2a64c2d6c42e0a}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G}~( 0x1 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )}}\label{gic__regs_8h_a83c4eac919c074664c2a64c2d6c42e0a}
+
+
+\-Definition at line 82 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a2ab0ca8b1981d34e6570a25d43850619}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-P\-E\-N\-D\-I\-N\-G\-\_\-\-A\-C\-T\-I\-V\-E}~( 0x3 $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T )}}\label{gic__regs_8h_a2ab0ca8b1981d34e6570a25d43850619}
+
+
+\-Definition at line 84 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a673398abcaa361155cb66b95eb96de4b}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-S\-T\-A\-T\-E\-\_\-\-S\-H\-I\-F\-T}~28}}\label{gic__regs_8h_a673398abcaa361155cb66b95eb96de4b}
+
+
+\-Definition at line 79 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_aec90c180b09793d32f95b10c097be140}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-M\-A\-S\-K}~(0x3ff $<$$<$ G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_aec90c180b09793d32f95b10c097be140}
+
+
+\-Definition at line 69 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a103e2ad583b2fb6f8fc98806ed8efe2e}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-L\-R\-\_\-\-V\-I\-R\-T\-U\-A\-L\-I\-D\-\_\-\-S\-H\-I\-F\-T}~0}}\label{gic__regs_8h_a103e2ad583b2fb6f8fc98806ed8efe2e}
+
+
+\-Definition at line 68 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a3b551f14f253b7b2097b00fcb2cd63b6}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R}}
+\index{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R}~(0x10/4)}}\label{gic__regs_8h_a3b551f14f253b7b2097b00fcb2cd63b6}
+
+
+\-Definition at line 36 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a4a56cf5833bc3e70dc1bcb96fcfc29c7}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I}}
+\index{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-E\-O\-I}~(1)}}\label{gic__regs_8h_a4a56cf5833bc3e70dc1bcb96fcfc29c7}
+
+
+\-Definition at line 92 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a2fa43094e70ad68deaae85af7a8fd92e}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P}}
+\index{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P}~(1 $<$$<$ {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T})}}\label{gic__regs_8h_a2fa43094e70ad68deaae85af7a8fd92e}
+
+
+\-Definition at line 96 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a48605a2f1393cde539dc06a366fb0af0}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-N\-P\-\_\-\-S\-H\-I\-F\-T}~(3)}}\label{gic__regs_8h_a48605a2f1393cde539dc06a366fb0af0}
+
+
+\-Definition at line 95 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_aec1db3e4d6a9de8f3ddb86143aeca135}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U}}
+\index{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U}~(1 $<$$<$ {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T})}}\label{gic__regs_8h_aec1db3e4d6a9de8f3ddb86143aeca135}
+
+
+\-Definition at line 94 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a90caf6ea221753e28f4b4a071a6db31c}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-M\-I\-S\-R\-\_\-\-U\-\_\-\-S\-H\-I\-F\-T}~(1)}}\label{gic__regs_8h_a90caf6ea221753e28f4b4a071a6db31c}
+
+
+\-Definition at line 93 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a5ec2e00ce6c5100fa7bab0e0d374bad7}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-M\-C\-R@{\-G\-I\-C\-H\-\_\-\-V\-M\-C\-R}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-M\-C\-R@{\-G\-I\-C\-H\-\_\-\-V\-M\-C\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-M\-C\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-M\-C\-R}~(0x08/4)}}\label{gic__regs_8h_a5ec2e00ce6c5100fa7bab0e0d374bad7}
+
+
+\-Definition at line 35 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_aa65dcc61040fd019a6bc6c30a767979f}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-T\-R@{\-G\-I\-C\-H\-\_\-\-V\-T\-R}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-T\-R@{\-G\-I\-C\-H\-\_\-\-V\-T\-R}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-T\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-T\-R}~(0x04/4)}}\label{gic__regs_8h_aa65dcc61040fd019a6bc6c30a767979f}
+
+
+\-Definition at line 34 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_abd5d62cbbddf5e1bdb48d4c314af4946}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-L\-I\-S\-T\-R\-E\-G\-S\-\_\-\-M\-A\-S\-K}~0x3f}}\label{gic__regs_8h_abd5d62cbbddf5e1bdb48d4c314af4946}
+
+
+\-Definition at line 65 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_afce32131718d56774e16504202554a95}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}~(0x7 $<$$<$ G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-V\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_afce32131718d56774e16504202554a95}
+
+
+\-Definition at line 64 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a11cc8a37cc3cc577f6280e7c8f719370}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-E\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}~26}}\label{gic__regs_8h_a11cc8a37cc3cc577f6280e7c8f719370}
+
+
+\-Definition at line 63 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a83c7da9618809dc16c9ee79281314cf1}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-M\-A\-S\-K}~(0x7 $<$$<$ G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-V\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T)}}\label{gic__regs_8h_a83c7da9618809dc16c9ee79281314cf1}
+
+
+\-Definition at line 62 of file gic\-\_\-regs.\-h.
+
+\hypertarget{gic__regs_8h_a56c9045299b8897a36ec7a2f2ca61955}{\index{gic\-\_\-regs.\-h@{gic\-\_\-regs.\-h}!\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}}
+\index{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T@{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}!gic_regs.h@{gic\-\_\-regs.\-h}}
+\subsubsection[{\-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-I\-C\-H\-\_\-\-V\-T\-R\-\_\-\-P\-R\-I\-B\-I\-T\-S\-\_\-\-S\-H\-I\-F\-T}~29}}\label{gic__regs_8h_a56c9045299b8897a36ec7a2f2ca61955}
+
+
+\-Definition at line 61 of file gic\-\_\-regs.\-h.
+

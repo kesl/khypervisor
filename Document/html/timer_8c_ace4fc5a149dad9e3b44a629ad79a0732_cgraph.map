@@ -1,0 +1,17 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$timer_8c.html#a7571113fd1cc955273ce64c87ba25955" title="_timer_channel_num_callbacks" alt="" coords="140,5,343,35"/>
+<area shape="rect" id="node5" href="$generic__timer_8c.html#a26fcbba99e1dbf1ac9e06b91e3bc3ab6" title="generic_timer_set_callback" alt="" coords="152,59,331,88"/>
+<area shape="rect" id="node7" href="$timer_8c.html#a6a2899299644274bf48809409775c21b" title="_timer_hw_callback" alt="" coords="173,163,309,192"/>
+<area shape="rect" id="node17" href="$generic__timer_8c.html#a9c827fc2504de623842afa015a0791e2" title="generic_timer_set_tval" alt="" coords="419,216,571,245"/>
+<area shape="rect" id="node20" href="$generic__timer_8c.html#ac31d0e77e798fb55de96b4ff320c1a17" title="generic_timer_enable_int" alt="" coords="412,56,577,85"/>
+<area shape="rect" id="node25" href="$generic__timer_8c.html#a7adf47a410958220c1df75a9edbc253c" title="generic_timer_enable_irq" alt="" coords="159,296,324,325"/>
+<area shape="rect" id="node9" href="$generic__timer_8c.html#ae4cbbf157ccf4126af25918bfc239918" title="generic_timer_disable_int" alt="" coords="411,163,579,192"/>
+<area shape="rect" id="node15" href="$timer_8c.html#a2d0ba1e2f2d1f8e831afdae609ccf3ae" title="_timer_each_callback_channel" alt="" coords="395,109,595,139"/>
+<area shape="rect" id="node11" href="$generic__timer__regs_8h.html#a076a2f37c8f342ce8d64fda8bf6cdc90" title="generic_timer_reg_read" alt="" coords="647,83,804,112"/>
+<area shape="rect" id="node13" href="$generic__timer__regs_8h.html#a21908c6f55add221caf5e3de30fe8f77" title="generic_timer_reg_write" alt="" coords="645,163,805,192"/>
+<area shape="rect" id="node27" href="$gic_8c.html#aaee4d58fadbe09c39f45e8e114a4dd4d" title="gic_test_set_irq_handler" alt="" coords="413,269,576,299"/>
+<area shape="rect" id="node29" href="$generic__timer_8c.html#a1ec3de997b7552597b2ba32e6068e069" title="_generic_timer_hyp_irq_handler" alt="" coords="392,323,597,352"/>
+<area shape="rect" id="node31" href="$gic_8c.html#acbe5581611f81cd00b58cebeda222edf" title="gic_test_configure_irq" alt="" coords="420,376,569,405"/>
+<area shape="rect" id="node33" href="$gic_8c.html#ac9a2d7f5ce83d3499113a8566f65fad0" title="gic_disable_irq" alt="" coords="672,349,779,379"/>
+<area shape="rect" id="node35" href="$gic_8c.html#a53e36754e628b6624a760838e37fd9df" title="gic_enable_irq" alt="" coords="673,403,777,432"/>
+</map>

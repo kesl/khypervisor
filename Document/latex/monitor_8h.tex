@@ -1,0 +1,47 @@
+\hypertarget{monitor_8h}{\section{monitor.\-h \-File \-Reference}
+\label{monitor_8h}\index{monitor.\-h@{monitor.\-h}}
+}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{monitor_8h_a48a4a1eed335c3f9e88846b90cf85247}{mon\-\_\-init} (void)
+\item 
+void \hyperlink{monitor_8h_a3d6c25e634e4c732ea89b83c18913cf3}{mon\-\_\-smc} (void)
+\item 
+void \hyperlink{monitor_8h_a4ec58a1f8d7da8034e261292fece7271}{mon\-\_\-enter\-\_\-hyp} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{monitor_8h_a4ec58a1f8d7da8034e261292fece7271}{\index{monitor.\-h@{monitor.\-h}!mon\-\_\-enter\-\_\-hyp@{mon\-\_\-enter\-\_\-hyp}}
+\index{mon\-\_\-enter\-\_\-hyp@{mon\-\_\-enter\-\_\-hyp}!monitor.h@{monitor.\-h}}
+\subsubsection[{mon\-\_\-enter\-\_\-hyp}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf mon\-\_\-enter\-\_\-hyp} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{monitor_8h_a4ec58a1f8d7da8034e261292fece7271}
+
+
+\-Definition at line 5 of file monitor\-\_\-imp.\-c.
+
+
+\begin{DoxyCode}
+{
+    uart_print("[monitor] enter_hyp: entering hyp mode. not coming back\n\r");
+    __mon_enter_hyp();
+}
+\end{DoxyCode}
+\hypertarget{monitor_8h_a48a4a1eed335c3f9e88846b90cf85247}{\index{monitor.\-h@{monitor.\-h}!mon\-\_\-init@{mon\-\_\-init}}
+\index{mon\-\_\-init@{mon\-\_\-init}!monitor.h@{monitor.\-h}}
+\subsubsection[{mon\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf mon\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{monitor_8h_a48a4a1eed335c3f9e88846b90cf85247}
+\hypertarget{monitor_8h_a3d6c25e634e4c732ea89b83c18913cf3}{\index{monitor.\-h@{monitor.\-h}!mon\-\_\-smc@{mon\-\_\-smc}}
+\index{mon\-\_\-smc@{mon\-\_\-smc}!monitor.h@{monitor.\-h}}
+\subsubsection[{mon\-\_\-smc}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf mon\-\_\-smc} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{monitor_8h_a3d6c25e634e4c732ea89b83c18913cf3}

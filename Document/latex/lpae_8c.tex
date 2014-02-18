@@ -1,0 +1,463 @@
+\hypertarget{lpae_8c}{\section{lpae.\-c \-File \-Reference}
+\label{lpae_8c}\index{lpae.\-c@{lpae.\-c}}
+}
+{\ttfamily \#include \char`\"{}lpae.\-h\char`\"{}}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+{\ttfamily \#include $<$log/uart\-\_\-print.\-h$>$}\*
+\-Include dependency graph for lpae.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=311pt]{lpae_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{lpae_8c_a8c7b23411ed3f2e01c24ea913aeace90}{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-E\-C000000\-U\-L\-L
+\item 
+\#define \hyperlink{lpae_8c_adac2fbb29b77eddd35f6d1cb58b66642}{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-E00000\-U\-L\-L
+\item 
+\#define \hyperlink{lpae_8c_aa452a83b539e9f6d0fc7ef003bd9ccdc}{\-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L
+\item 
+\#define \hyperlink{lpae_8c_a848c4c6c0ffa51fcf55b912e103d7e53}{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L
+\item 
+\#define \hyperlink{lpae_8c_a9caa2950b38e6db50f556304f82965fa}{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8c_af1169c7fcd127aa56142bfd0314691ee}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t} mattr)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8c_aaa674eddb596444230e0aea1ba32e90e}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} attr\-\_\-idx)
+\item 
+void \hyperlink{lpae_8c_ae7e55ecf2bf23e4f97618e990b61159d}{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl1, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} baddr, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8c_ad87d6a55d9a4301257cc7efe32ad0153}{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} baddr, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8c_abfb766e3ac67185b6e435f24b3223527}{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2)
+\item 
+void \hyperlink{lpae_8c_adeb0f02a13e39ed3e5bab0574e89c13c}{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl2)
+\item 
+void \hyperlink{lpae_8c_aff0ed5c291334c705ddbd99f197e1247}{lpaed\-\_\-stage2\-\_\-map\-\_\-page} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$pte, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{lpae_8h_a05d556a9b3ba68a3bafcc96839956371}{lpaed\-\_\-stage2\-\_\-memattr\-\_\-t} mattr)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8c_a804b9089155c7bc74ccea12d009c36fd}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8c_a6dba6fbdc7725faf61722eff42e18bbc}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa)
+\item 
+\hyperlink{unionlpaed__t}{lpaed\-\_\-t} \hyperlink{lpae_8c_a1f31704271c412a5077309bf60b83f86}{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} pa, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} attr\-\_\-idx, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8c_a7063374a9b74906e426f94dc544b132b}{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl3, \hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} baddr, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} valid)
+\item 
+void \hyperlink{lpae_8c_a8ab1751ba62e519b19560863ee75fbf8}{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table} (\hyperlink{unionlpaed__t}{lpaed\-\_\-t} $\ast$ttbl3)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{lpae_8c_a8c7b23411ed3f2e01c24ea913aeace90}{\index{lpae.\-c@{lpae.\-c}!\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}}
+\index{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}!lpae.c@{lpae.\-c}}
+\subsubsection[{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-T\-T\-B\-L\-\_\-\-L1\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-E\-C000000\-U\-L\-L}}\label{lpae_8c_a8c7b23411ed3f2e01c24ea913aeace90}
+
+
+\-Definition at line 7 of file lpae.\-c.
+
+\hypertarget{lpae_8c_a848c4c6c0ffa51fcf55b912e103d7e53}{\index{lpae.\-c@{lpae.\-c}!\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}}
+\index{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}!lpae.c@{lpae.\-c}}
+\subsubsection[{\-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-T\-T\-B\-L\-\_\-\-L1\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L}}\label{lpae_8c_a848c4c6c0ffa51fcf55b912e103d7e53}
+
+
+\-Definition at line 11 of file lpae.\-c.
+
+\hypertarget{lpae_8c_adac2fbb29b77eddd35f6d1cb58b66642}{\index{lpae.\-c@{lpae.\-c}!\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}}
+\index{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}!lpae.c@{lpae.\-c}}
+\subsubsection[{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-T\-T\-B\-L\-\_\-\-L2\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-E00000\-U\-L\-L}}\label{lpae_8c_adac2fbb29b77eddd35f6d1cb58b66642}
+
+
+\-Definition at line 8 of file lpae.\-c.
+
+\hypertarget{lpae_8c_a9caa2950b38e6db50f556304f82965fa}{\index{lpae.\-c@{lpae.\-c}!\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}}
+\index{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}!lpae.c@{lpae.\-c}}
+\subsubsection[{\-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-T\-T\-B\-L\-\_\-\-L2\-\_\-\-T\-A\-B\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L}}\label{lpae_8c_a9caa2950b38e6db50f556304f82965fa}
+
+
+\-Definition at line 12 of file lpae.\-c.
+
+\hypertarget{lpae_8c_aa452a83b539e9f6d0fc7ef003bd9ccdc}{\index{lpae.\-c@{lpae.\-c}!\-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}}
+\index{\-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K@{\-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}!lpae.c@{lpae.\-c}}
+\subsubsection[{\-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-T\-T\-B\-L\-\_\-\-L3\-\_\-\-O\-U\-T\-A\-D\-D\-R\-\_\-\-M\-A\-S\-K}~0x000000\-F\-F\-F\-F\-F\-F\-F000\-U\-L\-L}}\label{lpae_8c_aa452a83b539e9f6d0fc7ef003bd9ccdc}
+
+
+\-Definition at line 9 of file lpae.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{lpae_8c_aaa674eddb596444230e0aea1ba32e90e}{\index{lpae.\-c@{lpae.\-c}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block}!lpae.c@{lpae.\-c}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-block} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf uint8\-\_\-t}}]{attr\-\_\-idx}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_aaa674eddb596444230e0aea1ba32e90e}
+
+
+\-Definition at line 47 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* lpae.c */
+    lpaed_t lpaed;
+
+    printh( "[mm] hvmm_mm_lpaed_l1_block:\n\r" );
+    printh( " pa:"); uart_print_hex64(pa); printh("\n\r");
+    printh( " attr_idx:"); uart_print_hex32((uint32_t) attr_idx); printh("\n\r"
+      );
+
+    // Valid Block Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 0;
+
+    lpaed.bits &= ~TTBL_L1_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L1_OUTADDR_MASK;
+    lpaed.pt.sbz = 0;
+
+    // Lower block attributes
+    lpaed.pt.ai = attr_idx;
+    lpaed.pt.ns = 1;    // Allow Non-secure access
+    lpaed.pt.user = 1;
+    lpaed.pt.ro = 0;
+    lpaed.pt.sh = 2;    // Outher Shareable
+    lpaed.pt.af = 1;    // Access Flag set to 1?
+    lpaed.pt.ng = 1;
+
+    // Upper block attributes
+    lpaed.pt.hint = 0;
+    lpaed.pt.pxn = 0;
+    lpaed.pt.xn = 0;    // eXecute Never = 0
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_a804b9089155c7bc74ccea12d009c36fd}{\index{lpae.\-c@{lpae.\-c}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l1\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_a804b9089155c7bc74ccea12d009c36fd}
+
+
+\-Definition at line 134 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{  
+    lpaed_t lpaed;
+   
+    // Valid Table Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 1;
+ 
+    // Next-level table address [39:12]
+    lpaed.bits &= ~TTBL_L1_TABADDR_MASK;
+    lpaed.bits |= pa & TTBL_L1_TABADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    lpaed.pt.pxnt = 0;  // PXN limit for subsequent levels of lookup
+    lpaed.pt.xnt = 0;   // XN limit for subsequent levels of lookup
+    lpaed.pt.apt = 0;   // Access permissions limit for subsequent levels of
+       lookup
+    lpaed.pt.nst = 1;   // Table address is in the Non-secure physical address
+       space
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_af1169c7fcd127aa56142bfd0314691ee}{\index{lpae.\-c@{lpae.\-c}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block}!lpae.c@{lpae.\-c}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-block} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}}]{mattr}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_af1169c7fcd127aa56142bfd0314691ee}
+
+
+\-Definition at line 15 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    /* lpae.c */
+    lpaed_t lpaed;
+
+    // Valid Block Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 0;
+
+    lpaed.bits &= ~TTBL_L2_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L2_OUTADDR_MASK;
+    lpaed.p2m.sbz3 = 0;
+
+    // Lower block attributes
+    lpaed.p2m.mattr = mattr & 0x0F; 
+    lpaed.p2m.read = 1;     // Read/Write
+    lpaed.p2m.write = 1;        
+    lpaed.p2m.sh = 0;   // Non-shareable
+    lpaed.p2m.af = 1;   // Access Flag set to 1?
+    lpaed.p2m.sbz4 = 0;
+
+    // Upper block attributes
+    lpaed.p2m.hint = 0;
+    lpaed.p2m.sbz2 = 0;
+    lpaed.p2m.xn = 0;   // eXecute Never = 0
+
+    lpaed.p2m.sbz1 = 0;
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_a6dba6fbdc7725faf61722eff42e18bbc}{\index{lpae.\-c@{lpae.\-c}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_a6dba6fbdc7725faf61722eff42e18bbc}
+
+
+\-Definition at line 158 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{ 
+    lpaed_t lpaed;
+  
+    // Valid Table Entry
+    lpaed.pt.valid = 1;
+    lpaed.pt.table = 1;
+
+    // Next-level table address [39:12]
+    lpaed.bits &= ~TTBL_L2_TABADDR_MASK;
+    lpaed.bits |= pa & TTBL_L2_TABADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    lpaed.pt.pxnt = 0;  // PXN limit for subsequent levels of lookup
+    lpaed.pt.xnt = 0;   // XN limit for subsequent levels of lookup
+    lpaed.pt.apt = 0;   // Access permissions limit for subsequent levels of
+       lookup
+    lpaed.pt.nst = 1;   // Table address is in the Non-secure physical address
+       space
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_a1f31704271c412a5077309bf60b83f86}{\index{lpae.\-c@{lpae.\-c}!hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table}}
+\index{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table@{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lpaed\-\_\-t} {\bf hvmm\-\_\-mm\-\_\-lpaed\-\_\-l3\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf uint8\-\_\-t}}]{attr\-\_\-idx, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_a1f31704271c412a5077309bf60b83f86}
+
+
+\-Definition at line 182 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{ 
+    lpaed_t lpaed;
+  
+    // Valid Table Entry
+    lpaed.pt.valid = valid;
+    lpaed.pt.table = 1;
+
+    // 4KB physical address [39:12]
+    lpaed.bits &= ~TTBL_L3_OUTADDR_MASK;
+    lpaed.bits |= pa & TTBL_L3_OUTADDR_MASK;
+
+    // UNK/SBZP [51:40]
+    lpaed.pt.sbz = 0;
+
+    //Lower page attributes
+    lpaed.pt.ai = attr_idx;
+    lpaed.pt.ns = 1;    // Allow Non-secure access
+    lpaed.pt.user = 1;
+    lpaed.pt.ro = 0;
+    lpaed.pt.sh = 2;    // Outher Shareable
+    lpaed.pt.af = 1;    // Access Flag set to 1?
+    lpaed.pt.ng = 1;
+
+    // Upper page attributes
+    lpaed.pt.hint = 0;
+    lpaed.pt.pxn = 0;
+    lpaed.pt.xn = 0;    // eXecute Never = 0
+
+    return lpaed;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_a7063374a9b74906e426f94dc544b132b}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table}}
+\index{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage1\-\_\-conf\-\_\-l3\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl3, }
+\item[{{\bf uint64\-\_\-t}}]{baddr, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_a7063374a9b74906e426f94dc544b132b}
+
+
+\-Definition at line 214 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl3->pt.valid = valid ? 1 : 0;
+    ttbl3->bits &= ~TTBL_L3_OUTADDR_MASK;
+    ttbl3->bits |= baddr & TTBL_L3_OUTADDR_MASK;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_a8ab1751ba62e519b19560863ee75fbf8}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table}}
+\index{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table@{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage1\-\_\-disable\-\_\-l3\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl3}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_a8ab1751ba62e519b19560863ee75fbf8}
+
+
+\-Definition at line 221 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl3->pt.valid = 0;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_ae7e55ecf2bf23e4f97618e990b61159d}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-conf\-\_\-l1\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl1, }
+\item[{{\bf uint64\-\_\-t}}]{baddr, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_ae7e55ecf2bf23e4f97618e990b61159d}
+
+
+\-Definition at line 81 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl1->pt.valid = valid ? 1 : 0;
+    ttbl1->pt.table = valid ? 1 : 0;
+    ttbl1->bits &= ~TTBL_L1_TABADDR_MASK;
+    ttbl1->bits |= baddr & TTBL_L1_TABADDR_MASK;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_ad87d6a55d9a4301257cc7efe32ad0153}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-conf\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2, }
+\item[{{\bf uint64\-\_\-t}}]{baddr, }
+\item[{{\bf uint8\-\_\-t}}]{valid}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_ad87d6a55d9a4301257cc7efe32ad0153}
+
+
+\-Definition at line 89 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl2->pt.valid = valid ? 1 : 0;
+    ttbl2->pt.table = valid ? 1 : 0;
+    ttbl2->bits &= ~TTBL_L2_TABADDR_MASK;
+    ttbl2->bits |= baddr & TTBL_L2_TABADDR_MASK;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_adeb0f02a13e39ed3e5bab0574e89c13c}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-disable\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_adeb0f02a13e39ed3e5bab0574e89c13c}
+
+
+\-Definition at line 102 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl2->pt.valid = 0;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_abfb766e3ac67185b6e435f24b3223527}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table}}
+\index{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table@{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-enable\-\_\-l2\-\_\-table} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{ttbl2}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_abfb766e3ac67185b6e435f24b3223527}
+
+
+\-Definition at line 97 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+    ttbl2->pt.valid = 1;
+    ttbl2->pt.table = 1;
+}
+\end{DoxyCode}
+\hypertarget{lpae_8c_aff0ed5c291334c705ddbd99f197e1247}{\index{lpae.\-c@{lpae.\-c}!lpaed\-\_\-stage2\-\_\-map\-\_\-page@{lpaed\-\_\-stage2\-\_\-map\-\_\-page}}
+\index{lpaed\-\_\-stage2\-\_\-map\-\_\-page@{lpaed\-\_\-stage2\-\_\-map\-\_\-page}!lpae.c@{lpae.\-c}}
+\subsubsection[{lpaed\-\_\-stage2\-\_\-map\-\_\-page}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf lpaed\-\_\-stage2\-\_\-map\-\_\-page} (
+\begin{DoxyParamCaption}
+\item[{{\bf lpaed\-\_\-t} $\ast$}]{pte, }
+\item[{{\bf uint64\-\_\-t}}]{pa, }
+\item[{{\bf lpaed\-\_\-stage2\-\_\-memattr\-\_\-t}}]{mattr}
+\end{DoxyParamCaption}
+)}}\label{lpae_8c_aff0ed5c291334c705ddbd99f197e1247}
+
+
+\-Definition at line 107 of file lpae.\-c.
+
+
+\begin{DoxyCode}
+{
+
+    pte->pt.valid = 1;
+    pte->pt.table = 1;
+
+    pte->bits &= ~TTBL_L3_OUTADDR_MASK;
+    pte->bits |= pa & TTBL_L3_OUTADDR_MASK;
+    pte->p2m.sbz3 = 0;
+
+    // Lower block attributes
+    pte->p2m.mattr = mattr & 0x0F;  
+    pte->p2m.read = 1;      // Read/Write
+    pte->p2m.write = 1;     
+    pte->p2m.sh = 0;    // Non-shareable
+    pte->p2m.af = 1;    // Access Flag set to 1?
+    pte->p2m.sbz4 = 0;
+
+    // Upper block attributes
+    pte->p2m.hint = 0;
+    pte->p2m.sbz2 = 0;
+    pte->p2m.xn = 0;    // eXecute Never = 0
+
+    pte->p2m.sbz1 = 0;
+}
+\end{DoxyCode}

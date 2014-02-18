@@ -1,0 +1,259 @@
+\hypertarget{virqmap_8c}{\section{virqmap.\-c \-File \-Reference}
+\label{virqmap_8c}\index{virqmap.\-c@{virqmap.\-c}}
+}
+{\ttfamily \#include $<$k-\/hypervisor-\/config.\-h$>$}\*
+{\ttfamily \#include \char`\"{}virqmap.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}context.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}hvmm\-\_\-types.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}vdev/vdev\-\_\-gicd.\-h\char`\"{}}\*
+{\ttfamily \#include $<$asm-\/arm\-\_\-inline.\-h$>$}\*
+{\ttfamily \#include $<$config/cfg\-\_\-platform.\-h$>$}\*
+{\ttfamily \#include $<$log/print.\-h$>$}\*
+\-Include dependency graph for virqmap.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{virqmap_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{virqmap_8c_aff147cadc8f2fd2449994205ee561d5d}{firstbit32}(word)~( 31 -\/ \hyperlink{asm-arm__inline_8h_a00f1b8fe0a7060c1e5385c8187115597}{asm\-\_\-clz}(word) )
+\item 
+\#define \hyperlink{virqmap_8c_a8dafe246b3640014aad225fe4318c7c5}{\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S}~128
+\item 
+\#define \hyperlink{virqmap_8c_a83d81190e6a61a2c13a364824c61e811}{\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}~(\hyperlink{virqmap_8c_a8dafe246b3640014aad225fe4318c7c5}{\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S} / 32)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{virqmap_8c_ae23dfc79ba4183fbf86031da2ce4d51c}{virqmap\-\_\-init} (void)
+\item 
+struct \hyperlink{structvirqmap__entry}{virqmap\-\_\-entry} $\ast$ \hyperlink{virqmap_8c_a303ca0708bf2514bbd843c4aa2a8a829}{virqmap\-\_\-for\-\_\-pirq} (\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} pirq)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{virqmap_8c_a12dba040e471900a7b385b9c3a0e4c85}{virqmap\-\_\-pirq} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} virq)
+\item 
+void \hyperlink{virqmap_8c_a17e7cbe76d72e1890ff5a10724d6f19c}{virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler} (\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} vmid, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} istatus, \hyperlink{arch__types_8h_aba7bc1797add20fe3efdf37ced1182c5}{uint8\-\_\-t} word\-\_\-offset)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structvirqmap__entry}{virqmap\-\_\-entry} \hyperlink{virqmap_8c_a122833af54ab6be47504b0c2ce32d418}{\-\_\-virqmap} \mbox{[}\hyperlink{gic_8h_a1ae8d5cca4dfb10e3503d0acd68ea045}{\-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-I\-R\-Q\-S}\mbox{]}
+\item 
+static \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{virqmap_8c_a4fcc89885437c46e50732772779a3ff4}{old\-\_\-vgicd\-\_\-status} \mbox{[}\hyperlink{hyp__config_8h_a7fcfcbc766cea81a21e2d8aba3b54843}{\-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\mbox{[}\hyperlink{virqmap_8c_a83d81190e6a61a2c13a364824c61e811}{\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}\mbox{]} = \{\{0,\}, \}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{virqmap_8c_aff147cadc8f2fd2449994205ee561d5d}{\index{virqmap.\-c@{virqmap.\-c}!firstbit32@{firstbit32}}
+\index{firstbit32@{firstbit32}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{firstbit32}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf firstbit32}(
+\begin{DoxyParamCaption}
+\item[{}]{word}
+\end{DoxyParamCaption}
+)~( 31 -\/ {\bf asm\-\_\-clz}(word) )}}\label{virqmap_8c_aff147cadc8f2fd2449994205ee561d5d}
+
+
+\-Definition at line 14 of file virqmap.\-c.
+
+\hypertarget{virqmap_8c_a8dafe246b3640014aad225fe4318c7c5}{\index{virqmap.\-c@{virqmap.\-c}!\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S@{\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S}}
+\index{\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S@{\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S}~128}}\label{virqmap_8c_a8dafe246b3640014aad225fe4318c7c5}
+
+
+\-Definition at line 15 of file virqmap.\-c.
+
+\hypertarget{virqmap_8c_a83d81190e6a61a2c13a364824c61e811}{\index{virqmap.\-c@{virqmap.\-c}!\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S@{\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}}
+\index{\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S@{\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{\-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}~({\bf \-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-V\-I\-R\-Q\-S} / 32)}}\label{virqmap_8c_a83d81190e6a61a2c13a364824c61e811}
+
+
+\-Definition at line 16 of file virqmap.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{virqmap_8c_a303ca0708bf2514bbd843c4aa2a8a829}{\index{virqmap.\-c@{virqmap.\-c}!virqmap\-\_\-for\-\_\-pirq@{virqmap\-\_\-for\-\_\-pirq}}
+\index{virqmap\-\_\-for\-\_\-pirq@{virqmap\-\_\-for\-\_\-pirq}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{virqmap\-\_\-for\-\_\-pirq}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf virqmap\-\_\-entry}$\ast$ {\bf virqmap\-\_\-for\-\_\-pirq} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint32\-\_\-t}}]{pirq}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}read\mbox{]}}}}\label{virqmap_8c_a303ca0708bf2514bbd843c4aa2a8a829}
+
+
+\-Definition at line 47 of file virqmap.\-c.
+
+
+\begin{DoxyCode}
+{
+    const struct virqmap_entry * result = VIRQMAP_ENTRY_NOTFOUND;
+
+    if ( _virqmap[pirq].vmid != VMID_INVALID) {
+        result = &_virqmap[pirq];
+    }
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{virqmap_8c_ae23dfc79ba4183fbf86031da2ce4d51c}{\index{virqmap.\-c@{virqmap.\-c}!virqmap\-\_\-init@{virqmap\-\_\-init}}
+\index{virqmap\-\_\-init@{virqmap\-\_\-init}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{virqmap\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf virqmap\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{virqmap_8c_ae23dfc79ba4183fbf86031da2ce4d51c}
+
+
+\-Definition at line 25 of file virqmap.\-c.
+
+
+\begin{DoxyCode}
+{
+    // TODO(wonseok): read file and initialize the mapping.
+    HVMM_TRACE_ENTER();
+    int i;
+
+    for (i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+        _virqmap[i].vmid = VMID_INVALID;
+        _virqmap[i].virq = 0;
+    }
+
+    // NOTE(wonseok): referenced by
+       https://github.com/kesl/khypervisor/wiki/Hardware-Resources-of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
+    CFG_GUEST0_VIRQMAP(_virqmap);
+    CFG_GUEST1_VIRQMAP(_virqmap);
+
+    vgicd_set_callback_changed_istatus(&
+      virqmap_vgicd_changed_istatus_callback_handler);
+
+    HVMM_TRACE_EXIT();
+
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{virqmap_8c_ae23dfc79ba4183fbf86031da2ce4d51c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{virqmap_8c_a12dba040e471900a7b385b9c3a0e4c85}{\index{virqmap.\-c@{virqmap.\-c}!virqmap\-\_\-pirq@{virqmap\-\_\-pirq}}
+\index{virqmap\-\_\-pirq@{virqmap\-\_\-pirq}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{virqmap\-\_\-pirq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf virqmap\-\_\-pirq} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{virq}
+\end{DoxyParamCaption}
+)}}\label{virqmap_8c_a12dba040e471900a7b385b9c3a0e4c85}
+
+
+\-Definition at line 57 of file virqmap.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t pirq = PIRQ_INVALID;
+
+    /* FIXME: This is ridiculously inefficient to loop up to GIC_NUM_MAX_IRQS 
+      */
+    int i;
+    for (i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+        if ( _virqmap[i].vmid == vmid && _virqmap[i].virq == virq ) {
+            pirq = i;
+            break;
+        }
+    }
+    return pirq;
+}
+\end{DoxyCode}
+\hypertarget{virqmap_8c_a17e7cbe76d72e1890ff5a10724d6f19c}{\index{virqmap.\-c@{virqmap.\-c}!virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler@{virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler}}
+\index{virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler@{virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf virqmap\-\_\-vgicd\-\_\-changed\-\_\-istatus\-\_\-callback\-\_\-handler} (
+\begin{DoxyParamCaption}
+\item[{{\bf vmid\-\_\-t}}]{vmid, }
+\item[{{\bf uint32\-\_\-t}}]{istatus, }
+\item[{{\bf uint8\-\_\-t}}]{word\-\_\-offset}
+\end{DoxyParamCaption}
+)}}\label{virqmap_8c_a17e7cbe76d72e1890ff5a10724d6f19c}
+
+
+\-Definition at line 73 of file virqmap.\-c.
+
+
+\begin{DoxyCode}
+{
+    uint32_t cstatus;                          // changed bits only
+    uint32_t minirq;
+    int bit;
+
+    minirq = word_offset * 32;                 /* irq range: 0~31 + word_offset
+       * size_of_istatus_in_bits */
+    cstatus = old_vgicd_status[vmid][word_offset] ^ istatus;   // find changed
+       bits
+
+    while(cstatus) {
+        uint32_t virq;
+        uint32_t pirq;
+        bit = firstbit32(cstatus);
+
+        virq = minirq + bit;
+        pirq = virqmap_pirq(vmid, virq);
+
+        if ( pirq != PIRQ_INVALID ) {
+            /* changed bit */
+            if ( istatus & (1 << bit) ) {
+                printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, 
+      __LINE__, bit + minirq);
+                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL, 
+      gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT );
+            } else {
+                printh("[%s : %d] disabled irq num is %d\n",__FUNCTION__, 
+      __LINE__, bit + minirq);
+                gic_disable_irq(pirq);
+            }
+        } else {
+            printh( "WARNING: Ignoring virq %d for guest %d has no mapped pirq
+      \n", virq, vmid );
+        }
+        cstatus &= ~(1<< bit);
+    }
+    old_vgicd_status[vmid][word_offset] = istatus;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{virqmap_8c_a17e7cbe76d72e1890ff5a10724d6f19c_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{virqmap_8c_a122833af54ab6be47504b0c2ce32d418}{\index{virqmap.\-c@{virqmap.\-c}!\-\_\-virqmap@{\-\_\-virqmap}}
+\index{\-\_\-virqmap@{\-\_\-virqmap}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{\-\_\-virqmap}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf virqmap\-\_\-entry} {\bf \-\_\-virqmap}\mbox{[}{\bf \-G\-I\-C\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-I\-R\-Q\-S}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{virqmap_8c_a122833af54ab6be47504b0c2ce32d418}
+
+
+\-Definition at line 18 of file virqmap.\-c.
+
+\hypertarget{virqmap_8c_a4fcc89885437c46e50732772779a3ff4}{\index{virqmap.\-c@{virqmap.\-c}!old\-\_\-vgicd\-\_\-status@{old\-\_\-vgicd\-\_\-status}}
+\index{old\-\_\-vgicd\-\_\-status@{old\-\_\-vgicd\-\_\-status}!virqmap.c@{virqmap.\-c}}
+\subsubsection[{old\-\_\-vgicd\-\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf old\-\_\-vgicd\-\_\-status}\mbox{[}{\bf \-N\-U\-M\-\_\-\-G\-U\-E\-S\-T\-S\-\_\-\-S\-T\-A\-T\-I\-C}\mbox{]}\mbox{[}{\bf \-N\-U\-M\-\_\-\-S\-T\-A\-T\-U\-S\-\_\-\-W\-O\-R\-D\-S}\mbox{]} = \{\{0,\}, \}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{virqmap_8c_a4fcc89885437c46e50732772779a3ff4}
+
+
+\-Definition at line 19 of file virqmap.\-c.
+

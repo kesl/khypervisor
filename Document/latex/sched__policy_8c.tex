@@ -1,0 +1,52 @@
+\hypertarget{sched__policy_8c}{\section{sched\-\_\-policy.\-c \-File \-Reference}
+\label{sched__policy_8c}\index{sched\-\_\-policy.\-c@{sched\-\_\-policy.\-c}}
+}
+{\ttfamily \#include \char`\"{}sched\-\_\-policy.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}context.\-h\char`\"{}}\*
+\-Include dependency graph for sched\-\_\-policy.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=333pt]{sched__policy_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{hvmm__types_8h_af7e9bd0adfb7d10e7a7a0ee60a5f962c}{vmid\-\_\-t} \hyperlink{sched__policy_8c_a1163c64573f2559944de8b62e2c49a72}{sched\-\_\-policy\-\_\-determ\-\_\-next} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{sched__policy_8c_a1163c64573f2559944de8b62e2c49a72}{\index{sched\-\_\-policy.\-c@{sched\-\_\-policy.\-c}!sched\-\_\-policy\-\_\-determ\-\_\-next@{sched\-\_\-policy\-\_\-determ\-\_\-next}}
+\index{sched\-\_\-policy\-\_\-determ\-\_\-next@{sched\-\_\-policy\-\_\-determ\-\_\-next}!sched_policy.c@{sched\-\_\-policy.\-c}}
+\subsubsection[{sched\-\_\-policy\-\_\-determ\-\_\-next}]{\setlength{\rightskip}{0pt plus 5cm}{\bf vmid\-\_\-t} {\bf sched\-\_\-policy\-\_\-determ\-\_\-next} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{sched__policy_8c_a1163c64573f2559944de8b62e2c49a72}
+
+
+\-Definition at line 4 of file sched\-\_\-policy.\-c.
+
+
+\begin{DoxyCode}
+{
+    vmid_t next = context_next_vmid(context_current_vmid());
+    if ( next == VMID_INVALID ) next = context_first_vmid();
+    return next;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{sched__policy_8c_a1163c64573f2559944de8b62e2c49a72_cgraph}
+\end{center}
+\end{figure}
+
+

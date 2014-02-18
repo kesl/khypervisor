@@ -1,0 +1,362 @@
+\hypertarget{timer_8c}{\section{timer.\-c \-File \-Reference}
+\label{timer_8c}\index{timer.\-c@{timer.\-c}}
+}
+{\ttfamily \#include \char`\"{}timer.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}generic\-\_\-timer.\-h\char`\"{}}\*
+{\ttfamily \#include $<$config/cfg\-\_\-platform.\-h$>$}\*
+{\ttfamily \#include $<$k-\/hypervisor-\/config.\-h$>$}\*
+\-Include dependency graph for timer.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{timer_8c_a2d0ba1e2f2d1f8e831afdae609ccf3ae}{\-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel, void $\ast$param)
+\item 
+static int \hyperlink{timer_8c_a7571113fd1cc955273ce64c87ba25955}{\-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel)
+\item 
+static void \hyperlink{timer_8c_a6a2899299644274bf48809409775c21b}{\-\_\-timer\-\_\-hw\-\_\-callback} (void $\ast$pdata)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{timer_8c_a833062839177da96d1c10cafd66fb5e3}{timer\-\_\-init} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{timer_8c_ace4fc5a149dad9e3b44a629ad79a0732}{timer\-\_\-start} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{timer_8c_afa821ebfe5739346936da29aafc27f09}{timer\-\_\-stop} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{timer_8c_a0be875a55b17ab6db30adc87ce373f47}{timer\-\_\-set\-\_\-interval} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel, \hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} interval\-\_\-us)
+\item 
+\hyperlink{arch__types_8h_a435d1572bf3f880d55459d9805097f62}{uint32\-\_\-t} \hyperlink{timer_8c_a3b91c51947e6979ee6c4f59166aff767}{timer\-\_\-get\-\_\-interval} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{timer_8c_afef8b97657801aaf10e7390cfdc822ab}{timer\-\_\-add\-\_\-callback} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel, \hyperlink{timer_8h_a1d134e8a1c43ace1df8be568acbdd90a}{timer\-\_\-callback\-\_\-t} callback)
+\item 
+\hyperlink{hvmm__types_8h_a39d593b2c97852f566d7472b76ab7ba2}{hvmm\-\_\-status\-\_\-t} \hyperlink{timer_8c_aa63b0311f321e73eb38c7a272098aca4}{timer\-\_\-remove\-\_\-callback} (\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10}{timer\-\_\-channel\-\_\-t} channel, \hyperlink{timer_8h_a1d134e8a1c43ace1df8be568acbdd90a}{timer\-\_\-callback\-\_\-t} callback)
+\item 
+\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} \hyperlink{timer_8c_af519d8d7c7657dd067bc07e0b4871d0d}{timer\-\_\-t2c} (\hyperlink{arch__types_8h_aaa5d1cd013383c889537491c3cfd9aad}{uint64\-\_\-t} time\-\_\-us)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structtimer__channel}{timer\-\_\-channel} \hyperlink{timer_8c_a16d3090c5382e43a22cd51b88e273b19}{\-\_\-channels} \mbox{[}\hyperlink{timer_8h_a6bb52d3cbff513eadd58a6e79de3aa10ac3fa8162a3526a578374e198845ce9ad}{\-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-C\-H\-A\-N\-N\-E\-L\-S}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{timer_8c_a7571113fd1cc955273ce64c87ba25955}{\index{timer.\-c@{timer.\-c}!\-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks@{\-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks}}
+\index{\-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks@{\-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks}!timer.c@{timer.\-c}}
+\subsubsection[{\-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf \-\_\-timer\-\_\-channel\-\_\-num\-\_\-callbacks} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{timer_8c_a7571113fd1cc955273ce64c87ba25955}
+
+
+\-Definition at line 23 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i, count = 0;
+    for( i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++) {
+        if( _channels[channel].callbacks[i] ) count++;
+    }
+    return count;
+}
+\end{DoxyCode}
+\hypertarget{timer_8c_a2d0ba1e2f2d1f8e831afdae609ccf3ae}{\index{timer.\-c@{timer.\-c}!\-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel@{\-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel}}
+\index{\-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel@{\-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel}!timer.c@{timer.\-c}}
+\subsubsection[{\-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-timer\-\_\-each\-\_\-callback\-\_\-channel} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel, }
+\item[{void $\ast$}]{param}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{timer_8c_a2d0ba1e2f2d1f8e831afdae609ccf3ae}
+
+
+\-Definition at line 15 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    for( i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++ ) {
+        if( _channels[channel].callbacks[i] ) _channels[channel].callbacks[i](
+      param);
+    }
+}
+\end{DoxyCode}
+\hypertarget{timer_8c_a6a2899299644274bf48809409775c21b}{\index{timer.\-c@{timer.\-c}!\-\_\-timer\-\_\-hw\-\_\-callback@{\-\_\-timer\-\_\-hw\-\_\-callback}}
+\index{\-\_\-timer\-\_\-hw\-\_\-callback@{\-\_\-timer\-\_\-hw\-\_\-callback}!timer.c@{timer.\-c}}
+\subsubsection[{\-\_\-timer\-\_\-hw\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-\_\-timer\-\_\-hw\-\_\-callback} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{pdata}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{timer_8c_a6a2899299644274bf48809409775c21b}
+
+
+\-Definition at line 32 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    generic_timer_disable_int(GENERIC_TIMER_HYP);
+
+    _timer_each_callback_channel(timer_sched, pdata);
+
+    generic_timer_set_tval(GENERIC_TIMER_HYP, _channels[timer_sched].
+      interval_us);
+    
+    generic_timer_enable_int(GENERIC_TIMER_HYP);
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c_a6a2899299644274bf48809409775c21b_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{timer_8c_afef8b97657801aaf10e7390cfdc822ab}{\index{timer.\-c@{timer.\-c}!timer\-\_\-add\-\_\-callback@{timer\-\_\-add\-\_\-callback}}
+\index{timer\-\_\-add\-\_\-callback@{timer\-\_\-add\-\_\-callback}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-add\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf timer\-\_\-add\-\_\-callback} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel, }
+\item[{{\bf timer\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_afef8b97657801aaf10e7390cfdc822ab}
+
+
+\-Definition at line 87 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+    for( i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++ ) {
+        if( _channels[channel].callbacks[i] == 0 ) {
+            _channels[channel].callbacks[i] = callback;
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    }
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{timer_8c_a3b91c51947e6979ee6c4f59166aff767}{\index{timer.\-c@{timer.\-c}!timer\-\_\-get\-\_\-interval@{timer\-\_\-get\-\_\-interval}}
+\index{timer\-\_\-get\-\_\-interval@{timer\-\_\-get\-\_\-interval}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-get\-\_\-interval}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint32\-\_\-t} {\bf timer\-\_\-get\-\_\-interval} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_a3b91c51947e6979ee6c4f59166aff767}
+
+
+\-Definition at line 82 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    return _channels[channel].interval_us;
+}
+\end{DoxyCode}
+\hypertarget{timer_8c_a833062839177da96d1c10cafd66fb5e3}{\index{timer.\-c@{timer.\-c}!timer\-\_\-init@{timer\-\_\-init}}
+\index{timer\-\_\-init@{timer\-\_\-init}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf timer\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_a833062839177da96d1c10cafd66fb5e3}
+
+
+\-Definition at line 43 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{   
+    int i;
+    for( i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++ ) {
+        _channels[channel].callbacks[i] = 0;
+    }
+
+    generic_timer_init();
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=266pt]{timer_8c_a833062839177da96d1c10cafd66fb5e3_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{timer_8c_aa63b0311f321e73eb38c7a272098aca4}{\index{timer.\-c@{timer.\-c}!timer\-\_\-remove\-\_\-callback@{timer\-\_\-remove\-\_\-callback}}
+\index{timer\-\_\-remove\-\_\-callback@{timer\-\_\-remove\-\_\-callback}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-remove\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf timer\-\_\-remove\-\_\-callback} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel, }
+\item[{{\bf timer\-\_\-callback\-\_\-t}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_aa63b0311f321e73eb38c7a272098aca4}
+
+
+\-Definition at line 101 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    int i;
+    hvmm_status_t result = HVMM_STATUS_NOT_FOUND;
+    for( i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++ ) {
+        if ( _channels[channel].callbacks[i] == callback ) {
+            _channels[channel].callbacks[i] = 0;
+            result = HVMM_STATUS_SUCCESS;
+            break;
+        }
+    }
+    return result;
+}
+\end{DoxyCode}
+\hypertarget{timer_8c_a0be875a55b17ab6db30adc87ce373f47}{\index{timer.\-c@{timer.\-c}!timer\-\_\-set\-\_\-interval@{timer\-\_\-set\-\_\-interval}}
+\index{timer\-\_\-set\-\_\-interval@{timer\-\_\-set\-\_\-interval}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-set\-\_\-interval}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf timer\-\_\-set\-\_\-interval} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel, }
+\item[{{\bf uint32\-\_\-t}}]{interval\-\_\-us}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_a0be875a55b17ab6db30adc87ce373f47}
+
+
+\-Definition at line 76 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    _channels[channel].interval_us = timer_t2c(interval_us);
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=268pt]{timer_8c_a0be875a55b17ab6db30adc87ce373f47_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{timer_8c_ace4fc5a149dad9e3b44a629ad79a0732}{\index{timer.\-c@{timer.\-c}!timer\-\_\-start@{timer\-\_\-start}}
+\index{timer\-\_\-start@{timer\-\_\-start}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-start}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf timer\-\_\-start} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_ace4fc5a149dad9e3b44a629ad79a0732}
+
+
+\-Definition at line 54 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    if ( _timer_channel_num_callbacks( channel ) > 0 ) {
+
+        generic_timer_set_callback(GENERIC_TIMER_HYP, &_timer_hw_callback );
+    
+        generic_timer_set_tval(GENERIC_TIMER_HYP, _channels[channel].
+      interval_us);
+    
+        generic_timer_enable_irq(GENERIC_TIMER_HYP);
+
+        generic_timer_enable_int(GENERIC_TIMER_HYP);
+    }
+
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c_ace4fc5a149dad9e3b44a629ad79a0732_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{timer_8c_afa821ebfe5739346936da29aafc27f09}{\index{timer.\-c@{timer.\-c}!timer\-\_\-stop@{timer\-\_\-stop}}
+\index{timer\-\_\-stop@{timer\-\_\-stop}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-stop}]{\setlength{\rightskip}{0pt plus 5cm}{\bf hvmm\-\_\-status\-\_\-t} {\bf timer\-\_\-stop} (
+\begin{DoxyParamCaption}
+\item[{{\bf timer\-\_\-channel\-\_\-t}}]{channel}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_afa821ebfe5739346936da29aafc27f09}
+
+
+\-Definition at line 70 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    generic_timer_disable_int(GENERIC_TIMER_HYP);
+    return HVMM_STATUS_SUCCESS;
+}
+\end{DoxyCode}
+
+
+\-Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c_afa821ebfe5739346936da29aafc27f09_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{timer_8c_af519d8d7c7657dd067bc07e0b4871d0d}{\index{timer.\-c@{timer.\-c}!timer\-\_\-t2c@{timer\-\_\-t2c}}
+\index{timer\-\_\-t2c@{timer\-\_\-t2c}!timer.c@{timer.\-c}}
+\subsubsection[{timer\-\_\-t2c}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint64\-\_\-t} {\bf timer\-\_\-t2c} (
+\begin{DoxyParamCaption}
+\item[{{\bf uint64\-\_\-t}}]{time\-\_\-us}
+\end{DoxyParamCaption}
+)}}\label{timer_8c_af519d8d7c7657dd067bc07e0b4871d0d}
+
+
+\-Definition at line 115 of file timer.\-c.
+
+
+\begin{DoxyCode}
+{
+    return time_us * COUNT_PER_USEC;
+}
+\end{DoxyCode}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{timer_8c_a16d3090c5382e43a22cd51b88e273b19}{\index{timer.\-c@{timer.\-c}!\-\_\-channels@{\-\_\-channels}}
+\index{\-\_\-channels@{\-\_\-channels}!timer.c@{timer.\-c}}
+\subsubsection[{\-\_\-channels}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf timer\-\_\-channel} {\bf \-\_\-channels}\mbox{[}{\bf \-T\-I\-M\-E\-R\-\_\-\-N\-U\-M\-\_\-\-M\-A\-X\-\_\-\-C\-H\-A\-N\-N\-E\-L\-S}\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{timer_8c_a16d3090c5382e43a22cd51b88e273b19}
+
+
+\-Definition at line 13 of file timer.\-c.
+
