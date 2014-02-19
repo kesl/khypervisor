@@ -14,73 +14,65 @@
 
 ### Download Tool chain for k-hypervisor
 - ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-</i>
+- or running apt-get install like this
+<pre>
+sudo apt-get install gcc-arm-linux-gnueabihf
+</pre>
 
-# Download hypervisor git & git module
+
+# Download hypervisor 
 <pre>
 $ git clone https://github.com/kesl/khypervisor.git
 $ cd khypervisor
 $ git submodule init
 $ git submodule update
+$ ./scripts/apply_patch.sh
 </pre>
 
-# RTOSguset + linux guest
+# How to test RTOSguset + linux guest
 
-## Building u-boot
-
-1. patching a autoboot for u-boot-native
+## Build bootloader
 <pre>
-$ cd platform-device/cortex_a15x2_arndale
-$ cd u-boot-native
-$ git checkout lue_arndale_13.1
-$ git apply ../patch/u-boot-bootz.patch
-</pre>
-2. Building u-boot-arndale
-<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
 $ make arndale5250 CROSS_COMPILE=arm-none-eabi- -j8
 </pre>
 
-## Building the RTOS guest
+## Build RTOS guest
 <pre>
-$ cd platform-device/cortex_a15x2_arndale/guestos/ucos-ii/
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/ucos-ii/
 $ make CROSS_COMPILE=arm-none-eabi-
 </pre>
 
-## Building the linux guset
-1. Initial setup for linux
+## Build linux guset
 <pre>
-$ cd guestos/linux
-$ git checkout origin/exynos-jb -b exynos-jb
-$ git apply ../../patch/linux-arndale-config-add-minimal-linux-config.patch
-$ git apply ../../patch/arndale-change-kernel-sdram-address-uart-port-2-1.patch
-</pre>
-2. Building linux-arndale
-<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/linux
 $ make ARCH=arm arndale_minimal_linux_defconfig
 $ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
 </pre>
 
-## Building the k-hypervisor for linux guset
+## Build k-hypervisor
 1. Copy guest image to guestimages directory
 <pre>
-$ cd platform-device/cortex_a15x2_arndale
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/guest0.bin
 $ cp ./guestos/ucos-ii/rtos.bin ./guestimages/guest1.bin
 </pre>
 2. Initial setup for linux
 <pre>
-$ cd platform-device/cortex_a15x2_arndale
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ make LINUX=y RTOS=y 
 </pre>
 
 
-## Testing minimal linux on ARNDALE board using git submodule
+## How to Flash a K-hypervisor to arndale board
 
-1. refusing SD card for arndale(X is number of SD card parition)
+1. Copy the binaries to SD card (X is number of SD card parition)	
+	<br>
+	Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
 
-Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
-
-<pre>
-$ sudo dd if=./u-boot-native/arndale-bl1.bin of=/dev/sdX bs=512 seek=1
+	<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
@@ -96,7 +88,7 @@ $ minicom -s
 "serial device for linuxguest sets /dev/ttyS1"
 </pre>
 
-3. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
+3. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
 <pre>
 $ ZIMAGE: ARNDALE # 
 </pre>
@@ -106,65 +98,57 @@ $ ZIMAGE: ARNDALE #
 $ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x90000000 851 400;mmc read 0x80008000 c51 2000;go 0xa000004c
 </pre>
 
-# bmguset + bmgest
-
-## Building the bmguest
-<blockquote>
+# How to test bmguset + bmgest
+## Build bmguest
 <pre>
-$ cd platform-device/cortex_a15x2_arndale/guestos/bmguest/
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/bmguest/
 $ make
 </pre>
-</blockquote>
 
-## Building the k-hypervisor for bmguest
-<blockquote>
+## Build k-hypervisor
 <pre>
-$ cd platform-device/cortex_a15x2_arndale
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest0.bin
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest1.bin
 $ make
 </pre>
-</blockquote>
 
-
-## Building the k-hypervisor for native u-boot
-
-1. Download u-boot
+## Build bootloader
 <pre>
-$ git submodule init
-$ git submodule update
-$ cd u-boot-native
-</pre>
-2. patching a autoboot for u-boot-native
-<pre>
-$ git checkout lue_arndale_13.1
-$ git apply ../patch/u-boot-bootz.patch
-</pre>
-3. Building u-boot-arndale
-<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
 $ make arndale5250
 </pre>
 
+## How to Flash a K-hypervisor to arndale board
 
-## Testing bmguest on ARNDALE 
-1. copy bmguest
-<pre>
-$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest0.bin
-$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest1.bin
-</pre>
+1. Copy the binaries to SD card (X is number of SD card parition)	
+	<br>
+	Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
 
-2. refusing SD card for arndale(X is number of SD card parition)
-
-<a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
-
-<pre>
-$ sudo dd if=./u-boot-native/arndale-bl1.bin of=/dev/sdX bs=512 seek=1
+	<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
-$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=2129
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=3153
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=2129
 </pre>
 
-3. loading on u-boot
+2. Setting serial port and run minicom, open 2 minicoms
+<pre>
+$ minicom -s
+"serial device for hypervisor & rtos sets /dev/ttyS0"
+$ minicom -s
+"serial device for linuxguest sets /dev/ttyS1"
+</pre>
+
+3. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
+<pre>
+$ ZIMAGE: ARNDALE # 
+</pre>
+
+4. Enter the following command
 <pre>
 $ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800; mmc read 0x60000000 851 400; mmc read 0x90000000 851 400; go 0xa000004c
 </pre>
