@@ -27,5 +27,5 @@ timer.o: timer.c
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c timer.c	
 
 clean:
-	rm *.o
+	rm -f *.o
 

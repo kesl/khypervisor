@@ -13,5 +13,5 @@ main.o: main.c
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c main.c
 
 clean:
-	rm *.o
+	rm -f *.o
 

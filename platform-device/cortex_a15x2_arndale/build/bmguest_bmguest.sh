@@ -4,11 +4,12 @@ export TARGET_PRODUCT="cortex_a15x2_arndale"
 export GUEST_COUNT=2
 
 export HYPERVISOR_BIN="hvc-man-switch.bin"
-export HYPERVISOR_BUILD_SCRIPT="make clean && make"
+export HYPERVISOR_BUILD_SCRIPT="make clean && \
+make CROSS_COMPILE=arm-linux-gnueabihf-"
 export HYPERVISOR_CLEAN_SCRIPT="make clean"
 
 export UBOOT_DIR="u-boot-native"
-export UBOOT_BIN="u-boot.bin"
+export UBOOT="u-boot.bin"
 export UBOOT_BUILD_SCRIPT="make arndale5250 CROSS_COMPILE=arm-none-eabi-"
 export UBOOT_CLEAN_SCRIPT="make clean"
 

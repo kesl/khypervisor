@@ -37,7 +37,7 @@ force:
 
 clean:
 	for i in $(DIRS) ; do make -C $$i clean; done 
-	rm $(BIN_FILE).elf 
-	rm $(BIN_FILE).map
-	rm $(BIN_FILE).dis
-	rm $(BIN_FILE).bin
+	rm -f $(BIN_FILE).elf
+	rm -f $(BIN_FILE).map
+	rm -f $(BIN_FILE).dis
+	rm -f $(BIN_FILE).bin

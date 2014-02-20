@@ -5,7 +5,8 @@ export TARGET_PRODUCT="cortex_a15x2_arndale"
 export GUEST_COUNT=2
 
 export HYPERVISOR_BIN="hvc-man-switch.bin"
-export HYPERVISOR_BUILD_SCRIPT="make clean && make LINUX=y RTOS=y"
+export HYPERVISOR_BUILD_SCRIPT="make clean && \
+make LINUX=y RTOS=y CROSS_COMPILE=arm-linux-gnueabihf-"
 export HYPERVISOR_CLEAN_SCRIPT="make clean"
 
 export UBOOT_DIR="u-boot-native"

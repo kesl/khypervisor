@@ -12,5 +12,5 @@ serial.o : serial.c
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c serial.c
 	
 clean:
-	rm *.o
+	rm -f *.o
 

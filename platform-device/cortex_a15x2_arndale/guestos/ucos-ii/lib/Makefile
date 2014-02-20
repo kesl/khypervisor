@@ -24,7 +24,7 @@ printf.o : printf.c
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c printf.c
 
 clean:
-	rm *.o
-	rm *.a
+	rm -f *.o
+	rm -f *.a
 
 

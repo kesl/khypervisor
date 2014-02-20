@@ -5,7 +5,8 @@ export TARGET_PRODUCT="cortex_a15x2_rtsm"
 export GUEST_COUNT=2
 
 export HYPERVISOR_BIN="hvc-man-switch.axf"
-export HYPERVISOR_BUILD_SCRIPT="make clean && make"
+export HYPERVISOR_BUILD_SCRIPT="make clean && \
+make CROSS_COMPILE=arm-linux-gnueabihf-"
 export HYPERVISOR_CLEAN_SCRIPT="make clean"
 
 export UBOOT_DIR=""
