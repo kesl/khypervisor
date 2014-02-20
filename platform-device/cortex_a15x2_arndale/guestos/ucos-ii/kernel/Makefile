@@ -17,6 +17,6 @@ ucos_ii.o: $(INCLUDES)/ucos_ii.h						\
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c ucos_ii.c
 
 clean:
-	rm *.o
-	rm *.a
+	rm -f *.o
+	rm -f *.a
 
