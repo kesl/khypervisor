@@ -29,7 +29,7 @@ $ git submodule update
 $ ./scripts/apply_patch.sh
 </pre>
 
-# How to test RTOSguset + linux guest
+# How to test RTOS guset + linux guest
 
 ## Build bootloader
 <pre>
