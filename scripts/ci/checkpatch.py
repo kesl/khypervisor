@@ -12,7 +12,8 @@ ROOT_DIR = os.path.dirname(TRUNK_DIR)
 PATCH_FILE = "pull_request.patch"
 
 def GetPullRequestPatch() :
-    url = str(os.getenv('GIT_URL')) + "pull/" + str(os.getenv('ghprbPullId')) + ".patch"
+    url = str(os.getenv('GIT_URL')) + "pull/"
+    url += str(os.getenv('ghprbPullId')) + ".patch"
     print url
     u = urllib2.urlopen(url)
     patch_file = open(PATCH_FILE, 'w')
@@ -72,13 +73,12 @@ def CheckPatch(fname, verbose=False):
 
     return result
 
- 
 def RunPullRequestPatch():
     '''Run the checkpatch.pl script'''
     GetPullRequestPatch()
     error_count, warning_count, check_count = 0, 0, 0
     fname = PATCH_FILE
-    
+
     result = CheckPatch(fname, 1)
     if not result.ok:
         error_count += result.errors
@@ -96,4 +96,3 @@ if __name__ == '__main__':
     print 'checkpatch for pull request'
     os.environ["ghprbPullId"] = "46"
     RunPullRequestPatch()
-    
