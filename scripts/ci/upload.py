@@ -80,7 +80,7 @@ def UploadNightly(server_ip, user, release_dir, product_name):
         return 1
 
     # Sunday is 6
-    if int(weekday) == 4 :
+    if int(weekday) == 6 :
         # create remote directory for weekly images
         weekly_create_cmd = "ssh " + user + "@" + server_ip + " \"mkdir -p "
         weekly_create_cmd += release_dir + "/" + product_name + "/weekly-image/"
