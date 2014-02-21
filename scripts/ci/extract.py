@@ -47,11 +47,11 @@ def ExtractImage():
     if (os.getenv('UBOOT_DIR') != "") :
         print 'copy bootloader image'
         bootloader_image = str(os.getenv('UBOOT_DIR'))
-        bootloader_image = bootloader_image + "/" + str(os.getenv('UBOOT_BIN'))
+        bootloader_image = bootloader_image + "/" + str(os.getenv('UBOOT'))
         try:
             shutil.copy2(target_dir + "/" + bootloader_image, image_dir + "/")
         except IOError, e:
-            print "Unable to copy file. %s" % guest_image
+            print "Unable to copy file. %s" % bootloader_image
             return False
 
     print '@@ extract done@@'
