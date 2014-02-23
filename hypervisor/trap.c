@@ -5,7 +5,7 @@
 #include "gic.h"
 #include "sched_policy.h"
 #include "trap_dabort.h"
-
+#define DEBUG
 #include <log/print.h>
 
 /* By holding the address to the saved regs struct, 
@@ -96,24 +96,68 @@ static void _trap_dump_bregs(void) {
 #define TRAP_EC_NON_ZERO_DATA_ABORT_FROM_HYP_MODE   0x25
 
 // HSR Bit Extraction.
-#define HSR_EC_ZERO  0xC0000000
+#define HSR_EC_ZERO  	0xC0000000
 #define EXTRACT_EC_ZERO 30
-#define HSR_EC_BIT  0xFC000000
-#define EXTRACT_EC 26
-#define HSR_IL_BIT  0x2000000
-#define EXTRACT_IL 25
-#define HSR_ISS_BIT  0x1FFFFFF
+#define HSR_EC_BIT  	0xFC000000
+#define EXTRACT_EC 		26
+#define HSR_IL_BIT  	0x02000000
+#define EXTRACT_IL 		25
+#define HSR_ISS_BIT  	0x01FFFFFF
 
 hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs) {
 	unsigned int hsr = read_hsr();
-	unsigned int iss = hsr & 0x1FFFFFF;
-	unsigned int ec = (hsr >> 26);
+	unsigned int ec = (hsr & HSR_EC_BIT) >> EXTRACT_EC;
+	unsigned int il = (hsr & HSR_IL_BIT) >> EXTRACT_IL;
+	unsigned int iss = hsr & HSR_ISS_BIT;
+
 
 	_trap_hyp_saved_regs = regs;
 
 	printh("[hvc] _hyp_hvc_service: enter\n\r");
 
 	switch (ec) {
+	case TRAP_EC_ZERO_UNKNOWN:
+		printh("Unknown reason: 0x%08x\n", hsr);
+		// Do nothing.
+		break;
+	case TRAP_EC_ZERO_WFI_WFE:
+		printh("Trapped WFI or WFE instruction: 0x%08x\n", hsr);
+		// emulate_wfi_wfe (iss, il);
+		break;
+	case TRAP_EC_ZERO_MCR_MRC_CP15:
+		printh("Trapped MCR or MRC access to CP15: 0x%08x\n", hsr);
+		// emulate_mcr_mrc_cp15(iss, il);
+		break;
+	case TRAP_EC_ZERO_MCRR_MRRC_CP15:
+		printh("Trapped MCRR or MRRC access to CP15: 0x%08x\n", hsr);
+		// Not yet.
+		break;
+	case TRAP_EC_ZERO_MCR_MRC_CP14:
+		printh("Trapped MCR or MRC access to CP14: 0x%08x\n", hsr);
+		// emulate_mcr_mrc_cp14(iss, il);
+		break;
+	case TRAP_EC_ZERO_LDC_STC_CP14:
+		printh("Trapped LDC or STC access to CP14: 0x%08x\n", hsr);
+		// Not yet.
+		break;
+	case TRAP_EC_ZERO_HCRTR_CP0_CP13:
+		printh("HCPTR-trapped access to CP0-CP13: 0x%08x\n", hsr);
+		// Not yet.
+		break;
+	case TRAP_EC_ZERO_MRC_VMRS_CP10:
+		printh("Trapped MRC or VMRS access to CP10, for ID group traps: 0x%08x\n", hsr);
+		// emulate_mcr_mrc_cp10(iss, il);
+		break;
+	case TRAP_EC_ZERO_BXJ:
+		printh("Trapped BXJ instruction: 0x%08x\n", hsr);
+		break;
+	case TRAP_EC_ZERO_MRRC_CP14:
+		printh("Trapped MRRC access to CP14: 0x%08x\n", hsr);
+		break;
+	case TRAP_EC_NON_ZERO_SVC:
+		printh("Supervisor Call exception routed to Hyp mode: 0x%08x\n", hsr);
+		// Not yet.
+		break;
 	case TRAP_EC_NON_ZERO_HVC: {
 		if ((iss & 0xFFFF) == 0xFFFF) {
 			/* Internal request to stay in hyp mode */
@@ -126,15 +170,28 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs) {
 		case 0xFFFE:
 			/* hyp_ping */
 			printh("[hyp] _hyp_hvc_service:ping\n\r");
-			context_dump_regs(regs);
-			break;
+		context_dump_regs(regs);
+		break;
 		case 0xFFFD:
-			/* hsvc_yield() */
-			printh("[hyp] _hyp_hvc_service:yield\n\r");
-			context_dump_regs(regs);
-			context_switchto(sched_policy_determ_next());
-			break;
-	} break; //TRAP_EC_NON_ZERO_HVC.
+		/* hsvc_yield() */
+		printh("[hyp] _hyp_hvc_service:yield\n\r");
+		context_dump_regs(regs);
+		context_switchto(sched_policy_determ_next());
+		break;
+	}
+		break; //TRAP_EC_NON_ZERO_HVC.
+	case TRAP_EC_NON_ZERO_SMC:
+		printh("Trapped SMC instruction: 0x%08x\n", hsr);
+		// Do nothing.
+		break;
+	case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_OTHER_MODE:
+		printh("Prefetch Abort routed to Hyp mode: 0x%08x\n", hsr);
+		// Not yet.
+		break;
+	case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_HYP_MODE:
+		printh("Prefetch Abort taken from Hyp mode: 0x%08x\n", hsr);
+		// Not yet.
+		break;
 	case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE: {
 		/* Handle data abort at the priority */
 		printh("[hyp] data abort handler: hsr.iss=%x\n", iss);
@@ -148,19 +205,18 @@ hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs) {
 			hyp_abort_infinite();
 		}
 		_trap_dump_bregs();
-	}
-		break; //TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE.
-	case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_OTHER_MODE:
-		printh("[hyp]: prefetch abort routed to Hyp mode\n");
-		break; // TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_OTHER_MODE.
+	} break; //TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE.
+	case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_HYP_MODE:
+		printh("Data Abort taken from Hyp mode: 0x%08x\n", hsr);
+		// Not yet.
+		break;
 	default:
 		printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
 		printh("[hyp] hsr.ec= %x\n", ec);
 		printh("[hyp] hsr= %x\n", hsr);
 		context_dump_regs(regs);
 		_trap_dump_bregs();
-		hyp_abort_infinite()
-		;
+		hyp_abort_infinite();
 		break;
 	} // End of switch(ec) statement.
 
