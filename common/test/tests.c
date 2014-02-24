@@ -21,7 +21,6 @@
 hvmm_status_t hvmm_tests_main(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-
     /* Entry point for sequence of test code */
 #ifdef TESTS_ENABLE_MALLOC
     result = hvmm_tests_malloc();
@@ -39,13 +38,11 @@ hvmm_status_t hvmm_tests_main(void)
     result = hvmm_tests_vdev_timer();
 #endif
 #ifdef TESTS_ENABLE_SP804
-    result = hvmm_tests_sp804_timer(); 
+    result = hvmm_tests_sp804_timer();
 #endif
-
 #ifdef TESTS_VDEV
     result = hvmm_tests_vdev();
 #endif
-
 #ifdef TESTS_VDEV_VGICD
     result = hvmm_tests_vdev_gicd();
 #endif

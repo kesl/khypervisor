@@ -29,7 +29,7 @@
 #define ATTR_IDX_DEV_CACHED    WRITEBACK
 
 /******************************************************************************
- * ARMv7-A LPAE pagetables: 3-level trie, mapping 40-bit input to
+ * ARMv7-A LPAE pagetables:3-level trie, mapping 40-bit input to
  * 40-bit output addresses.  Tables at all levels have 512 64-bit entries
  * (i.e. are 4Kb long).
  *
@@ -41,64 +41,64 @@
 
 typedef struct {
     /* These are used in all kinds of entry. */
-    unsigned long valid:1;      /* Valid mapping */
-    unsigned long table:1;      /* == 1 in 4k map entries too */
+    unsigned long valid:1;     /* Valid mapping */
+    unsigned long table:1;     /* == 1 in 4k map entries too */
 
     /* These ten bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long ai:3;         /* Attribute Index */
-    unsigned long ns:1;         /* Not-Secure */
-    unsigned long user:1;       /* User-visible */
-    unsigned long ro:1;         /* Read-Only */
-    unsigned long sh:2;         /* Shareability */
-    unsigned long af:1;         /* Access Flag */
-    unsigned long ng:1;         /* Not-Global */
+    unsigned long ai:3;        /* Attribute Index */
+    unsigned long ns:1;        /* Not-Secure */
+    unsigned long user:1;      /* User-visible */
+    unsigned long ro:1;        /* Read-Only */
+    unsigned long sh:2;        /* Shareability */
+    unsigned long af:1;        /* Access Flag */
+    unsigned long ng:1;        /* Not-Global */
 
     /* The base address must be appropriately aligned for Block entries */
-    unsigned long base:28;      /* Base address of block or next table */
-    unsigned long sbz:12;       /* Must be zero */
+    unsigned long base:28;     /* Base address of block or next table */
+    unsigned long sbz:12;      /* Must be zero */
 
     /* These seven bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long hint:1;       /* In a block of 16 contiguous entries */
-    unsigned long pxn:1;        /* Privileged-XN */
-    unsigned long xn:1;         /* eXecute-Never */
-    unsigned long avail:4;      /* Ignored by hardware */
+    unsigned long hint:1;      /* In a block of 16 contiguous entries */
+    unsigned long pxn:1;       /* Privileged-XN */
+    unsigned long xn:1;        /* eXecute-Never */
+    unsigned long avail:4;     /* Ignored by hardware */
 
     /* These 5 bits are only used in Table entries and are ignored in
      * Block entries */
-    unsigned long pxnt:1;       /* Privileged-XN */
-    unsigned long xnt:1;        /* eXecute-Never */
-    unsigned long apt:2;        /* Access Permissions */
-    unsigned long nst:1;        /* Not-Secure */
+    unsigned long pxnt:1;      /* Privileged-XN */
+    unsigned long xnt:1;       /* eXecute-Never */
+    unsigned long apt:2;       /* Access Permissions */
+    unsigned long nst:1;       /* Not-Secure */
 } __attribute__((__packed__)) lpae_pt_t;
 
 /* The p2m tables have almost the same layout, but some of the permission
  * and cache-control bits are laid out differently (or missing) */
 typedef struct {
     /* These are used in all kinds of entry. */
-    unsigned long valid:1;      /* Valid mapping */
-    unsigned long table:1;      /* == 1 in 4k map entries too */
+    unsigned long valid:1;     /* Valid mapping */
+    unsigned long table:1;     /* == 1 in 4k map entries too */
 
     /* These ten bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long mattr:4;      /* Memory Attributes */
-    unsigned long read:1;       /* Read access */
-    unsigned long write:1;      /* Write access */
-    unsigned long sh:2;         /* Shareability */
-    unsigned long af:1;         /* Access Flag */
+    unsigned long mattr:4;     /* Memory Attributes */
+    unsigned long read:1;      /* Read access */
+    unsigned long write:1;     /* Write access */
+    unsigned long sh:2;        /* Shareability */
+    unsigned long af:1;        /* Access Flag */
     unsigned long sbz4:1;
 
     /* The base address must be appropriately aligned for Block entries */
-    unsigned long base:28;      /* Base address of block or next table */
+    unsigned long base:28;     /* Base address of block or next table */
     unsigned long sbz3:12;
 
     /* These seven bits are only used in Block entries and are ignored
      * in Table entries. */
-    unsigned long hint:1;       /* In a block of 16 contiguous entries */
+    unsigned long hint:1;      /* In a block of 16 contiguous entries */
     unsigned long sbz2:1;
-    unsigned long xn:1;         /* eXecute-Never */
-    unsigned long avail:4;      /* Ignored by hardware */
+    unsigned long xn:1;        /* eXecute-Never */
+    unsigned long avail:4;     /* Ignored by hardware */
 
     unsigned long sbz1:5;
 } __attribute__((__packed__)) lpae_p2m_t;
@@ -110,13 +110,13 @@ typedef struct {
  */
 typedef struct {
     /* These are used in all kinds of entry. */
-    unsigned long valid:1;      /* Valid mapping */
-    unsigned long table:1;      /* == 1 in 4k map entries too */
+    unsigned long valid:1;     /* Valid mapping */
+    unsigned long table:1;     /* == 1 in 4k map entries too */
 
     unsigned long pad2:10;
 
     /* The base address must be appropriately aligned for Block entries */
-    unsigned long base:28;      /* Base address of block or next table */
+    unsigned long base:28;     /* Base address of block or next table */
 
     unsigned long pad1:24;
 } __attribute__((__packed__)) lpae_walk_t;
@@ -139,17 +139,17 @@ typedef enum {
     LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,
 } lpaed_stage2_memattr_t;
 
-lpaed_t hvmm_mm_lpaed_l1_block( uint64_t pa, uint8_t attr_idx );
-lpaed_t hvmm_mm_lpaed_l2_block( uint64_t pa, lpaed_stage2_memattr_t mattr );
-lpaed_t hvmm_mm_lpaed_l1_table( uint64_t pa);
-lpaed_t hvmm_mm_lpaed_l2_table( uint64_t pa);
-lpaed_t hvmm_mm_lpaed_l3_table( uint64_t pa, uint8_t attr_idx, uint8_t valid );
-void lpaed_stage1_conf_l3_table( lpaed_t *ttbl3, uint64_t baddr, uint8_t valid );
-void lpaed_stage1_disable_l3_table( lpaed_t *ttbl2 );
-void lpaed_stage2_map_page( lpaed_t *pte, uint64_t pa, lpaed_stage2_memattr_t mattr );
-void lpaed_stage2_conf_l1_table( lpaed_t *ttbl1, uint64_t baddr, uint8_t valid );
-void lpaed_stage2_conf_l2_table( lpaed_t *ttbl2, uint64_t baddr, uint8_t valid );
-void lpaed_stage2_enable_l2_table( lpaed_t *ttbl2 );
-void lpaed_stage2_disable_l2_table( lpaed_t *ttbl2 );
+lpaed_t hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
+lpaed_t hvmm_mm_lpaed_l2_block(uint64_t pa, lpaed_stage2_memattr_t mattr);
+lpaed_t hvmm_mm_lpaed_l1_table(uint64_t pa);
+lpaed_t hvmm_mm_lpaed_l2_table(uint64_t pa);
+lpaed_t hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx, uint8_t valid);
+void lpaed_stage1_conf_l3_table(lpaed_t *ttbl3, uint64_t baddr, uint8_t valid);
+void lpaed_stage1_disable_l3_table(lpaed_t *ttbl2);
+void lpaed_stage2_map_page(lpaed_t *pte, uint64_t pa, lpaed_stage2_memattr_t mattr);
+void lpaed_stage2_conf_l1_table(lpaed_t *ttbl1, uint64_t baddr, uint8_t valid);
+void lpaed_stage2_conf_l2_table(lpaed_t *ttbl2, uint64_t baddr, uint8_t valid);
+void lpaed_stage2_enable_l2_table(lpaed_t *ttbl2);
+void lpaed_stage2_disable_l2_table(lpaed_t *ttbl2);
 
 #endif
