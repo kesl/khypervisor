@@ -42,6 +42,6 @@ hvmm_status_t pwm_timer_enable_irq();
 /* Adds callback funtion. Called when occur timer interrupt */
 hvmm_status_t pwm_timer_set_callback(pwm_timer_callback_t callback);
 hvmm_status_t hvmm_tests_pwm_timer(void);
-void interrupt_pwmtimer(int irq, void *pregs, void *pdata );
+void interrupt_pwmtimer(int irq, void *pregs, void *pdata);
 
 #endif

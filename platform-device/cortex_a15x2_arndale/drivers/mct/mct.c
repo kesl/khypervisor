@@ -6,18 +6,16 @@ static inline uint32_t exynos5_mct_read(uint32_t offset)
 {
     return vmm_readl((void *) EXYNOS5_MCT_BASE + offset);
 }
-static void exynos5_mct_write(uint32_t value, uint32_t offset){
-
+static void exynos5_mct_write(uint32_t value, uint32_t offset)
+{
     uint32_t stat_addr;
     uint32_t mask;
     uint32_t i;
     exynos5_sys_timer = (void *)EXYNOS5_MCT_BASE;
-
     vmm_writel(value, exynos5_sys_timer + offset);
-
-    if(likely(offset >= EXYNOS5_MCT_L_BASE(0))){
+    if (likely(offset >= EXYNOS5_MCT_L_BASE(0))) {
         uint32_t base = offset & EXYNOS5_MCT_L_MASK;
-        switch( offset & ~EXYNOS5_MCT_L_MASK){
+        switch (offset & ~EXYNOS5_MCT_L_MASK) {
             case (uint32_t) MCT_L_TCON_OFFSET:
                 stat_addr = base + MCT_L_WSTAT_OFFSET;
                 mask = 1 << 3;
@@ -33,7 +31,7 @@ static void exynos5_mct_write(uint32_t value, uint32_t offset){
             default:
                 return;
         }
-    }else{
+    } else {
         switch (offset) {
             case (uint32_t) EXYNOS5_MCT_G_TCON:
                 stat_addr = EXYNOS5_MCT_G_WSTAT;
@@ -73,7 +71,8 @@ static void exynos5_mct_write(uint32_t value, uint32_t offset){
     }
 }
 
-void mct_init(void){
+void mct_init(void)
+{
     uint32_t reg;
     exynos5_mct_write(0, EXYNOS5_MCT_G_CNT_L);
     exynos5_mct_write(0, EXYNOS5_MCT_G_CNT_U);

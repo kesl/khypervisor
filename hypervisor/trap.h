@@ -1,7 +1,7 @@
 #ifndef __TRAP_H__
 #define __TRAP_H__
 
-// HSR Exception Class.
+/* HSR Exception Class. */
 #define TRAP_EC_ZERO_UNKNOWN        0x00
 #define TRAP_EC_ZERO_WFI_WFE        0x01
 #define TRAP_EC_ZERO_MCR_MRC_CP15   0x03
@@ -20,7 +20,7 @@
 #define TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE 0x24
 #define TRAP_EC_NON_ZERO_DATA_ABORT_FROM_HYP_MODE   0x25
 
-// HSR Bit Extraction.
+/* HSR Bit Extraction. */
 #define HSR_EC_ZERO     0xC0000000
 #define EXTRACT_EC_ZERO 30
 #define HSR_EC_BIT      0xFC000000
@@ -29,5 +29,5 @@
 #define EXTRACT_IL      25
 #define HSR_ISS_BIT     0x01FFFFFF
 
-struct arch_regs * trap_saved_regs(void);
+struct arch_regs *trap_saved_regs(void);
 #endif

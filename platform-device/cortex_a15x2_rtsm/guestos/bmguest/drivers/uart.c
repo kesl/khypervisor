@@ -11,38 +11,37 @@ void uart_init(void)
        Currently, intialized by Hypervisor for FastModels RTSM_VE, as a workaround
      */
     /* ibrd 0x24 */
-    //UART_BASE[9] = 0x10;
-    //UART_BASE[12] = 0xc300;
+    /* UART_BASE[9] = 0x10; */
+    /* UART_BASE[12] = 0xc300; */
 }
 
 void uart_print(char *str)
 {
     char *pUART = (char *) UART_BASE;
-    while(*str) {
-            *pUART = *str++;
+    while (*str) {
+        *pUART = *str++;
     }
 }
 
-void uart_putc(char c )
+void uart_putc(char c)
 {
     volatile char *pUART = (char *) UART_BASE;
-	*pUART = c;
+    *pUART = c;
 }
 
-void uart_print_hex32( unsigned int v )
+void uart_print_hex32(unsigned int v)
 {
-	unsigned int mask8 = 0xF;
-	unsigned int c;
-	int i;
-	uart_print("0x");
-	
-	for ( i = 7; i >= 0; i-- ) {
-		c = (( v >> (i * 4) ) & mask8);
-		if ( c < 10 ) {
-			c += '0';
-		} else {
-			c += 'A' - 10;
-		}
-		uart_putc( (char) c );
-	}
+    unsigned int mask8 = 0xF;
+    unsigned int c;
+    int i;
+    uart_print("0x");
+    for (i = 7; i >= 0; i--) {
+        c = ((v >> (i * 4)) & mask8);
+        if (c < 10) {
+            c += '0';
+        } else {
+            c += 'A' - 10;
+        }
+        uart_putc((char) c);
+    }
 }
