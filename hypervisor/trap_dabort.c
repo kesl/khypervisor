@@ -27,21 +27,21 @@
  * - ISS[8] is a cache maintenance. For synchronous fault, it should need a cache maintenance.
  * - ISS[7] is a stage 2 fault for a stage 1 translation table walk
  * - ISS[6] is synchronous abort that was caused by a write or read operation
- * - ISS[5:0] is a data fault status code(DFSC) 
- * Additional register we should reference a DFSR 
+ * - ISS[5:0] is a data fault status code(DFSC)
+ * Additional register we should reference a DFSR
  */
 
-#define ISS_VALID						0x01000000
+#define ISS_VALID                        0x01000000
 
-#define ISS_FSR_MASK              		0x0000003F
-#define ISS_TRANS_FAULT_MASK			0x07
-#define TRANS_FAULT_LEVEL1				0x05
-#define TRANS_FAULT_LEVEL2				0x06
-#define TRANS_FAULT_LEVEL3				0x07
-#define ACCESS_FAULT_LEVEL0				0x08
-#define ACCESS_FAULT_LEVEL1				0x09
-#define ACCESS_FAULT_LEVEL2				0x0A
-#define ACCESS_FAULT_LEVEL3				0x0B
+#define ISS_FSR_MASK                      0x0000003F
+#define ISS_TRANS_FAULT_MASK            0x07
+#define TRANS_FAULT_LEVEL1                0x05
+#define TRANS_FAULT_LEVEL2                0x06
+#define TRANS_FAULT_LEVEL3                0x07
+#define ACCESS_FAULT_LEVEL0                0x08
+#define ACCESS_FAULT_LEVEL1                0x09
+#define ACCESS_FAULT_LEVEL2                0x0A
+#define ACCESS_FAULT_LEVEL3                0x0B
 
 #define ISS_WNR_SHIFT                   6
 #define ISS_WNR                         (1 << ISS_WNR_SHIFT)
@@ -53,8 +53,8 @@
 #define ISS_SAS_WORD                    0x2
 #define ISS_SAS_RESERVED                0x3
 
-#define ISS_SSE_SHIFT					21
-#define ISS_SSE_MASK					(0x1 << ISS_SSE_SHIFT)
+#define ISS_SSE_SHIFT                    21
+#define ISS_SSE_MASK                    (0x1 << ISS_SSE_SHIFT)
 
 #define ISS_SRT_SHIFT                   16
 #define ISS_SRT_MASK                    (0xf << ISS_SRT_SHIFT)
@@ -72,57 +72,49 @@
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-	//far, fipa, il
-	uint32_t far = read_hdfar();
-	uint32_t fipa;
-	uint32_t sas, srt, wnr;
-
+    /* far, fipa, il */
+    uint32_t far = read_hdfar();
+    uint32_t fipa;
+    uint32_t sas, srt, wnr;
     HVMM_TRACE_ENTER();
-
-    printh( "trap_hvc_dabort: hdfar:%x hpfar:%x\n", far, read_hpfar() );
-	fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
-	fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
-	fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
-	sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
-	srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
-	wnr = (iss & ISS_WNR) ? 1 : 0;
-
-    if ( (iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8) ) {
+    printh("trap_hvc_dabort: hdfar:%x hpfar:%x\n", far, read_hpfar());
+    fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
+    fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
+    fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
+    sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
+    srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
+    wnr = (iss & ISS_WNR) ? 1 : 0;
+    if ((iss & ISS_VALID) && ((iss & ISS_FSR_MASK) < 8)) {
         /*
            vdev emulates read/write, update pc, update destination register
          */
-        result = vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs );
-        if ( result != HVMM_STATUS_SUCCESS ) {
-            printh( "trap_dabort: emulation failed guest pc:%x\n", regs->pc );
-
+        result = vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs);
+        if (result != HVMM_STATUS_SUCCESS) {
+            printh("trap_dabort: emulation failed guest pc:%x\n", regs->pc);
             /* Let the guest continue by increasing pc */
             regs->pc += 4;
         }
     } else {
-        printh( "trap_dboart: fipa=0x%x\n", fipa );
+        printh("trap_dboart: fipa=0x%x\n", fipa);
         result = HVMM_STATUS_BAD_ACCESS;
     }
-    if ( result != HVMM_STATUS_SUCCESS ) {
-        printh( "- INSTR: %s[%d] r%d [%x]\n", wnr ? "str" : "ldr", (sas + 1) * 8, srt, fipa );
+    if (result != HVMM_STATUS_SUCCESS) {
+        printh("- INSTR: %s[%d] r%d [%x]\n", wnr ? "str" : "ldr", (sas + 1) * 8, srt, fipa);
     }
-
-	switch (iss & ISS_FSR_MASK) {
-		case TRANS_FAULT_LEVEL1:
-		case TRANS_FAULT_LEVEL2:
-		case TRANS_FAULT_LEVEL3:
-		    break;
-
-		case ACCESS_FAULT_LEVEL1:
-		case ACCESS_FAULT_LEVEL2:
-		case ACCESS_FAULT_LEVEL3:
-            {
-			    printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
-            }
-		    break;
-		default:
-		break;
-	}
+    switch (iss & ISS_FSR_MASK) {
+    case TRANS_FAULT_LEVEL1:
+    case TRANS_FAULT_LEVEL2:
+    case TRANS_FAULT_LEVEL3:
+        break;
+    case ACCESS_FAULT_LEVEL1:
+    case ACCESS_FAULT_LEVEL2:
+    case ACCESS_FAULT_LEVEL3: {
+        printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
+    }
+    break;
+    default:
+        break;
+    }
     HVMM_TRACE_EXIT();
-
     return result;
 }

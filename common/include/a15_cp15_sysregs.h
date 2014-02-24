@@ -3,7 +3,7 @@
 
 #include "arch_types.h"
 
-/* 
+/*
  * Cortex-A15 Implementation Defined Registers
  * ACTLR
  * L2CTLR
@@ -25,5 +25,5 @@
 
 #define read_cbar()              ({ uint32_t rval; asm volatile(\
                                 " mrc     p15, 4, %0, c15, c0, 0\n\t" \
-                                : "=r" (rval) : : "memory", "cc"); rval;})
+                                : "=r" (rval) : : "memory", "cc"); rval; })
 #endif

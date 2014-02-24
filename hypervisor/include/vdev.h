@@ -17,13 +17,13 @@ typedef enum {
  * @pvalue  address to input value (if write) or output value (if read)
  * return: HVMM_STATUS_SUCCESS if successful, failed otherwise
  */
-typedef hvmm_status_t (* vdev_callback_t)(uint32_t wnr, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size);
+typedef hvmm_status_t (*vdev_callback_t)(uint32_t wnr, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size);
 
 typedef struct {
-	char *name;
-	unsigned int base;
-	unsigned int size;
-	vdev_callback_t handler;
+    char *name;
+    unsigned int base;
+    unsigned int size;
+    vdev_callback_t handler;
 } vdev_info_t;
 
 void vdev_init(void);
@@ -31,4 +31,4 @@ int register_vdev(void);
 hvmm_status_t vdev_reg_device(vdev_info_t *new_vdev);
 hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr, vdev_access_size_t access_size, uint32_t srt, struct arch_regs *regs);
 
-#endif //__VDEV_H_
+#endif /* __VDEV_H_ */
