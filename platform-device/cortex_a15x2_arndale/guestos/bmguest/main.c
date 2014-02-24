@@ -9,14 +9,12 @@
 
 int main()
 {
-    uart_print(GUEST_LABEL); uart_print("=== Starting platform main n\r");
-
+    uart_print(GUEST_LABEL);
+    uart_print("=== Starting platform main n\r");
 #ifdef TESTS_ENABLE_PWM_TIMER
     hvmm_tests_pwm_timer();
 #endif
-
     while (1)
         ;
-
     return 0;
 }

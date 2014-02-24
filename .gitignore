@@ -10,3 +10,5 @@ modelsemi.lds
 linux-system-semi.axf
 TAGS
 cscope.out
+.cproject
+.project

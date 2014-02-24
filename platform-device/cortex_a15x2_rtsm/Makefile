@@ -39,6 +39,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/generic_timer/generic_timer.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/vgic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/trap.o					\
+	$(HYPERVISOR_SOURCE_DIR)/emulate_trapped_inst.o \
 	$(HYPERVISOR_SOURCE_DIR)/sched_policy.o			\
 	$(HYPERVISOR_SOURCE_DIR)/trap_dabort.o			\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev.o			\

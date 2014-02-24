@@ -1,4 +1,4 @@
-/* 
+/*
  *  BOARD param
  */
 #define CFG_BOARD_RTSM_VE_CA15
@@ -12,7 +12,7 @@
  */
 #define CFG_GIC_BASE_PA   0x2c000000
 
-#define CFG_MACHINE_NUMBER 2272  //RTSM
+#define CFG_MACHINE_NUMBER 2272  /* RTSM */
 
 #define CFG_GUEST0_DEVICE_MEMORY \
 { "sysreg", 0x1C010000, 0x1C010000,   0x1000, LPAED_STAGE2_MEMATTR_DM },        \
