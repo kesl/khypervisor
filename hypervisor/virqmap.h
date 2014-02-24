@@ -12,14 +12,14 @@
  * TODO(wonseok): need to change a structure when we support a sharing device among guests.
  */
 struct virqmap_entry {
-    vmid_t vmid;      
+    vmid_t vmid;
     uint32_t virq;
 };
 
 const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq);
 hvmm_status_t virqmap_init(void);
 uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq);
-void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid, uint32_t istatus, uint8_t word_offset );
+void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid, uint32_t istatus, uint8_t word_offset);
 
 #define VIRQMAP_ENTRY_NOTFOUND  0
 

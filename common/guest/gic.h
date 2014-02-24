@@ -19,6 +19,6 @@ hvmm_status_t gic_disable_irq(uint32_t irq);
 hvmm_status_t gic_init(void);
 volatile uint32_t *gic_vgic_baseaddr(void);
 
-hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler, void *pdata );
+hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler, void *pdata);
 
 #endif

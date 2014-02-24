@@ -61,14 +61,12 @@ static inline void generic_timer_reg_write(int reg, uint32_t val)
         uart_print("Trying to write invalid generic-timer register\n\r");
         break;
     }
-
     isb();
 }
 
 static inline uint32_t generic_timer_reg_read(int reg)
 {
     uint32_t val;
-
     switch (reg) {
     case GENERIC_TIMER_REG_FREQ:
         val = read_cntfrq();
@@ -101,7 +99,6 @@ static inline uint32_t generic_timer_reg_read(int reg)
         uart_print("Trying to read invalid generic-timer register\n\r");
         break;
     }
-
     return val;
 }
 
@@ -124,14 +121,12 @@ static inline void generic_timer_reg_write64(int reg, uint64_t val)
         uart_print("Trying to write invalid generic-timer register\n\r");
         break;
     }
-
     isb();
 }
 
 static inline uint64_t generic_timer_reg_read64(int reg)
 {
     uint64_t val;
-
     switch (reg) {
     case GENERIC_TIMER_REG_HYP_CVAL:
         val = read_cnthp_cval();
@@ -149,7 +144,6 @@ static inline uint64_t generic_timer_reg_read64(int reg)
         uart_print("Trying to read invalid generic-timer register\n\r");
         break;
     }
-
     return val;
 }
 #endif

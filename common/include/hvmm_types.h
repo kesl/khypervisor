@@ -7,15 +7,15 @@
 #define VIRQ_INVALID    PIRQ_INVALID
 
 typedef enum {
-	HVMM_STATUS_SUCCESS = 0,
-	HVMM_STATUS_UNKNOWN_ERROR = -1,
-	HVMM_STATUS_UNSUPPORTED_FEATURE = -2,
-	HVMM_STATUS_BUSY = -3,
+    HVMM_STATUS_SUCCESS = 0,
+    HVMM_STATUS_UNKNOWN_ERROR = -1,
+    HVMM_STATUS_UNSUPPORTED_FEATURE = -2,
+    HVMM_STATUS_BUSY = -3,
     HVMM_STATUS_BAD_ACCESS = -4,
     HVMM_STATUS_NOT_FOUND = -5,
     HVMM_STATUS_IGNORED = -6,
 } hvmm_status_t;
 
-typedef uint8_t vmid_t; 
+typedef uint8_t vmid_t;
 #endif
 

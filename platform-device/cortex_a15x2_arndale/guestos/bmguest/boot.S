@@ -4,14 +4,14 @@
  * Copyright (C) 2013 KESL. All rights reserved.
  *
  */
-    .syntax unified
-    .arch_extension sec
-    .arch_extension virt
-    .text
+.syntax unified
+.arch_extension sec
+.arch_extension virt
+.text
 
-    @ Guest start code
+@ Guest start code
 .global guest_start
 guest_start:
 
-    b   common_guest_entry
-.type guest_start, %function
+b   common_guest_entry
+.type guest_start, % function
