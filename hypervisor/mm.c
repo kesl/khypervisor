@@ -87,8 +87,6 @@
 #define HTCR_IRGN0_SHIFT                                8
 #define HTCR_T0SZ_MASK                                  0x00000003
 #define HTCR_T0SZ_SHIFT                                 0
-
-aadf
 /* PL2 Stage 1 Level 1 */
 #define HMM_L1_PTE_NUM  512
 
