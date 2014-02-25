@@ -61,7 +61,6 @@ def BuildGuests(product):
     guest_count = int(os.getenv('GUEST_COUNT'))
     print "guest_count" + str(guest_count)
     for n in range(0, guest_count):
-        guest_count = int(os.getenv('GUEST_COUNT'))
         guest_dir_string = "GUEST" + str(n) + "_DIR"
         guest_bin_string = "GUEST" + str(n) + "_BIN"
         guest_script_string = "GUEST" + str(n) + "_BUILD_SCRIPT"
