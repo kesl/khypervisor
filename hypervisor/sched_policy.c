@@ -7,5 +7,6 @@ vmid_t sched_policy_determ_next(void)
     if (next == VMID_INVALID) {
         next = context_first_vmid();
     }
+
     return next;
 }
