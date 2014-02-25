@@ -8,7 +8,6 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-
 /* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
  * Indexed by the AttrIndex bits of a LPAE entry;
  * the 8-bit fields are packed little-endian into MAIR0 and MAIR1
