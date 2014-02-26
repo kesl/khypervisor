@@ -1,16 +1,13 @@
 /*
  * Copyright (C) 2013 KESL. All rights reserved.
  */
-    .syntax unified
-    .arch_extension sec
-    .arch_extension virt
     .text
-    @ Guest start code
-.global guest_start
-guest_start:
+    @ Guest loader start code
+.global guestloader_start
+guestloader_start:
     /* Stack pointer initialization */
     @ sp  
-    ldr     sp, =guest_stacktop
+    ldr     sp, =guestloader_stacktop
     b   main
-.type guest_start, %function
+.type guestloader_start, %function
 

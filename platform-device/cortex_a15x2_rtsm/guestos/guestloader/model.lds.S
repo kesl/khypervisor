@@ -54,7 +54,7 @@ SECTIONS
  #endif
 
  . = PHYS_STACK;
- guest_stacktop = .;
+ guestloader_stacktop = .;
  . = PHYS_STACK - 0x00400000; 
- guest_stacklimit = .;
+ guestloader_stacklimit = .;
 }
