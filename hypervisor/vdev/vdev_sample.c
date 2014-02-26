@@ -9,12 +9,15 @@ struct vdev_sample_regs {
     uint32_t axis_z;
 };
 
-static vdev_info_t _vdev_info;
+static struct vdev_info _vdev_info;
 static struct vdev_sample_regs regs[NUM_GUESTS_STATIC];
 
-hvmm_status_t access_handler(uint32_t write, uint32_t offset, uint32_t *pvalue, vdev_access_size_t access_size)
+hvmm_status_t access_handler(uint32_t write, uint32_t offset,
+        uint32_t *pvalue, enum vdev_access_size access_size)
 {
-    printh("%s: %s offset:%d value:%x\n", __FUNCTION__, write ? "write" : "read", offset, write ? *pvalue : (uint32_t) pvalue);
+    printh("%s: %s offset:%d value:%x\n", __func__,
+            write ? "write" : "read", offset
+            write ? *pvalue : (uint32_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     unsigned int vmid = context_current_vmid();
     if (!write) {
@@ -61,10 +64,11 @@ hvmm_status_t vdev_sample_init(uint32_t base_addr)
     _vdev_info.size     = sizeof(struct vdev_sample_regs);
     _vdev_info.handler  = access_handler;
     result = vdev_reg_device(&_vdev_info);
-    if (result == HVMM_STATUS_SUCCESS) {
-        printh("%s: vdev registered:'%s'\n", __FUNCTION__, _vdev_info.name);
-    } else {
-        printh("%s: Unable to register vdev:'%s' code=%x\n", __FUNCTION__, _vdev_info.name, result);
-    }
+    if (result == HVMM_STATUS_SUCCESS)
+        printh("%s: vdev registered:'%s'\n", __func__, _vdev_info.name);
+    else
+        printh("%s: Unable to register vdev:'%s' code=%x\n",
+                __func__, _vdev_info.name, result);
+
     return result;
 }

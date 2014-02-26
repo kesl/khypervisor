@@ -47,7 +47,8 @@ void slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq)
         printh("vgic: setting vmid:%d slot:%d virq:%d\n", vmid, slot, virq);
         _guest_virqatslot[vmid][slot] = virq;
     } else {
-        printh("vgic: not setting invalid vmid:%d slot:%d virq:%d\n", vmid, slot, virq);
+        printh("vgic: not setting invalid vmid:%d slot:%d virq:%d\n",
+                vmid, slot, virq);
     }
 }
 
@@ -59,7 +60,8 @@ uint32_t slotvirq_getslot(vmid_t vmid, uint32_t virq)
         for (i = 0; i < VGIC_NUM_MAX_SLOTS; i++) {
             if (_guest_virqatslot[vmid][i] == virq) {
                 slot = i;
-                printh("vgic: reading vmid:%d slot:%d virq:%d\n", vmid, slot, virq);
+                printh("vgic: reading vmid:%d slot:%d virq:%d\n",
+                        vmid, slot, virq);
                 break;
             }
         }

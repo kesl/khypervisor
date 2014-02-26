@@ -21,7 +21,7 @@
 #undef HVMM_TRACE_HEX32
 #define HVMM_TRACE_ENTER()
 #define HVMM_TRACE_EXIT()
-#define HVMM_TRACE_HEX32(a,b)
+#define HVMM_TRACE_HEX32(a, b)
 #endif
 #endif
 
@@ -30,7 +30,8 @@
 
 #define VGIC_MAX_LISTREGISTERS          VGIC_NUM_MAX_SLOTS
 #define VGIC_SIGNATURE_INITIALIZED      0x45108EAD
-#define VGIC_READY()                    (_vgic.initialized == VGIC_SIGNATURE_INITIALIZED)
+#define VGIC_READY() \
+            (_vgic.initialized == VGIC_SIGNATURE_INITIALIZED)
 
 /*
  * Operations:
@@ -45,7 +46,8 @@
  *      GICH_ELSR[VIRQ/32][VIRQ%32] == 1, Free
  *      Otherwise, Used
  *
- *      - vgic_inject_virq( virq, slot, state, priority, hw, physrc, maintenance )
+ *      - vgic_inject_virq(
+ *          virq, slot, state, priority, hw, physrc, maintenance )
  *      - vgic_inject_virq_hw( virq, state, priority, pirq)
  *      - vgic_inject_virq_sw( virq, state, priority, cpuid, maintenance )
  *
@@ -53,7 +55,8 @@
  *      Check VICH_MISR
  *          [V] EOI - At least one VIRQ EOI
  *          [ ] U - Underflow - Non or one valid interrupt in LRs
- *          [ ] LRENP - LI Entry Not Present (no valid interrupt for an EOI request)
+ *          [ ] LRENP - LI Entry Not Present (
+ *                              no valid interrupt for an EOI request)
  *          [ ] NP - No Pending Interrupt
  *          [ ] VGrp[0/1][E/D]
  *  - [V] Context Switch:
@@ -68,13 +71,15 @@
  */
 
 struct vgic {
-    volatile uint32_t *base;    /* Base address of VGIC (Virtual Interface Control Registers) */
-    uint32_t num_lr;            /* Number of List Registers */
-    uint32_t initialized;       /* vgic module initialized if == VGIC_SIGNATURE_INITIALIZED */
+    /* Base address of VGIC (Virtual Interface Control Registers) */
+    volatile uint32_t *base;
+    /* Number of List Registers */
+    uint32_t num_lr;
+    /* vgic module initialized if == VGIC_SIGNATURE_INITIALIZED */
+    uint32_t initialized;
     uint64_t valid_lr_mask;
 };
 
-hvmm_status_t vgic_injection_enable(uint8_t enable);
 
 static struct vgic _vgic;
 static void (*_cb_virq_flush)(vmid_t vmid);
@@ -112,17 +117,14 @@ static uint32_t vgic_is_free_slot(uint32_t slot)
 {
     uint32_t free_slot = VGIC_SLOT_NOTFOUND;
     if (slot < 32) {
-        if (_vgic.base[GICH_ELSR0] & (1 << slot)) {
+        if (_vgic.base[GICH_ELSR0] & (1 << slot))
             free_slot = slot;
-        }
     } else {
-        if (_vgic.base[GICH_ELSR1] & (1 << (slot - 32))) {
+        if (_vgic.base[GICH_ELSR1] & (1 << (slot - 32)))
             free_slot = slot;
-        }
     }
-    if (free_slot != slot) {
+    if (free_slot != slot)
         free_slot = vgic_find_free_slot();
-    }
     return free_slot;
 }
 
@@ -259,9 +261,8 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
             int i;
             printh("vgic: active virqs...\n");
             for (i = 0; i < _vgic.num_lr; i++) {
-                if (_vgic.base[GICH_LR + i] & 0x20000000) {
+                if (_vgic.base[GICH_LR + i] & 0x20000000)
                     printh("- lr[%d]: %x\n", i, _vgic.base[GICH_LR + i]);
-                }
             }
         }
     }
@@ -334,18 +335,20 @@ hvmm_status_t vgic_injection_enable(uint8_t enable)
  * @return          slot index, or VGIC_SLOT_NOTFOUND
  */
 uint32_t vgic_inject_virq(
-    uint32_t virq, uint32_t slot, virq_state_t state, uint32_t priority,
+    uint32_t virq, uint32_t slot, enum virq_state state, uint32_t priority,
     uint8_t hw, uint32_t physrc, uint8_t maintenance)
 {
     uint32_t physicalid;
     uint32_t lr_desc;
     HVMM_TRACE_ENTER();
-    physicalid = (hw ? physrc : (maintenance << 9) | (physrc & 0x7)) << GICH_LR_PHYSICALID_SHIFT;
+    physicalid = (hw ? physrc : (maintenance << 9) | \
+            (physrc & 0x7)) << GICH_LR_PHYSICALID_SHIFT;
     physicalid &= GICH_LR_PHYSICALID_MASK;
     lr_desc = (GICH_LR_HW_MASK & (hw << GICH_LR_HW_SHIFT)) |
               /* (GICH_LR_GRP1_MASK & (1 << GICH_LR_GRP1_SHIFT) )| */
               (GICH_LR_STATE_MASK & (state << GICH_LR_STATE_SHIFT)) |
-              (GICH_LR_PRIORITY_MASK & ((priority >> 3)  << GICH_LR_PRIORITY_SHIFT)) |
+              (GICH_LR_PRIORITY_MASK & \
+              ((priority >> 3)  << GICH_LR_PRIORITY_SHIFT)) |
               physicalid |
               (GICH_LR_VIRTUALID_MASK & virq);
     slot = vgic_is_free_slot(slot);
@@ -364,7 +367,8 @@ uint32_t vgic_inject_virq(
 /*
  * Return: slot index if successful, VGIC_SLOT_NOTFOUND otherwise
  */
-uint32_t vgic_inject_virq_hw(uint32_t virq, virq_state_t state, uint32_t priority, uint32_t pirq)
+uint32_t vgic_inject_virq_hw(uint32_t virq, enum virq_state state,
+            uint32_t priority, uint32_t pirq)
 {
     uint32_t slot = VGIC_SLOT_NOTFOUND;
     HVMM_TRACE_ENTER();
@@ -381,14 +385,16 @@ uint32_t vgic_inject_virq_hw(uint32_t virq, virq_state_t state, uint32_t priorit
     return slot;
 }
 
-uint32_t vgic_inject_virq_sw(uint32_t virq, virq_state_t state, uint32_t priority, uint32_t cpuid, uint8_t maintenance)
+uint32_t vgic_inject_virq_sw(uint32_t virq, enum virq_state state,
+            uint32_t priority, uint32_t cpuid, uint8_t maintenance)
 {
     uint32_t slot = VGIC_SLOT_NOTFOUND;
     HVMM_TRACE_ENTER();
     slot = vgic_find_free_slot();
     HVMM_TRACE_HEX32("slot:", slot);
     if (slot != VGIC_SLOT_NOTFOUND) {
-        slot = vgic_inject_virq(virq, slot, state, priority, 0, cpuid, maintenance);
+        slot = vgic_inject_virq(virq, slot, state,
+                priority, 0, cpuid, maintenance);
     }
     HVMM_TRACE_EXIT();
     return slot;
@@ -425,16 +431,18 @@ static uint64_t _vgic_valid_lr_mask(uint32_t num_lr)
 }
 
 /*
- * Registers the callback for flushing out queued virqs for the specified guest (vmid)
+ * Registers the callback for flushing out queued virqs
+ * for the specified guest (vmid)
  */
 hvmm_status_t vgic_setcallback_virq_flush(void (*callback)(vmid_t vmid))
 {
     _cb_virq_flush = callback;
-    if (_cb_virq_flush == 0) {
+    if (_cb_virq_flush == 0)
         printh("vgic: virq_flush() cleared\n");
-    } else {
-        printh("vgic: virq_flush() set to function at %x\n", (uint32_t) _cb_virq_flush);
-    }
+    else
+        printh("vgic: virq_flush() set to function at %x\n",
+                (uint32_t) _cb_virq_flush);
+
     return HVMM_STATUS_SUCCESS;
 }
 
@@ -463,9 +471,8 @@ hvmm_status_t vgic_init_status(struct vgic_status *status, vmid_t vmid)
     status->apr = 0;
     status->vmcr = 0;
     status->saved_once = 0;
-    for (i = 0; i < _vgic.num_lr; i++) {
+    for (i = 0; i < _vgic.num_lr; i++)
         status->lr[i] = 0;
-    }
     return result;
 }
 
@@ -473,9 +480,8 @@ hvmm_status_t vgic_save_status(struct vgic_status *status, vmid_t vmid)
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;
-    for (i = 0; i < _vgic.num_lr; i++) {
+    for (i = 0; i < _vgic.num_lr; i++)
         status->lr[i] = _vgic.base[GICH_LR + i];
-    }
     status->hcr = _vgic.base[GICH_HCR];
     status->apr = _vgic.base[GICH_APR];
     status->vmcr = _vgic.base[GICH_VMCR];
@@ -488,9 +494,8 @@ hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     int i;
-    for (i = 0; i < _vgic.num_lr; i++) {
+    for (i = 0; i < _vgic.num_lr; i++)
         _vgic.base[GICH_LR + i] = status->lr[i];
-    }
     _vgic.base[GICH_APR] = status->apr;
     _vgic.base[GICH_VMCR] = status->vmcr;
     _vgic.base[GICH_HCR] = status->hcr;

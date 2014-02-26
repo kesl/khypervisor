@@ -16,7 +16,10 @@
 #define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
 static struct virqmap_entry _virqmap[GIC_NUM_MAX_IRQS];
-static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {{0,}, };        /* old status */
+/* old status */
+static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {
+    {0,},
+};
 
 /*
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
@@ -32,12 +35,15 @@ hvmm_status_t virqmap_init(void)
         _virqmap[i].virq = 0;
     }
     /*
-     * NOTE(wonseok): referenced by https://github.com/kesl/khypervisor/wiki/Hardware-Resources
+     * NOTE(wonseok):
+     * referenced by
+     * https://github.com/kesl/khypervisor/wiki/Hardware-Resources
      * -of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
      * */
     CFG_GUEST0_VIRQMAP(_virqmap);
     CFG_GUEST1_VIRQMAP(_virqmap);
-    vgicd_set_callback_changed_istatus(&virqmap_vgicd_changed_istatus_callback_handler);
+    vgicd_set_callback_changed_istatus(
+            &virqmap_vgicd_changed_istatus_callback_handler);
     HVMM_TRACE_EXIT();
     return HVMM_STATUS_SUCCESS;
 }
@@ -46,16 +52,19 @@ const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq)
 {
     const struct virqmap_entry *result = VIRQMAP_ENTRY_NOTFOUND;
 
-    if (_virqmap[pirq].vmid != VMID_INVALID) {
+    if (_virqmap[pirq].vmid != VMID_INVALID)
         result = &_virqmap[pirq];
-    }
+
     return result;
 }
 
 uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq)
 {
     uint32_t pirq = PIRQ_INVALID;
-    /* FIXME: This is ridiculously inefficient to loop up to GIC_NUM_MAX_IRQS */
+    /*
+     * FIXME: This is ridiculously inefficient to
+     * loop up to GIC_NUM_MAX_IRQS
+     */
     int i;
     for (i = 0; i < GIC_NUM_MAX_IRQS; i++) {
         if (_virqmap[i].vmid == vmid && _virqmap[i].virq == virq) {
@@ -67,13 +76,16 @@ uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq)
 }
 
 
-void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
+void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid,
+        uint32_t istatus, uint8_t word_offset)
 {
-    uint32_t cstatus;                          /* changed bits only */
+    uint32_t cstatus;   /* changed bits only */
     uint32_t minirq;
     int bit;
-    minirq = word_offset * 32;                 /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
-    cstatus = old_vgicd_status[vmid][word_offset] ^ istatus;   /* find changed bits */
+    /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
+    minirq = word_offset * 32;
+    /* find changed bits */
+    cstatus = old_vgicd_status[vmid][word_offset] ^ istatus;
     while (cstatus) {
         uint32_t virq;
         uint32_t pirq;
@@ -83,14 +95,18 @@ void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid, uint32_t istatu
         if (pirq != PIRQ_INVALID) {
             /* changed bit */
             if (istatus & (1 << bit)) {
-                printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
-                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL, gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
+                printh("[%s : %d] enabled irq num is %d\n",
+                        __func__, __LINE__, bit + minirq);
+                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
+                        gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
             } else {
-                printh("[%s : %d] disabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
+                printh("[%s : %d] disabled irq num is %d\n",
+                        __func__, __LINE__, bit + minirq);
                 gic_disable_irq(pirq);
             }
         } else {
-            printh("WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid);
+            printh("WARNING: Ignoring virq %d for guest %d has "
+                    "no mapped pirq\n", virq, vmid);
         }
         cstatus &= ~(1 << bit);
     }
