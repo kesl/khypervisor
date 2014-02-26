@@ -52,7 +52,6 @@
 #define SZ_2G               0x80000000
 
 #define CFG_GUEST0_DEVICE_MEMORY \
-    do { \
     { "pl330.0", 0x11C10000, 0x11C10000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },         \
     { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },         \
     { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },         \
@@ -89,17 +88,14 @@
     { "fimc_lite2", 0x13C90000, 0x13C90000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
     { "mipi_csis0", 0x13C20000, 0x13C20000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
     { "mipi_csis1", 0x13C30000, 0x13C30000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,  0x2000, LPAED_STAGE2_MEMATTR_DM } \
-    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */ \
-    } while (0)
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,  0x2000, LPAED_STAGE2_MEMATTR_DM }
+    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */ 
 
 #define CFG_GUEST1_DEVICE_MEMORY \
-    do { \
         { "uart", 0x12C10000, 0x12C20000, 0x1000, LPAED_STAGE2_MEMATTR_DM },        \
         { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, LPAED_STAGE2_MEMATTR_DM },   \
-        { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,  0x2000, LPAED_STAGE2_MEMATTR_DM } \
-        /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */ \
-    } while (0)
+        { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,  0x2000, LPAED_STAGE2_MEMATTR_DM }
+        /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
 
 #define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
     do {                                \
@@ -108,7 +104,6 @@
     } while (0)
 
 #define CFG_GUEST0_VIRQMAP(name) \
-    do {                                \
     DECLARE_VIRQMAP(name, 0, 32, 32);   \
     DECLARE_VIRQMAP(name, 0, 33, 33);   \
     DECLARE_VIRQMAP(name, 0, 34, 34);   \
@@ -176,6 +171,5 @@
     DECLARE_VIRQMAP(name, 0, 96, 96);   \
     DECLARE_VIRQMAP(name, 0, 97, 97);   \
     DECLARE_VIRQMAP(name, 0, 98, 98);   \
-    DECLARE_VIRQMAP(name, 0, 99, 99);   \
-    } while (0)
+    DECLARE_VIRQMAP(name, 0, 99, 99);
 #define CFG_GUEST1_VIRQMAP(name)
