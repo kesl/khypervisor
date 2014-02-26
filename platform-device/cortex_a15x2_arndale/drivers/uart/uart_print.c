@@ -5,19 +5,19 @@
 
 #ifdef CFG_EXYNOS5250
 #ifdef CFG_BOARD_ARNDALE
-#define UART2_BASE       	0x12c20000
+#define UART2_BASE           0x12c20000
 #else
 #error "Configuration for board is not specified! Exynos5250 but board is unknow."
 #endif
 
 /* Exynos 5250 UART register macros */
-#define UTXH		0x20
-#define UFSTAT		0x18
-#define UART_BASE 	(UART0 + UTXH)
+#define UTXH        0x20
+#define UFSTAT        0x18
+#define UART_BASE     (UART0 + UTXH)
 
 #define TX_FIFO_FULL_MASK       (1 << 24)
-#define	readl(a)		 (*(volatile unsigned int *)(a))
-#define	writeb(v, a)		 (*(volatile unsigned char *)(a) = (v))
+#define    readl(a)         (*(volatile unsigned int *)(a))
+#define    writeb(v, a)         (*(volatile unsigned char *)(a) = (v))
 
 static int serial_err_check(int op)
 {
