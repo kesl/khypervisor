@@ -72,7 +72,8 @@ void interrupt_pwmtimer(void *pdata)
 
 hvmm_status_t hvmm_tests_gic_pwm_timer(void)
 {
-    /* Testing pwm timer event (timer1, Interrupt ID : 69), Cortex-A15 exynos5250
+    /* Testing pwm timer event (timer1, Interrupt ID : 69),
+     * Cortex-A15 exynos5250
      * - Periodically triggers timer interrupt
      * - Just print uart_print
      */
@@ -87,7 +88,8 @@ hvmm_status_t hvmm_tests_gic_pwm_timer(void)
 
 hvmm_status_t hvmm_tests_gic_timer(void)
 {
-    /* Testing Non-secure Physical Timer Event (PPI2, Interrupt ID:30), Cortex-A15
+    /* Testing Non-secure Physical Timer Event
+     * (PPI2, Interrupt ID:30), Cortex-A15
      * - Periodically triggers timer interrupt
      * - switches guest context at every timer interrupt
      */
@@ -118,11 +120,13 @@ void callback_timer(void *pdata)
     HVMM_TRACE_ENTER();
     vmid = context_current_vmid();
     printh("Injecting IRQ 30 to Guest:%d\n", vmid);
-    /* vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1); */
+    /*
+     * vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING,
+     *      GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
+     */
     /* SW VIRQ, No PIRQ */
-    if (_timer_status[vmid] == 0) {
+    if (_timer_status[vmid] == 0)
         virq_inject(vmid, 30, 0, 0);
-    }
     HVMM_TRACE_EXIT();
 }
 
@@ -131,15 +135,17 @@ hvmm_status_t hvmm_tests_vgic(void)
     /* VGIC test
      *  - Implementation Not Complete
      *  - TODO: specify guest to receive the virtual IRQ
-     *  - Once the guest responds to the IRQ, Virtual Maintenance Interrupt service routine should be called
+     *  - Once the guest responds to the IRQ, Virtual Maintenance
+     *    Interrupt service routine should be called
      *      -> ISR implementation is empty for the moment
-     *      -> This should handle completion of deactivation and further injection if there is any pending virtual IRQ
+     *      -> This should handle completion of deactivation and further
+     *         injection if there is any pending virtual IRQ
      */
     int i;
     vtimer_set_callback_chagned_status(&_timer_injection_changed_status);
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_STATIC; i++)
         _timer_status[i] = 1;
-    }
+
     timer_add_callback(timer_sched, &callback_timer);
     return HVMM_STATUS_SUCCESS;
 }

@@ -39,10 +39,10 @@ trap_hvc:
     bl    _hyp_hvc_service    @ r0: HSR
 
     @ r0 = return
-    tst    r0, #1            
+    tst    r0, #1
     @ if return == HYP_RET_STAY -> stay in Hyp mode
-    bne    1f            
-    
+    bne    1f
+
     @ Pop registers
     pop     {r0-r1, lr}
     msr        spsr_hyp, r0
@@ -51,8 +51,8 @@ trap_hvc:
 
     @ else if return == HYP_RET_ERET -> Exception Return
     eret
-    
-1:    
+
+1:
     @ Pop registers
     pop     {r0-r1, lr}
     tst     r0, #0x1f
@@ -75,7 +75,7 @@ trap_dabt:
     bl    _hyp_trap_dabort    @ r0: HSR
 
     @ if (return == 0) execute a conditional code
-    @ tst    r0, #1            
+    @ tst    r0, #1
     @ <conditional code>
 
     @ Pop registers
@@ -131,5 +131,5 @@ __mon_switch_to_guest_context:    @ struct arch_regs *r0
     eret
 .type __mon_switch_to_guest_context, %function
 
-    
+
 

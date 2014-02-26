@@ -17,32 +17,29 @@ static int serial_err_check(int op)
 {
     struct s5p_uart *const uart = (struct s5p_uart *) UART0;
     unsigned int mask;
-    if (op) {
+    if (op)
         mask = 0x8;
-    } else {
+    else
         mask = 0xf;
-    }
+
     return readl(&uart->uerstat) & mask;
 }
 
 void uart_putc(const char c)
 {
     struct s5p_uart *const uart = (struct s5p_uart *) UART0;
-    while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {
-        if (serial_err_check(1)) {
+    while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK))
+        if (serial_err_check(1))
             return;
-        }
-    }
+
     writeb(c, &uart->utxh);
-    if (c == '\n') {
+    if (c == '\n')
         uart_putc('\r');
-    }
 }
 void uart_print(const char *str)
 {
-    while (*str) {
+    while (*str)
         uart_putc(*str++);
-    }
 }
 
 void uart_print_hex32(uint32_t v)
@@ -53,11 +50,10 @@ void uart_print_hex32(uint32_t v)
     uart_print("0x");
     for (i = 7; i >= 0; i--) {
         c = ((v >> (i * 4)) & mask8);
-        if (c < 10) {
+        if (c < 10)
             c += '0';
-        } else {
+        else
             c += 'A' - 10;
-        }
         uart_putc((char) c);
     }
 }
@@ -71,10 +67,11 @@ void uart_print_hex64(uint64_t v)
 void uart_init(void)
 {
     /* TODO:
-       Figure out how to initialize the UART.
-       Currently, intialized by Hypervisor for FastModels RTSM_VE, as a workaround
+     * Figure out how to initialize the UART.
+     * Currently, intialized by Hypervisor for FastModels RTSM_VE,
+     * as a workaround
      */
     /* ibrd 0x24 */
-    //UART_BASE[9] = 0x10;
-    //UART_BASE[12] = 0xc300;
+    /* UART_BASE[9] = 0x10; */
+    /* UART_BASE[12] = 0xc300; */
 }

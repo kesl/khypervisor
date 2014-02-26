@@ -8,7 +8,10 @@
 
 /* Enable/Disable Test Items */
 
-/* GIC/Timer test disabled due to scheduler test does context switching based on timer ticks */
+/*
+ * GIC/Timer test disabled due to scheduler test does
+ * context switching based on timer ticks
+ */
 /* #define TESTS_ENABLE_GIC_TIMER */
 /* #define TESTS_ENABLE_GIC_PWM_TIMER */
 /* #define TESTS_ENABLE_MALLOC */

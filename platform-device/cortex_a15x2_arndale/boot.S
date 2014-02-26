@@ -79,7 +79,8 @@ start:
 	@
 	mrc	p15, 0, r0, c0, c1, 1		@ CPUID_EXT_PFR1
 	lsr	r0, r0, #16
-	and	r0, r0, #1			        @ Check generic timer support
+	@ Check generic timer support
+	and	r0, r0, #1
 	beq	1f
 
 	ldr	r0, = CFG_CNTFRQ
@@ -121,8 +122,10 @@ start:
 	mcr	p15, 0, r0, c1, c1, 2
 
 	@ Check CPU nr again
-	mrc	p15, 0, r0, c0, c0, 5		@ MPIDR (ARMv7 only)
-	bfc	r0, #24, #8			@ CPU number, taking multicluster into account
+	@ MPIDR (ARMv7 only)
+	mrc	p15, 0, r0, c0, c0, 5
+	@ CPU number, taking multicluster into account
+	bfc	r0, #24, #8
 	cmp	r0, #0				@ primary CPU?
 	beq	2f
 

@@ -51,11 +51,10 @@ void sp804_init_periodic(uint32_t sp804_base, uint32_t load_value)
     reg = SP804_PERIODIC | SP804_32BIT | SP804_IRQEN;
     writel(reg, sp804_base + SP804_CTRL);
     /* 1 tick per usec, 1 irq per msec */
-    if (load_value) {
+    if (load_value)
         sp804_load(load_value, sp804_base);
-    } else {
+    else
         sp804_load(1000, sp804_base);
-    }
 }
 
 void sp804_init_oneshot(uint32_t sp804_base)

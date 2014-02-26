@@ -24,7 +24,7 @@ MON_STACK_SIZE  = 0x00c00000;
 SEC_STACKTOP = MON_STACK + MON_STACK_SIZE;
 SEC_STACK_SIZE  = 0x00400000;
 
-/* NS.SVC mode code space 
+/* NS.SVC mode code space
  * - simon
  */
 GUEST_SIZE_MAX  = 0x0F000000;
@@ -43,31 +43,31 @@ SECTIONS
 
 /* Guest 1 */
  . = CFG_MEMMAP_GUEST_OFFSET;
-  guest_bin_start = .; 
+  guest_bin_start = .;
   .guest : { ./guestimages/guest0.bin}
-  guest_bin_end = .; 
+  guest_bin_end = .;
 
  . = GUEST_STACK;
  guest_stacktop = .;
- . = GUEST_STACK + 0x01000000; 
+ . = GUEST_STACK + 0x01000000;
  guest_stacklimit = .;
 
 /* Guest 2 */
  . = CFG_MEMMAP_GUEST2_OFFSET;
-  guest2_bin_start = .; 
+  guest2_bin_start = .;
  .guest2 : { ./guestimages/guest1.bin }
-  guest2_bin_end = .; 
+  guest2_bin_end = .;
 
  . = GUEST2_STACK;
  guest2_stacktop = .;
- . = GUEST2_STACK + 0x01000000; 
+ . = GUEST2_STACK + 0x01000000;
  guest2_stacklimit = .;
 
  . = CFG_MEMMAP_MON_OFFSET;
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.
   */
- .text : { 
+ .text : {
     *(.text)
  }
  .= ALIGN(4);
@@ -75,12 +75,12 @@ SECTIONS
     *(.rodata)
  }
  .= ALIGN(4);
- .data : { 
+ .data : {
     *(.data)
  }
  .= ALIGN(4);
  begin_bss = .;
- .bss : { 
+ .bss : {
     *(.bss)
  }
  end_bss = .;

@@ -5,7 +5,7 @@
 #include <test/tests.h>
 #include <drivers/pwm_timer.h>
 
-//#define TESTS_ENABLE_PWM_TIMER
+/* #define TESTS_ENABLE_PWM_TIMER */
 
 int main()
 {
