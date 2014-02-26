@@ -79,10 +79,11 @@ start:
 	@
 	mrc	p15, 0, r0, c0, c1, 1		@ CPUID_EXT_PFR1
 	lsr	r0, r0, #16
-	and	r0, r0, #1			        @ Check generic timer support
+	@ Check generic timer support
+	and	r0, r0, #1
 	beq	1f
 
-	ldr	r0, = CFG_CNTFRQ			
+	ldr	r0, = CFG_CNTFRQ
 	mcr	p15, 0, r0, c14, c0, 0		@ CNTFRQ
 1:
 	@
@@ -122,7 +123,8 @@ start:
 
 	@ Check CPU nr again
 	mrc	p15, 0, r0, c0, c0, 5		@ MPIDR (ARMv7 only)
-	bfc	r0, #24, #8			@ CPU number, taking multicluster into account
+	@ CPU number, taking multicluster into account
+	bfc	r0, #24, #8
 	cmp	r0, #0				@ primary CPU?
 	beq	2f
 
@@ -156,8 +158,10 @@ start:
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
 
-    /* Initialize UART1 and UART2 for access from guests, as a workaround, 
-       since initialization sequence in C, in guest, is not clear a the moment */
+    /*
+     * Initialize UART1 and UART2 for access from guests, as a workaround,
+     * since initialization sequence in C, in guest, is not clear a the moment
+     */
 	ldr	r0, =0x1c0a0000			@ UART base (Versatile Express)
 	mov	r1, #0x10			@ ibrd
 	str	r1, [r0, #0x24]

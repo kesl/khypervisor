@@ -21,7 +21,7 @@ int main()
 {
     int val;
     uart_print(GUEST_LABEL);
-    uart_print("\n\r=== Starting platform main \n\r");
+    uart_print("\n\r=== Starting platform main\n\r");
 #ifdef TESTS_ENABLE_SP804_TIMER
     /* Test the SP804 timer */
     hvmm_tests_sp804_timer();
