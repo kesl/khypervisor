@@ -52,54 +52,6 @@ static int _next_guest_vmid = VMID_INVALID;
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked;
 
-#if defined BAREMETAL_GUEST && !defined LINUX_GUEST
-#define FIXUP_BMGUEST_LOAD_AT_GUEST1
-#endif
-
-#if defined LINUX_GUEST
-static void _hyp_guest0_copy_zimage(void)
-{
-    uint32_t *src = &guest_bin_start;
-    uint32_t *end = &guest_bin_end;
-    uint32_t *dst = &guest_bin_start + (0x20008000 / 4);
-    HVMM_TRACE_ENTER();
-    uart_print("Copying guest0 image to guest1\n\r");
-    uart_print(" src: ");
-    uart_print_hex32((uint32_t)src);
-    uart_print(" dst: ");
-    uart_print_hex32((uint32_t)dst);
-    uart_print(" size: ");
-    uart_print_hex32((uint32_t)(end - src) * sizeof(uint32_t));
-    uart_print("\n\r");
-    while (src < end)
-        *dst++ = *src++;
-    uart_print("=== done ===\n\r");
-    HVMM_TRACE_EXIT();
-}
-#endif
-
-#if defined FIXUP_BMGUEST_LOAD_AT_GUEST1
-static void _hyp_fixup_unloaded_guest(void)
-{
-    uint32_t *src = &guest_bin_start;
-    uint32_t *end = &guest_bin_end;
-    uint32_t *dst = &guest2_bin_start;
-    HVMM_TRACE_ENTER();
-    uart_print("Copying guest0 image to guest1\n\r");
-    uart_print(" src: ");
-    uart_print_hex32((uint32_t)src);
-    uart_print(" dst: ");
-    uart_print_hex32((uint32_t)dst);
-    uart_print(" size: ");
-    uart_print_hex32((uint32_t)(end - src) * sizeof(uint32_t));
-    uart_print("\n\r");
-    while (src < end)
-        *dst++ = *src++;
-    uart_print("=== done ===\n\r");
-    HVMM_TRACE_EXIT();
-}
-#endif
-
 #ifdef DEBUG
 static char *_modename(uint8_t mode)
 {
@@ -484,13 +436,7 @@ void context_init_guests(void)
     context_init_cops(&context->regs_cop);
     context_init_banked(&context->regs_banked);
     vgic_init_status(&context->vgic_status, context->vmid);
-#if defined LINUX_GUEST
-    _hyp_guest0_copy_zimage();
-#elif defined BAREMETAL_GUEST
-    /* Workaround for unloaded bmguest.bin at 0xB0000000@PA */
-    _hyp_fixup_unloaded_guest();
-#endif
-#if defined LINUX_GUEST
+#if defined(LINUX_GUEST)
     {
         uint32_t *src = &guest_bin_start;
         loadlinux_setup_tags(src);
