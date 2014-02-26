@@ -31,11 +31,11 @@ void test_vdev_sample()
         r = *reg_c;
         uart_print("    = r(");
         uart_print_hex32(r);
-        if (r == (v1 + v2)) {
+        if (r == (v1 + v2))
             uart_print(") - OK");
-        } else {
+        else
             uart_print(") - FAILED");
-        }
+
         uart_print("\n\r");
     }
     uart_print("vdev_sample: End\n\r");

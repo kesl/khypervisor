@@ -10,7 +10,7 @@ void init_print()
 
 void printH(const char *format, ...)
 {
-    va_list ap;
+    __builtin_va_list ap;
     va_start(ap, format);
     format_print(format, ap);
     va_end(ap);

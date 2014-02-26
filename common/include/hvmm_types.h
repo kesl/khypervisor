@@ -6,7 +6,7 @@
 #define PIRQ_INVALID    0xFFFFFFFF
 #define VIRQ_INVALID    PIRQ_INVALID
 
-typedef enum {
+typedef enum hvmm_status {
     HVMM_STATUS_SUCCESS = 0,
     HVMM_STATUS_UNKNOWN_ERROR = -1,
     HVMM_STATUS_UNSUPPORTED_FEATURE = -2,
@@ -17,5 +17,6 @@ typedef enum {
 } hvmm_status_t;
 
 typedef uint8_t vmid_t;
+
 #endif
 

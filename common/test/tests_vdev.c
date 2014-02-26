@@ -18,14 +18,18 @@
 #define NUM_MAX_VIRQS   128
 #define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
-static uint32_t ostatus[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {{0, },};        /* old status */
+/* old status */
+static uint32_t ostatus[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {{0, },};
 
-void _my_vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
+void _my_vgicd_changed_istatus(vmid_t vmid, uint32_t istatus,
+        uint8_t word_offset)
 {
     uint32_t cstatus;                          /* changed bits only */
     uint32_t minirq;
     int bit;
-    minirq = word_offset * 32;                 /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
+
+    /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
+    minirq = word_offset * 32;
     cstatus = ostatus[vmid][word_offset] ^ istatus;   /* find changed bits */
     while (cstatus) {
         uint32_t virq;
@@ -36,14 +40,18 @@ void _my_vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offse
         if (pirq != PIRQ_INVALID) {
             /* changed bit */
             if (istatus & (1 << bit)) {
-                printh("[%s : %d] enabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
-                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL, gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
+                printh("[%s : %d] enabled irq num is %d\n",
+                        __func__, __LINE__, bit + minirq);
+                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
+                        gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
             } else {
-                printh("[%s : %d] disabled irq num is %d\n", __FUNCTION__, __LINE__, bit + minirq);
+                printh("[%s : %d] disabled irq num is %d\n",
+                        __func__, __LINE__, bit + minirq);
                 gic_disable_irq(pirq);
             }
         } else {
-            printh("WARNING: Ignoring virq %d for guest %d has no mapped pirq\n", virq, vmid);
+            printh("WARNING: Ignoring virq %d for guest"
+                   "%d has no mapped pirq\n", virq, vmid);
         }
         cstatus &= ~(1 << bit);
     }
@@ -62,7 +70,8 @@ hvmm_status_t hvmm_tests_vdev(void)
 hvmm_status_t hvmm_tests_vdev_gicd(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-    printh("[%s : %d] register vgicd_changed_istatus callback.\n", __FUNCTION__, __LINE__);
+    printh("[%s : %d] register vgicd_changed_istatus callback.\n",
+            __func__, __LINE__);
     vgicd_set_callback_changed_istatus(&_my_vgicd_changed_istatus);
     return result;
 }

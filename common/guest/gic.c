@@ -133,7 +133,8 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
     /*
      * Note:
      * We currently support GICv2 with Cortex-A15 only.
-     * Other architectures with GICv2 support will be further listed and added for support later.
+     * Other architectures with GICv2 support will be further
+     * listed and added for support later.
      */
     if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
         _gic.baseaddr = (uint32_t) va_base;
@@ -165,7 +166,8 @@ hvmm_status_t gic_disable_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler, void *pdata)
+hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler,
+                void *pdata)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
     if (irq < GIC_NUM_MAX_IRQS) {
@@ -180,22 +182,22 @@ hvmm_status_t gic_init(void)
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     int i;
     HVMM_TRACE_ENTER();
-    for (i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+    for (i = 0; i < GIC_NUM_MAX_IRQS; i++)
         _gic.handlers[i] = 0;
-    }
+
     result = gic_init_baseaddr((uint32_t *) GIC_BASEADDR_GUEST);
     /* enable group0 and group1 interrupts */
     _gic.ba_gicc[GICC_CTLR] |= 0x213;
     /* no priority masking */
     _gic.ba_gicc[GICC_PMR] = 0xFF;
-    if (result == HVMM_STATUS_SUCCESS) {
+    if (result == HVMM_STATUS_SUCCESS)
         gic_dump_registers();
-    }
+
     _gic.lines = 1022;
     result = HVMM_STATUS_SUCCESS;
-    if (result == HVMM_STATUS_SUCCESS) {
+    if (result == HVMM_STATUS_SUCCESS)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
-    }
+
     /* enable virtual timer */
     vtimer_mask(0);
     HVMM_TRACE_EXIT();
@@ -228,9 +230,9 @@ void gic_interrupt(int fiq, void *pregs)
             uart_print("\n\r");
         }
         /* ISR */
-        if (_gic.handlers[irq]) {
+        if (_gic.handlers[irq])
             _gic.handlers[irq](irq, regs, 0);
-        }
+
         /* Completion & Deactivation */
         _gic.ba_gicc[GICC_EOIR] = irq;
         _gic.ba_gicc[GICC_DIR] = irq;

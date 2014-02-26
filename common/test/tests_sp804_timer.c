@@ -8,8 +8,9 @@ hvmm_status_t hvmm_tests_sp804_timer(void)
 {
     HVMM_TRACE_ENTER();
     /*
-     * Until the guest enables IRQ34, for SP804, through VGICD, we manually enable here for
-     * test purpose so the hypervisor can receive and forward to a designated guest
+     * Until the guest enables IRQ34, for SP804, through VGICD,
+     * we manually enable here for test purpose so the hypervisor
+     * can receive and forward to a designated guest
      */
     gic_test_configure_irq(34,
                            GIC_INT_POLARITY_LEVEL,
