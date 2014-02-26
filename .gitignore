@@ -5,6 +5,7 @@ model.lds
 config.mk
 *.o
 *.swp
+*.pyc
 tags
 modelsemi.lds
 linux-system-semi.axf

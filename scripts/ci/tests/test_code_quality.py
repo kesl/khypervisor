@@ -11,7 +11,13 @@ import checkpatch
 
 def test_coding_style():
     print 'Code Quality Check... : Coding Style'
-    eq_(checkpatch.RunPullRequestPatch(), True)
+    if (os.getenv('ghprbPullId') != None):
+        eq_(checkpatch.RunPullRequestPatch(), True)
+    elif (os.getenv('BULID_TYPE') == ''
+        eq_(True, True)
+    else:
+        eq_(True, True)
+
 
 def test_clang():
     eq_(True, True)

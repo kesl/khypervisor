@@ -8,7 +8,6 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-
 /* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
  * Indexed by the AttrIndex bits of a LPAE entry;
  * the 8-bit fields are packed little-endian into MAIR0 and MAIR1
@@ -88,7 +87,6 @@
 #define HTCR_IRGN0_SHIFT                                8
 #define HTCR_T0SZ_MASK                                  0x00000003
 #define HTCR_T0SZ_SHIFT                                 0
-
 /* PL2 Stage 1 Level 1 */
 #define HMM_L1_PTE_NUM  512
 
