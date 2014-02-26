@@ -1,12 +1,12 @@
 #ifndef __PWM_PRIV_H__
 #define __PWM_PRIV_H__
 
-#define PWMBASE (void*)0x12DD0000
+#define PWMBASE (void *) 0x12DD0000
 #define PWM_TIMERREG(x) (PWMBASE + (x))
 #define TCFG0   PWM_TIMERREG(0x00)
 #define TCFG1   PWM_TIMERREG(0x04)
 #define TCON    PWM_TIMERREG(0x08)
-#define PWM_TIMERREG2(tmr,reg) PWM_TIMERREG((reg)+0x0c+((tmr)*0x0c))
+#define PWM_TIMERREG2(tmr, reg) PWM_TIMERREG((reg)+0x0c+((tmr)*0x0c))
 #define CSTAT PWM_TIMERREG(0x44)
 #define TCNTB(tmr)  PWM_TIMERREG2(tmr, 0x00)
 #define TCMPB(tmr)  PWM_TIMERREG2(tmr, 0x04)
