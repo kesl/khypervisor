@@ -10,8 +10,10 @@
 
 /*
  * ISS encoding for Data Abort exceptions taken to Hyp mode as beloww
- * ISS[24] : instruction syndrome valid. 0 is invalid information in ISS. 1 is valid information in ISS
- * when ISS[24] is 0, we don't need to extract information from the rest of ISS field
+ * ISS[24] : instruction syndrome valid. 0 is invalid information in ISS.
+ * 1 is valid information in ISS
+ * when ISS[24] is 0, we don't need to extract information
+ * from the rest of ISS field
  * when ISS[24] is 1, we need to extract information from ISS[26:13]
  *
  * ISS[26:13] is consist of 10 parts. Details as below
@@ -24,7 +26,8 @@
  * - ISS[19:16] is for register transfer ?
  * - ISS[15:10] is reserved
  * - ISS[9] is an external abort type. It is IMPLEMENTATION_DEFINED
- * - ISS[8] is a cache maintenance. For synchronous fault, it should need a cache maintenance.
+ * - ISS[8] is a cache maintenance. For synchronous fault, it should
+ * need a cache maintenance.
  * - ISS[7] is a stage 2 fault for a stage 1 translation table walk
  * - ISS[6] is synchronous abort that was caused by a write or read operation
  * - ISS[5:0] is a data fault status code(DFSC)
@@ -88,7 +91,8 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
         /*
            vdev emulates read/write, update pc, update destination register
          */
-        result = vdev_emulate(fipa, wnr, (vdev_access_size_t) sas, srt, regs);
+        result = vdev_emulate(fipa, wnr, (enum vdev_access_size) sas,
+                    srt, regs);
         if (result != HVMM_STATUS_SUCCESS) {
             printh("trap_dabort: emulation failed guest pc:%x\n", regs->pc);
             /* Let the guest continue by increasing pc */
@@ -98,9 +102,9 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
         printh("trap_dboart: fipa=0x%x\n", fipa);
         result = HVMM_STATUS_BAD_ACCESS;
     }
-    if (result != HVMM_STATUS_SUCCESS) {
-        printh("- INSTR: %s[%d] r%d [%x]\n", wnr ? "str" : "ldr", (sas + 1) * 8, srt, fipa);
-    }
+    if (result != HVMM_STATUS_SUCCESS)
+        printh("- INSTR: %s[%d] r%d [%x]\n",
+                wnr ? "str" : "ldr", (sas + 1) * 8, srt, fipa);
     switch (iss & ISS_FSR_MASK) {
     case TRANS_FAULT_LEVEL1:
     case TRANS_FAULT_LEVEL2:
@@ -108,10 +112,9 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
         break;
     case ACCESS_FAULT_LEVEL1:
     case ACCESS_FAULT_LEVEL2:
-    case ACCESS_FAULT_LEVEL3: {
+    case ACCESS_FAULT_LEVEL3:
         printh("ACCESS fault %d\n", iss & ISS_FSR_MASK);
-    }
-    break;
+        break;
     default:
         break;
     }

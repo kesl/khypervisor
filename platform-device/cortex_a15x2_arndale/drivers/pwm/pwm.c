@@ -14,11 +14,11 @@ hvmm_status_t pwm_timer_enable_int()
     HVMM_TRACE_ENTER();
     tcon = vmm_readl(TCON);
     tcstat = vmm_readl(CSTAT);
-    //auto reload set & timer start
+    /* auto reload set & timer start */
     tcon |= (TCON_T1RELOAD);
     tcon |= (TCON_T1START);
     vmm_writel(tcon, TCON);
-    //interrupt enable
+    /* interrupt enable */
     tcstat |= 1 << 1;
     vmm_writel(tcstat, CSTAT);
     HVMM_TRACE_EXIT();

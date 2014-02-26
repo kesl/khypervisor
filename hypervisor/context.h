@@ -8,10 +8,10 @@
 
 #define ARCH_REGS_NUM_GPR    13
 
-typedef enum {
+enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
     HYP_RESULT_STAY = 1
-} hyp_hvc_result_t;
+};
 
 struct arch_regs {
     uint32_t cpsr; /* CPSR */
@@ -58,7 +58,7 @@ struct arch_regs_banked {
 
 struct hyp_guest_context {
     struct arch_regs regs;
-    lpaed_t *ttbl;
+    union lpaed *ttbl;
     vmid_t vmid;
     struct vgic_status vgic_status;
     struct arch_regs_cop regs_cop;
@@ -100,5 +100,11 @@ vmid_t context_next_vmid(vmid_t ofvmid);
 struct hyp_guest_context *context_atvmid(vmid_t vmid);
 
 void start_guest_os(void);
+
+extern void __mon_switch_to_guest_context(struct arch_regs *regs);
+
+extern uint32_t guest_bin_start;
+extern uint32_t guest_bin_end;
+extern uint32_t guest2_bin_start;
 
 #endif    /* __CONTEXT_H__ */

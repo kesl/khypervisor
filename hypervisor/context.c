@@ -15,7 +15,7 @@
 #include <vmm.h>
 
 #include <string.h>
-#if defined (LINUX_GUEST)
+#if defined LINUX_GUEST
 #include "loadlinux.h"
 #endif
 
@@ -42,14 +42,15 @@
 #define CPSR_MODE_SYS   0x1F
 
 #define __CONTEXT_TRACE_VERBOSE__
-#define _valid_vmid(vmid)   (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
+#define _valid_vmid(vmid) \
+    (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
 
-extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int _current_guest_vmid = VMID_INVALID;
 static int _next_guest_vmid = VMID_INVALID;
-static uint8_t _switch_locked;   /* further switch request will be ignored if set */
+/* further switch request will be ignored if set */
+static uint8_t _switch_locked;
 
 #ifdef DEBUG
 static char *_modename(uint8_t mode)
@@ -112,15 +113,15 @@ void context_dump_regs(struct arch_regs *regs)
 #endif
 #endif
 }
-static void context_copy_regs(struct arch_regs *regs_dst, struct arch_regs *regs_src)
+static void context_copy_regs(struct arch_regs *regs_dst,
+                struct arch_regs *regs_src)
 {
     int i;
     regs_dst->cpsr = regs_src->cpsr;
     regs_dst->pc = regs_src->pc;
     regs_dst->lr = regs_src->lr;
-    for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+    for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
         regs_dst->gpr[i] = regs_src->gpr[i];
-    }
 }
 
 /* banked registers */
@@ -283,7 +284,8 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
    void context_switch_to_next_guest(struct arch_regs *regs_current)
  */
 
-static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs_current, vmid_t next_vmid)
+static hvmm_status_t context_perform_switch_to_guest_regs(
+                        struct arch_regs *regs_current, vmid_t next_vmid)
 {
     /* _curreng_guest_vmid -> next_vmid */
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -295,7 +297,8 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
         return HVMM_STATUS_IGNORED;
     }
     /*
-     * We assume VTCR has been configured and initialized in the memory management module
+     * We assume VTCR has been configured and initialized
+     * in the memory management module
      */
     /* Disable Stage 2 Translation: HCR.VM = 0 */
     vmm_stage2_enable(0);
@@ -315,7 +318,10 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
     }
     /* The context of the next guest */
     context = &guest_contexts[next_vmid];
-    /* Restore Translation Table for the next guest and Enable Stage 2 Translation */
+    /*
+     * Restore Translation Table for the next guest and
+     * Enable Stage 2 Translation
+     */
     vmm_set_vmid_ttbl(context->vmid, context->ttbl);
     vmm_stage2_enable(1);
     vgic_restore_status(&context->vgic_status, context->vmid);
@@ -332,7 +338,10 @@ static hvmm_status_t context_perform_switch_to_guest_regs(struct arch_regs *regs
     _current_guest_vmid = next_vmid;
     if (regs_current == 0) {
         /* init -> hyp mode -> guest */
-        /* The actual context switching (Hyp to Normal mode) handled in the asm code */
+        /*
+         * The actual context switching (Hyp to Normal mode)
+         * handled in the asm code
+         */
         __mon_switch_to_guest_context(&context->regs);
     } else {
         /* guest -> hyp -> guest */
@@ -353,17 +362,24 @@ hvmm_status_t context_perform_switch(void)
         /* very first time, to the default first guest */
         result = context_perform_switch_to_guest_regs(0, _next_guest_vmid);
         /* DOES NOT COME BACK HERE */
-    } else if (_next_guest_vmid != VMID_INVALID && _current_guest_vmid != _next_guest_vmid) {
+    } else if (_next_guest_vmid != VMID_INVALID &&
+                _current_guest_vmid != _next_guest_vmid) {
         struct arch_regs *regs = trap_saved_regs();
         if ((regs->cpsr & 0x1F) != 0x1A) {
             printh("curr: %x\n", _current_guest_vmid);
             printh("next: %x\n", _next_guest_vmid);
             /* Only if not from Hyp */
-            result = context_perform_switch_to_guest_regs(regs, _next_guest_vmid);
+            result = context_perform_switch_to_guest_regs(regs,
+                            _next_guest_vmid);
             _next_guest_vmid = VMID_INVALID;
         }
     } else {
-        /* Staying at the currently active guest. Flush out queued virqs since we didn't have a chance to switch the context, where virq flush takes place,  this time */
+        /*
+         * Staying at the currently active guest.
+         * Flush out queued virqs since we didn't have a chance
+         * to switch the context, where virq flush takes place,
+         * this time
+         */
         vgic_flush_virqs(_current_guest_vmid);
     }
     _switch_locked = 0;
@@ -396,12 +412,12 @@ void context_init_guests(void)
     context = &guest_contexts[0];
     regs = &context->regs;
     regs->cpsr = 0x1d3;            /* supervisor, interrupt disabled */
-#if defined (LINUX_GUEST)
+#if defined LINUX_GUEST
     regs->pc = 0xA0008000;        /* PA:0xA0008000, where zImage is */
     regs->gpr[1] = CFG_MACHINE_NUMBER;
     regs->gpr[2] = 0x80000100;  /* src+(0x100/4); */
 #else
-    regs->pc = 0x80000000;        /* PA:0xA0000000, default entry for bmguest */
+    regs->pc = 0x80000000; /* PA:0xA0000000, default entry for bmguest */
 #endif
     /* regs->gpr[] = whatever */
     context->vmid = 0;
@@ -422,7 +438,6 @@ void context_init_guests(void)
     vgic_init_status(&context->vgic_status, context->vmid);
 #if defined (LINUX_GUEST)
     {
-        extern uint32_t guest_bin_start;
         uint32_t *src = &guest_bin_start;
         loadlinux_setup_tags(src);
     }
@@ -434,9 +449,8 @@ struct hyp_guest_context *context_atvmid(vmid_t vmid)
 {
     struct hyp_guest_context *result = 0;
 
-    if (vmid < NUM_GUEST_CONTEXTS) {
+    if (vmid < NUM_GUEST_CONTEXTS)
         result = &guest_contexts[vmid];
-    }
 
     return result;
 }
@@ -457,9 +471,9 @@ vmid_t context_last_vmid(void)
 vmid_t context_next_vmid(vmid_t ofvmid)
 {
     vmid_t next = VMID_INVALID;
-    if (ofvmid == VMID_INVALID) {
+    if (ofvmid == VMID_INVALID)
         next = context_first_vmid();
-    } else if (ofvmid < context_last_vmid()) {
+    else if (ofvmid < context_last_vmid()) {
         /* FIXME:Hardcoded */
         next = ofvmid + 1;
     }
@@ -487,19 +501,19 @@ hvmm_status_t context_switchto_lock(vmid_t vmid, uint8_t locked)
     HVMM_TRACE_ENTER();
     /* valid and not current vmid, switch */
     if (_switch_locked == 0) {
-        if (!_valid_vmid(vmid)) {
+        if (!_valid_vmid(vmid))
             result = HVMM_STATUS_BAD_ACCESS;
-        } else {
+        else {
             _next_guest_vmid = vmid;
             result = HVMM_STATUS_SUCCESS;
             printh("switching to vmid: %x\n", (uint32_t)vmid);
         }
-    } else {
+    } else
         printh("context: next vmid locked to %d\n", _next_guest_vmid);
-    }
-    if (locked) {
+
+    if (locked)
         _switch_locked = locked;
-    }
+
     HVMM_TRACE_EXIT();
     return result;
 }
@@ -508,20 +522,21 @@ void start_guest_os(void)
 {
     init_print();
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
-    printh("[%s : %d] Starting...\n", __FUNCTION__, __LINE__);
+    printh("[%s : %d] Starting...\n", __func__, __LINE__);
     /* Initialize Memory Management */
     ret = hvmm_mm_init();
     /* Initialize Interrupt Management */
     ret = hvmm_interrupt_init();
-    if (ret != HVMM_STATUS_SUCCESS) {
+    if (ret != HVMM_STATUS_SUCCESS)
         uart_print("[hyp_main] interrupt initialization failed...\n\r");
-    }
+
     /* Initialize Guests */
     context_init_guests();
     /* Initialize Virtual Devices */
     vdev_init();
     /* Virtual GIC Distributor */
-    printh("tests: Registering sample vdev:'vgicd' at %x\n", CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
+    printh("tests: Registering sample vdev:'vgicd' at %x\n",
+            CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
     vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
     /* Initialize PIRQ to VIRQ mapping */
     virqmap_init();
