@@ -3,14 +3,14 @@
 #	$ make	     	; build for bmguest
 #	$ make LINUX=y	; build for linux guest
 
-# Include config file 
+# Include config file
 include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
-OBJS += boot.o main.o loadlinux.o drivers/uart.o $(COMMON_SOURCE_DIR)/log/string.o 
+OBJS += boot.o main.o loadlinux.o drivers/uart.o $(COMMON_SOURCE_DIR)/log/string.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
-INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include 
+INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
@@ -22,7 +22,7 @@ endif
 all: $(GUESTLOADERBIN)
 clean distclean:
 	rm -f $(GUESTLOADERIMG) $(GUESTLOADERBIN) \
-	model.lds $(OBJS) 
+	model.lds $(OBJS)
 $(GUESTLOADERIMG): $(OBJS) model.lds
 	$(LD) -o $@ $(OBJS) --script=model.lds
 $(GUESTLOADERBIN): $(GUESTLOADERIMG)

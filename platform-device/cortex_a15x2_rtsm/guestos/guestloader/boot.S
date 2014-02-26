@@ -6,7 +6,7 @@
 .global guestloader_start
 guestloader_start:
     /* Stack pointer initialization */
-    @ sp  
+    @ sp
     ldr     sp, =guestloader_stacktop
     b   main
 .type guestloader_start, %function

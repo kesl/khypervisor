@@ -4,7 +4,7 @@
 Download linux using gitmodule command.
 <pre>
 cd {khypervisor_root_dir}/scripts
-./buildwithlinux_rtsm.sh 
+./buildwithlinux_rtsm.sh
 </pre>
 
 ##bmguest + bmguest

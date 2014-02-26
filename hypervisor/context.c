@@ -436,7 +436,7 @@ void context_init_guests(void)
     context_init_cops(&context->regs_cop);
     context_init_banked(&context->regs_banked);
     vgic_init_status(&context->vgic_status, context->vmid);
-#if defined (LINUX_GUEST)
+#if defined(LINUX_GUEST)
     {
         uint32_t *src = &guest_bin_start;
         loadlinux_setup_tags(src);

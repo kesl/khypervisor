@@ -25,7 +25,7 @@ SECTIONS
 
  loader_start = .;
 
- .text : { 
+ .text : {
     *(.text)
  }
  .= ALIGN(4);
@@ -33,12 +33,12 @@ SECTIONS
     *(.rodata)
  }
  .= ALIGN(4);
- .data : { 
+ .data : {
     *(.data)
  }
  .= ALIGN(4);
  begin_bss = .;
- .bss : { 
+ .bss : {
     *(.bss)
  }
  end_bss = .;
@@ -55,6 +55,6 @@ SECTIONS
 
  . = PHYS_STACK;
  guestloader_stacktop = .;
- . = PHYS_STACK - 0x00400000; 
+ . = PHYS_STACK - 0x00400000;
  guestloader_stacklimit = .;
 }
