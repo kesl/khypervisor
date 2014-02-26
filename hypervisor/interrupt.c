@@ -28,14 +28,11 @@ hvmm_status_t hvmm_interrupt_init(void)
     /* Physical Interrupt: GIC Distributor & CPU Interface */
     ret = gic_init();
     /* Virtual Interrupt: GIC Virtual Interface Control */
-    if (ret == HVMM_STATUS_SUCCESS) {
+    if (ret == HVMM_STATUS_SUCCESS)
         ret = vgic_init();
-    }
-    if (ret == HVMM_STATUS_SUCCESS) {
+    if (ret == HVMM_STATUS_SUCCESS)
         ret = vgic_enable(1);
-    }
-    if (ret == HVMM_STATUS_SUCCESS) {
+    if (ret == HVMM_STATUS_SUCCESS)
         ret = virq_init();
-    }
     return ret;
 }

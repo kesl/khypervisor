@@ -91,7 +91,10 @@ static void gic_dump_registers(void)
 static uint64_t gic_periphbase_pa(void)
 {
     /* CBAR:   4,  c0,   0 */
-    /* MRC p15, 4, <Rt>, c15, c0, 0; Read Configuration Base Address Register */
+    /*
+     * MRC p15, 4, <Rt>, c15, c0, 0; Read Configuration Base
+     * Address Register
+     */
     uint64_t periphbase = (uint64_t) read_cbar();
     uint64_t pbmsb = periphbase & ((uint64_t)CBAR_PERIPHBASE_MSB_MASK);
     if (pbmsb) {
@@ -116,12 +119,14 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
     /*
      * Note:
      * We currently support GICv2 with Cortex-A15 only.
-     * Other architectures with GICv2 support will be further listed and added for support later
+     * Other architectures with GICv2 support will be further
+     * listed and added for support later
      */
     if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
         /* fall-back to periphbase addr from cbar */
         if (va_base == 0) {
-            va_base = (uint32_t *)(uint32_t)(gic_periphbase_pa() & 0x00000000FFFFFFFFULL);
+            va_base = (uint32_t *)(uint32_t)(gic_periphbase_pa() & \
+                    0x00000000FFFFFFFFULL);
         }
         _gic.baseaddr = (uint32_t) va_base;
         uart_print("cbar:");
@@ -164,28 +169,28 @@ static hvmm_status_t gic_init_dist(void)
     uart_print_hex32(_gic.ba_gicd[GICD_IIDR]);
     uart_print("\n\r");
     /* Interrupt polarity for SPIs (Global Interrupts) active-low */
-    for (i = 32; i < _gic.lines; i += 16) {
+    for (i = 32; i < _gic.lines; i += 16)
         _gic.ba_gicd[GICD_ICFGR + i / 16] = 0x0;
-    }
+
     /* Default Priority for all Interrupts
      * Private/Banked interrupts will be configured separately
      */
-    for (i = 32; i < _gic.lines; i += 4) {
+    for (i = 32; i < _gic.lines; i += 4)
         _gic.ba_gicd[GICD_IPRIORITYR + i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
-    }
+
     /* Disable all global interrupts.
      * Private/Banked interrupts will be configured separately
      */
-    for (i = 32; i < _gic.lines; i += 32) {
+    for (i = 32; i < _gic.lines; i += 32)
         _gic.ba_gicd[GICD_ICENABLER + i / 32] = 0xFFFFFFFF;
-    }
+
     /* Route all global IRQs to this CPU */
     cpumask = 1 << smp_processor_id();
     cpumask |= cpumask << 8;
     cpumask |= cpumask << 16;
-    for (i = 32; i < _gic.lines; i += 4) {
+    for (i = 32; i < _gic.lines; i += 4)
         _gic.ba_gicd[GICD_ITARGETSR + i / 4] = cpumask;
-    }
+
     /* Enable Distributor */
     _gic.ba_gicd[GICD_CTLR] = GICD_CTLR_ENABLE;
     HVMM_TRACE_EXIT();
@@ -202,9 +207,9 @@ static hvmm_status_t gic_init_cpui(void)
     /* Enable forwarding SGIs(ID0~15) */
     _gic.ba_gicd[GICD_ISENABLER] = 0x0000FFFF;
     /* Default priority for SGIs and PPIs */
-    for (i = 0; i < 32; i += 4) {
+    for (i = 0; i < 32; i += 4)
         _gic.ba_gicd[GICD_IPRIORITYR | i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
-    }
+
     /* No Priority Masking: the lowest value as the threshold : 255 */
     _gic.ba_gicc[GICC_PMR] = 0xFF;
     _gic.ba_gicc[GICC_BPR] = 0x0;
@@ -233,7 +238,8 @@ hvmm_status_t gic_deactivate_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler, void *pdata)
+hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler,
+                void *pdata)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
     if (irq < GIC_NUM_MAX_IRQS) {
@@ -258,31 +264,27 @@ hvmm_status_t gic_init(void)
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     int i;
     HVMM_TRACE_ENTER();
-    for (i = 0; i < GIC_NUM_MAX_IRQS; i++) {
+    for (i = 0; i < GIC_NUM_MAX_IRQS; i++)
         _gic.handlers[i] = 0;
-    }
     /*
-     * Determining VA of GIC base adddress has not been defined yet. Let is use the PA for the time being
+     * Determining VA of GIC base adddress has not been defined yet.
+     * Let is use the PA for the time being
      */
     result = gic_init_baseaddr((void *)CFG_GIC_BASE_PA);
-    if (result == HVMM_STATUS_SUCCESS) {
+    if (result == HVMM_STATUS_SUCCESS)
         gic_dump_registers();
-    }
     /*
      * Initialize and Enable GIC Distributor
      */
-    if (result == HVMM_STATUS_SUCCESS) {
+    if (result == HVMM_STATUS_SUCCESS)
         result = gic_init_dist();
-    }
     /*
      * Initialize and Enable GIC CPU Interface for this CPU
      */
-    if (result == HVMM_STATUS_SUCCESS) {
+    if (result == HVMM_STATUS_SUCCESS)
         result = gic_init_cpui();
-    }
-    if (result == HVMM_STATUS_SUCCESS) {
+    if (result == HVMM_STATUS_SUCCESS)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
-    }
     HVMM_TRACE_EXIT();
     return result;
 }
@@ -293,7 +295,9 @@ hvmm_status_t gic_init(void)
                                     (1u << smp_processor_id()),
                                     GIC_INT_PRIORITY_DEFAULT);
  */
-hvmm_status_t gic_test_configure_irq(uint32_t irq, gic_int_polarity_t polarity,  uint8_t cpumask, uint8_t priority)
+hvmm_status_t gic_test_configure_irq(uint32_t irq,
+                enum gic_int_polarity polarity,  uint8_t cpumask,
+                uint8_t priority)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     HVMM_TRACE_ENTER();
@@ -305,11 +309,11 @@ hvmm_status_t gic_test_configure_irq(uint32_t irq, gic_int_polarity_t polarity, 
         if (result == HVMM_STATUS_SUCCESS) {
             /* polarity: level or edge */
             icfg = _gic.ba_gicd[GICD_ICFGR + irq / 16];
-            if (polarity == GIC_INT_POLARITY_LEVEL) {
+            if (polarity == GIC_INT_POLARITY_LEVEL)
                 icfg &= ~(2u << (2 * (irq % 16)));
-            } else {
+            else
                 icfg |= (2u << (2 * (irq % 16)));
-            }
+
             _gic.ba_gicd[GICD_ICFGR + irq / 16] = icfg;
             /* routing */
             reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ITARGETSR]);
@@ -354,9 +358,8 @@ void gic_interrupt(int fiq, void *pregs)
             _gic.ba_gicc[GICC_EOIR] = irq;
             virq_inject(virq_entry->vmid, virq_entry->virq, irq, 1);
         } else {
-            if (_gic.handlers[irq]) {
+            if (_gic.handlers[irq])
                 _gic.handlers[irq](irq, regs, 0);
-            }
             /* Completion & Deactivation */
             _gic.ba_gicc[GICC_EOIR] = irq;
             _gic.ba_gicc[GICC_DIR] = irq;

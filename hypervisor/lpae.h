@@ -39,7 +39,7 @@
  * bits that's not in use in a given node type can be used as
  * extra software-defined bits. */
 
-typedef struct {
+struct lpae_pt {
     /* These are used in all kinds of entry. */
     unsigned long valid:1;     /* Valid mapping */
     unsigned long table:1;     /* == 1 in 4k map entries too */
@@ -71,11 +71,11 @@ typedef struct {
     unsigned long xnt:1;       /* eXecute-Never */
     unsigned long apt:2;       /* Access Permissions */
     unsigned long nst:1;       /* Not-Secure */
-} __attribute__((__packed__)) lpae_pt_t;
+} __attribute__((__packed__));
 
 /* The p2m tables have almost the same layout, but some of the permission
  * and cache-control bits are laid out differently (or missing) */
-typedef struct {
+struct lpae_p2m {
     /* These are used in all kinds of entry. */
     unsigned long valid:1;     /* Valid mapping */
     unsigned long table:1;     /* == 1 in 4k map entries too */
@@ -101,14 +101,14 @@ typedef struct {
     unsigned long avail:4;     /* Ignored by hardware */
 
     unsigned long sbz1:5;
-} __attribute__((__packed__)) lpae_p2m_t;
+} __attribute__((__packed__));
 
 
 /*
  * Walk is the common bits of p2m and pt entries which are needed to
  * simply walk the table (e.g. for debug).
  */
-typedef struct {
+struct lpae_walk {
     /* These are used in all kinds of entry. */
     unsigned long valid:1;     /* Valid mapping */
     unsigned long table:1;     /* == 1 in 4k map entries too */
@@ -119,16 +119,16 @@ typedef struct {
     unsigned long base:28;     /* Base address of block or next table */
 
     unsigned long pad1:24;
-} __attribute__((__packed__)) lpae_walk_t;
+} __attribute__((__packed__));
 
-typedef union {
+union lpaed {
     uint64_t bits;
-    lpae_pt_t pt;
-    lpae_p2m_t p2m;
-    lpae_walk_t walk;
-} lpaed_t;
+    struct lpae_pt pt;
+    struct lpae_p2m  p2m;
+    struct lpae_walk walk;
+};
 
-typedef enum {
+enum lpaed_stage2_memattr {
     LPAED_STAGE2_MEMATTR_SO = 0x0,   /* Strongly Ordered */
     LPAED_STAGE2_MEMATTR_DM = 0x1,   /* Device memory */
     LPAED_STAGE2_MEMATTR_NORMAL_ONC = 0x4,  /* Outer Non-cacheable */
@@ -137,19 +137,25 @@ typedef enum {
     LPAED_STAGE2_MEMATTR_NORMAL_INC = 0x1,
     LPAED_STAGE2_MEMATTR_NORMAL_IWT = 0x2,
     LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,
-} lpaed_stage2_memattr_t;
+};
 
-lpaed_t hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
-lpaed_t hvmm_mm_lpaed_l2_block(uint64_t pa, lpaed_stage2_memattr_t mattr);
-lpaed_t hvmm_mm_lpaed_l1_table(uint64_t pa);
-lpaed_t hvmm_mm_lpaed_l2_table(uint64_t pa);
-lpaed_t hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx, uint8_t valid);
-void lpaed_stage1_conf_l3_table(lpaed_t *ttbl3, uint64_t baddr, uint8_t valid);
-void lpaed_stage1_disable_l3_table(lpaed_t *ttbl2);
-void lpaed_stage2_map_page(lpaed_t *pte, uint64_t pa, lpaed_stage2_memattr_t mattr);
-void lpaed_stage2_conf_l1_table(lpaed_t *ttbl1, uint64_t baddr, uint8_t valid);
-void lpaed_stage2_conf_l2_table(lpaed_t *ttbl2, uint64_t baddr, uint8_t valid);
-void lpaed_stage2_enable_l2_table(lpaed_t *ttbl2);
-void lpaed_stage2_disable_l2_table(lpaed_t *ttbl2);
+union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
+union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
+                enum lpaed_stage2_memattr mattr);
+union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa);
+union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa);
+union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
+                uint8_t valid);
+void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
+                uint8_t valid);
+void lpaed_stage1_disable_l3_table(union lpaed *ttbl2);
+void lpaed_stage2_map_page(union lpaed *pte, uint64_t pa,
+        enum lpaed_stage2_memattr mattr);
+void lpaed_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
+        uint8_t valid);
+void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
+        uint8_t valid);
+void lpaed_stage2_enable_l2_table(union lpaed *ttbl2);
+void lpaed_stage2_disable_l2_table(union lpaed *ttbl2);
 
 #endif

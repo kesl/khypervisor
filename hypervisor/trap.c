@@ -40,8 +40,8 @@ hvmm_status_t _hyp_trap_unhandled(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
     context_dump_regs(regs);
-    hyp_abort_infinite()
-    ;
+    hyp_abort_infinite();
+
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
@@ -67,12 +67,14 @@ static void _trap_dump_bregs(void)
  *
  * HYP Syndrome Register(HSR)
  * EC[31:26] is an exception class for the exception that is taken to HYP mode
- * IL[25] is an instruction length for the trapped insruction that is 16 bit or 32 bit
- * ISS[24:0] is an instruction-specific syndrome for the instruction information included. It depends on EC field.
+ * IL[25] is an instruction length for the trapped insruction that is
+ * 16 bit or 32 bit
+ * ISS[24:0] is an instruction-specific syndrome for the instruction
+ * information included. It depends on EC field.
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
 
-hyp_hvc_result_t _hyp_hvc_service(struct arch_regs *regs)
+enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     unsigned int hsr = read_hsr();
     unsigned int ec = (hsr & HSR_EC_BIT) >> EXTRACT_EC;

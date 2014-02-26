@@ -19,7 +19,8 @@ hvmm_status_t generic_timer_init()
 }
 
 
-hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
+hvmm_status_t generic_timer_set_tval(enum generic_timer_type type,
+                uint32_t tval)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     if (type == GENERIC_TIMER_HYP) {
@@ -31,7 +32,7 @@ hvmm_status_t generic_timer_set_tval(generic_timer_type_t type, uint32_t tval)
     return result;
 }
 
-hvmm_status_t generic_timer_enable_int(generic_timer_type_t type)
+hvmm_status_t generic_timer_enable_int(enum generic_timer_type type)
 {
     uint32_t ctrl;
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -45,7 +46,7 @@ hvmm_status_t generic_timer_enable_int(generic_timer_type_t type)
     return result;
 }
 
-hvmm_status_t generic_timer_disable_int(generic_timer_type_t type)
+hvmm_status_t generic_timer_disable_int(enum generic_timer_type type)
 {
     uint32_t ctrl;
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -64,7 +65,7 @@ static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
     _callback[GENERIC_TIMER_HYP](regs);
 }
 
-hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type)
+hvmm_status_t generic_timer_enable_irq(enum generic_timer_type type)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     if (type == GENERIC_TIMER_HYP) {
@@ -79,7 +80,8 @@ hvmm_status_t generic_timer_enable_irq(generic_timer_type_t type)
     return result;
 }
 
-hvmm_status_t generic_timer_set_callback(generic_timer_type_t type, generic_timer_callback_t callback)
+hvmm_status_t generic_timer_set_callback(enum generic_timer_type type,
+                generic_timer_callback_t callback)
 {
     HVMM_TRACE_ENTER();
     _callback[type] = callback;
