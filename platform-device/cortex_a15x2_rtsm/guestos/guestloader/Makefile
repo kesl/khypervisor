@@ -1,7 +1,7 @@
 # Usage: make
 # Example:
-#	$ make		; build for bmguest
-#	$ make		; build for linux guest
+#	$ make	     	; build for bmguest
+#	$ make LINUX=y	; build for linux guest
 
 # Include config file 
 include config-default.mk
