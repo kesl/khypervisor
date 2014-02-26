@@ -97,11 +97,11 @@ static struct atag *_params; /* used to point at the current tag */
 static void setup_core_tag( void * address, long pagesize )
 {
     _params = (struct atag *)address;         /* Initialise parameters to start at given address */
-    _params->hdr.tag = ATAG_CORE;            /* start with the core tag */
-    _params->hdr.size = tag_size(atag_core); /* size the tag */
-    _params->u.core.flags = 1;               /* ensure read-only */
-    _params->u.core.pagesize = pagesize;     /* systems pagesize (4k) */
-    _params->u.core.rootdev = 0;             /* zero root device (typicaly overidden from commandline )*/
+    _params->hdr.tag = ATAG_CORE;             /* start with the core tag */
+    _params->hdr.size = tag_size(atag_core);  /* size the tag */
+    _params->u.core.flags = 1;                /* ensure read-only */
+    _params->u.core.pagesize = pagesize;      /* systems pagesize (4k) */
+    _params->u.core.rootdev = 0;              /* zero root device (typicaly overidden from commandline )*/
     _params = tag_next(_params);              /* move pointer to next tag */
 }
 
@@ -117,10 +117,10 @@ static void setup_cmdline_tag( const char * line )
 {
     int linelen = strlen(line);
     if(!linelen)
-        return;                             /* do not insert a tag for an empty commandline */
-    _params->hdr.tag = ATAG_CMDLINE;         /* Commandline tag */
+        return;                               /* do not insert a tag for an empty commandline */
+    _params->hdr.tag = ATAG_CMDLINE;          /* Commandline tag */
     _params->hdr.size = (sizeof(struct atag_header) + linelen + 1 + 4) >> 2;
-    strcpy(_params->u.cmdline.cmdline,line); /* place commandline into tag */
+    strcpy(_params->u.cmdline.cmdline,line);  /* place commandline into tag */
     _params = tag_next(_params);              /* move pointer to next tag */
 }
 
@@ -130,7 +130,7 @@ static void setup_mem_tag( uint32_t start, uint32_t len )
     _params->hdr.size = tag_size(atag_mem);  /* size tag */
     _params->u.mem.start = start;            /* Start of memory area (physical address) */
     _params->u.mem.size = len;               /* Length of area */
-    _params = tag_next(_params);              /* move pointer to next tag */
+    _params = tag_next(_params);             /* move pointer to next tag */
 }
 
 static void setup_end_tag( void )
@@ -151,10 +151,10 @@ void loadlinux_setup_tags( uint32_t *src )
 
 void loadlinux_run_zImage( uint32_t start_addr )
 {
-	uint32_t machineid = CFG_MACHINE_NUMBER;
-	uint32_t atagspointer = 0x80000100;
-	/* Jump to 0xA000_8000 */
-	asm volatile ("mov r1, %0" ::"r" (machineid):"memory","cc");
-	asm volatile ("mov r2, %0" ::"r" (atagspointer):"memory","cc");
-	asm volatile ("mov pc, %0" ::"r" (start_addr):"memory","cc");
+    uint32_t machineid = CFG_MACHINE_NUMBER;
+    uint32_t atagspointer = 0x80000100;
+    /* Jump to 0xA000_8000 */
+    asm volatile ("mov r1, %0" ::"r" (machineid):"memory","cc");
+    asm volatile ("mov r2, %0" ::"r" (atagspointer):"memory","cc");
+    asm volatile ("mov pc, %0" ::"r" (start_addr):"memory","cc");
 }
