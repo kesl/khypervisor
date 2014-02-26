@@ -208,7 +208,7 @@ our $UTF8	= qr {
 
 our $typeTypedefs = qr{(?x:
 	(?:__)?(?:u|s|be|le)(?:8|16|32|64)|
-	atomic_t
+	atomic_t | hvmm_status | vmid_t | (?:int|uint)(?:8_t|16_t|32_t|64_t)
 )};
 
 our $logFunctions = qr{(?x:
