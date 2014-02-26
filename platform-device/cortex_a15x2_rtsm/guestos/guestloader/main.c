@@ -13,7 +13,7 @@ static void copy_loader_next_to_guest( void )
     extern uint32_t loader_start;
     uint32_t *src = &loader_start;
     uint32_t *dst = &guest_bin_end;
-	uint32_t *end = &guest_bin_start;
+    uint32_t *end = &guest_bin_start;
     uint32_t offset;
     while(src < end ) {
         *dst++ = *src++;
