@@ -54,7 +54,7 @@ OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
 	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
 	$(COMMON_SOURCE_DIR)/test/tests_vdev.o			\
 	$(COMMON_SOURCE_DIR)/test/tests_malloc.o		\
-	$(COMMON_SOURCE_DIR)/test/tests_vdev_timer.o		
+	$(COMMON_SOURCE_DIR)/test/tests_vdev_timer.o
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/log/string.o	\
 	$(COMMON_SOURCE_DIR)/log/format.o				\
@@ -75,7 +75,7 @@ SEMIIMG 	= hvc-man-switch.axf
 MONITORMAP	= monitor.map
 
 
-CONFIG_FLAGS	= -DBAREMETAL_GUEST 
+CONFIG_FLAGS	= -DBAREMETAL_GUEST
 
 ifeq ($(LINUX), y)
     CONFIG_FLAGS	+= -DLINUX_GUEST
@@ -104,32 +104,32 @@ semi: $(SEMIIMG) $(MONITORMAP)
 
 $(MONITORMAP): $(SEMIIMG)
 	$(NM) $< > $@
-	
+
 clean distclean:
 	rm -f $(MONITORMAP) $(SEMIIMG) $(HYPBIN) \
-	model.lds modelsemi.lds $(OBJS) 
+	model.lds modelsemi.lds $(OBJS)
 
 $(SEMIIMG): $(OBJS) modelsemi.lds
 	$(LD) -o $@ $(OBJS) --script=modelsemi.lds
 
 $(HYPBIN): $(SEMIIMG)
-	$(OBJCOPY) -O binary $(SEMIIMG) $(HYPBIN) 
+	$(OBJCOPY) -O binary $(SEMIIMG) $(HYPBIN)
 
-$(GUEST0BIN): 
+$(GUEST0BIN):
 	@echo "========================================"
 	@echo "ERROR: Copy $@ from guestos/bmguest/ after building it"
 	@echo "======================================="
 	# Our intention is to cause an error and abort Makefile processing
 	# Not actually removing the file
 	@rm $@
-	
-$(GUEST1BIN): 
+
+$(GUEST1BIN):
 	@echo "========================================"
 	@echo "ERROR: Copy $@ from guestos/bmguest/ after building it"
 	@echo "======================================="
 	# Our intention is to cause an error and abort Makefile processing
 	# Not actually removing the file
-	@rm $@ 
+	@rm $@
 
 
 boot.o: $(BOOTLOADER)
@@ -141,7 +141,7 @@ monitor.o: monitor.S
 %.o: %.c
 	$(CC) $(CPPFLAGS) -Wall -O2 -ffreestanding -I. -c -o $@ $<
 
-model.lds: $(LD_SCRIPT) Makefile 
+model.lds: $(LD_SCRIPT) Makefile
 	$(CC) $(CPPFLAGS) -E -P -C -o $@ $<
 
 modelsemi.lds: $(LD_SCRIPT) Makefile $(GUEST0BIN) $(GUEST1BIN)
