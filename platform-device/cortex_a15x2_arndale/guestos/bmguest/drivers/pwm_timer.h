@@ -3,13 +3,13 @@
 
 #include <hvmm_types.h>
 
-//For Guest OS
-#define PWMBASE (void*)0x3FD10000
+/* For Guest OS */
+#define PWMBASE (void *)0x3FD10000
 #define PWM_TIMERREG(x) (PWMBASE + (x))
 #define TCFG0   PWM_TIMERREG(0x00)
 #define TCFG1   PWM_TIMERREG(0x04)
 #define TCON    PWM_TIMERREG(0x08)
-#define PWM_TIMERREG2(tmr,reg) PWM_TIMERREG((reg)+0x0c+((tmr)*0x0c))
+#define PWM_TIMERREG2(tmr, reg) PWM_TIMERREG((reg) + 0x0c + ((tmr) * 0x0c))
 #define CSTAT PWM_TIMERREG(0x44)
 #define TCNTB(tmr)  PWM_TIMERREG2(tmr, 0x00)
 #define TCMPB(tmr)  PWM_TIMERREG2(tmr, 0x04)
@@ -35,7 +35,10 @@ void pwm_timer_init();
 hvmm_status_t pwm_timer_enable_int();
 /* Disable the timer.  */
 hvmm_status_t pwm_timer_disable_int();
-/* Sets time interval. Converts from microseconds to count and sets time interval.*/
+/*
+ * Sets time interval. Converts from microseconds
+ * to count and sets time interval.
+ */
 hvmm_status_t pwm_timer_set_interval(uint32_t tval);
 /* Enables timer irq.  */
 hvmm_status_t pwm_timer_enable_irq();

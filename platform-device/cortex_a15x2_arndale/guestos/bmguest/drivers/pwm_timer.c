@@ -16,11 +16,11 @@ hvmm_status_t pwm_timer_enable_int()
     HVMM_TRACE_ENTER();
     tcon = vmm_readl(TCON);
     tcstat = vmm_readl(CSTAT);
-    //auto reload set & timer start
+    /* auto reload set & timer start */
     tcon |= (TCON_T1RELOAD);
     tcon |= (TCON_T1START);
     vmm_writel(tcon, TCON);
-    //interrupt enable
+    /* interrupt enable */
     tcstat |= 1 << 1;
     vmm_writel(tcstat, CSTAT);
     HVMM_TRACE_EXIT();
@@ -103,8 +103,9 @@ void interrupt_pwmtimer(int irq, void *pregs, void *pdata)
 
 hvmm_status_t hvmm_tests_pwm_timer(void)
 {
-    /* Testing pwm timer event (timer1, Interrupt ID : 69), Cortex-A15 exynos5250
-         * - Periodically triggers timer interrupt
+    /* Testing pwm timer event (timer1, Interrupt ID : 69),
+     * Cortex-A15 exynos5250
+     * - Periodically triggers timer interrupt
      * - Just print uart_print
      */
     HVMM_TRACE_ENTER();

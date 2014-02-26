@@ -10,7 +10,10 @@ void pwm_timer_init();
 hvmm_status_t pwm_timer_enable_int();
 /* Disable the timer.  */
 hvmm_status_t pwm_timer_disable_int();
-/* Sets time interval. Converts from microseconds to count and sets time interval.*/
+/*
+ * Sets time interval. Converts from microseconds
+ * to count and sets time interval.
+ */
 hvmm_status_t pwm_timer_set_interval(uint32_t tval);
 /* Enables timer irq.  */
 hvmm_status_t pwm_timer_enable_irq();
