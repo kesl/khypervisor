@@ -45,12 +45,5 @@ struct s5p_uart {
         union br_rest        rest;
         unsigned char        res3[0xffd0];
 };
-
-static inline int s5p_uart_divslot(void)
-{
-        return 0;
-}
-
-
 #endif
 
