@@ -15,10 +15,6 @@
 #include <vmm.h>
 
 #include <string.h>
-#if defined LINUX_GUEST
-#include "loadlinux.h"
-#endif
-
 #include <config/cfg_platform.h>
 
 #include <log/uart_print.h>
@@ -412,13 +408,7 @@ void context_init_guests(void)
     context = &guest_contexts[0];
     regs = &context->regs;
     regs->cpsr = 0x1d3;            /* supervisor, interrupt disabled */
-#if defined LINUX_GUEST
-    regs->pc = 0xA0008000;        /* PA:0xA0008000, where zImage is */
-    regs->gpr[1] = CFG_MACHINE_NUMBER;
-    regs->gpr[2] = 0x80000100;  /* src+(0x100/4); */
-#else
     regs->pc = 0x80000000; /* PA:0xA0000000, default entry for bmguest */
-#endif
     /* regs->gpr[] = whatever */
     context->vmid = 0;
     context->ttbl = vmm_vmid_ttbl(context->vmid);
@@ -436,12 +426,6 @@ void context_init_guests(void)
     context_init_cops(&context->regs_cop);
     context_init_banked(&context->regs_banked);
     vgic_init_status(&context->vgic_status, context->vmid);
-#if defined LINUX_GUEST
-    {
-        uint32_t *src = &guest_bin_start;
-        loadlinux_setup_tags(src);
-    }
-#endif
     uart_print("[hyp] init_guests: return\n\r");
 }
 

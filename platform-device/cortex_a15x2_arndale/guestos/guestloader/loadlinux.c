@@ -1,7 +1,7 @@
 #include "loadlinux.h"
 #include <log/string.h>
-#include <log/print.h>
 
+#define CFG_MACHINE_NUMBER 4274
 /* list of possible tags */
 #define ATAG_NONE       0x00000000
 #define ATAG_CORE       0x54410001
@@ -16,10 +16,9 @@
 
 #define tag_next(t)     ((struct atag *)((uint32_t *)(t) + (t)->hdr.size))
 #define tag_size(type)  ((sizeof(struct atag_header) \
-            + sizeof(struct type)) >> 2)
+        + sizeof(struct type)) >> 2)
 
 /* structures for each atag */
-
 struct atag_header {
     uint32_t size; /* length of tag in words including this header */
     uint32_t tag;  /* tag type */
@@ -29,7 +28,6 @@ struct atag_core {
     uint32_t pagesize;
     uint32_t rootdev;
 };
-
 struct atag_mem {
     uint32_t size;
     uint32_t start;
@@ -38,7 +36,6 @@ struct atag_serialnr {
     uint32_t low;
     uint32_t high;
 };
-
 struct atag_revision {
     uint32_t rev;
 };
@@ -104,13 +101,13 @@ static void setup_core_tag(void *address, long pagesize)
     _params = (struct atag *)address;
     /* start with the core tag */
     _params->hdr.tag = ATAG_CORE;
-    _params->hdr.size = tag_size(atag_core); /* size the tag */
-    _params->u.core.flags = 1;               /* ensure read-only */
-    _params->u.core.pagesize = pagesize;     /* systems pagesize (4k) */
+    _params->hdr.size = tag_size(atag_core);  /* size the tag */
+    _params->u.core.flags = 1;                /* ensure read-only */
+    _params->u.core.pagesize = pagesize;      /* systems pagesize (4k) */
     /* zero root device (typicaly overidden from commandline )*/
     _params->u.core.rootdev = 0;
     /* move pointer to next tag */
-    _params = tag_next(_params);
+    _params = tag_next(_params);              /* move pointer to next tag */
 }
 
 static void setup_revision_tag(void)
@@ -124,24 +121,24 @@ static void setup_revision_tag(void)
 static void setup_cmdline_tag(const char *line)
 {
     int linelen = strlen(line);
+    /* do not insert a tag for an empty commandline */
     if (!linelen)
-        return;    /* do not insert a tag for an empty commandline */
-
-    _params->hdr.tag = ATAG_CMDLINE;         /* Commandline tag */
+        return;
+    _params->hdr.tag = ATAG_CMDLINE;          /* Commandline tag */
     _params->hdr.size = (sizeof(struct atag_header) + linelen + 1 + 4) >> 2;
-    strcpy(_params->u.cmdline.cmdline, line); /* place commandline into tag */
+    /* place commandline into tag */
+    strcpy(_params->u.cmdline.cmdline, line);
     _params = tag_next(_params);              /* move pointer to next tag */
 }
 
 static void setup_mem_tag(uint32_t start, uint32_t len)
 {
-    printh("setup_mem_tag start :  %x len : %x\n", start, len);
     _params->hdr.tag = ATAG_MEM;             /* Memory tag */
     _params->hdr.size = tag_size(atag_mem);  /* size tag */
     /* Start of memory area (physical address) */
     _params->u.mem.start = start;
     _params->u.mem.size = len;               /* Length of area */
-    _params = tag_next(_params);              /* move pointer to next tag */
+    _params = tag_next(_params);             /* move pointer to next tag */
 }
 
 static void setup_end_tag(void)
@@ -156,11 +153,20 @@ void loadlinux_setup_tags(uint32_t *src)
             "root=/dev/ram rw earlyprintk console=ttyAMA0 "
             "mem=256M rdinit=/sbin/init";
     /* standard core tag 4k pagesize */
-    setup_core_tag(src + (0x100 / 4), 4096);
+    setup_core_tag(src+(0x100/4), 4096);
     /* commandline setting root device */
     setup_cmdline_tag(commandline);
     setup_revision_tag();
-    setup_mem_tag((uint32_t)(src - (0x20000000 / 4)), 0x10000000);
-    /* end of tags */
-    setup_end_tag();
+    setup_mem_tag((uint32_t)src, 0x10000000);
+    setup_end_tag();                           /* end of tags */
+}
+
+void loadlinux_run_zImage(uint32_t start_addr)
+{
+    uint32_t machineid = CFG_MACHINE_NUMBER;
+    uint32_t atagspointer = 0x80000100;
+    /* Jump to 0xA000_8000 */
+    asm volatile ("mov r1, %0" : : "r" (machineid) : "memory", "cc");
+    asm volatile ("mov r2, %0" : : "r" (atagspointer) : "memory", "cc");
+    asm volatile ("mov pc, %0" : : "r" (start_addr) : "memory", "cc");
 }
