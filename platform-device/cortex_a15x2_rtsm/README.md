@@ -88,7 +88,7 @@ Go to "Testing bmguest+linuxguest on RTSM"
 this section, if you done this process first.
 <pre>
 $ cd khypervisor
-$ source platform-device/cortex_a15x2_arndale/build/linux_bmguest.sh
+$ source platform-device/cortex_a15x2_rtsm/build/linux_bmguest.sh
 $ make
 </pre>
 
@@ -124,7 +124,7 @@ $ cp guestloader.bin ../../guestimages/guest0.bin
 </pre>
 3. Build guestloader for bmguest
 <pre>
-$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/guestos/guestloader
 $ make
 $ cp guestloader.bin ../../guestimages/guest1.bin
 </pre>
