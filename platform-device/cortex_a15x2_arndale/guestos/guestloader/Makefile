@@ -2,6 +2,7 @@
 # Example:
 #	$ make	     	; build for bmguest
 #	$ make LINUX=y	; build for linux guest
+#	$ make RTOS=y	; build for rtos guest
 
 # Include config file
 include config-default.mk
@@ -15,11 +16,15 @@ CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY	= $(CROSS_COMPILE)objcopy
-ifeq ($(LINUX), y)
-GUESTLOADERCONFIGS += -DLINUX_GUEST
-GUESTBIN	= ../../guestimages/zImage
-else
+GUESTLOADERCONFIGS = -DBM_GUEST
 GUESTBIN	= ../../guestimages/bmguest.bin
+ifeq ($(LINUX), y)
+GUESTLOADERCONFIGS = -DLINUX_GUEST
+GUESTBIN	= ../../guestimages/zImage
+endif
+ifeq ($(RTOS), y)
+GUESTLOADERCONFIGS = -DRTOS_GUEST
+GUESTBIN	= ../../guestimages/rtos.bin
 endif
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN)
 all: $(GUESTLOADERBIN)
@@ -30,13 +35,8 @@ $(GUESTLOADERIMG): $(OBJS) model.lds
 	$(LD) -o $@ $(OBJS) --script=model.lds
 $(GUESTLOADERBIN): $(GUESTLOADERIMG)
 	$(OBJCOPY) -O binary -S $< $@
-ifeq ($(LINUX), y)
 $(GUESTBIN):
-	@echo "ERROS: Copy $@ from guestos/linux/arch/arm/boot/ after building it"
-else
-$(GUESTBIN):
-	@echo "ERROS: Copy $@ from guestos/bmguest/ after building it"
-endif
+	@echo "ERROS: Copy $@ from guestos/target_guest/ after building it"
 boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 %.o: %.c

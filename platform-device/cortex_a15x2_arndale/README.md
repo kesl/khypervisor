@@ -20,7 +20,7 @@ sudo apt-get install gcc-arm-linux-gnueabihf
 </pre>
 
 
-# Download hypervisor 
+# Download hypervisor
 <pre>
 $ git clone https://github.com/kesl/khypervisor.git
 $ cd khypervisor
@@ -30,6 +30,15 @@ $ ./scripts/apply_patch.sh
 </pre>
 
 # How to test RTOS guset + linux guest
+
+## Make a build in one step continuous integration
+Go to "How to Flash a K-hypervisor to arndale board (RTOS + Linux guest)"
+this section, if you done this process first.
+<pre>
+$ cd khypervisor
+$ source platform-device/cortex_a15x2_arndale/build/linux_ucos-ii.sh
+$ make
+</pre>
 
 ## Build bootloader
 <pre>
@@ -50,34 +59,47 @@ $ make ARCH=arm arndale_minimal_linux_defconfig
 $ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
 </pre>
 
-## Build k-hypervisor
+## Build guest loader
 1. Copy guest image to guestimages directory
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale
-$ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/guest0.bin
-$ cp ./guestos/ucos-ii/rtos.bin ./guestimages/guest1.bin
+$ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/zImage
+$ cp ./guestos/ucos-ii/rtos.bin ./guestimages/rtos.bin
 </pre>
-2. Initial setup for linux
+2. Build guestloader for linux guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make LINUX=y
+$ cp guestloader.bin ../../guestimages/guest0.bin
+</pre>
+3. Build guestloader for RTOS guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make RTOS=y
+$ cp guestloader.bin ../../guestimages/guest1.bin
+</pre>
+
+## Build k-hypervisor
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale
-$ make LINUX=y RTOS=y 
+$ make
 </pre>
 
 
-## How to Flash a K-hypervisor to arndale board
+## How to Flash a K-hypervisor to arndale board (RTOS + Linux guest)
 
-1. Copy the binaries to SD card (X is number of SD card parition)	
+1. Copy the binaries to SD card (X is number of SD card parition)
 	<br>
 	Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
 
-	<pre>
+<pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
 $ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=2129
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=11153
 </pre>
 
 2. Setting serial port and run minicom, open 2 minicoms
@@ -90,26 +112,140 @@ $ minicom -s
 
 3. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
 <pre>
-$ ZIMAGE: ARNDALE # 
+$ ZIMAGE: ARNDALE #
 </pre>
 
 4. Enter the following command
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x90000000 851 400;mmc read 0x80008000 c51 2000;go 0xa000004c
+$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 1F40;mmc read 0x90000000 2b91 bb8;go 0xa000004c
 </pre>
 
-# How to test bmguset + bmgest
+# How to test bmguset + linux guest
+
+## Make a build in one step continuous integration
+Go to "How to Flash a K-hypervisor to arndale board (bmguest + Linux guest)"
+this section, if you done this process first.
+<pre>
+$ cd khypervisor
+$ source platform-device/cortex_a15x2_arndale/build/linux_bmguest.sh
+$ make
+</pre>
+
+## Build bootloader
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
+$ make arndale5250 CROSS_COMPILE=arm-none-eabi- -j8
+</pre>
+
+## Build RTOS guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/bmguest/
+$ make
+</pre>
+
+## Build linux guset
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/linux
+$ make ARCH=arm arndale_minimal_linux_defconfig
+$ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
+</pre>
+
+## Build guest loader
+1. Copy guest image to guestimages directory
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/zImage
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/bmguest.bin
+</pre>
+2. Build guestloader for linux guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make LINUX=y
+$ cp guestloader.bin ../../guestimages/guest0.bin
+</pre>
+3. Build guestloader for bmguest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make
+$ cp guestloader.bin ../../guestimages/guest1.bin
+</pre>
+
+## Build k-hypervisor
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ make
+</pre>
+
+
+## How to Flash a K-hypervisor to arndale board (bmguest + Linux guest)
+
+1. Copy the binaries to SD card (X is number of SD card parition)
+	<br>
+	Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
+
+	<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
+$ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
+$ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
+$ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=11153
+</pre>
+
+2. Setting serial port and run minicom, open 2 minicoms
+<pre>
+$ minicom -s
+"serial device for hypervisor & rtos sets /dev/ttyS0"
+$ minicom -s
+"serial device for linuxguest sets /dev/ttyS1"
+</pre>
+
+3. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
+<pre>
+$ ZIMAGE: ARNDALE #
+</pre>
+
+4. Enter the following command
+<pre>
+$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 1F40;mmc read 0x90000000 2b91 bb8;go 0xa000004c
+</pre>
+
+
+# How to test bmguest + bmgest
+
+## Make a build in one step continuous integration
+Go to "How to Flash a K-hypervisor to arndale board (bmguest + bmguest)"
+this section, if you done this process first.
+<pre>
+$ cd khypervisor
+$ source platform-device/cortex_a15x2_arndale/build/bmguest_bmguest.sh
+$ make
+</pre>
+
 ## Build bmguest
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/bmguest/
 $ make
 </pre>
 
+## Build guest loader
+1. Copy guest image to guestimages directory
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/bmguest.bin
+</pre>
+2. Build guestloader for bmguest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make
+$ cp guestloader.bin ../../guestimages/guest0.bin
+$ cp guestloader.bin ../../guestimages/guest1.bin
+</pre>
+
 ## Build k-hypervisor
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale
-$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest0.bin
-$ cp ./guestos/bmguest/bmguest.bin ./guestimages/guest1.bin
 $ make
 </pre>
 
@@ -119,9 +255,9 @@ $ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
 $ make arndale5250
 </pre>
 
-## How to Flash a K-hypervisor to arndale board
+## How to Flash a K-hypervisor to arndale board (bmguest + bmguest)
 
-1. Copy the binaries to SD card (X is number of SD card parition)	
+1. Copy the binaries to SD card (X is number of SD card parition)
 	<br>
 	Download arndale-bl1.bin here : <a href="http://releases.linaro.org/12.12/components/kernel/arndale-bl1/arndale-bl1.bin">arndale-bl1.bin download</a>
 
@@ -132,7 +268,7 @@ $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
 $ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=2129
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=6153
 </pre>
 
 2. Setting serial port and run minicom, open 2 minicoms
@@ -145,11 +281,11 @@ $ minicom -s
 
 3. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
 <pre>
-$ ZIMAGE: ARNDALE # 
+$ ZIMAGE: ARNDALE #
 </pre>
 
 4. Enter the following command
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800; mmc read 0x60000000 851 400; mmc read 0x90000000 851 400; go 0xa000004c
+$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 bb8;mmc read 0x90000000 1809 bb8;go 0xa000004c
 </pre>
 

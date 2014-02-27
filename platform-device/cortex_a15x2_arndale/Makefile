@@ -7,8 +7,7 @@
 
 # Usage: make
 # Example:
-# 	$ make LINUX=y 	; # build for linux kernel loading
-#	$ make			; # build for bmguest loading
+#	$ make			; # build for khypervisor
 
 # Include config file (prefer config.mk, fall back to config-default.mk)
 ifneq ($(wildcard config.mk),)
@@ -74,13 +73,6 @@ GUEST1BIN	= ./guestimages/guest1.bin
 
 SEMIIMG 	= hvc-man-switch.axf
 MONITORMAP	= monitor.map
-
-CONFIG_FLAGS	= -DBAREMETAL_GUEST
-
-ifeq ($(LINUX), y)
-    CONFIG_FLAGS	+= -DLINUX_GUEST
-	OBJS += $(HYPERVISOR_SOURCE_DIR)/loadlinux.o
-endif
 
 CPPFLAGS	+= $(CONFIG_FLAGS) $(INCLUDES)
 
