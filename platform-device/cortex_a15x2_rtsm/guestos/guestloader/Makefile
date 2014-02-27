@@ -6,11 +6,16 @@
 # Include config file
 include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
-OBJS += boot.o main.o loadlinux.o drivers/uart.o $(COMMON_SOURCE_DIR)/log/string.o
+COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
+OBJS += boot.o main.o drivers/uart.o \
+	$(COMMON_SOURCE_DIR)/log/string.o \
+	$(COMMON_LOADER_DIR)/loadlinux.o \
+	$(COMMON_LOADER_DIR)/loadguest.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
-INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include
+INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
+			 -I$(COMMON_LOADER_DIR)
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld

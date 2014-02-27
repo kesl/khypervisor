@@ -18,13 +18,13 @@ endif
 
 COMMON_SOURCE_DIR=../../../../common
 
-COMMON_OBJS = $(COMMON_SOURCE_DIR)/guest/c_start.o \
-	$(COMMON_SOURCE_DIR)/guest/exception.o \
-	$(COMMON_SOURCE_DIR)/guest/gic.o \
+COMMON_OBJS = $(COMMON_SOURCE_DIR)/guest/core/c_start.o \
+	$(COMMON_SOURCE_DIR)/guest/core/exception.o \
+	$(COMMON_SOURCE_DIR)/guest/core/gic.o \
 	$(COMMON_SOURCE_DIR)/guest/test/test_vdev_sample.o \
 	$(COMMON_SOURCE_DIR)/guest/test/test_vtimer.o \
 	$(COMMON_SOURCE_DIR)/log/string.o \
-	$(COMMON_SOURCE_DIR)/guest/guest.o
+	$(COMMON_SOURCE_DIR)/guest/core/guest.o
 	
 OBJS = boot.o main.o $(COMMON_OBJS)
 
@@ -33,7 +33,7 @@ OBJS += drivers/uart.o drivers/sp804_timer.o
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin
 LD_SCRIPT	= model.lds.S
-INCLUDES    = -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include -I$(COMMON_SOURCE_DIR)/guest
+INCLUDES    = -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include -I$(COMMON_SOURCE_DIR)/guest -I$(COMMON_SOURCE_DIR)/guest/core
 
 CPPFLAGS    += $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
