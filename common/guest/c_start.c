@@ -102,6 +102,7 @@ void nrm_loop(void)
     }
     uart_print(GUEST_LABEL);
     uart_print("common nrm_loop done\n\r");
+    uart_print("\n[K-HYPERVISOR]TEST#INSTALLATION#BMGUEST-BOOT#PASS\n\r");
     /* start platform start up code */
     main();
 }
