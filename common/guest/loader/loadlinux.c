@@ -1,7 +1,7 @@
 #include "loadlinux.h"
 #include <log/string.h>
+#include <guestloader.h>
 
-#define CFG_MACHINE_NUMBER 2272
 /* list of possible tags */
 #define ATAG_NONE       0x00000000
 #define ATAG_CORE       0x54410001
@@ -163,7 +163,7 @@ void loadlinux_setup_tags(uint32_t *src)
 
 void loadlinux_run_zImage(uint32_t start_addr)
 {
-    uint32_t machineid = CFG_MACHINE_NUMBER;
+    uint32_t machineid = MACHINE_NUMBER;
     uint32_t atagspointer = 0x80000100;
     /* Jump to 0xA000_8000 */
     asm volatile ("mov r1, %0" : : "r" (machineid) : "memory", "cc");
