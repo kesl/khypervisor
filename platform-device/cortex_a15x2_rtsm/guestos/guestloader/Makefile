@@ -32,17 +32,15 @@ $(GUESTLOADERBIN): $(GUESTLOADERIMG)
 ifeq ($(LINUX), y)
 $(GUESTBIN):
 	@echo "ERROS: Copy $@ from guestos/linux/arch/arm/boot/ after building it"
-	@rm $@
 else
 $(GUESTBIN):
 	@echo "ERROS: Copy $@ from guestos/bmguest/ after building it"
-	@rm $@
 endif
 boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 %.o: %.c
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -O2 -ffreestanding -I.  -c -o $@ $<
-model.lds: $(LD_SCRIPT) Makefile
+model.lds: $(LD_SCRIPT) Makefile $(GUESTBIN)
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -E -P -C -o $@ $<
 force: ;
 Makefile: ;

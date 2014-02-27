@@ -1,7 +1,6 @@
 #include <guestloader.h>
 #include <log/uart_print.h>
 #include <arch_types.h>
-#include <hvmm_trace.h>
 #include <loadlinux.h>
 /**
 * @brief Copying Guestloader next to guestimage.
