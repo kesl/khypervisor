@@ -15,9 +15,11 @@ CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY	= $(CROSS_COMPILE)objcopy
-GUESTLOADERCONFIGS += -DLDS_PHYS_OFFSET='0x80000000' -DLDS_STACK='0x8F000000'
 ifeq ($(LINUX), y)
-	GUESTLOADERCONFIGS += -DLINUX_GUEST
+GUESTLOADERCONFIGS += -DLINUX_GUEST
+GUESTBIN	= ../../guestimages/zImage
+else
+GUESTBIN	= ../../guestimages/bmguest.bin
 endif
 all: $(GUESTLOADERBIN)
 clean distclean:
@@ -27,6 +29,15 @@ $(GUESTLOADERIMG): $(OBJS) model.lds
 	$(LD) -o $@ $(OBJS) --script=model.lds
 $(GUESTLOADERBIN): $(GUESTLOADERIMG)
 	$(OBJCOPY) -O binary -S $< $@
+ifeq ($(LINUX), y)
+$(GUESTBIN):
+	@echo "ERROS: Copy $@ from guestos/linux/arch/arm/boot/ after building it"
+	@rm $@
+else
+$(GUESTBIN):
+	@echo "ERROS: Copy $@ from guestos/bmguest/ after building it"
+	@rm $@
+endif
 boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 %.o: %.c

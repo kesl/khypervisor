@@ -1,11 +1,10 @@
 #include <guestloader.h>
 #include <log/uart_print.h>
 #include <arch_types.h>
-#if defined(LINUX_GUEST)
+#include <hvmm_trace.h>
 #include <loadlinux.h>
-#endif
 /**
-* @brief Copying Guestloader next to guestimage
+* @brief Copying Guestloader next to guestimage.
 */
 static void copy_loader_next_to_guest(void)
 {
@@ -20,8 +19,8 @@ static void copy_loader_next_to_guest(void)
     asm volatile ("add  pc, pc, %0" : : "r" (offset) : "memory", "cc");
 }
 /**
-* @brief Copying guestos to start_addr
-* @param start_addr Start address of guestos
+* @brief Copying guestos to start_addr.
+* @param start_addr Start address of guestos.
 */
 static void copy_guestos_to_start_addr(uint32_t start_addr)
 {
@@ -31,50 +30,52 @@ static void copy_guestos_to_start_addr(uint32_t start_addr)
     while (src < end)
         *dst++ = *src++;
 }
-#if defined(LINUX_GUEST)
 /**
-* @brief Load linux guest
-* @param start_addr Start address of linux guest
+* @brief Set tags and Load linux guest.
+* @param start_addr Start address of linux guest.
 */
-static void loadlinuxguest(uint32_t start_addr)
+static void load_linuxguest(uint32_t start_addr)
 {
-    /* copy loader next to linux guest */
-    copy_loader_next_to_guest();
-    /* copy zImage next to 0xA000_8000 */
-    copy_guestos_to_start_addr(start_addr);
     /* Set atags for booting linux guest */
     loadlinux_setup_tags((uint32_t *) 0x80000000);
     /* Jump to zImage at start_addr */
     loadlinux_run_zImage(start_addr);
-    /* The code flow must not reach here */
-    uart_print("[loadlinuxguest] ERROR: CODE MUST NOT REACH HERE\n\r");
-    while (1)
-        ;
 }
-#else
 /**
-* @brief Load bmguest
-* @param start_addr Start address of bmguest
+* @brief Load bmguest.
+* @param start_addr Start address of bmguest.
 */
-static void loadbmguest(uint32_t start_addr)
+static void load_bmguest(uint32_t start_addr)
 {
-    /* copy loader next to linux bmguest */
-    copy_loader_next_to_guest();
-    /* copy bmguest next to 0x8000_0000 */
-    copy_guestos_to_start_addr(start_addr);
     /* Jump to 0x8000_0000 */
     asm volatile ("mov pc, %0" : : "r" (start_addr) : "memory", "cc");
+}
+/**
+* @brief Load guest.
+* @param type Guest type. There are bmguest and Linux guest.
+*/
+static void load_guest(uint32_t type)
+{
+    copy_loader_next_to_guest();
+    copy_guestos_to_start_addr(START_ADDR);
+    switch (type) {
+    case GUEST_TYPE_BM:
+        load_bmguest(START_ADDR);
+        break;
+    case GUEST_TYPE_LINUX:
+        load_linuxguest(START_ADDR);
+        break;
+    default:
+        uart_print("[loadbmguest] ERROR: CANT'T NOT MATCH GUEST TYPE\n\r");
+        break;
+    }
     /* The code flow must not reach here */
     uart_print("[loadbmguest] ERROR: CODE MUST NOT REACH HERE\n\r");
     while (1)
         ;
 }
-#endif
-void main(void){
+void main(void)
+{
     uart_print("\n\r=== starting guestloader.\n\r");
-#if defined(LINUX_GUEST)
-    loadlinuxguest(0xA0008000);
-#else
-    loadbmguest(0x80000000);
-#endif
+    load_guest(GUEST_TYPE);
 }

@@ -10,21 +10,29 @@
 OUTPUT_FORMAT("elf32-littlearm")
 OUTPUT_ARCH(arm)
 TARGET(binary)
-
+#include "memmap.cfg"
 #ifdef LINUX_GUEST
 INPUT(../../guestimages/zImage)
 #else
 INPUT(../../guestimages/bmguest.bin)
 #endif
-PHYS_OFFSET = LDS_PHYS_OFFSET;
 PHYS_STACK  = LDS_STACK;
-
+GUEST_START = LDS_GUEST_START;
+LOADER_PHYS_START = LDS_LOADER_PHYS_START;
 SECTIONS
 {
- . = PHYS_OFFSET;
-
+ . = GUEST_START;
+ #ifdef LINUX_GUEST
+ guest_bin_start = .;
+ .guest : { ../../guestimages/zImage}
+ guest_bin_end = .;
+ #else
+ guest_bin_start = .;
+ .guest : { ../../guestimages/bmguest.bin}
+ guest_bin_end = .;
+ #endif
+ . = LOADER_PHYS_START;
  loader_start = .;
-
  .text : {
     *(.text)
  }
@@ -42,17 +50,6 @@ SECTIONS
     *(.bss)
  }
  end_bss = .;
-
- #ifdef LINUX_GUEST
- guest_bin_start = _binary_______guestimages_zImage_start;
- guest_bin_end = _binary_______guestimages_zImage_end;
- guest_bin_size = _binary_______guestimages_zImage_size;
- #else
- guest_bin_start = _binary_______guestimages_bmguest_bin_start;
- guest_bin_end = _binary_______guestimages_bmguest_bin_end;
- guest_bin_size = _binary_______guestimages_bmguest_bin_size;
- #endif
-
  . = PHYS_STACK;
  guestloader_stacktop = .;
  . = PHYS_STACK - 0x00400000;
