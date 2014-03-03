@@ -160,21 +160,24 @@ static void _hmm_init(void)
      * Partition 3: 0xC0000000 ~ 0xFFFFFFFF - Monitor
      *                                      - LV2 translation table address
      */
-    _hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED); pa += 0x40000000;
+    _hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED);
+    pa += 0x40000000;
     uart_print("&_hmm_pgtable[0]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[0]);
     uart_print("\n\r");
     uart_print("lpaed:");
     uart_print_hex64(_hmm_pgtable[0].bits);
     uart_print("\n\r");
-    _hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+    _hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, UNCACHED);
+    pa += 0x40000000;
     uart_print("&_hmm_pgtable[1]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[1]);
     uart_print("\n\r");
     uart_print("lpaed:");
     uart_print_hex64(_hmm_pgtable[1].bits);
     uart_print("\n\r");
-    _hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, UNCACHED); pa += 0x40000000;
+    _hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, WRITEALLOC);
+    pa += 0x40000000;
     uart_print("&_hmm_pgtable[2]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[2]);
     uart_print("\n\r");
@@ -357,8 +360,7 @@ int hvmm_mm_init(void)
     uart_print("\n\r");
 
     /* HSCTLR Enable MMU and D-cache */
-    /* hsctlr |= (SCTLR_M |SCTLR_C); */
-    hsctlr |= (SCTLR_M);
+    hsctlr |= (SCTLR_M | SCTLR_C);
 
     /* Flush PTE writes */
     asm("dsb");
