@@ -84,7 +84,7 @@ static struct memmap_desc guest_device_md1[] = {
 static struct memmap_desc guest_memory_md0[] = {
     /* 756MB */
     {"start", 0x00000000, 0, 0x30000000,
-      LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT
+     LPAED_STAGE2_MEMATTR_NORMAL_OWB | LPAED_STAGE2_MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
@@ -92,7 +92,7 @@ static struct memmap_desc guest_memory_md0[] = {
 static struct memmap_desc guest_memory_md1[] = {
     /* 256MB */
     {"start", 0x00000000,          0, 0x10000000,
-     LPAED_STAGE2_MEMATTR_NORMAL_OWT | LPAED_STAGE2_MEMATTR_NORMAL_IWT
+     LPAED_STAGE2_MEMATTR_NORMAL_OWB | LPAED_STAGE2_MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
