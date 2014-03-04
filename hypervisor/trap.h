@@ -30,7 +30,6 @@
 #define HSR_ISS_BIT     0x01FFFFFF
 /**
  * @brief get saved registers in trap
- * @param void
  * @return struct arch_regs * saved registers
  */
 struct arch_regs *trap_saved_regs(void);

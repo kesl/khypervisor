@@ -52,7 +52,9 @@ struct gicd_regs {
 
     /* 0xFD0 ~ 0xFFC RO Cortex-A15 PIDRn, CIDRn */
 };
-
+/**
+ * entry for handler mapping table
+ */
 struct gicd_handler_entry {
     uint32_t offset;
     vdev_callback_t handler;
@@ -83,7 +85,9 @@ vgicd_changed_istatus_callback_t _cb_changed_istatus;
 
 static struct vdev_info _vdev_info;
 static struct gicd_regs _regs[NUM_GUESTS_STATIC];
-
+/**
+ * handler mapping table for gic interrupt
+ */
 static struct gicd_handler_entry _handler_map[0x10] = {
     /* 0x00 ~ 0x0F */
     { 0x00, handler_000 },              /* CTLR, TYPER, IIDR, IGROUPR */
@@ -103,7 +107,14 @@ static struct gicd_handler_entry _handler_map[0x10] = {
     { 0x0E, handler_NSACR },            /* NSACR */
     { 0x0F, handler_F00 },            /* SGIR, CPENDSGIR, SPENDGIR, ICPIDR2 */
 };
-
+/**
+ * @brief golbal handler for virtual gic interrupt
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -116,9 +127,14 @@ static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
                                         access_size);
     return result;
 }
-
-
-
+/**
+ * @brief handler for virtual gic interrupt {CTLR, TYPER, IIDR, IGROUPR}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -180,7 +196,14 @@ void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
     if (_cb_changed_istatus != 0)
         _cb_changed_istatus(vmid, istatus, word_offset);
 }
-
+/**
+ * @brief handler for virtual gic interrupt {ISENABLER, ICENABLER}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_ISCENABLER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -272,7 +295,14 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write,
     }
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {ISPENDR, ICPENDR}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -305,7 +335,14 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {ISACTIVER}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_ISCACTIVER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -313,7 +350,14 @@ static hvmm_status_t handler_ISCACTIVER(uint32_t write,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {IPRIORITYR}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -334,7 +378,14 @@ static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {ITARGETSR}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -375,7 +426,14 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {ITARGETSR}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -395,7 +453,14 @@ static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {CA15}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -403,7 +468,14 @@ static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {NSACR}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -411,7 +483,14 @@ static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief handler for virtual gic interrupt {SGIR, CPENDSGIR, SPENDGIR, ICPIDR2}
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -419,7 +498,9 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief initialize virtual gic registers
+ */
 static void vdev_gicd_reset_values(void)
 {
     int i;

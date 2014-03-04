@@ -20,8 +20,8 @@
 static struct arch_regs *_trap_hyp_saved_regs;
 /**
  * @brief Handler for data aboart exception
- * @param struct arch_regs *regs currnt registers' values
- * @return hvmm_status_t value of hvmm status
+ * @param currnt registers' values
+ * @return value of hvmm status
  */
 hvmm_status_t _hyp_trap_dabort(struct arch_regs *regs)
 {
@@ -33,8 +33,8 @@ hvmm_status_t _hyp_trap_dabort(struct arch_regs *regs)
 }
 /**
  * @brief Handler for irq exception
- * @param struct arch_regs *regs currnt registers' values
- * @return hvmm_status_t value of hvmm status
+ * @param currnt registers' values
+ * @return value of hvmm status
  */
 hvmm_status_t _hyp_trap_irq(struct arch_regs *regs)
 {
@@ -45,8 +45,8 @@ hvmm_status_t _hyp_trap_irq(struct arch_regs *regs)
 }
 /**
  * @brief Handler for unhandled exception
- * @param struct arch_regs *regs currnt registers' values
- * @return hvmm_status_t value of hvmm status
+ * @param currnt registers' values
+ * @return value of hvmm status
  */
 hvmm_status_t _hyp_trap_unhandled(struct arch_regs *regs)
 {
@@ -58,8 +58,6 @@ hvmm_status_t _hyp_trap_unhandled(struct arch_regs *regs)
 }
 /**
  * @brief check architecture registers(spsr, lr, sp) for debugging mode
- * @param void
- * @return void
  */
 static void _trap_dump_bregs(void)
 {
@@ -91,8 +89,8 @@ static void _trap_dump_bregs(void)
  */
 /**
  * @brief Handler for hvc exception
- * @param struct arch_regs *regs currnt registers' values
- * @return hvmm_status_t value of hvmm status
+ * @param currnt registers' values
+ * @return value of hvmm status
  */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
