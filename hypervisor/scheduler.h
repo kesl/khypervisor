@@ -7,16 +7,31 @@
 
 #include <log/uart_print.h>
 
+/**
+*@param int irq, void *pdata
+*@todo Have to implement
+*/
 hvmm_status_t scheduler_next_event(int irq, void *pdata);
 
-/* Test Code */
+/**
+*@brief Test scheduling
+*@param void
+*@return void
+*/
 void scheduler_test_scheduling(void);
 
-/*
- * Schedules guest context switch according to the default
- * scheduling policy (sched_policy.c)
- */
+/**
+*@brief Request switch when exit trap
+*@param void
+*@return void
+*/
 void scheduler_schedule(void);
+
+/**
+*@brief Test context switch to next guest
+*@param void
+*@return void
+*/
 void scheduler_test_switch_to_next_guest(void *pdata);
 
 #endif

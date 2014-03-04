@@ -12,6 +12,11 @@
 
 static struct timer_channel _channels[TIMER_NUM_MAX_CHANNELS];
 
+/**
+* @brief callback timer channel
+* @param enum timer_channel_type channel, void *param
+* @return void
+*/
 static void _timer_each_callback_channel(enum timer_channel_type channel,
                 void *param)
 {
@@ -21,6 +26,11 @@ static void _timer_each_callback_channel(enum timer_channel_type channel,
             _channels[channel].callbacks[i](param);
 }
 
+/**
+* @brief count timer channel callback
+* @param  enum timer_channel_type channel
+* @return int count value
+*/
 static int _timer_channel_num_callbacks(enum timer_channel_type channel)
 {
     int i, count = 0;
@@ -30,6 +40,11 @@ static int _timer_channel_num_callbacks(enum timer_channel_type channel)
     return count;
 }
 
+/**
+* @brief callback HW
+* @param void *pdata
+* @return void
+*/
 static void _timer_hw_callback(void *pdata)
 {
     generic_timer_disable_int(GENERIC_TIMER_HYP);

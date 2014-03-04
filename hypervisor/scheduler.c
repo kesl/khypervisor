@@ -8,6 +8,11 @@ void scheduler_schedule(void)
     context_switchto(sched_policy_determ_next());
 }
 
+/**
+*@brief Testing context switch on guest
+*@param void *pdata
+*@return void
+*/
 void scheduler_test_switch_to_next_guest(void *pdata)
 {
     struct arch_regs *regs = pdata;
@@ -31,9 +36,15 @@ void scheduler_test_switch_to_next_guest(void *pdata)
         scheduler_schedule();
 }
 
+/**
+*@param void *pdata
+*@return void
+*@todo Have to implement
+*/
 void extra_timer_callback(void *pdata)
 {
 }
+
 
 void scheduler_test_scheduling()
 {

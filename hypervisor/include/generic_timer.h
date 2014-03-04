@@ -15,21 +15,55 @@ enum generic_timer_type {
 
 typedef void (*generic_timer_callback_t)(void *pdata);
 
-/* Calling this function is required only once in the entire system. */
+/**
+* @brief Numbering generic timer each level : HYP, NSP, VIR
+* Calling this function is required only once in the entire system.
+* @return HVMM_STATUS_SUCCESS (It takes "0")
+*/
 hvmm_status_t generic_timer_init();
-/* Enable the timer interrupt. Specified by timer type */
+
+/**
+* @brief Enable timer interrupt. Specified by timer type
+* @param enum generic_timer_type type
+* @return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
+*/
 hvmm_status_t generic_timer_enable_int(enum generic_timer_type type);
-/* Disable the timer. Specified by timer type */
+
+/**
+* @brief Disable the timer. Specified by timer type
+* @param enum generic_timer_type type
+* @return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
+*/
 hvmm_status_t generic_timer_disable_int(enum generic_timer_type type);
+
 /*
  * Sets time interval. Converts from microseconds
  * to count and sets time interval.
  */
+
+
+/**
+* @brief Setting generic timer value
+* @param enum generic_timer_type type, uint32_t tval
+* @return HVMM_STATUS_SUCCESS or HVMM_STATUS_UNSUPPORTED_FEATURE
+*/
 hvmm_status_t generic_timer_set_tval(enum generic_timer_type type,
                     uint32_t tval);
-/* Enables timer irq.  */
+
+/**
+* @brief Enable generic timer irq
+* @param enum generic_timer_type type
+* @return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
+*/
 hvmm_status_t generic_timer_enable_irq(enum generic_timer_type type);
+
 /* Adds callback funtion. Called when occur timer interrupt */
+
+/**
+* @brief Adds callback funtion. Called when occur timer interrupt
+* @param enum generic_timer_type type, generic_timer_callback_t callback
+* @return HVMM_STATUS_SUCCESS
+*/
 hvmm_status_t generic_timer_set_callback(enum generic_timer_type type,
                 generic_timer_callback_t callback);
 

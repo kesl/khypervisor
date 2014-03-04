@@ -27,6 +27,11 @@ enum {
     GENERIC_TIMER_REG_VIRT_OFF,
 };
 
+/**
+* @brief Generic timer write register value
+* @param : register, unit32_t
+* @return void
+*/
 static inline void generic_timer_reg_write(int reg, uint32_t val)
 {
     switch (reg) {
@@ -64,6 +69,11 @@ static inline void generic_timer_reg_write(int reg, uint32_t val)
     isb();
 }
 
+/**
+* @brief Generic timer read register
+* @param int reg
+* @return uint32_t
+*/
 static inline uint32_t generic_timer_reg_read(int reg)
 {
     uint32_t val;
@@ -102,6 +112,11 @@ static inline uint32_t generic_timer_reg_read(int reg)
     return val;
 }
 
+/**
+* @brief Generic timer write register(64bit)
+* @param int reg, uint64_t val
+* @return void
+*/
 static inline void generic_timer_reg_write64(int reg, uint64_t val)
 {
     switch (reg) {
@@ -124,6 +139,11 @@ static inline void generic_timer_reg_write64(int reg, uint64_t val)
     isb();
 }
 
+/**
+* @brief Generic timer read register(64bit)
+* @param int reg
+* @return uint64_t
+*/
 static inline uint64_t generic_timer_reg_read64(int reg)
 {
     uint64_t val;
