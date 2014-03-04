@@ -155,11 +155,11 @@ static struct memmap_desc *guest_mdlist1[] = {
  *
  * Mapping  the Information about physical address and<br>
  * Virtual Machine's Virtual address to ttbl3 Entry
- * @param lpaed_t *ttbl3 target Level 3 Translation Table Pointer
- * @param uint64_t offset target's location
- * @param uint32_t pages number of pages
- * @param uint64_t pa Physical address
- * @param lpaed_stage2_memattr_t mattr Memory Attribute
+ * @param *ttbl3 target Level 3 Translation Table Pointer
+ * @param offset target's location
+ * @param pages number of pages
+ * @param pa Physical address
+ * @param mattr Memory Attribute
  * @return void
  */
 static void vmm_ttbl3_map(union lpaed *ttbl3, uint64_t offset, uint32_t pages,
@@ -184,9 +184,9 @@ static void vmm_ttbl3_map(union lpaed *ttbl3, uint64_t offset, uint32_t pages,
  *
  * Unmapping Virtual Address in ttbl3 Entry<br>
  * And Invalidate that Entry
- * @param lpaed_t *ttbl3 Target Level 3 Translation Table Pointer
- * @param uint64_t offset target's location
- * @param uint32_t pages number of pages
+ * @param *ttbl3 Target Level 3 Translation Table Pointer
+ * @param offset target's location
+ * @param pages number of pages
  * @return void
  */
 static void vmm_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
@@ -212,9 +212,9 @@ static void vmm_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
  *   L2 lock size(2MB) aligned<br>
  * - size: <= 1GB<br>
  *   page size aligned<br>
- * @param lpaed_t *ttbl2 Target Level 2 Translation Table Pointer
- * @param uint64_t va_offset Virtual Address Offset
- * @param uint32_t size size of target Memory
+ * @param *ttbl2 Target Level 2 Translation Table Pointer
+ * @param va_offset Virtual Address Offset
+ * @param size size of target Memory
  * @return void
  */
 static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
@@ -248,11 +248,11 @@ static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
  *    (==location is not fit in Level2 TTB Entry)<br>
  *   mapping it first & mapping other to n Blocks<br>
  * - Third, if tail's size is remained, mapping it
- * @param lpaed_t *ttbl2 target Level2 Translation Table Pointer
- * @param uint64_t va_offset Virtual Address's Offset
- * @param uint64_t pa Physical Address
- * @param uint32_t size size of target Memory
- * @param lpaed_stage2_memattr_t Memory Attribute
+ * @param *ttbl2 target Level2 Translation Table Pointer
+ * @param va_offset Virtual Address's Offset
+ * @param pa Physical Address
+ * @param size size of target Memory
+ * @param Memory Attribute
  * @return void
  */
 static void vmm_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset, uint64_t pa,
@@ -321,7 +321,7 @@ static void vmm_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset, uint64_t pa,
  * Initilize Level2 Translation Table Entry<br>
  * and Level3 Translation Table Entries<br>
  * And Set Invalidate
- * @param lpaed_t *ttbl2 Target Level 2 Translation Table Entry Point
+ * @param *ttbl2 Target Level 2 Translation Table Entry Point
  * @return void
  */
 static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
@@ -344,8 +344,8 @@ static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
  *
  * Initilize Level 2 Translation Table and<br>
  * Mapping Device Memory Mapping Descriptor's Information
- * @param lpaed_t *ttbl2 Target Level 2 Translation Table Pointer
- * @param struct memmap_desc *md Device Memroy Mapping Information Descriptor
+ * @param *ttbl2 Target Level 2 Translation Table Pointer
+ * @param *md Device Memroy Mapping Information Descriptor
  * @return void
  */
 static void vmm_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
@@ -371,8 +371,8 @@ static void vmm_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
  *
  * Mapping Virtual Machine's Virtual Address<br>
  * to All Translation Talbe Entry<br>
- * @param lpaed_t *ttbl Target Translation Table Pointer
- * @param struct memmap_desc *mdlist[] memory mapping Descriptor List
+ * @param *ttbl Target Translation Table Pointer
+ * @param *mdlist[] memory mapping Descriptor List
  * @return void
  */
 static void vmm_init_ttbl(union lpaed *ttbl, struct memmap_desc *mdlist[])
