@@ -124,7 +124,7 @@ void context_dump_regs(struct arch_regs *regs)
 /**
  * @brief Copy the register from regs_src to regs_dst
  *
- * copy registers cpsr, pc, lr, gpr[0-ARCH_REGS_NUM_GPR]
+ * copy registers cpsr, pc, lr, r0-r12
  * @param resgs_dst destination register
  * @param regs_src source register
  */
