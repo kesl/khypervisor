@@ -286,7 +286,7 @@ void context_restore_banked(struct arch_regs_banked *regs_banked)
 }
 
 /**
- * @brief Co-processor state management: init
+ * @brief Coprocessor state management: init
  * @param regs_cop initialize target
  * @return void
  */
@@ -300,7 +300,7 @@ void context_init_cops(struct arch_regs_cop *regs_cop)
 }
 
 /**
- * @brief Co-processor state management: save
+ * @brief Coprocessor state management: save
  * @param regs_cop target strcuture
  * @return void
  */
@@ -314,7 +314,7 @@ void context_save_cops(struct arch_regs_cop *regs_cop)
 }
 
 /**
- * @brief Co-processor state management: restore
+ * @brief Coprocessor state management: restore
  * @param regs_cop source structure
  * @return void
  */
