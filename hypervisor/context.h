@@ -90,7 +90,7 @@ struct hyp_guest_context {
  * @brief Show delivered register's status
  *
  * CPSR, PC, LR, GPR[0-ARCH_REGS_NUM_GPR]
- * @param struct arch_regs *regs
+ * @param regs
  * @return void
  */
 void context_dump_regs(struct arch_regs *regs);
@@ -144,28 +144,28 @@ void context_init_guests(void);
  *   to switch the context,<br>
  * where virq flush takes place, this time
  * @param void
- * @return hvmm_status_t result of swithcing
+ * @return result of swithcing
  */
 hvmm_status_t context_perform_switch(void);
 
 /**
  * @brief VMID of the current guest
  * @param void
- * @return vmid_t _current_guest_vmid
+ * @return _current_guest_vmid
  */
 vmid_t context_current_vmid(void);
 
 /**
  * @brief VMID of the next guest to be switched to
  * @param void
- * @return vmid_t _next_guest_vmid
+ * @return _next_guest_vmid
  */
 vmid_t context_waiting_vmid(void);
 
 /**
  * @brief Requests switch to the guest with'vmid'
  * @param vmid_t vmid
- * @return hvmm_status_t result of switch.<br>
+ * @return result of switch.<br>
  * success - HVMM_STATUS_SUCCESS<br>
  * vmid is not valied - HVMM_STATUS_BAD_ACCESS<br>
  * switching is locked - HVMM_STATUS_IGNORED<br>
@@ -173,9 +173,9 @@ vmid_t context_waiting_vmid(void);
 hvmm_status_t context_switchto(vmid_t vmid);
 /**
  * @brief Switch the context with delivered vmid
- * @param vmid_t vmid target vmid
- * @param uint8_t locked set context's switching lock<br>
- * @return hvmm_status_t result of switch.<br>
+ * @param target vmid
+ * @param set context's switching lock<br>
+ * @return result of switch.<br>
  * success - HVMM_STATUS_SUCCESS<br>
  * vmid is not valied - HVMM_STATUS_BAD_ACCESS<br>
  * switching is locked - HVMM_STATUS_IGNORED<br>
@@ -186,27 +186,27 @@ hvmm_status_t context_switchto_lock(vmid_t vmid, uint8_t locked);
 /**
  * @brief Get first context's virtual machine id
  * @param void
- * @return vmid_t return first guest's virtual machine id - 0
+ * @return return first guest's virtual machine id - 0
  * @todo change the source code
  */
 vmid_t context_first_vmid(void);
 /**
  * @brief Get last context's virtual machine id
  * @param void
- * @return vmid_t return last guest's virtual machine id - 1
+ * @return last guest's virtual machine id - 1
  * @todo change the source code
  */
 vmid_t context_last_vmid(void);
 /**
  * @brief Get the next context's virtual machine id from ofvmid
- * @param vmid_t ofvmid target virtual machine id
- * @return vmid_t next virtual machine id
+ * @param target virtual machine id
+ * @return next virtual machine id
  */
 vmid_t context_next_vmid(vmid_t ofvmid);
 /**
  * @brief Get guest's context with vmid
- * @param vmid_t vmid wished guest's context vmid
- * @return struct hyp_guest_context guest's context
+ * @param wished guest's context vmid
+ * @return guest's context
  */
 struct hyp_guest_context *context_atvmid(vmid_t vmid);
 
