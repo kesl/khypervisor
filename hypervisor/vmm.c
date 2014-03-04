@@ -16,19 +16,33 @@
 /* Stage 2 Level 2 */
 #define VMM_L2_PTE_NUM          512
 #define VMM_L3_PTE_NUM          512
+/**
+ * @brief Totla Number of Level 2, Level 3 Page Table Entry
+ *
+ * VMM_L2_PTE_NUM * VMM_L3_PTE_NUM = /<br>
+ * Total Number Of Level 3 Page Table Entry<br>
+ * + VMM_L2_PTE_NUM = Total Number Of Level 2 Page Table Entry
+ */
 #define VMM_L2L3_PTE_NUM_TOTAL  (VMM_L2_PTE_NUM \
         * VMM_L3_PTE_NUM + VMM_L2_PTE_NUM)
+/**
+ * @brief Total Number of All Page Table Entry
+ */
 #define VMM_PTE_NUM_TOTAL  (VMM_L1_PTE_NUM                  \
         + VMM_L1_PADDING_PTE_NUM + VMM_L2L3_PTE_NUM_TOTAL   \
         * VMM_L1_PTE_NUM)
-/* VTTBR */
+/* \defgroup VTTBR
+ * @{
+ */
 #define VTTBR_INITVAL                                   0x0000000000000000ULL
 #define VTTBR_VMID_MASK                                 0x00FF000000000000ULL
 #define VTTBR_VMID_SHIFT                                48
 #define VTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
 #define VTTBR_BADDR_SHIFT                               12
-
-/* VTCR */
+/** @} */
+/** \defgroup VTCR
+ * @{
+ */
 #define VTCR_INITVAL                                    0x80000000
 #define VTCR_SH0_MASK                                   0x00003000
 #define VTCR_SH0_SHIFT                                  12
@@ -42,7 +56,7 @@
 #define VTCR_S_SHIFT                                    4
 #define VTCR_T0SZ_MASK                                  0x00000003
 #define VTCR_T0SZ_SHIFT                                 0
-
+/** @} */
 /*
  * Stage 2 Translation Table, look up begins at second level
  * VTTBR.BADDR[31:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range,
@@ -57,12 +71,17 @@ _ttbl_guest0[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 static union lpaed
 _ttbl_guest1[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 
+/**
+ * @brief Memory Mapping Descriptor
+ *
+ * Memory Mapping information Descriptor
+ */
 struct memmap_desc {
-    char *label;
-    uint64_t va;
-    uint64_t pa;
-    uint32_t size;
-    enum lpaed_stage2_memattr attr;
+    char *label;  /**< string, memory region name*/
+    uint64_t va;  /**< Virtual Address */
+    uint64_t pa;  /**< Physical Address */
+    uint32_t size;/**< Size of memory region */
+    enum lpaed_stage2_memattr attr;/**< Memory Attribute Information */
 };
 
 static struct memmap_desc guest_md_empty[] = {
@@ -115,16 +134,34 @@ static struct memmap_desc *guest_mdlist1[] = {
     0
 };
 
-/* Returns address of L3 TTBL at 'l2index' entry of L2
-    union lpaed *TTBL_L3(union lpaed *ttbl_l2, uint32_t index_l2);
+/**
+ * @brief Get TTBL_L3 Entry
+ * Returns address of L3 TTBL at 'l2index' entry of L2
+ * union lpaed *TTBL_L3(union lpaed *ttbl_l2, uint32_t index_l2);
  */
 #define TTBL_L3(ttbl_l2, index_l2) \
     (&ttbl_l2[VMM_L2_PTE_NUM + (VMM_L3_PTE_NUM * (index_l2))])
+/**
+ * @brief Get TTBL_L2 Entry
+ * Returns address of L2 TTBL at 'l1index' entry of L1
+ * union lpaed *TTBL_L2(union lpaed *ttbl_l1, uint32_t index_l1);
+ */
 #define TTBL_L2(ttbl_l1, index_l1) \
     (&ttbl_l1[(VMM_L1_PTE_NUM + VMM_L1_PADDING_PTE_NUM) \
               + (VMM_L2L3_PTE_NUM_TOTAL * (index_l1))])
 
-
+/**
+ * @brief Virtual Machine's Memory mapping to ttbl3 Entry
+ *
+ * Mapping  the Information about physical address and<br>
+ * Virtual Machine's Virtual address to ttbl3 Entry
+ * @param lpaed_t *ttbl3 target Level 3 Translation Table Pointer
+ * @param uint64_t offset target's location
+ * @param uint32_t pages number of pages
+ * @param uint64_t pa Physical address
+ * @param lpaed_stage2_memattr_t mattr Memory Attribute
+ * @return void
+ */
 static void vmm_ttbl3_map(union lpaed *ttbl3, uint64_t offset, uint32_t pages,
                 uint64_t pa, enum lpaed_stage2_memattr mattr)
 {
@@ -142,6 +179,16 @@ static void vmm_ttbl3_map(union lpaed *ttbl3, uint64_t offset, uint32_t pages,
     }
 }
 
+/**
+ * @brief Virtual machine's Memory unmapping in ttbl3 Entry
+ *
+ * Unmapping Virtual Address in ttbl3 Entry<br>
+ * And Invalidate that Entry
+ * @param lpaed_t *ttbl3 Target Level 3 Translation Table Pointer
+ * @param uint64_t offset target's location
+ * @param uint32_t pages number of pages
+ * @return void
+ */
 static void vmm_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
                 uint32_t pages)
 {
@@ -154,12 +201,21 @@ static void vmm_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
         ttbl3[index_l3].pt.valid = 0;
 }
 
-/*
- * va_offset: 0 ~ (1GB - size), start contiguous
- * virtual address within level 1 block (1GB),
- *      L2 lock size(2MB) aligned
- * size: <= 1GB
- *      page size aligned
+/**
+ * @brief Virtual machine's Memory Address unmapping in ttbl2 & ttbl3 Entry
+ *
+ * Unmapping Virtual Address in ttbl2 & ttbl3 Entry<br>
+ * And Invalidate that Entry<br>
+ * <br>
+ * - va_offset: 0 ~ (1GB - size), start contiguous<br>
+ *   virtual address within level 1 block (1GB), <br>
+ *   L2 lock size(2MB) aligned<br>
+ * - size: <= 1GB<br>
+ *   page size aligned<br>
+ * @param lpaed_t *ttbl2 Target Level 2 Translation Table Pointer
+ * @param uint64_t va_offset Virtual Address Offset
+ * @param uint32_t size size of target Memory
+ * @return void
  */
 static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
                 uint32_t size)
@@ -183,6 +239,22 @@ static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
     }
 }
 
+/**
+ * @brief Virtual machine's Memory mapping to ttbl2 Entry
+ *
+ * Mapping Virtual Machine's Virtual Address to TTBL2 Entry & TTBL3 Entry<br>
+ * - First, check the TTBL2's Index & block_ offset<br>
+ * - Second, if block's offset is not zero<br>
+ *    (==location is not fit in Level2 TTB Entry)<br>
+ *   mapping it first & mapping other to n Blocks<br>
+ * - Third, if tail's size is remained, mapping it
+ * @param lpaed_t *ttbl2 target Level2 Translation Table Pointer
+ * @param uint64_t va_offset Virtual Address's Offset
+ * @param uint64_t pa Physical Address
+ * @param uint32_t size size of target Memory
+ * @param lpaed_stage2_memattr_t Memory Attribute
+ * @return void
+ */
 static void vmm_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset, uint64_t pa,
                 uint32_t size, enum lpaed_stage2_memattr mattr)
 {
@@ -243,6 +315,15 @@ static void vmm_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset, uint64_t pa,
     HVMM_TRACE_EXIT();
 }
 
+/**
+ * @brief Initialize TTBL2 Entry and TTBL3 Entry
+ *
+ * Initilize Level2 Translation Table Entry<br>
+ * and Level3 Translation Table Entries<br>
+ * And Set Invalidate
+ * @param lpaed_t *ttbl2 Target Level 2 Translation Table Entry Point
+ * @return void
+ */
 static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
 {
     int i, j;
@@ -258,7 +339,15 @@ static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
     HVMM_TRACE_EXIT();
 }
 
-
+/**
+ * @brief initialize TTBL2
+ *
+ * Initilize Level 2 Translation Table and<br>
+ * Mapping Device Memory Mapping Descriptor's Information
+ * @param lpaed_t *ttbl2 Target Level 2 Translation Table Pointer
+ * @param struct memmap_desc *md Device Memroy Mapping Information Descriptor
+ * @return void
+ */
 static void vmm_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
 {
     int i = 0;
@@ -277,6 +366,15 @@ static void vmm_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
     HVMM_TRACE_EXIT();
 }
 
+/**
+ * @brief Initialize All Translation Table
+ *
+ * Mapping Virtual Machine's Virtual Address<br>
+ * to All Translation Talbe Entry<br>
+ * @param lpaed_t *ttbl Target Translation Table Pointer
+ * @param struct memmap_desc *mdlist[] memory mapping Descriptor List
+ * @return void
+ */
 static void vmm_init_ttbl(union lpaed *ttbl, struct memmap_desc *mdlist[])
 {
     int i = 0;
@@ -295,7 +393,37 @@ static void vmm_init_ttbl(union lpaed *ttbl, struct memmap_desc *mdlist[])
     HVMM_TRACE_EXIT();
 }
 
-
+/**
+ * @brief Initialize MMU
+ *
+ * Configure VTCR(Virtualization Translation Control Register)<br>
+ *
+ * <b>Configuration</b><br>
+ * - SL0(Starting Level)<br>
+ *  - 00 : Start at Second Level<br>
+ *  - 01 : Start at First Level    V<br>
+ *  - 10, 11 : Reserved, UNPREDICTABLE<br>
+ * - ORGN0(Outer Cacheability Attribute)<br>
+ *  - 00 : Normal Memory, Outer Non-Cacheable<br>
+ *  - 01 : Normal Memory, Outer Write-Back Write Allocate Cacheable<br>
+ *  - 10 : Normal Memory, Outer Write-Through Cacheable<br>
+ *  - 11 : Normal Memory, Outer Write-Back no Write Allocate Cacheable<br>
+ * - IRGN0(Inner Cacheability Attribute)<br>
+ *  - 00 : Normal Memory, Inner Non-Cacheable<br>
+ *  - 01 : Normal Memory, Inner Write-Back Write Allocate Cacheable<br>
+ *  - 10 : Normal Memory, Inner Write-Through Cacheable<br>
+ *  - 11 : Normal Memory, Inner Write-Back no Write Allocate Cacheable<br>
+ * - T0SZ(The Size Offset of the Memory Region Address by VTTBR)<br>
+ *  - Base Address = (SL0 == 0 ? 14 - T0SZ : 5 - T0SZ)<br>
+ * .
+ * In Here, configure<br>
+ *  - SL0 - Start at First Level<br>
+ *  - ORGN0 - Normal Memory, Outer Write-Back no Write Allocate Cacheable<br>
+ *  - IRGN0 - Normal Memory, Inner Write-Back no Write Allocate Cacheable
+ *
+ * @param void
+ * @return void
+ */
 static void vmm_init_mmu(void)
 {
     uint32_t vtcr, vttbr;

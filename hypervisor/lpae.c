@@ -3,14 +3,16 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-/* Long-descriptor translation table format */
+/** \defgroup Long-descriptor_translation_table_format
+ * @{
+ */
 #define TTBL_L1_OUTADDR_MASK    0x000000FFEC000000ULL
 #define TTBL_L2_OUTADDR_MASK    0x000000FFFFE00000ULL
 #define TTBL_L3_OUTADDR_MASK    0x000000FFFFFFF000ULL
 
 #define TTBL_L1_TABADDR_MASK    0x000000FFFFFFF000ULL
 #define TTBL_L2_TABADDR_MASK    0x000000FFFFFFF000ULL
-
+/** @}*/
 /*
  * Level 2 Block, 2MB, entry in LPAE Descriptor format
  * for the given physical address
