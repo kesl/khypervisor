@@ -424,7 +424,7 @@ void hmm_flushTLB(void)
 }
 
 /**
- * @brief get level 3 table entry
+ * @brief Get level 3 table entry
  *
  * Get level3 translation table entry by virtual address and number of pages
  * @param unsigned long virt virtual address
@@ -523,7 +523,7 @@ void hmm_free(void *ap)
 }
 
 /**
- * @brief get more free memory for malloc
+ * @brief Get more free memory for malloc
  *
  * Get free memory<br>
  * At least 1024(1K)Byte<br>
