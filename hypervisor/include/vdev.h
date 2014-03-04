@@ -19,7 +19,9 @@ enum vdev_access_size {
  */
 typedef hvmm_status_t (*vdev_callback_t)(uint32_t wnr, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size);
-
+/**
+ * virtual deivce infomation
+ */
 struct vdev_info {
     char *name;
     unsigned int base;
