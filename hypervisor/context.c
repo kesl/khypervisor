@@ -58,8 +58,8 @@ static uint8_t _switch_locked;
 #ifdef DEBUG
 /**
  * @brief Return mode name string
- * @param uint8_t mode mode value
- * @return char * mode name string
+ * @param  mode mode value
+ * @return mode name string
  */
 static char *_modename(uint8_t mode)
 {
@@ -125,8 +125,8 @@ void context_dump_regs(struct arch_regs *regs)
  * @brief Copy the register from regs_src to regs_dst
  *
  * copy registers cpsr, pc, lr, gpr[0-ARCH_REGS_NUM_GPR]
- * @param struct arch_regs *regs_dst destination register
- * @param strcut arch_regs *regs_src source register
+ * @param destination register
+ * @param source register
  */
 static void context_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
@@ -144,7 +144,7 @@ static void context_copy_regs(struct arch_regs *regs_dst,
  * @brief Initialize the banked registers
  *
  * initialize the all mode's banked register
- * @param struct arch_regs_banked *regs_bnaked target banked registers
+ * @param target banked registers
  * @return void
  */
 void context_init_banked(struct arch_regs_banked *regs_banked)
@@ -176,7 +176,7 @@ void context_init_banked(struct arch_regs_banked *regs_banked)
  * @brief Copy currently active banked registers to regs_banked
  *
  * copy registers to struct arch_regs_banked *regs_banked
- * @param struct arch_regs_banked *regs_banked copy target structure
+ * @param copy target structure
  * @return void
  */
 void context_save_banked(struct arch_regs_banked *regs_banked)
@@ -232,7 +232,7 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
 /**
  * @brief Restore banked register from regs_banked to active banked register
  *
- * @param struct arch_regs_banked *regs_banked source banked registers
+ * @param source banked registers
  * @return void
  */
 void context_restore_banked(struct arch_regs_banked *regs_banked)
@@ -287,7 +287,7 @@ void context_restore_banked(struct arch_regs_banked *regs_banked)
 
 /**
  * @brief Co-processor state management: init
- * @param struct arch_regs_cop *regs_cop initialize target
+ * @param initialize target
  * @return void
  */
 void context_init_cops(struct arch_regs_cop *regs_cop)
@@ -301,7 +301,7 @@ void context_init_cops(struct arch_regs_cop *regs_cop)
 
 /**
  * @brief Co-processor state management: save
- * @param struct arch_regs_cop *regs_cop target strcuture
+ * @param target strcuture
  * @return void
  */
 void context_save_cops(struct arch_regs_cop *regs_cop)
@@ -315,7 +315,7 @@ void context_save_cops(struct arch_regs_cop *regs_cop)
 
 /**
  * @brief Co-processor state management: restore
- * @param struct arch_regs_cop *regs_cop source structure
+ * @param source structure
  * @return void
  */
 void context_restore_cops(struct arch_regs_cop *regs_cop)
@@ -341,9 +341,9 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
  *   - Restore Translation Table for the next guest<br>
  *   - and Enable Stage 2 Translation<br>
  *   - The Next Guest Becomes the Current
- * @param struct arch_regs* regs_current current register's memory
- * @param vmid_t next_vmid next guest's vmid
- * @return hvmm_status_t context switching result
+ * @param current register's memory
+ * @param next guest's vmid
+ * @return context switching result
  */
 static hvmm_status_t context_perform_switch_to_guest_regs(
                         struct arch_regs *regs_current, vmid_t next_vmid)
