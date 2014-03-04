@@ -3,7 +3,7 @@
 
 #include "arch_types.h"
 /**
- * @brief return the smp processor id
+ * @brief Return the smp processor id
  *
  * read the mpid from mpidr and return id<br>
  * - Coretex-A15<br>
