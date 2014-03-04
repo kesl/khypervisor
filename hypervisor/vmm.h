@@ -8,7 +8,7 @@
  * @brief Get Target Virtual Machine's Translation Table Pointer By vmid
  *
  * Get Target Virtual machien's TTBL By vmid
- * @param vmid_t vmid wish Virtual machine's ID
+ * @param vmid wish Virtual machine's ID
  * @return lpaed_t * ttbl
  */
 union lpaed *vmm_vmid_ttbl(vmid_t vmid);
@@ -20,16 +20,16 @@ union lpaed *vmm_vmid_ttbl(vmid_t vmid);
  * <br>
  * - VTTBR.VMID = vmid<br>
  * - VTTBR.BADDR = ttbl
- * @param vmid_t vmid Virtual Machine's ID
- * @param lpaed_t *ttbl ttbl
- * @return hvmm_status_t if Success return HVMM_STATUS_SUCCESS
+ * @param vmid Virtual Machine's ID
+ * @param *ttbl ttbl
+ * @return if Success return HVMM_STATUS_SUCCESS
  */
 hvmm_status_t vmm_set_vmid_ttbl(vmid_t vmid, union lpaed *ttbl);
 /**
  * @brief Enableing Stage 2 MMU
  *
  * - HCR.VM[0] = enable
- * @param int enable
+ * @param enable
  * @return void
  */
 void vmm_stage2_enable(int enable);
