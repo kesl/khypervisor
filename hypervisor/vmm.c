@@ -340,7 +340,7 @@ static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
 }
 
 /**
- * @brief initialize TTBL2
+ * @brief Initialize TTBL2
  *
  * Initilize Level 2 Translation Table and<br>
  * Mapping Device Memory Mapping Descriptor's Information
