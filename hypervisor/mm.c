@@ -427,9 +427,9 @@ void hmm_flushTLB(void)
  * @brief Get level 3 table entry
  *
  * Get level3 translation table entry by virtual address and number of pages
- * @param unsigned long virt virtual address
- * @param unsigned long npages number of pages
- * @return lpaged_t* level 3 table entry
+ * @param  virt virtual address
+ * @param  npages number of pages
+ * @return * level 3 table entry
  */
 union lpaed *hmm_get_l3_table_entry(unsigned long virt, unsigned long npages)
 {
@@ -473,8 +473,8 @@ void hmm_map(unsigned long phys, unsigned long virt, unsigned long npages)
  * General-purpose sbrk, basic memory management system calls<br>
  * Returns -1 if there was no space.
  *
- * @param unsigned int incr size of memory wanted
- * @return void * size of space
+ * @param  incr size of memory wanted
+ * @return size of space
  */
 void *hmm_sbrk(unsigned int incr)
 {
@@ -527,8 +527,8 @@ void hmm_free(void *ap)
  *
  * Get free memory<br>
  * At least 1024(1K)Byte<br>
- * @param unsigned int nu number of units, allocate size
- * @return fl_bheader * pointer of free list block header & memory area
+ * @param nu number of units, allocate size
+ * @return pointer of free list block header & memory area
  */
 static union header *morecore(unsigned int nu)
 {
