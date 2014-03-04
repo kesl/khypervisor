@@ -40,7 +40,7 @@
  * extra software-defined bits. */
 
 /**
- * @brief lpae page table descriptor
+ * @brief LPAE page table descriptor
  *
  * - Descriptoin<br>
  *   - These are used in all kinds of entry<br>
@@ -104,7 +104,7 @@ struct lpae_pt {
 } __attribute__((__packed__));
 
 /**
- * @brief lpae p2m table descriptor
+ * @brief LPAE p2m table descriptor
  *
  * The p2m tables have almost the same layout, but some of the permission<br>
  * and cache-control bits are laid out differently (or missing)<br>
@@ -157,7 +157,7 @@ struct lpae_p2m {
 
 
 /**
- * @brief walk entry
+ * @brief Walk entry
  *
  * Walk is the common bits of p2m and pt entries which are needed to<br>
  * simply walk the table (e.g. for debug).<br>
@@ -182,7 +182,7 @@ struct lpae_walk {
 } __attribute__((__packed__));
 
 /**
- * @brief lpead's union
+ * @brief Lpead's union
  */
 union lpaed {
     uint64_t bits;
@@ -192,7 +192,7 @@ union lpaed {
 };
 
 /**
- * @brief lpaed stage2 memory attribute configuration enum
+ * @brief Lpaed stage2 memory attribute configuration enum
  */
 enum lpaed_stage2_memattr {
     LPAED_STAGE2_MEMATTR_SO = 0x0,   /**< Strongly Ordered */
@@ -267,7 +267,7 @@ union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa);
 union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
                 uint8_t valid);
 /**
- * @brief configure stage1 level3 table entry
+ * @brief Configure stage1 level3 table entry
  *
  * configure table's validate & page base address<br>
  * - valid = valid ? 1 : 0
@@ -279,7 +279,7 @@ union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
 void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
                 uint8_t valid);
 /**
- * @brief disable stage1 level3 table entry
+ * @brief Disable stage1 level3 table entry
  *
  * make Invalidate table entry<br>
  * - valid = 0
@@ -288,7 +288,7 @@ void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
  */
 void lpaed_stage1_disable_l3_table(union lpaed *ttbl2);
 /**
- * @brief mapping stage2 lpaed to physical address & memory attrigute
+ * @brief Mapping stage2 lpaed to physical address & memory attrigute
  *
  * mapping page table entry to pa, mattr<br>
  * - Setting<br>
@@ -328,7 +328,7 @@ void lpaed_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
 void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
         uint8_t valid);
 /**
- * @brief enable stage2 level2 table entry
+ * @brief Enable stage2 level2 table entry
  *
  * - Setting<br>
  *   - valid = 1, table =1
@@ -337,7 +337,7 @@ void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
  */
 void lpaed_stage2_enable_l2_table(union lpaed *ttbl2);
 /**
- * @brief disable stage2 level2 table entry
+ * @brief Disable stage2 level2 table entry
  *
  * - Setting<br>
  *   - valid = 0
