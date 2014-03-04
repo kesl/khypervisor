@@ -10,10 +10,6 @@ static uint32_t _timer_irqs[GENERIC_TIMER_NUM_TYPES];
 static uint32_t _tvals[GENERIC_TIMER_NUM_TYPES];
 static generic_timer_callback_t _callback[GENERIC_TIMER_NUM_TYPES];
 
-/**
-*@return HVMM_STATUS_SUCCESS (It takes "0")
-*@brief Initial generic timer each level : HYP, NSP, VIR
-*/
 hvmm_status_t generic_timer_init()
 {
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
@@ -22,11 +18,6 @@ hvmm_status_t generic_timer_init()
     return HVMM_STATUS_SUCCESS;
 }
 
-/**
-*@param enum generic_timer_type type, uint32_t tval
-*@return HVMM_STATUS_SUCCESS or HVMM_STATUS_UNSUPPORTED_FEATURE
-*@brief Setting generic timer value
-*/
 hvmm_status_t generic_timer_set_tval(enum generic_timer_type type,
                 uint32_t tval)
 {
@@ -41,9 +32,9 @@ hvmm_status_t generic_timer_set_tval(enum generic_timer_type type,
 }
 
 /**
-*@param enum generic_timer_type type
-*@return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
-*@brief Enable generic timer
+* @brief Enable generic timer
+* @param enum generic_timer_type type
+* @return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
 */
 hvmm_status_t generic_timer_enable_int(enum generic_timer_type type)
 {
@@ -60,9 +51,9 @@ hvmm_status_t generic_timer_enable_int(enum generic_timer_type type)
 }
 
 /**
-*@param enum generic_timer_type type
-*@return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
-*@brief Disable generic timer
+* @brief Disable generic timer
+* @param enum generic_timer_type type
+* @return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
 */
 hvmm_status_t generic_timer_disable_int(enum generic_timer_type type)
 {
@@ -79,9 +70,9 @@ hvmm_status_t generic_timer_disable_int(enum generic_timer_type type)
 }
 
 /**
-*@param int irq, void *regs, void *pdata
-*@return void
-*@brief Callback generic timer(hypervisor mode)
+* @brief Callback generic timer(hypervisor mode)
+* @param int irq, void *regs, void *pdata
+* @return void
 */
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
 {
@@ -89,9 +80,9 @@ static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
 }
 
 /**
-*@param enum generic_timer_type type
-*@return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
-*@brief Enable generic timer irq
+* @brief Enable generic timer irq
+* @param enum generic_timer_type type
+* @return HVMM_STATUS_UNSUPPORTED_FEATURE or HVMM_STATUS_SUCCESS
 */
 hvmm_status_t generic_timer_enable_irq(enum generic_timer_type type)
 {
@@ -109,9 +100,9 @@ hvmm_status_t generic_timer_enable_irq(enum generic_timer_type type)
 }
 
 /**
-*@param enum generic_timer_type type, generic_timer_callback_t callback
-*@return HVMM_STATUS_SUCCESS
-*@brief Callback for setting
+* @brief Callback for setting
+* @param enum generic_timer_type type, generic_timer_callback_t callback
+* @return HVMM_STATUS_SUCCESS
 */
 hvmm_status_t generic_timer_set_callback(enum generic_timer_type type,
                 generic_timer_callback_t callback)

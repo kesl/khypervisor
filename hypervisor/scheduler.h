@@ -14,23 +14,23 @@
 hvmm_status_t scheduler_next_event(int irq, void *pdata);
 
 /**
+*@brief Test scheduling
 *@param void
 *@return void
-*@brief Test scheduling
 */
 void scheduler_test_scheduling(void);
 
 /**
+*@brief Request switch when exit trap
 *@param void
 *@return void
-*@brief Request switch when exit trap
 */
 void scheduler_schedule(void);
 
 /**
+*@brief Test context switch to next guest
 *@param void
 *@return void
-*@brief Test context switch to next guest
 */
 void scheduler_test_switch_to_next_guest(void *pdata);
 

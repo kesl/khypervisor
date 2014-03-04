@@ -41,78 +41,77 @@ struct timer_channel {
 };
 
 /**
-*@param enum timer_channel_t channel
-*@return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
-*@brief
-*Calling this function is required only once in the entire system
-*prior to calls<br>to other functions of Timer module.
+* @brief Calling this function is required only once in the entire system
+* prior to calls<br>to other functions of Timer module.
+* @param enum timer_channel_t channel
+* @return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
 */
 hvmm_status_t timer_init(enum timer_channel_type channel);
 
 /**
-*@param enum timer_channel_type channel
-*@return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
-*@brief
-*Starts the timer channel specified by 'channel'.
-*The callback, if set, will be periodically called
-*until it's unset or the channel stops
-*by 'timer_stop(timer_channel)i'
+* @brief
+* Starts the timer channel specified by 'channel'.
+* The callback, if set, will be periodically called
+* until it's unset or the channel stops
+* by 'timer_stop(timer_channel)i'
+* @param enum timer_channel_type channel
+* @return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
 */
 hvmm_status_t timer_start(enum timer_channel_type channel);
 
 /**
-*@param enum timer_channel_t channel
-*@return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
-*@brief
-*Stops the timer channel specified by 'channel'
+* @brief
+* Stops the timer channel specified by 'channel'
+* @param enum timer_channel_t channel
+* @return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
 */
 hvmm_status_t timer_stop(enum timer_channel_type channel);
 
 /**
-*@param enum timer_channel_t channel, uint32_t interval_us
-*@return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
-*@brief
-*Sets time interval, in microseconds, for the timer channel.
-*If the channel has been started and a callback function is set,
-*it will be called in the next interval
+* @brief
+* Sets time interval, in microseconds, for the timer channel.
+* If the channel has been started and a callback function is set,
+* it will be called in the next interval
+* @param enum timer_channel_t channel, uint32_t interval_us
+* @return hvmm_status_t HVMM_STATUS_SUCCES (It takes '0')
 */
 hvmm_status_t timer_set_interval(enum timer_channel_type channel,
                 uint32_t interval_us);
 
 /**
-*@param enum timer_channel_type channel
-*@return uint32_t _channels
-*@brief
-*Returns the time interval for the timer channel if it was set previously.
-*Unknown value is returned otherwise.
+* @brief
+* Returns the time interval for the timer channel if it was set previously.
+* Unknown value is returned otherwise.
+* @param enum timer_channel_type channel
+* @return uint32_t _channels
 */
 uint32_t timer_get_interval(enum timer_channel_type channel);
 
 /**
-*@param enum timer_channel_t channel, timer_callback_t callback
-*@return hvmm_status_t HVMM_STATUS_BUSY or HVMM_STATUS_SUCESS
-*@brief
-*Adds a callback function for the timer channel.
+* @brief
+* Adds a callback function for the timer channel.
+* @param enum timer_channel_t channel, timer_callback_t callback
+* @return hvmm_status_t HVMM_STATUS_BUSY or HVMM_STATUS_SUCESS
 */
 hvmm_status_t timer_add_callback(enum timer_channel_type channel,
                 timer_callback_t handler);
 
 /**
-*@param timer_channel_t channel, timer_callback_t callback
-*@return hvmm_status_t HVMM_STATUS_NOT_FOUND or HVMM_STATUS_SUCESS
-*@brief
-*Removes the callback function from the timer channel's
-*registered callback function list
-*if it previously has been added.
+* @brief
+* Removes the callback function from the timer channel's
+* registered callback function list
+* if it previously has been added.
+* @param timer_channel_t channel, timer_callback_t callback
+* @return hvmm_status_t HVMM_STATUS_NOT_FOUND or HVMM_STATUS_SUCESS
 */
 hvmm_status_t enum timer_remove_callback(enum timer_channel_type channel,
         timer_callback_t handler);
 
 /**
-*@param uint64_t time_us
-*@return uint64_t time_us * COUNT_PER_USEC
-*@brief
-*Converts from microseconds to system counter.
+* @brief
+* Converts from microseconds to system counter.
+* @param uint64_t time_us
+* @return uint64_t time_us * COUNT_PER_USEC
 */
 uint64_t timer_t2c(uint64_t time_us);
 

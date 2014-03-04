@@ -9,9 +9,9 @@ void scheduler_schedule(void)
 }
 
 /**
+*@brief Testing context switch on guest
 *@param void *pdata
 *@return void
-*@brief Testing context switch on guest
 */
 void scheduler_test_switch_to_next_guest(void *pdata)
 {

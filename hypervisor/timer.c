@@ -13,9 +13,9 @@
 static struct timer_channel _channels[TIMER_NUM_MAX_CHANNELS];
 
 /**
-*@param enum timer_channel_type channel, void *param
-*@return void
-*@brief callback timer channel
+* @brief callback timer channel
+* @param enum timer_channel_type channel, void *param
+* @return void
 */
 static void _timer_each_callback_channel(enum timer_channel_type channel,
                 void *param)
@@ -27,9 +27,9 @@ static void _timer_each_callback_channel(enum timer_channel_type channel,
 }
 
 /**
-*@param  enum timer_channel_type channel
-*@return int count value
-*@brief count timer channel callback
+* @brief count timer channel callback
+* @param  enum timer_channel_type channel
+* @return int count value
 */
 static int _timer_channel_num_callbacks(enum timer_channel_type channel)
 {
@@ -41,9 +41,9 @@ static int _timer_channel_num_callbacks(enum timer_channel_type channel)
 }
 
 /**
-*@param void *pdata
-*@return void
-@brief callback HW
+* @brief callback HW
+* @param void *pdata
+* @return void
 */
 static void _timer_hw_callback(void *pdata)
 {

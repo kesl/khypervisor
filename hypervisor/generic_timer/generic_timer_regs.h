@@ -28,9 +28,9 @@ enum {
 };
 
 /**
-*@param : register, unit32_t
-*@return void
-*@brief Generic timer write register value
+* @brief Generic timer write register value
+* @param : register, unit32_t
+* @return void
 */
 static inline void generic_timer_reg_write(int reg, uint32_t val)
 {
@@ -70,9 +70,9 @@ static inline void generic_timer_reg_write(int reg, uint32_t val)
 }
 
 /**
-*@param int reg
-*@return uint32_t
-*@brief Generic timer read register
+* @brief Generic timer read register
+* @param int reg
+* @return uint32_t
 */
 static inline uint32_t generic_timer_reg_read(int reg)
 {
@@ -113,9 +113,9 @@ static inline uint32_t generic_timer_reg_read(int reg)
 }
 
 /**
-*@param int reg, uint64_t val
-*@return void
-*@brief Generic timer write register(64bit)
+* @brief Generic timer write register(64bit)
+* @param int reg, uint64_t val
+* @return void
 */
 static inline void generic_timer_reg_write64(int reg, uint64_t val)
 {
@@ -140,9 +140,9 @@ static inline void generic_timer_reg_write64(int reg, uint64_t val)
 }
 
 /**
-*@param int reg
-*@return uint64_t
-*@brief Generic timer read register(64bit)
+* @brief Generic timer read register(64bit)
+* @param int reg
+* @return uint64_t
 */
 static inline uint64_t generic_timer_reg_read64(int reg)
 {
