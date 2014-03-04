@@ -339,7 +339,7 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
  *   - Disable Stage 2 Translation: HCR.VM = 0<br>
  *   - Save the current Guest's context<br>
  *   - Restore Translation Table for the next guest<br>
- *   - and Enable Stage 2 Translation<br>
+ *   - Enable Stage 2 Translation<br>
  *   - The Next Guest Becomes the Current
  * @param regs_current current register's memory
  * @param next_vmid next guest's vmid
