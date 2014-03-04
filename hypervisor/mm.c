@@ -409,7 +409,7 @@ int hvmm_mm_init(void)
 }
 
 /**
- * @brief flush TLB
+ * @brief Flush TLB
  *
  * Invalidate entire unified TLB
  * @param void
