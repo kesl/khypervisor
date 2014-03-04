@@ -167,14 +167,14 @@ vmid_t context_waiting_vmid(void);
  * @param vmid_t vmid
  * @return result of switch.<br>
  * success - HVMM_STATUS_SUCCESS<br>
- * vmid is not valied - HVMM_STATUS_BAD_ACCESS<br>
+ * vmid vmid is not valied - HVMM_STATUS_BAD_ACCESS<br>
  * switching is locked - HVMM_STATUS_IGNORED<br>
  */
 hvmm_status_t context_switchto(vmid_t vmid);
 /**
  * @brief Switch the context with delivered vmid
- * @param target vmid
- * @param set context's switching lock<br>
+ * @param vmid target vmid
+ * @param locked set context's switching lock<br>
  * @return result of switch.<br>
  * success - HVMM_STATUS_SUCCESS<br>
  * vmid is not valied - HVMM_STATUS_BAD_ACCESS<br>
@@ -205,7 +205,7 @@ vmid_t context_last_vmid(void);
 vmid_t context_next_vmid(vmid_t ofvmid);
 /**
  * @brief Get guest's context with vmid
- * @param wished guest's context vmid
+ * @param vmid wished guest's context vmid
  * @return guest's context
  */
 struct hyp_guest_context *context_atvmid(vmid_t vmid);
