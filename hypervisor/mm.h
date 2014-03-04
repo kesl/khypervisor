@@ -21,7 +21,7 @@
  */
 int hvmm_mm_init(void);
 /**
- * @brief malloc, get size of space
+ * @brief Malloc, get size of space
  *
  * Get dynamic Memory from Heap Area
  * @param unsigned long size size of space
@@ -37,7 +37,7 @@ void *hmm_malloc(unsigned long size);
  */
 void hmm_free(void *addr);
 /**
- * @brief unmapping level 3 table entry in virtual address
+ * @brief Unmapping level 3 table entry in virtual address
  *
  * @param unsigned long virt virtual address
  * @param unsigned long npages number of pages
@@ -45,7 +45,7 @@ void hmm_free(void *addr);
  */
 void hmm_umap(unsigned long virt, unsigned long npages);
 /**
- * @brief mapping virtual address to level 3 table entry
+ * @brief Mapping virtual address to level 3 table entry
  *
  * maping physical address to level 3 table entry<br>
  * that be finded by virtual address and flush TLB
