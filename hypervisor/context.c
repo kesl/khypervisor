@@ -43,7 +43,7 @@
 
 #define __CONTEXT_TRACE_VERBOSE__
 /**
- * @brief Check validattion of vmid
+ * @brief Check validation of vmid
  */
 #define _valid_vmid(vmid) \
     (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
