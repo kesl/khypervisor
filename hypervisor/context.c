@@ -43,7 +43,7 @@
 
 #define __CONTEXT_TRACE_VERBOSE__
 /**
- * @brief check validattion of vmid
+ * @brief Check validattion of vmid
  */
 #define _valid_vmid(vmid) \
     (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
@@ -57,7 +57,7 @@ static uint8_t _switch_locked;
 
 #ifdef DEBUG
 /**
- * @brief return mode name string
+ * @brief Return mode name string
  * @param uint8_t mode mode value
  * @return char * mode name string
  */
@@ -122,7 +122,7 @@ void context_dump_regs(struct arch_regs *regs)
 #endif
 }
 /**
- * @brief copy the register from regs_src to regs_dst
+ * @brief Copy the register from regs_src to regs_dst
  *
  * copy registers cpsr, pc, lr, gpr[0-ARCH_REGS_NUM_GPR]
  * @param struct arch_regs *regs_dst destination register
@@ -141,7 +141,7 @@ static void context_copy_regs(struct arch_regs *regs_dst,
 
 /* banked registers */
 /**
- * @brief initialize the banked registers
+ * @brief Initialize the banked registers
  *
  * initialize the all mode's banked register
  * @param struct arch_regs_banked *regs_bnaked target banked registers
@@ -173,7 +173,7 @@ void context_init_banked(struct arch_regs_banked *regs_banked)
 }
 
 /**
- * @brief copy currently active banked registers to regs_banked
+ * @brief Copy currently active banked registers to regs_banked
  *
  * copy registers to struct arch_regs_banked *regs_banked
  * @param struct arch_regs_banked *regs_banked copy target structure
@@ -230,7 +230,7 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
 }
 
 /**
- * @brief restore banked register from regs_banked to active banked register
+ * @brief Restore banked register from regs_banked to active banked register
  *
  * @param struct arch_regs_banked *regs_banked source banked registers
  * @return void
@@ -333,7 +333,7 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
  */
 
 /**
- * @brief switch context current to next guest context
+ * @brief Switch context current to next guest context
  *
  * - Step<br>
  *   - Disable Stage 2 Translation: HCR.VM = 0<br>
