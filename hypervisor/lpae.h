@@ -213,9 +213,9 @@ enum lpaed_stage2_memattr {
  *   - Valid =1, table = 0, ai = attr_idx<br>
  *   - ns = 1, user =1, ro = 0, sh = 2<br>
  *   - af = 1, ng = 1, hint = 0, pxn = 0, xn = 0<br>
- * @param uint64_t pa block's physical address
- * @param uint8_t attr_idx attribute index for memory this descriptor
- * @return lpaed_t generated entry of LPAE Descriptor
+ * @param  pa block's physical address
+ * @param  attr_idx attribute index for memory this descriptor
+ * @return  generated entry of LPAE Descriptor
  */
 union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
 /**
@@ -226,8 +226,8 @@ union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
  *   - Valid = 1, table = 0, mattr = mattr & 0x0F<br>
  *   - read = 1, write =1, sh = 0, af = 1, hint = 0<br>
  *   - xn = 0<br>
- * @param uint64_t pa block's physical address
- * @param lpaed_stage2_memattr_t mattr
+ * @param pa block's physical address
+ * @param mattr
  * @return lpaed_t generated entry of LPAE Descriptor
  */
 union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
@@ -238,8 +238,8 @@ union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
  * Generate entry of LPAE Descriptor - Level 1 table entry, 1GB<br>
  * - Setting<br>
  *   - valid = 1, table = 1, pxnt = 0, xnt = 0, apt = 0, nst = 1<br>
- * @param uint64_t pa level2 page table's physical address
- * @return lpead_t generated entry of LPAE Descriptor
+ * @param pa level2 page table's physical address
+ * @return generated entry of LPAE Descriptor
  */
 union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa);
 /**
@@ -248,8 +248,8 @@ union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa);
  * Generate entry of LPAE Descriptor - Level 2 table entry, 2MB<br>
  * - Setting<br>
  *   - Valid = 1, table = 1, pxnt = 0, xnt = 0, apt =0, nst =1<br>
- * @param uint64_t pa level3 page table's physical address
- * @return lpead_t generated entry of LPAE Descriptor
+ * @param pa level3 page table's physical address
+ * @return generated entry of LPAE Descriptor
  */
 union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa);
 /**
@@ -259,10 +259,10 @@ union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa);
  * - Setting<br>
  *   - Valid = valid, table = 1, ai = attr_idx, ns = 1, user = 1<br>
  *   - ro = 0, sh = 2, af =1, ng =1, hint = 0, pxn = 0, xn =0<br>
- * @param uint64_t pa 4KB physical address
- * @param uint8_t attr_idx memory attribute Index
- * @param uint8_t valid validation of table entry
- * @return lpead_t generated entry of LPAE Descriptor
+ * @param pa 4KB physical address
+ * @param attr_idx memory attribute Index
+ * @param valid validation of table entry
+ * @return generated entry of LPAE Descriptor
  */
 union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
                 uint8_t valid);
@@ -271,9 +271,9 @@ union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
  *
  * configure table's validate & page base address<br>
  * - valid = valid ? 1 : 0
- * @param lpaed_t *ttbl3 level3 translation table entry pointer
- * @param uint64_t baddr delivered base address
- * @param uint8_5 valid validate
+ * @param *ttbl3 level3 translation table entry pointer
+ * @param baddr delivered base address
+ * @param valid validate
  * @return void
  */
 void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
@@ -283,7 +283,7 @@ void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
  *
  * make Invalidate table entry<br>
  * - valid = 0
- * @param lpaed_t *ttbl3 target table entry pointer
+ * @param *ttbl3 target table entry pointer
  * @return void
  */
 void lpaed_stage1_disable_l3_table(union lpaed *ttbl2);
@@ -294,9 +294,9 @@ void lpaed_stage1_disable_l3_table(union lpaed *ttbl2);
  * - Setting<br>
  *   - valid = 1, table = 1, mattr = mattr & 0x0F, read = 1, write 1<br>
  *   - sh = 0, af = 1, hint = 0, xn = 0
- * @param lpaed_t *pte target page table entry
- * @param uint64_t pa physical address
- * @param lpaed_stage2_memattr_t mattr memory entry
+ * @param *pte target page table entry
+ * @param pa physical address
+ * @param mattr memory entry
  * @return void
  */
 void lpaed_stage2_map_page(union lpaed *pte, uint64_t pa,
@@ -307,9 +307,9 @@ void lpaed_stage2_map_page(union lpaed *pte, uint64_t pa,
  * - Setting<br>
  *   - valid = valid ? 1: 0, table = valid ? 1 : 0<br>
  *   - bass address = baddr
- * @param lpaed_t *ttbl1 stage2 level1 table's translation table entry
- * @param uint64_t baddr base address
- * @param uint8_5 valid valid
+ * @param *ttbl1 stage2 level1 table's translation table entry
+ * @param baddr base address
+ * @param valid valid
  * @return void
  */
 void lpaed_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
@@ -320,9 +320,9 @@ void lpaed_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
  * - Setting<br>
  *   - valid = valid ? 1: 0, table = valid ? 1 : 0<br>
  *   - bass address = baddr
- * @param lpaed_t *ttbl2 stage2 level2 table's translation table entry
- * @param uint64_t baddr base address
- * @param uint8_5 valid valid
+ * @param *ttbl2 stage2 level2 table's translation table entry
+ * @param baddr base address
+ * @param valid valid
  * @return void
  */
 void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
@@ -332,7 +332,7 @@ void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
  *
  * - Setting<br>
  *   - valid = 1, table =1
- * @param lpaed_t *ttbl2 target level2 translation table entry
+ * @param *ttbl2 target level2 translation table entry
  * @return void
  */
 void lpaed_stage2_enable_l2_table(union lpaed *ttbl2);
@@ -341,7 +341,7 @@ void lpaed_stage2_enable_l2_table(union lpaed *ttbl2);
  *
  * - Setting<br>
  *   - valid = 0
- * @param lpaed_t *ttbl2 target level2 translation table entry
+ * @param *ttbl2 target level2 translation table entry
  * @return void
  */
 void lpaed_stage2_disable_l2_table(union lpaed *ttbl2);
