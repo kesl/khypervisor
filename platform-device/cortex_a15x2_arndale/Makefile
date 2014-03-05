@@ -29,7 +29,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/lpae.o					\
-	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
+	$(HYPERVISOR_SOURCE_DIR)/vtimer.o				\
 	$(HYPERVISOR_SOURCE_DIR)/context.o				\
 	$(HYPERVISOR_SOURCE_DIR)/gic/gic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\

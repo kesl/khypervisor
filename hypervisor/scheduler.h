@@ -3,7 +3,7 @@
 
 #include "armv7_p15.h"
 #include "context.h"
-#include "timer.h"
+#include <vtimer.h>
 
 #include <log/uart_print.h>
 
