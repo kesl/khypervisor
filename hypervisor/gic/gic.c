@@ -27,18 +27,20 @@
                                          |(GIC_INT_PRIORITY_DEFAULT))
 
 #define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
-
+/**
+ * @brief GIC struct
+ */
 struct gic {
-    uint32_t baseaddr;
-    volatile uint32_t *ba_gicd;
-    volatile uint32_t *ba_gicc;
-    volatile uint32_t *ba_gich;
-    volatile uint32_t *ba_gicv;
-    volatile uint32_t *ba_gicvi;
-    uint32_t lines;
-    uint32_t cpus;
-    gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
-    uint32_t initialized;
+    uint32_t baseaddr;          /**< GIC base address */
+    volatile uint32_t *ba_gicd; /**< Distributor */
+    volatile uint32_t *ba_gicc; /**< CPU interface */
+    volatile uint32_t *ba_gich; /**< Virtual interface control (common)*/
+    volatile uint32_t *ba_gicv; /**< Virtual interface control (processor-specific) */
+    volatile uint32_t *ba_gicvi;/**< Virtual CPU interface */
+    uint32_t lines;             /**< The Maximum number of interrupts */
+    uint32_t cpus;              /**< The number of implemented CPU interfaces */
+    gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS]; /** <IRQ handler */
+    uint32_t initialized;       /**< Check whether initializing GIC. */
 };
 
 static struct gic _gic;
@@ -87,7 +89,10 @@ static void gic_dump_registers(void)
     HVMM_TRACE_EXIT();
 }
 
-
+/**
+ * @brief Get GIC's base address.
+ * @todo When 40 bit address supports, This function wil use.
+ */
 static uint64_t gic_periphbase_pa(void)
 {
     /* CBAR:   4,  c0,   0 */
@@ -103,7 +108,11 @@ static uint64_t gic_periphbase_pa(void)
     }
     return periphbase;
 }
-
+/**
+ * @brief Set address of GIC memory map.
+ * @param va_base : Base address of GIC.
+ * @return Result status.
+ */
 static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 {
     /* MIDR[15:4], CRn:c0, Op1:0, CRm:c0, Op2:0  == 0xC0F (Cortex-A15) */
@@ -148,8 +157,18 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
     HVMM_TRACE_EXIT();
     return result;
 }
-
-
+/**
+ * @brief Initialize and Enable GIC Distributor
+ * <pre>
+ * Initialization sequence
+ * 1. Set Default SPI's polarity.
+ * 2. Set Default priority.
+ * 3. Diable all interrupts.
+ * 4. Route all IRQs to all target processors.
+ * 5. Enable Distributor.
+ * </pre>
+ * @return Result status.
+ */
 static hvmm_status_t gic_init_dist(void)
 {
     uint32_t type;
@@ -197,7 +216,18 @@ static hvmm_status_t gic_init_dist(void)
     return HVMM_STATUS_SUCCESS;
 }
 
-/* Initializes GICv2 CPU Interface */
+/**
+ * @brief Initializes GICv2 CPU Interface
+ * <pre>
+ * Initialization sequence
+ * 1. Diable all PPI interrupts, ensure all SGI interrupts are enabled.
+ * 2. Set priority on PPI and SGI interrupts.
+ * 3. Set priority threshold(Priority Masking),
+ *    Finest granularity of priority
+ * 4. Enable signaling of interrupts.
+ * </pre>
+ * @return Result status.
+ */
 static hvmm_status_t gic_init_cpui(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -208,7 +238,7 @@ static hvmm_status_t gic_init_cpui(void)
     _gic.ba_gicd[GICD_ISENABLER] = 0x0000FFFF;
     /* Default priority for SGIs and PPIs */
     for (i = 0; i < 32; i += 4)
-        _gic.ba_gicd[GICD_IPRIORITYR | i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
+        _gic.ba_gicd[GICD_IPRIORITYR + i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
 
     /* No Priority Masking: the lowest value as the threshold : 255 */
     _gic.ba_gicc[GICC_PMR] = 0xFF;
