@@ -23,7 +23,7 @@ BOOTLOADER	= boot.S
 
 OBJS 		= boot.o	\
 	main.o				\
-	$(HYPERVISOR_SOURCE_DIR)/monitor.o				\
+	$(HYPERVISOR_SOURCE_DIR)/vector.o				\
 	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/lpae.o					\
@@ -37,7 +37,6 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/trap.o					\
 	$(HYPERVISOR_SOURCE_DIR)/emulate_trapped_inst.o \
 	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
-	$(HYPERVISOR_SOURCE_DIR)/trap_dabort.o			\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev.o			\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_sample.o		\
 	$(HYPERVISOR_SOURCE_DIR)/virq.o					\
@@ -123,7 +122,7 @@ $(GUEST1BIN):
 boot.o: $(BOOTLOADER)
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
-monitor.o: monitor.S
+vector.o: vector.S
 	$(CC) $(CPPFLAGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
