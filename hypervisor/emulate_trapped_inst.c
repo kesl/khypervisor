@@ -15,13 +15,19 @@ void emulate_mcr_mrc_cp15(unsigned int iss, unsigned int il)
      * If value of EC bit is equal to 0x3, trapped
      * instruction should be handled here.
      */
-    unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT;
-    unsigned int cond;
+    /* unused variable */
+    /* unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT; */
+
+    /* unsigned int cond; */
     unsigned int Opc2, Opc1, CRn, Rt, CRm, dir;
+
+    /* warning: variable ‘cond’ set but not used */
+    /*
     if (cv == IS_VAILD_CV)
         cond = (iss & EC_ZERO_COND_BIT) >> EC_ZERO_COND_SHIFT;
     else
         cond = 0x0;
+    */
     dir = (iss & MCR_MRC_DIRECTION_BIT);
     Opc2 = (iss & MCR_MRC_OPC2_BIT) >> MCR_MRC_OPC2_SHIFT;
     Opc1 = (iss & MCR_MRC_OPC1_BIT) >> MCR_MRC_OPC1_SHIFT;
@@ -45,13 +51,17 @@ void emulate_mcr_mrc_cp14(unsigned int iss, unsigned int il)
      * If value of EC bit is equal to 0x3, trapped
      * instruction should be handled here.
      */
-    unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT;
-    unsigned int cond;
+    /* unused variable */
+    /* unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT; */
+    /* unused variable */
+    /* unsigned int cond; */
     unsigned int Opc2, Opc1, CRn, Rt, CRm, dir;
-    if (cv == IS_VAILD_CV)
+    /* warning: variable ‘cond’ set but not used */
+    /* if (cv == IS_VAILD_CV)
         cond = (iss & EC_ZERO_COND_BIT) >> EC_ZERO_COND_SHIFT;
     else
         cond = 0x0;
+    */
     dir = (iss & MCR_MRC_DIRECTION_BIT);
     Opc2 = (iss & MCR_MRC_OPC2_BIT) >> MCR_MRC_OPC2_SHIFT;
     Opc1 = (iss & MCR_MRC_OPC1_BIT) >> MCR_MRC_OPC1_SHIFT;
@@ -75,13 +85,18 @@ void emulate_mcr_mrc_cp10(unsigned int iss, unsigned int il)
      * If value of EC bit is equal to 0x3,
      * trapped instruction should be handled here.
      */
-    unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT;
-    unsigned int cond;
+    /* unused variable */
+    /* unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT; */
+    /* unused variable */
+    /* unsigned int cond; */
     unsigned int Opc2, Opc1, CRn, Rt, CRm, dir;
+    /* warning: variable ‘cond’ set but not used */
+    /*
     if (cv == IS_VAILD_CV)
         cond = (iss & EC_ZERO_COND_BIT) >> EC_ZERO_COND_SHIFT;
     else
         cond = 0x0;
+    */
     dir = (iss & MCR_MRC_DIRECTION_BIT);
     Opc2 = (iss & MCR_MRC_OPC2_BIT) >> MCR_MRC_OPC2_SHIFT;
     Opc1 = (iss & MCR_MRC_OPC1_BIT) >> MCR_MRC_OPC1_SHIFT;
@@ -128,12 +143,18 @@ void emulate_mcr_mrc_cp10(unsigned int iss, unsigned int il)
 
 void emulate_wfi_wfe(unsigned int iss, unsigned int il)
 {
-    unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT;
-    unsigned int cond, direction;
+    /* unused variable */
+    /* unsigned int cv = (iss & EC_ZERO_CV_BIT) >> EC_ZERO_CV_SHIFT; */
+    /* unused variable */
+    /* unsigned int cond; */
+    unsigned int direction;
+    /* warning: variable ‘cond’ set but not used */
+    /*
     if (cv == IS_VAILD_CV)
         cond = (iss & EC_ZERO_COND_BIT) >> EC_ZERO_COND_SHIFT;
     else
         cond = 0x0;
+    */
     if (il == 0)
         printh("16-bit Thumb instruction\n");
     else

@@ -78,7 +78,8 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     unsigned int hsr = read_hsr();
     unsigned int ec = (hsr & HSR_EC_BIT) >> EXTRACT_EC;
-    unsigned int il = (hsr & HSR_IL_BIT) >> EXTRACT_IL;
+    /* unused variable */
+    /* unsigned int il = (hsr & HSR_IL_BIT) >> EXTRACT_IL; */
     unsigned int iss = hsr & HSR_ISS_BIT;
     _trap_hyp_saved_regs = regs;
     printh("[hvc] _hyp_hvc_service: enter\n\r");
