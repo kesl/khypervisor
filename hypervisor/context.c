@@ -19,7 +19,7 @@
 
 #include <log/uart_print.h>
 #include <log/print.h>
-#include <test/tests.h>
+#include <tests/tests.h>
 
 #include <log/uart_print.h>
 #include <log/print.h>

@@ -4,7 +4,7 @@
 #include <hvmm_trace.h>
 #include <a15_cp15_sysregs.h>
 #include <armv7_p15.h>
-#include <test/test_vtimer.h>
+#include <tests/test_vtimer.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
 
