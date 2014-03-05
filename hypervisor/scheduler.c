@@ -37,11 +37,11 @@ void extra_timer_callback(void *pdata)
 
 void scheduler_test_scheduling()
 {
-    timer_init(timer_sched);
+    timer_init(TIMER_SCHED);
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
-    timer_set_interval(timer_sched, 100000);
-    timer_add_callback(timer_sched, &scheduler_test_switch_to_next_guest);
-    timer_start(timer_sched);
-    timer_add_callback(timer_sched, &extra_timer_callback);
+    timer_set_interval(TIMER_SCHED, 100000);
+    timer_add_callback(TIMER_SCHED, &scheduler_test_switch_to_next_guest);
+    timer_start(TIMER_SCHED);
+    timer_add_callback(TIMER_SCHED, &extra_timer_callback);
 }
 
