@@ -99,8 +99,6 @@ vmid_t context_last_vmid(void);
 vmid_t context_next_vmid(vmid_t ofvmid);
 struct hyp_guest_context *context_atvmid(vmid_t vmid);
 
-void start_guest_os(void);
-
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 
 extern uint32_t guest_bin_start;
