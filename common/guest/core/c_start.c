@@ -26,7 +26,7 @@
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include <gic.h>
-#include <test/tests.h>
+#include <tests/tests.h>
 
 /* #define TESTS_ENABLE_VDEV_SAMPLE */
 

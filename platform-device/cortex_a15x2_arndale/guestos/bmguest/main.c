@@ -2,7 +2,7 @@
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include <gic.h>
-#include <test/tests.h>
+#include <tests/tests.h>
 #include <drivers/pwm_timer.h>
 
 /* #define TESTS_ENABLE_PWM_TIMER */

@@ -2,7 +2,7 @@
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include <gic.h>
-#include <test/tests.h>
+#include <tests/tests.h>
 #include <trap.h>
 #include <drivers/sp804_timer.h>
 

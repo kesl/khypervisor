@@ -49,11 +49,11 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/virqmap.o				\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_timer.o
 
-OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
-	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
-	$(COMMON_SOURCE_DIR)/test/tests_vdev.o			\
-	$(COMMON_SOURCE_DIR)/test/tests_malloc.o		\
-	$(COMMON_SOURCE_DIR)/test/tests_vdev_timer.o
+OBJS 		+=	$(COMMON_SOURCE_DIR)/tests/tests.o	\
+	$(COMMON_SOURCE_DIR)/tests/tests_gic_timer.o		\
+	$(COMMON_SOURCE_DIR)/tests/tests_vdev.o			\
+	$(COMMON_SOURCE_DIR)/tests/tests_malloc.o		\
+	$(COMMON_SOURCE_DIR)/tests/tests_vdev_timer.o
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/log/string.o	\
 	$(COMMON_SOURCE_DIR)/log/format.o				\
