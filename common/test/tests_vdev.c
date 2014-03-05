@@ -6,7 +6,6 @@
 #include <asm-arm_inline.h>
 #include <gic.h>
 #include "virqmap.h"
-#include <hyp_config.h>
 
 #include <config/cfg_platform.h>
 #include <log/print.h>

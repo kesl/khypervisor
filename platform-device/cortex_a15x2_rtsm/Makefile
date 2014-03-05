@@ -24,8 +24,6 @@ BOOTLOADER	= boot.S
 OBJS 		= boot.o	\
 	main.o				\
 	$(HYPERVISOR_SOURCE_DIR)/monitor.o				\
-	$(HYPERVISOR_SOURCE_DIR)/monitor_secure.o		\
-	$(HYPERVISOR_SOURCE_DIR)/monitor_imp.o			\
 	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/lpae.o					\
