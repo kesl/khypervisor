@@ -1,8 +1,8 @@
-#include <context.h>
+#include <guest.h>
 
 int main(void)
 {
-    start_guest_os();
+    start_guest();
     /* The code flow must not reach here */
     while (1)
         ;

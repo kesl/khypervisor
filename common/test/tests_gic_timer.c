@@ -4,7 +4,7 @@
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
-#include "sched_policy.h"
+#include "guest.h"
 #include "hyp_config.h"
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
