@@ -19,6 +19,16 @@ typedef void (*gic_irq_handler_t)(int irq, void *regs, void *pdata);
 void gic_interrupt(int fiq, void *regs);
 hvmm_status_t gic_enable_irq(uint32_t irq);
 hvmm_status_t gic_disable_irq(uint32_t irq);
+/**
+ * @brief Initialize GIC
+ * <pre>
+ * Initialization sequence
+ * 1. Determine GIC's base address and set it.
+ * 2. Initialize and Enable GIC Distributor.
+ * 3. Initialize and Enable GIC CPU Interface for this CPU.
+ * </pre>
+ * @return Result status.
+ */
 hvmm_status_t gic_init(void);
 hvmm_status_t gic_deactivate_irq(uint32_t irq);
 volatile uint32_t *gic_vgic_baseaddr(void);
