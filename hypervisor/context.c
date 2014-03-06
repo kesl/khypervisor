@@ -27,6 +27,9 @@
 
 #define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC
 
+/** \defgroup CPSR_MODE
+ * @{
+ */
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
 #define CPSR_MODE_IRQ   0x12
@@ -36,8 +39,12 @@
 #define CPSR_MODE_HYP   0x1A
 #define CPSR_MODE_UND   0x1B
 #define CPSR_MODE_SYS   0x1F
+/** @} */
 
 #define __CONTEXT_TRACE_VERBOSE__
+/**
+ * @brief Check validation of vmid
+ */
 #define _valid_vmid(vmid) \
     (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
 
@@ -49,6 +56,11 @@ static int _next_guest_vmid = VMID_INVALID;
 static uint8_t _switch_locked;
 
 #ifdef DEBUG
+/**
+ * @brief Return mode name string
+ * @param mode mode value
+ * @return mode name string
+ */
 static char *_modename(uint8_t mode)
 {
     char *name = "Unknown";
@@ -109,6 +121,13 @@ void context_dump_regs(struct arch_regs *regs)
 #endif
 #endif
 }
+/**
+ * @brief Copy the register from regs_src to regs_dst
+ *
+ * copy registers cpsr, pc, lr, r0-r12
+ * @param resgs_dst destination register
+ * @param regs_src source register
+ */
 static void context_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
 {
@@ -121,7 +140,13 @@ static void context_copy_regs(struct arch_regs *regs_dst,
 }
 
 /* banked registers */
-
+/**
+ * @brief Initialize the banked registers
+ *
+ * initialize the all mode's banked register
+ * @param regs_banked target banked registers
+ * @return void
+ */
 void context_init_banked(struct arch_regs_banked *regs_banked)
 {
     regs_banked->sp_usr = 0;
@@ -147,6 +172,13 @@ void context_init_banked(struct arch_regs_banked *regs_banked)
     /* Cortex-A15 processor does not support sp_fiq */
 }
 
+/**
+ * @brief Copy currently active banked registers to regs_banked
+ *
+ * copy registers to struct arch_regs_banked *regs_banked
+ * @param regs_banked copy target structure
+ * @return void
+ */
 void context_save_banked(struct arch_regs_banked *regs_banked)
 {
     /* USR banked register */
@@ -197,6 +229,12 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
                  : "=r"(regs_banked->r12_fiq) : : "memory", "cc");
 }
 
+/**
+ * @brief Restore banked register from regs_banked to active banked register
+ *
+ * @param regs_banked source banked registers
+ * @return void
+ */
 void context_restore_banked(struct arch_regs_banked *regs_banked)
 {
     /* USR banked register */
@@ -247,7 +285,11 @@ void context_restore_banked(struct arch_regs_banked *regs_banked)
                  : : "r"(regs_banked->r12_fiq) : "memory", "cc");
 }
 
-/* Co-processor state management: init/save/restore */
+/**
+ * @brief Coprocessor state management: init
+ * @param regs_cop initialize target
+ * @return void
+ */
 void context_init_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = 0;
@@ -257,6 +299,11 @@ void context_init_cops(struct arch_regs_cop *regs_cop)
     regs_cop->sctlr = 0;
 }
 
+/**
+ * @brief Coprocessor state management: save
+ * @param regs_cop target strcuture
+ * @return void
+ */
 void context_save_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = read_vbar();
@@ -266,6 +313,11 @@ void context_save_cops(struct arch_regs_cop *regs_cop)
     regs_cop->sctlr = read_sctlr();
 }
 
+/**
+ * @brief Coprocessor state management: restore
+ * @param regs_cop source structure
+ * @return void
+ */
 void context_restore_cops(struct arch_regs_cop *regs_cop)
 {
     write_vbar(regs_cop->vbar);
@@ -280,6 +332,19 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
    void context_switch_to_next_guest(struct arch_regs *regs_current)
  */
 
+/**
+ * @brief Switch context current to next guest context
+ *
+ * - Step<br>
+ *   - Disable Stage 2 Translation: HCR.VM = 0<br>
+ *   - Save the current Guest's context<br>
+ *   - Restore Translation Table for the next guest<br>
+ *   - Enable Stage 2 Translation<br>
+ *   - The Next Guest Becomes the Current
+ * @param regs_current current register's memory
+ * @param next_vmid next guest's vmid
+ * @return context switching result
+ */
 static hvmm_status_t context_perform_switch_to_guest_regs(
                         struct arch_regs *regs_current, vmid_t next_vmid)
 {

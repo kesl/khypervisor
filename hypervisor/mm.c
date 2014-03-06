@@ -9,35 +9,39 @@
 #include <log/uart_print.h>
 
 
-/* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
- * Indexed by the AttrIndex bits of a LPAE entry;
- * the 8-bit fields are packed little-endian into MAIR0 and MAIR1
+/**
+ * \defgroup LPAE_Memory_region_attrigutes
  *
- *                 ai    encoding
- *   UNCACHED      000   0000 0000  -- Strongly Ordered
- *   BUFFERABLE    001   0100 0100  -- Non-Cacheable
- *   WRITETHROUGH  010   1010 1010  -- Write-through
- *   WRITEBACK     011   1110 1110  -- Write-back
- *   DEV_SHARED    100   0000 0100  -- Device
- *   ??            101
- *   reserved      110
- *   WRITEALLOC    111   1111 1111  -- Write-back write-allocate
- *
- *   DEV_NONSHARED 100   (== DEV_SHARED)
- *   DEV_WC        001   (== BUFFERABLE)
- *   DEV_CACHED    011   (== WRITEBACK)
+ * LPAE Memory region attributes, to match Linux's (non-LPAE) choices.<br>
+ * Indexed by the AttrIndex bits of a LPAE entry;<br>
+ * the 8-bit fields are packed little-endian into MAIR0 and MAIR1<br>
+ * <br>
+ *                 ai    encoding<br>
+ *   UNCACHED      000   0000 0000  -- Strongly Ordered<br>
+ *   BUFFERABLE    001   0100 0100  -- Non-Cacheable<br>
+ *   WRITETHROUGH  010   1010 1010  -- Write-through<br>
+ *   WRITEBACK     011   1110 1110  -- Write-back<br>
+ *   DEV_SHARED    100   0000 0100  -- Device<br>
+ *   ??            101<br>
+ *   reserved      110<br>
+ *   WRITEALLOC    111   1111 1111  -- Write-back write-allocate<br>
+ *<br>
+ *   DEV_NONSHARED 100   (== DEV_SHARED)<br>
+ *   DEV_WC        001   (== BUFFERABLE)<br>
+ *   DEV_CACHED    011   (== WRITEBACK)<br>
+ *   @{
  */
 #define INITIAL_MAIR0VAL 0xeeaa4400
 #define INITIAL_MAIR1VAL 0xff000004
 #define INITIAL_MAIRVAL (INITIAL_MAIR0VAL|INITIAL_MAIR1VAL<<32)
-
-/*
- * Attribute Indexes.
+/** @}*/
+/**
+ * \defgroup Attribute_Indexes_LPAE_stage_1_page
  *
- * These are valid in the AttrIndx[2:0] field of an LPAE stage 1 page
- * table entry. They are indexes into the bytes of the MAIR*
+ * These are valid in the AttrIndx[2:0] field of an LPAE stage 1 page<br>
+ * table entry. They are indexes into the bytes of the MAIR*<br>
  * registers, as defined above.
- *
+ * @{
  */
 #define UNCACHED      0x0
 #define BUFFERABLE    0x1
@@ -48,9 +52,13 @@
 #define DEV_NONSHARED DEV_SHARED
 #define DEV_WC        BUFFERABLE
 #define DEV_CACHED    WRITEBACK
-
-/* SCTLR System Control Register. */
-/* HSCTLR is a subset of this. */
+/** @}*/
+/** \defgroup SCTLR
+ *
+ *  System Control Register.<br>
+ *  HSCTLR is a subset of this
+ *  @{
+ */
 #define SCTLR_TE        (1<<30)
 #define SCTLR_AFE       (1<<29)
 #define SCTLR_TRE       (1<<28)
@@ -72,13 +80,20 @@
 #define SCTLR_M         (1<<0)
 #define SCTLR_BASE        0x00c50078
 #define HSCTLR_BASE       0x30c51878
+/** @}*/
 
-/* HTTBR */
+/**
+ * \defgroup HTTBR
+ * @{
+ */
 #define HTTBR_INITVAL                                   0x0000000000000000ULL
 #define HTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
 #define HTTBR_BADDR_SHIFT                               12
+/** @}*/
 
-/* HTCR */
+/** \defgroup HTCR
+ * @{
+ */
 #define HTCR_INITVAL                                    0x80000000
 #define HTCR_SH0_MASK                                   0x00003000
 #define HTCR_SH0_SHIFT                                  12
@@ -88,7 +103,7 @@
 #define HTCR_IRGN0_SHIFT                                8
 #define HTCR_T0SZ_MASK                                  0x00000003
 #define HTCR_T0SZ_SHIFT                                 0
-
+/** @} */
 /* PL2 Stage 1 Level 1 */
 #define HMM_L1_PTE_NUM  512
 
@@ -134,7 +149,14 @@ uint32_t last_valid_address; /* last mapping address */
 static union header freep_base; /* empty list to get started */
 static union header *freep; /* start of free list */
 
-/* malloc init */
+/**
+ * @brief Initilization of heap Memory region
+ *
+ * Initialize Heap Region for malloc operation<br>
+ * mm_break = mm_prev_break = last_valid_address = HEAD_ADDR
+ * @param void
+ * @param void
+ */
 void hmm_heap_init(void)
 {
     mm_break = HEAP_ADDR;
@@ -143,23 +165,27 @@ void hmm_heap_init(void)
     freep = 0;
 }
 
-/*
- * Initialization of Host Monitor Memory Management
- * PL2 Stage1 Translation
- * VA32 -> PA
+/**
+ * @brief Initialization of Host Monitor Memory Management
+ *
+ * Initialization of Host Monitor(Hyp Mode's)  Memory Management<br>
+ * PL2 Stage1 Translation<br>
+ * VA32 -> PA<br>
+ * Generate Translation Table level1, level2, level3<br>
+ * But do not asign Virtual address, just asign Physical address<br>
+ * Partition0 : 0x00000000 ~ 0x3FFFFFFF - Peripheral-DEV_SHARED
+ * Partition1 : 0x40000000 ~ 0x7FFFFFFF - Unused    -UNCACHED
+ * Partition2 : 0x80000000 ~ 0xBFFFFFFF - Guest     -UNCACHED
+ * Partition3 : 0xC0000000 ~ 0xFFFFFFFF - Monitor
+ *                                      -L2 translation table address
+ * @param void
+ * @return void
  */
-
 static void _hmm_init(void)
 {
     int i, j;
     uint64_t pa = 0x00000000ULL;
-    /*
-     * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - DEV_SHARED
-     * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - UNCACHED
-     * Partition 2: 0x80000000 ~ 0xBFFFFFFF - Guest         - UNCACHED
-     * Partition 3: 0xC0000000 ~ 0xFFFFFFFF - Monitor
-     *                                      - LV2 translation table address
-     */
+
     _hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED);
     pa += 0x40000000;
     uart_print("&_hmm_pgtable[0]:");
@@ -382,6 +408,13 @@ int hvmm_mm_init(void)
     return HVMM_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Flush TLB
+ *
+ * Invalidate entire unified TLB
+ * @param void
+ * @return void
+ */
 void hmm_flushTLB(void)
 {
     /* Invalidate entire unified TLB */
@@ -390,6 +423,14 @@ void hmm_flushTLB(void)
     asm volatile("isb");
 }
 
+/**
+ * @brief Get level 3 table entry
+ *
+ * Get level3 translation table entry by virtual address and number of pages
+ * @param  virt virtual address
+ * @param  npages number of pages
+ * @return * level 3 table entry
+ */
 union lpaed *hmm_get_l3_table_entry(unsigned long virt, unsigned long npages)
 {
     int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
@@ -426,9 +467,15 @@ void hmm_map(unsigned long phys, unsigned long virt, unsigned long npages)
     hmm_flushTLB();
 }
 
-/* General-purpose sbrk, basic memory management system calls
+/**
+ * @brief General-purpose sbrk, basic memory management system calls
+ *
+ * General-purpose sbrk, basic memory management system calls<br>
  * Returns -1 if there was no space.
-*/
+ *
+ * @param  incr size of memory wanted
+ * @return size of space
+ */
 void *hmm_sbrk(unsigned int incr)
 {
     unsigned int required_addr;
@@ -475,6 +522,14 @@ void hmm_free(void *ap)
     freep = p;
 }
 
+/**
+ * @brief Get more free memory for malloc
+ *
+ * Get free memory<br>
+ * At least 1024(1K)Byte<br>
+ * @param nu number of units, allocate size
+ * @return pointer of free list block header & memory area
+ */
 static union header *morecore(unsigned int nu)
 {
     char *cp;
