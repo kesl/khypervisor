@@ -3,7 +3,7 @@
 #include "trap.h"
 #include "context.h"
 #include "gic.h"
-#include "sched_policy.h"
+#include "guest.h"
 #include "trap_dabort.h"
 #include "emulate_trapped_inst.h"
 #include "trap.h"
