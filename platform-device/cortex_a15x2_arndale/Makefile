@@ -31,7 +31,6 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/context.o				\
 	$(HYPERVISOR_SOURCE_DIR)/gic/gic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
-	$(HYPERVISOR_SOURCE_DIR)/smp.o					\
 	$(HYPERVISOR_SOURCE_DIR)/generic_timer/generic_timer.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/vgic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/trap.o					\
