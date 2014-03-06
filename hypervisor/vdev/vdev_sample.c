@@ -11,7 +11,14 @@ struct vdev_sample_regs {
 
 static struct vdev_info _vdev_info;
 static struct vdev_sample_regs regs[NUM_GUESTS_STATIC];
-
+/**
+ * @brief handler for virtual sample device
+ * @param flag mode 0: read, 1: write
+ * @param offset in bytes from base address
+ * @param address to input value (if write) or output value (if read)
+ * @param size of virtual device's access
+ * @return value of hvmm status
+ */
 hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {

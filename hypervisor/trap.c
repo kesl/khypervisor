@@ -18,7 +18,11 @@
  */
 
 static struct arch_regs *_trap_hyp_saved_regs;
-
+/**
+ * @brief Handler for data aboart exception
+ * @param currnt registers' values
+ * @return value of hvmm status
+ */
 hvmm_status_t _hyp_trap_dabort(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -27,7 +31,11 @@ hvmm_status_t _hyp_trap_dabort(struct arch_regs *regs)
     ;
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**
+ * @brief Handler for irq exception
+ * @param currnt registers' values
+ * @return value of hvmm status
+ */
 hvmm_status_t _hyp_trap_irq(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -35,7 +43,11 @@ hvmm_status_t _hyp_trap_irq(struct arch_regs *regs)
     context_perform_switch();
     return HVMM_STATUS_SUCCESS;
 }
-
+/**
+ * @brief Handler for unhandled exception
+ * @param currnt registers' values
+ * @return value of hvmm status
+ */
 hvmm_status_t _hyp_trap_unhandled(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -44,7 +56,9 @@ hvmm_status_t _hyp_trap_unhandled(struct arch_regs *regs)
 
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**
+ * @brief check architecture registers(spsr, lr, sp) for debugging mode
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -73,7 +87,11 @@ static void _trap_dump_bregs(void)
  * information included. It depends on EC field.
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
-
+/**
+ * @brief Handler for hvc exception
+ * @param currnt registers' values
+ * @return value of hvmm status
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     unsigned int hsr = read_hsr();
