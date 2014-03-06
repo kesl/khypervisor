@@ -122,10 +122,10 @@ static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
 static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
-    /* CTLR;              /*0x000 RW*/
-    /* TYPER;             /*      RO*/
-    /* IIDR;              /*      RO*/
-    /* IGROUPR[32];       /* 0x080 ~ 0x0FF */
+    /* CTLR;              0x000 RW*/
+    /* TYPER;             RO*/
+    /* IIDR;              RO*/
+    /* IGROUPR[32];       0x080 ~ 0x0FF */
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = context_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];

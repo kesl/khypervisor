@@ -24,8 +24,6 @@ BOOTLOADER	= boot.S
 OBJS 		= boot.o	\
 	main.o				\
 	$(HYPERVISOR_SOURCE_DIR)/monitor.o				\
-	$(HYPERVISOR_SOURCE_DIR)/monitor_secure.o		\
-	$(HYPERVISOR_SOURCE_DIR)/monitor_imp.o			\
 	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/lpae.o					\
@@ -34,11 +32,10 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/gic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
 	$(HYPERVISOR_SOURCE_DIR)/smp.o					\
-	$(HYPERVISOR_SOURCE_DIR)/scheduler.o			\
 	$(HYPERVISOR_SOURCE_DIR)/generic_timer/generic_timer.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/vgic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/trap.o					\
-	$(HYPERVISOR_SOURCE_DIR)/sched_policy.o			\
+	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
 	$(HYPERVISOR_SOURCE_DIR)/trap_dabort.o			\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev.o			\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_sample.o		\

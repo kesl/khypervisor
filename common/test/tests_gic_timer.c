@@ -4,8 +4,7 @@
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
-#include "sched_policy.h"
-#include "hyp_config.h"
+#include "guest.h"
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
@@ -146,6 +145,6 @@ hvmm_status_t hvmm_tests_vgic(void)
     for (i = 0; i < NUM_GUESTS_STATIC; i++)
         _timer_status[i] = 1;
 
-    timer_add_callback(timer_sched, &callback_timer);
+    timer_add_callback(TIMER_SCHED, &callback_timer);
     return HVMM_STATUS_SUCCESS;
 }
