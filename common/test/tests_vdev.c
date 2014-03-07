@@ -41,7 +41,7 @@ void _my_vgicd_changed_istatus(vmid_t vmid, uint32_t istatus,
             if (istatus & (1 << bit)) {
                 printh("[%s : %d] enabled irq num is %d\n",
                         __func__, __LINE__, bit + minirq);
-                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
+                gic_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
                         gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
             } else {
                 printh("[%s : %d] disabled irq num is %d\n",

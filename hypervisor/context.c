@@ -402,29 +402,23 @@ void context_init_guests(void)
 {
     struct hyp_guest_context *context;
     struct arch_regs *regs = 0;
+    int i;
     uart_print("[hyp] init_guests: enter\n\r");
-    /* Guest 1 @guest_bin_start */
-    context = &guest_contexts[0];
-    regs = &context->regs;
-    regs->cpsr = 0x1d3;            /* supervisor, interrupt disabled */
-    regs->pc = 0x80000000; /* PA:0xA0000000, default entry for bmguest */
-    /* regs->gpr[] = whatever */
-    context->vmid = 0;
-    context->ttbl = vmm_vmid_ttbl(context->vmid);
-    context_init_cops(&context->regs_cop);
-    context_init_banked(&context->regs_banked);
-    vgic_init_status(&context->vgic_status, context->vmid);
-    /* Guest 2 @guest2_bin_start */
-    context = &guest_contexts[1];
-    regs = &context->regs;
-    regs->pc = 0x80000000;    /* PA: 0xB0000000 */
-    regs->cpsr = 0x1d3;    /* supervisor, interrupt disabled */
-    /* regs->gpr[] = whatever */
-    context->vmid = 1;
-    context->ttbl = vmm_vmid_ttbl(context->vmid);
-    context_init_cops(&context->regs_cop);
-    context_init_banked(&context->regs_banked);
-    vgic_init_status(&context->vgic_status, context->vmid);
+    /* Initializes 2 guests */
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+        /* Guest i @guest_bin_start */
+        context = &guest_contexts[i];
+        regs = &context->regs;
+        regs->pc = 0x80000000;
+        /* supervisor mode */
+        regs->cpsr = 0x1d3;
+        /* regs->gpr[] = whatever */
+        context->vmid = i;
+        context->ttbl = vmm_vmid_ttbl(context->vmid);
+        context_init_cops(&context->regs_cop);
+        context_init_banked(&context->regs_banked);
+        vgic_init_status(&context->vgic_status, context->vmid);
+    }
     uart_print("[hyp] init_guests: return\n\r");
 }
 
