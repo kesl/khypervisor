@@ -1,6 +1,8 @@
 #ifndef __TRAP_H__
 #define __TRAP_H__
 
+#include <hvmm_types.h>
+
 /* HSR Exception Class. */
 #define TRAP_EC_ZERO_UNKNOWN        0x00
 #define TRAP_EC_ZERO_WFI_WFE        0x01
@@ -30,4 +32,7 @@
 #define HSR_ISS_BIT     0x01FFFFFF
 
 struct arch_regs *trap_saved_regs(void);
+hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
+enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
+
 #endif
