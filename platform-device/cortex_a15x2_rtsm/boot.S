@@ -187,7 +187,7 @@ start:
 	ldr     sp, =sec_stacklimit
 
     bl mon_init
-    bl mon_enter_hyp   // Secure -> NS.Hyp -> hyp_main()
+    bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
 
 	@ Never reached
 1:	b 1b
@@ -206,18 +206,18 @@ start:
     pop {r0 - r2, pc}
 .type mon_init, % function
 
-.global mon_enter_hyp
-    mon_enter_hyp:
+.global mon_to_hyp
+    mon_to_hyp:
     smc #0  @ -> trap_smc
     hvc #0  @ -> trap_hyp_entry
     /* Place the right Hyp exception vector for the first time */
-    ldr r0, = monitor_hyp_vectors
+    ldr r0, = hyp_init_vectors
     mcr p15, 4, r0, c12, c0, 0
     bl main
     @ never come back
     1:
     b 1b
-.type mon_enter_hyp, % function
+.type mon_to_hyp, % function
 
 .global __mon_switch_to_guest_context
 __mon_switch_to_guest_context:    @ struct arch_regs *r0

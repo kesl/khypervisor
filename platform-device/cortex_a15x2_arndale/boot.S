@@ -189,7 +189,7 @@ start:
     smc #0  @ -> trap_smc
     hvc #0  @ -> trap_hyp_entry
     /* Place the right Hyp exception vector for the first time */
-    ldr r0, = monitor_hyp_vectors
+    ldr r0, = hyp_init_vectors
     mcr p15, 4, r0, c12, c0, 0
     bl main
     @ never come back

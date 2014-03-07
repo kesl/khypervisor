@@ -65,23 +65,22 @@ vector_secure_unhandled:
     eret
 
 /* ---[Hyp Mode]------------------------------------------------------ */
-.global monitor_hyp_vectors
+.global hyp_init_vectors
 /*
  * Monitor Vector Table
  */
 .align 5
-monitor_hyp_vectors:
+hyp_init_vectors:
     .word 0    /* reset */
-    b    vector_unhandled    /* undef*/
-    b    vector_unhandled     /* hypervisor */
-    b    vector_unhandled    /* pabt*/
-    b    vector_dabt    /* dabt */
-    b    vector_hvc     /* hvc */
-    b    vector_irq    /* irq */
-    b    vector_unhandled    /* fiq*/
+    b    hyp_vector_unhandled    /* undef*/
+    b    hyp_vector_unhandled     /* hypervisor */
+    b    hyp_vector_unhandled    /* pabt*/
+    b    hyp_vector_dabt    /* dabt */
+    b    hyp_vector_hvc     /* hvc */
+    b    hyp_vector_irq    /* irq */
+    b    hyp_vector_unhandled    /* fiq*/
 
-
-vector_hvc:
+hyp_vector_hvc:
     @ Push registers
     push    {r0-r12}
     mrs    r0, spsr_hyp
@@ -117,7 +116,7 @@ vector_hvc:
     mrs    lr, elr_hyp
     mov    pc, lr
 
-vector_dabt:
+hyp_vector_dabt:
     @ Push registers
     push    {r0-r12}
     mrs    r0, spsr_hyp
@@ -139,7 +138,7 @@ vector_dabt:
     pop     {r0-r12}
     eret
 
-vector_irq:
+hyp_vector_irq:
     @ Push registers
     push    {r0-r12}
     mrs    r0, spsr_hyp
@@ -157,7 +156,7 @@ vector_irq:
     pop     {r0-r12}
     eret
 
-vector_unhandled:
+hyp_vector_unhandled:
     @ Push registers
     push    {r0-r12}
     mrs     r0, spsr_hyp
