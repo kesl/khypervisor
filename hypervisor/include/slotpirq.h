@@ -3,7 +3,9 @@
 #include <arch_types.h>
 #include <hvmm_types.h>
 #define SLOT_INVALID        0xFFFFFFFF
-
+/**
+ * @brief   Initializes all physical irq slot and virtual irq slot.
+ */
 void slotpirq_init(void);
 void slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq);
 uint32_t slotpirq_get(vmid_t vmid, uint32_t slot);

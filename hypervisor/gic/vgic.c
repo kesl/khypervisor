@@ -71,19 +71,23 @@
  */
 
 struct vgic {
-    /* Base address of VGIC (Virtual Interface Control Registers) */
+    /** Base address of VGIC (Virtual Interface Control Registers) */
     volatile uint32_t *base;
-    /* Number of List Registers */
+    /** Number of List Registers */
     uint32_t num_lr;
-    /* vgic module initialized if == VGIC_SIGNATURE_INITIALIZED */
+    /** vgic module initialized if == VGIC_SIGNATURE_INITIALIZED */
     uint32_t initialized;
+    /** Mask of the Number of Valid List Register */
     uint64_t valid_lr_mask;
 };
 
 
 static struct vgic _vgic;
 static void (*_cb_virq_flush)(vmid_t vmid);
-
+/**
+ * @brief Find one empty List Register index, from ELRSR0/1's LSB.
+ * @return Empty List Register.
+ */
 static uint32_t vgic_find_free_slot(void)
 {
     uint32_t slot;
@@ -127,7 +131,14 @@ static uint32_t vgic_is_free_slot(uint32_t slot)
         free_slot = vgic_find_free_slot();
     return free_slot;
 }
-
+/**
+ * @brief   Shows VGIC status
+ * <pre>
+ * Initialized  : Whether the initialization VGIC.
+ * Num ListRegs : The number of List registers.
+ * LR_MASK      : Mask of the Number of Valid List Register.
+ * </pre>
+ */
 static void _vgic_dump_status(void)
 {
     /*
@@ -163,12 +174,22 @@ static void _vgic_dump_status(void)
     uart_print("\n\r");
 }
 
+/**
+ * @brief   Shows virtual interface control registers.
+ * <pre>
+ * HCR     : Hypervisor Control Register
+ * VTR     : VGIC Type Register
+ * VMCR    : Virtual Machine Control Register
+ * MISR    : Maintenance Interrupt Status Register
+ * EISR0~1 : End of Interrupt Status Registers
+ * ELSR0~1 : Empty List Register Status Registers
+ * APR     : Active Priorities Register
+ * LR0~n   : List Registers
+ * </pre>
+ */
 static void _vgic_dump_regs(void)
 {
 #ifndef __VGIC_DISABLE_TRACE__
-    /*
-     * HCR * VTR * VMCR * MISR * EISR0 * EISR1 * ELSR0 * ELSR1 * APR * LR0~n
-     */
     int i;
     HVMM_TRACE_ENTER();
     uart_print("  hcr:");
@@ -400,25 +421,31 @@ uint32_t vgic_inject_virq_sw(uint32_t virq, enum virq_state state,
     return slot;
 }
 
-
-hvmm_status_t vgic_maintenance_irq_enable(uint8_t enable)
+/**
+ * @brief   Enables Virtual Maintenance Interrupt.
+ * @return  Result status. Always return success.
+ */
+static hvmm_status_t _vgic_maintenance_irq_enable(uint8_t enable)
 {
     uint32_t irq = VGIC_MAINTENANCE_INTERRUPT_IRQ;
     HVMM_TRACE_ENTER();
     if (enable) {
-        gic_test_set_irq_handler(irq, &_vgic_isr_maintenance_irq, 0);
-        gic_test_configure_irq(irq,
+        gic_set_irq_handler(irq, &_vgic_isr_maintenance_irq);
+        gic_configure_irq(irq,
                                GIC_INT_POLARITY_LEVEL,
                                gic_cpumask_current(),
                                GIC_INT_PRIORITY_DEFAULT);
     } else {
-        gic_test_set_irq_handler(irq, 0, 0);
+        gic_set_irq_handler(irq, 0);
         gic_disable_irq(irq);
     }
     HVMM_TRACE_EXIT();
     return HVMM_STATUS_SUCCESS;
 }
-
+/**
+ * @brief Returns Mask of the Number of Valid List Register.
+ * @return Mask bit of the Number of valid List Register.
+ */
 static uint64_t _vgic_valid_lr_mask(uint32_t num_lr)
 {
     uint64_t mask_valid_lr = 0xFFFFFFFFFFFFFFFFULL;
@@ -430,9 +457,10 @@ static uint64_t _vgic_valid_lr_mask(uint32_t num_lr)
     return mask_valid_lr;
 }
 
-/*
- * Registers the callback for flushing out queued virqs
- * for the specified guest (vmid)
+/**
+ * @brief Registers the callback for flushing out queued virqs
+ * for the specified guest (vmid).
+ * @return Always return success.
  */
 hvmm_status_t vgic_setcallback_virq_flush(void (*callback)(vmid_t vmid))
 {
@@ -454,7 +482,7 @@ hvmm_status_t vgic_init(void)
     _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
     _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
     _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
-    vgic_maintenance_irq_enable(1);
+    _vgic_maintenance_irq_enable(1);
     slotpirq_init();
     result = HVMM_STATUS_SUCCESS;
     _vgic_dump_status();

@@ -52,58 +52,63 @@
 #define SZ_2G               0x80000000
 
 #define CFG_GUEST0_DEVICE_MEMORY \
-    { "pl330.0", 0x11C10000, 0x11C10000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },         \
-    { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },         \
-    { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },         \
-    { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },          \
-    { "uart.1", 0x12C10000, 0x12C10000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },          \
-    { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },          \
-    { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },          \
-    { "chipid", 0x10000000, 0x10000000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },           \
-    { "syscon", 0x10050000, 0x10050000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },          \
-    { "timer", 0x12DD0000, 0x12DD0000, SZ_16K, LPAED_STAGE2_MEMATTR_DM },           \
-    { "wdt", 0x101D0000, 0x101D0000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },              \
-    { "sromc", 0x12250000, 0x12250000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },            \
-    { "hsphy", 0x12130000, 0x12130000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },            \
-    { "systimer", 0x101C0000, 0x101C0000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },         \
-    { "sysram", 0x02020000, 0x02020000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },           \
-    { "cmu", 0x10010000, 0x10010000, 144 * SZ_1K, LPAED_STAGE2_MEMATTR_DM },        \
-    { "pmu", 0x10040000, 0x10040000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },             \
-    { "combiner", 0x10440000, 0x10440000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },         \
-    { "gpio1", 0x11400000, 0x11400000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },            \
-    { "gpio2", 0x13400000, 0x13400000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },            \
-    { "gpio3", 0x10D10000, 0x10D10000, SZ_256, LPAED_STAGE2_MEMATTR_DM },           \
-    { "gpio4", 0x03860000, 0x03860000, SZ_256, LPAED_STAGE2_MEMATTR_DM },           \
-    { "audss", 0x03810000, 0x03810000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },            \
-    { "hsphy", 0x12130000, 0x12130000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },            \
-    { "ss_phy", 0x12100000, 0x12100000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },           \
-    { "sysram_ns", 0x0204F000, 0x0204F000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },        \
-    { "ppmu_cpu", 0x10C60000, 0x10C60000, SZ_8K, LPAED_STAGE2_MEMATTR_DM },         \
-    { "ppmu_ddr_c", 0x10C40000, 0x10C40000, SZ_8K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "ppmu_ddr_r1", 0x10C50000, 0x10C50000, SZ_8K, LPAED_STAGE2_MEMATTR_DM },      \
-    { "ppmu_ddr_l", 0x10CB0000, 0x10CB0000, SZ_8K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "ppmu_right0_bus", 0x13660000, 0x13660000, SZ_8K, LPAED_STAGE2_MEMATTR_DM},   \
-    { "fimc_lite0", 0x13C00000, 0x13C00000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "fimc_lite1", 0x13C10000, 0x13C10000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "fimc_lite2", 0x13C90000, 0x13C90000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "mipi_csis0", 0x13C20000, 0x13C20000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "mipi_csis1", 0x13C30000, 0x13C30000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },       \
-    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,  0x2000, LPAED_STAGE2_MEMATTR_DM }
-    /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */ 
+ do {    \
+    { "pl330.0", 0x11C10000, 0x11C10000, SZ_64K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "uart.1", 0x12C10000, 0x12C10000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "chipid", 0x10000000, 0x10000000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },   \
+    { "syscon", 0x10050000, 0x10050000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "timer", 0x12DD0000, 0x12DD0000, SZ_16K, LPAED_STAGE2_MEMATTR_DM },   \
+    { "wdt", 0x101D0000, 0x101D0000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },      \
+    { "sromc", 0x12250000, 0x12250000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },    \
+    { "hsphy", 0x12130000, 0x12130000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },    \
+    { "systimer", 0x101C0000, 0x101C0000, SZ_4K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "sysram", 0x02020000, 0x02020000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },   \
+    { "cmu", 0x10010000, 0x10010000, 144 * SZ_1K, LPAED_STAGE2_MEMATTR_DM },\
+    { "pmu", 0x10040000, 0x10040000, SZ_64K, LPAED_STAGE2_MEMATTR_DM },     \
+    { "combiner", 0x10440000, 0x10440000, SZ_4K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "gpio1", 0x11400000, 0x11400000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },    \
+    { "gpio2", 0x13400000, 0x13400000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },    \
+    { "gpio3", 0x10D10000, 0x10D10000, SZ_256, LPAED_STAGE2_MEMATTR_DM },   \
+    { "gpio4", 0x03860000, 0x03860000, SZ_256, LPAED_STAGE2_MEMATTR_DM },   \
+    { "audss", 0x03810000, 0x03810000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },    \
+    { "hsphy", 0x12130000, 0x12130000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },    \
+    { "ss_phy", 0x12100000, 0x12100000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },   \
+    { "sysram_ns", 0x0204F000, 0x0204F000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },\
+    { "ppmu_cpu", 0x10C60000, 0x10C60000, SZ_8K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "ppmu_ddr_c", 0x10C40000, 0x10C40000, SZ_8K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "ppmu_ddr_r1", 0x10C50000, 0x10C50000, SZ_8K, LPAED_STAGE2_MEMATTR_DM }, \
+    { "ppmu_ddr_l", 0x10CB0000, 0x10CB0000, SZ_8K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "ppmu_right0_bus", 0x13660000, 0x13660000, SZ_8K, \
+        LPAED_STAGE2_MEMATTR_DM}, \
+    { "fimc_lite0", 0x13C00000, 0x13C00000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "fimc_lite1", 0x13C10000, 0x13C10000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "fimc_lite2", 0x13C90000, 0x13C90000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "mipi_csis0", 0x13C20000, 0x13C20000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "mipi_csis1", 0x13C30000, 0x13C30000, SZ_4K, LPAED_STAGE2_MEMATTR_DM },  \
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, \
+        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, LPAED_STAGE2_MEMATTR_DM }  \
+    } while (0)
 
 #define CFG_GUEST1_DEVICE_MEMORY \
-        { "uart", 0x12C10000, 0x12C20000, 0x1000, LPAED_STAGE2_MEMATTR_DM },        \
-        { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, LPAED_STAGE2_MEMATTR_DM },   \
-        { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI,  0x2000, LPAED_STAGE2_MEMATTR_DM }
-        /* UNMAP {  "gicd", 0x2C001000, 0x2C001000,     0x1000, LPAED_STAGE2_MEMATTR_DM }, */
-
+do {  \
+    { "uart", 0x12C10000, 0x12C20000, 0x1000, LPAED_STAGE2_MEMATTR_DM },       \
+    { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, LPAED_STAGE2_MEMATTR_DM },  \
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC, \
+        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, LPAED_STAGE2_MEMATTR_DM } \
+    } while (0)
 #define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
     do {                                \
         name[_pirq].virq = _virq;         \
         name[_pirq].vmid = id;           \
     } while (0)
 
-#define CFG_GUEST0_VIRQMAP(name) \
+#define CFG_GUEST_VIRQMAP(name) \
+do { \
     DECLARE_VIRQMAP(name, 0, 32, 32);   \
     DECLARE_VIRQMAP(name, 0, 33, 33);   \
     DECLARE_VIRQMAP(name, 0, 34, 34);   \
@@ -171,5 +176,5 @@
     DECLARE_VIRQMAP(name, 0, 96, 96);   \
     DECLARE_VIRQMAP(name, 0, 97, 97);   \
     DECLARE_VIRQMAP(name, 0, 98, 98);   \
-    DECLARE_VIRQMAP(name, 0, 99, 99);
-#define CFG_GUEST1_VIRQMAP(name)
+    DECLARE_VIRQMAP(name, 0, 99, 99);   \
+    } while (0)
