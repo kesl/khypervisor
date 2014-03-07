@@ -270,8 +270,7 @@ hvmm_status_t gic_deactivate_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler,
-                void *pdata)
+hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
     if (irq < GIC_NUM_MAX_IRQS) {
@@ -321,7 +320,7 @@ hvmm_status_t gic_init(void)
     return result;
 }
 
-hvmm_status_t gic_test_configure_irq(uint32_t irq,
+hvmm_status_t gic_configure_irq(uint32_t irq,
                 enum gic_int_polarity polarity,  uint8_t cpumask,
                 uint8_t priority)
 {

@@ -47,25 +47,24 @@ volatile uint32_t *gic_vgic_baseaddr(void);
  * @return  If interrupt number is vaild then return success,
  *          otherwise return "unsupported feature".
  */
-hvmm_status_t gic_test_configure_irq(uint32_t irq,
+hvmm_status_t gic_configure_irq(uint32_t irq,
                 enum gic_int_polarity polarity, uint8_t cpumask,
                 uint8_t priority);
 /**
  * @brief   Registers handler for a given IRQ.
  * <pre>
  * Example Usage - How to enable irq.
- *   gic_test_configure_irq( irq#,
+ *   gic_configure_irq( irq#,
  *               GIC_INT_POLARITY_LEVEL,
  *               (1u << smp_processor_id()),
  *               GIC_INT_PRIORITY_DEFAULT );
- *   gic_test_set_irq_handler( 26, &myhandler );
+ *   gic_set_irq_handler( 26, &myhandler );
  * </pre>
  * @param irq       Interrupt number.
  * @param handler   To register.
  * @return If interrupt number is vaild then return success,
  *          otherwise return "busy".
  */
-hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler,
-                void *pdata);
+hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler);
 
 #endif

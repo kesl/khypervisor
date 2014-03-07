@@ -430,13 +430,13 @@ static hvmm_status_t _vgic_maintenance_irq_enable(uint8_t enable)
     uint32_t irq = VGIC_MAINTENANCE_INTERRUPT_IRQ;
     HVMM_TRACE_ENTER();
     if (enable) {
-        gic_test_set_irq_handler(irq, &_vgic_isr_maintenance_irq, 0);
-        gic_test_configure_irq(irq,
+        gic_set_irq_handler(irq, &_vgic_isr_maintenance_irq);
+        gic_configure_irq(irq,
                                GIC_INT_POLARITY_LEVEL,
                                gic_cpumask_current(),
                                GIC_INT_PRIORITY_DEFAULT);
     } else {
-        gic_test_set_irq_handler(irq, 0, 0);
+        gic_set_irq_handler(irq, 0);
         gic_disable_irq(irq);
     }
     HVMM_TRACE_EXIT();
