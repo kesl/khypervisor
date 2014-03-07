@@ -28,7 +28,7 @@
 
 #define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
 /**
- * @brief GIC struct
+ * @brief Registers for Generic Interrupt Controller(GIC)
  */
 struct gic {
     uint32_t baseaddr;          /**< GIC base address */
@@ -39,7 +39,7 @@ struct gic {
     volatile uint32_t *ba_gicvi;/**< Virtual CPU interface */
     uint32_t lines;             /**< The Maximum number of interrupts */
     uint32_t cpus;              /**< The number of implemented CPU interfaces */
-    gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS]; /** <IRQ handler */
+    gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS]; /**< IRQ handler */
     uint32_t initialized;       /**< Check whether initializing GIC. */
 };
 
@@ -90,8 +90,9 @@ static void gic_dump_registers(void)
 }
 
 /**
- * @brief Get GIC's base address.
- * @todo When 40 bit address supports, This function wil use.
+ * @brief Return base address of GIC.
+ *
+ * When 40 bit address supports, This function wil use.
  */
 static uint64_t gic_periphbase_pa(void)
 {
@@ -109,9 +110,10 @@ static uint64_t gic_periphbase_pa(void)
     return periphbase;
 }
 /**
- * @brief Set address of GIC memory map.
- * @param va_base : Base address of GIC.
- * @return Result status.
+ * @brief   Return address of GIC memory map to _gic.baseaddr.
+ * @param   va_base Base address(Physical) of GIC.
+ * @return  If target architecture is Cortex-A15 then return success,
+ *          otherwise return failed.
  */
 static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 {
@@ -158,7 +160,7 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
     return result;
 }
 /**
- * @brief Initialize and Enable GIC Distributor
+ * @brief Initializes and enables GIC Distributor
  * <pre>
  * Initialization sequence
  * 1. Set Default SPI's polarity.
@@ -167,7 +169,7 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
  * 4. Route all IRQs to all target processors.
  * 5. Enable Distributor.
  * </pre>
- * @return Result status.
+ * @return Always return success.
  */
 static hvmm_status_t gic_init_dist(void)
 {
@@ -226,7 +228,7 @@ static hvmm_status_t gic_init_dist(void)
  *    Finest granularity of priority
  * 4. Enable signaling of interrupts.
  * </pre>
- * @return Result status.
+ * @return Always return success.
  */
 static hvmm_status_t gic_init_cpui(void)
 {
@@ -268,8 +270,7 @@ hvmm_status_t gic_deactivate_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t gic_test_set_irq_handler(int irq, gic_irq_handler_t handler,
-                void *pdata)
+hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
     if (irq < GIC_NUM_MAX_IRQS) {
@@ -319,13 +320,7 @@ hvmm_status_t gic_init(void)
     return result;
 }
 
-/*
- * example: gic_test_configure_irq( 26,
-                                    GIC_INT_POLARITY_LEVEL,
-                                    (1u << smp_processor_id()),
-                                    GIC_INT_PRIORITY_DEFAULT);
- */
-hvmm_status_t gic_test_configure_irq(uint32_t irq,
+hvmm_status_t gic_configure_irq(uint32_t irq,
                 enum gic_int_polarity polarity,  uint8_t cpumask,
                 uint8_t priority)
 {

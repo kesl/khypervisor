@@ -40,8 +40,7 @@ hvmm_status_t virqmap_init(void)
      * https://github.com/kesl/khypervisor/wiki/Hardware-Resources
      * -of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
      * */
-    CFG_GUEST0_VIRQMAP(_virqmap);
-    CFG_GUEST1_VIRQMAP(_virqmap);
+    CFG_GUEST_VIRQMAP(_virqmap);
     vgicd_set_callback_changed_istatus(
             &virqmap_vgicd_changed_istatus_callback_handler);
     HVMM_TRACE_EXIT();
@@ -97,7 +96,7 @@ void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid,
             if (istatus & (1 << bit)) {
                 printh("[%s : %d] enabled irq num is %d\n",
                         __func__, __LINE__, bit + minirq);
-                gic_test_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
+                gic_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
                         gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
             } else {
                 printh("[%s : %d] disabled irq num is %d\n",

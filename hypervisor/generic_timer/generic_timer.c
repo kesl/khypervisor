@@ -195,8 +195,8 @@ hvmm_status_t generic_timer_enable_irq(void)
 
     if (_timer_type == GENERIC_TIMER_HYP) {
         uint32_t irq = _timer_irqs[_timer_type];
-        gic_test_set_irq_handler(irq, &_generic_timer_hyp_irq_handler, 0);
-        gic_test_configure_irq(irq,
+        gic_set_irq_handler(irq, &_generic_timer_hyp_irq_handler);
+        gic_configure_irq(irq,
                                GIC_INT_POLARITY_LEVEL,
                                gic_cpumask_current(),
                                GIC_INT_PRIORITY_DEFAULT);
