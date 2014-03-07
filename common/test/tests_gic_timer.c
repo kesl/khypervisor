@@ -94,12 +94,12 @@ hvmm_status_t hvmm_tests_gic_timer(void)
      */
     HVMM_TRACE_ENTER();
     /* handler */
-    gic_test_set_irq_handler(30, &interrupt_nsptimer, 0);
+    gic_set_irq_handler(30, &interrupt_nsptimer);
     /* configure and enable interrupt */
-    gic_test_configure_irq(30,
-                           GIC_INT_POLARITY_LEVEL,
-                           gic_cpumask_current(),
-                           GIC_INT_PRIORITY_DEFAULT);
+    gic_configure_irq(30,
+                      GIC_INT_POLARITY_LEVEL,
+                      gic_cpumask_current(),
+                      GIC_INT_PRIORITY_DEFAULT);
     /* start timer */
     test_start_timer();
     HVMM_TRACE_EXIT();

@@ -52,7 +52,6 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
     }
     return result;
 }
-
 static void virq_flush(vmid_t vmid)
 {
     /* Actual injection of queued VIRQs takes place here */

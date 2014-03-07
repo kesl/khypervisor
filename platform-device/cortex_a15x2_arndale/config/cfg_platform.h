@@ -103,7 +103,7 @@
         name[_pirq].vmid = id;           \
     } while (0)
 
-#define CFG_GUEST0_VIRQMAP(name) \
+#define CFG_GUEST_VIRQMAP(name) \
     DECLARE_VIRQMAP(name, 0, 32, 32);   \
     DECLARE_VIRQMAP(name, 0, 33, 33);   \
     DECLARE_VIRQMAP(name, 0, 34, 34);   \
@@ -172,4 +172,3 @@
     DECLARE_VIRQMAP(name, 0, 97, 97);   \
     DECLARE_VIRQMAP(name, 0, 98, 98);   \
     DECLARE_VIRQMAP(name, 0, 99, 99);
-#define CFG_GUEST1_VIRQMAP(name)

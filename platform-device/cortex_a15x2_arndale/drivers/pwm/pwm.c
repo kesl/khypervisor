@@ -51,9 +51,9 @@ hvmm_status_t pwm_timer_enable_irq()
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     /* handler */
-    gic_test_set_irq_handler(69, &_pwm_timer_irq_handler, 0);
+    gic_set_irq_handler(69, &_pwm_timer_irq_handler);
     /* configure and enable interrupt */
-    gic_test_configure_irq(69,
+    gic_configure_irq(69,
                            GIC_INT_POLARITY_LEVEL,
                            gic_cpumask_current(),
                            GIC_INT_PRIORITY_DEFAULT);

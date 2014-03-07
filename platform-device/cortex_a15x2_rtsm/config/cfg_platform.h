@@ -58,7 +58,7 @@
  *  vimm-0, pirq-45, virq-45 = KMI: shared driver
  */
 
-#define CFG_GUEST0_VIRQMAP(name) \
+#define CFG_GUEST_VIRQMAP(name) \
     DECLARE_VIRQMAP(name, 0, 1, 1);     \
     DECLARE_VIRQMAP(name, 0, 31, 31);   \
     DECLARE_VIRQMAP(name, 0, 33, 33);   \
@@ -76,6 +76,3 @@
     DECLARE_VIRQMAP(name, 0, 43, 43);   \
     DECLARE_VIRQMAP(name, 0, 44, 44);   \
     DECLARE_VIRQMAP(name, 0, 45, 45);
-
-
-#define CFG_GUEST1_VIRQMAP(name)
