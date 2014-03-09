@@ -68,18 +68,9 @@ struct memmap_desc {
 static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
 };
-
-static struct memmap_desc guest_device_md0[] = {
-    /*  label, ipa, pa, size, attr */
-    CFG_GUEST0_DEVICE_MEMORY,
-    { 0, 0, 0, 0,  0},
-};
-
-static struct memmap_desc guest_device_md1[] = {
-    /*  label, ipa, pa, size, attr */
-    CFG_GUEST1_DEVICE_MEMORY,
-    { 0, 0, 0, 0,  0},
-};
+/*  label, ipa, pa, size, attr */
+static struct memmap_desc guest_device_md0[] = CFG_GUEST0_DEVICE_MEMORY;
+static struct memmap_desc guest_device_md1[] = CFG_GUEST1_DEVICE_MEMORY;
 
 static struct memmap_desc guest_memory_md0[] = {
     /* 756MB */
