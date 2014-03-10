@@ -27,6 +27,7 @@
 #include <log/uart_print.h>
 #include <gic.h>
 #include <test/tests.h>
+#include <test/test_vtimer.h>
 
 /* #define TESTS_ENABLE_VDEV_SAMPLE */
 
@@ -59,6 +60,8 @@ void nrm_loop(void)
     uart_print(GUEST_LABEL);
     uart_print("=== Starting commom start up\n\r");
     gic_init();
+    /* Enable receiving virtual timer interrupt */
+    vtimer_mask(0);
     /* We are ready to accept irqs with GIC. Enable it now */
     irq_enable();
     /* Test the sample virtual device.
