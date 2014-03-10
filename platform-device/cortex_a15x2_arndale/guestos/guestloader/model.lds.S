@@ -40,8 +40,15 @@ SECTIONS
     *(.bss)
  }
  end_bss = .;
- . = PHYS_STACK;
- guestloader_stacktop = .;
- . = PHYS_STACK - 0x00400000;
- guestloader_stacklimit = .;
+
+. = PHYS_STACK;
+guestloader_stacktop_svc = .;
+. = PHYS_STACK + 0x00400000;
+guestloader_stacklimit_svc = .;
+guestloader_stacktop_irq = .;
+. = PHYS_STACK + 0x00800000;
+guestloader_stacklimit_irq = .;
+guestloader_stacktop = .;
+. = PHYS_STACK + 0x01000000;
+guestloader_stacklimit = .;
 }
