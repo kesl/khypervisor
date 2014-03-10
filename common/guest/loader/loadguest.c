@@ -35,3 +35,25 @@ void load_bmguest(uint32_t start_addr)
     /* Jump to 0x8000_0000 */
     asm volatile ("mov pc, %0" : : "r" (start_addr) : "memory", "cc");
 }
+
+void load_guest(uint32_t type)
+{
+    copy_loader_next_to_guest();
+    copy_guestos_to_start_addr(START_ADDR);
+    switch (type) {
+    case GUEST_TYPE_BM:
+    case GUEST_TYPE_RTOS:
+        load_bmguest(START_ADDR);
+        break;
+    case GUEST_TYPE_LINUX:
+        load_linuxguest(START_ADDR);
+        break;
+    default:
+        uart_print("[loadbmguest] ERROR: CANT'T NOT MATCH GUEST TYPE\n\r");
+        break;
+    }
+    /* The code flow must not reach here */
+    uart_print("[loadbmguest] ERROR: CODE MUST NOT REACH HERE\n\r");
+    while (1)
+        ;
+}
