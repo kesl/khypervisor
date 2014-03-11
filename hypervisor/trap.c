@@ -77,9 +77,12 @@
  For example, copying register values for context switching can be
  performed this way.
  */
-
 static struct arch_regs *_trap_hyp_saved_regs;
-
+/**
+ * @brief Handler for data abort exception
+ * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @return Status for Hypervisor
+ */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -88,6 +91,11 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+/**
+ * @brief Handler for IRQ exception
+ * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @return Status for Hypervisor
+ */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -96,6 +104,11 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
     return HVMM_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Handler for unhandled exception
+ * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @return Status for Hypervisor
+ */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -105,13 +118,22 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+/**
+ * @brief Indirecting _hyp_hvc_service function in file
+ * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @return Result of HYP Service, if result is HYP_RESULT_STAY(1), it will remain in hyper mode
+ */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
     return _hyp_hvc_service(regs);
 }
 
-/*
-   Handles data abort case trapped into hvc, not dabort
+/**
+ * @brief Handles data abort.
+ *  <br> However this handler used to trap into hvc instead of conducting data abort.
+ * @param ISS register
+ * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @return Status for Hypervisor
  */
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
@@ -163,6 +185,9 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
     return result;
 }
 
+/**
+ * @brief Showing register's(gpr, spsr, lr, sp) value for debugging mode
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -192,6 +217,11 @@ static void _trap_dump_bregs(void)
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
 
+/**
+ * @brief Handler for HYP exception
+ * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @return Result of HYP Service, if result is HYP_RESULT_STAY(1), it will remain in hyper mode
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     unsigned int hsr = read_hsr();
@@ -304,4 +334,3 @@ struct arch_regs *trap_saved_regs(void)
 {
     return _trap_hyp_saved_regs;
 }
-
