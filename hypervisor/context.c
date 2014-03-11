@@ -7,7 +7,6 @@
 #include <context.h>
 #include <hvmm_trace.h>
 #include <vdev.h>
-#include <vdev/vdev_gicd.h>
 #include <gic_regs.h>
 #include <virqmap.h>
 #include <trap.h>
