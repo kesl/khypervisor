@@ -1,9 +1,11 @@
-#include "vdev_gicd.h"
 #include <context.h>
+#include <gic.h>
 #include <gic_regs.h>
 #include <vdev.h>
-
+#define DEBUG
 #include <log/print.h>
+#include <asm-arm_inline.h>
+#include <virqmap.h>
 
 #define VGICD_ITLINESNUM    128
 /* Lines:128, CPU:0, Security Extenstin:No */
@@ -11,6 +13,13 @@
 #define VGICD_IIDR_DEFAULT  (0x43B) /* Cortex-A15 */
 #define VGICD_NUM_IGROUPR   (VGICD_ITLINESNUM/32)
 #define VGICD_NUM_IENABLER  (VGICD_ITLINESNUM/32)
+
+/* return the bit position of the first bit set from msb
+ * for example, firstbit32(0x7F = 111 1111) returns 7
+ */
+#define firstbit32(word) (31 - asm_clz(word))
+#define NUM_MAX_VIRQS   128
+#define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
 /*
     1. High Priority Registers to be implemented first for test with linux
@@ -79,9 +88,10 @@ static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
 static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size);
 
-vgicd_changed_istatus_callback_t _cb_changed_istatus;
-
-static struct vdev_info _vdev_info;
+static struct vdev_info _vdev_gicd_info = {
+    .base = CFG_GIC_BASE_PA | GIC_OFFSET_GICD,
+    .size = 4096,
+};
 static struct gicd_regs _regs[NUM_GUESTS_STATIC];
 
 static struct gicd_handler_entry _handler_map[0x10] = {
@@ -104,20 +114,10 @@ static struct gicd_handler_entry _handler_map[0x10] = {
     { 0x0F, handler_F00 },            /* SGIR, CPENDSGIR, SPENDGIR, ICPIDR2 */
 };
 
-static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
-        uint32_t *pvalue, enum vdev_access_size access_size)
-{
-    printh("%s: %s offset:%d value:%x\n", __func__,
-            write ? "write" : "read",
-            offset, write ? *pvalue : (uint32_t) pvalue);
-    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    uint8_t offsetidx = (uint8_t)((offset & 0xF00) >> 8);
-    result = _handler_map[offsetidx].handler(write, offset, pvalue,
-                                        access_size);
-    return result;
-}
-
-
+/* old status */
+static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {
+    {0,},
+};
 
 static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -169,16 +169,41 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
     return result;
 }
 
-void vgicd_set_callback_changed_istatus(
-        vgicd_changed_istatus_callback_t callback)
+void vgicd_changed_istatus(vmid_t vmid,
+        uint32_t istatus, uint8_t word_offset)
 {
-    _cb_changed_istatus = callback;
-}
-
-void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
-{
-    if (_cb_changed_istatus != 0)
-        _cb_changed_istatus(vmid, istatus, word_offset);
+    uint32_t cstatus;   /* changed bits only */
+    uint32_t minirq;
+    int bit;
+    /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
+    minirq = word_offset * 32;
+    /* find changed bits */
+    cstatus = old_vgicd_status[vmid][word_offset] ^ istatus;
+    while (cstatus) {
+        uint32_t virq;
+        uint32_t pirq;
+        bit = firstbit32(cstatus);
+        virq = minirq + bit;
+        pirq = virqmap_pirq(vmid, virq);
+        if (pirq != PIRQ_INVALID) {
+            /* changed bit */
+            if (istatus & (1 << bit)) {
+                printh("[%s : %d] enabled irq num is %d\n",
+                        __func__, __LINE__, bit + minirq);
+                gic_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
+                        gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
+            } else {
+                printh("[%s : %d] disabled irq num is %d\n",
+                        __func__, __LINE__, bit + minirq);
+                gic_disable_irq(pirq);
+            }
+        } else {
+            printh("WARNING: Ignoring virq %d for guest %d has "
+                    "no mapped pirq\n", virq, vmid);
+        }
+        cstatus &= ~(1 << bit);
+    }
+    old_vgicd_status[vmid][word_offset] = istatus;
 }
 
 static hvmm_status_t handler_ISCENABLER(uint32_t write,
@@ -420,9 +445,65 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
     return result;
 }
 
-static void vdev_gicd_reset_values(void)
+static hvmm_status_t vdev_gicd_access_handler(uint32_t write, uint32_t offset,
+        uint32_t *pvalue, enum vdev_access_size access_size)
 {
+    printh("%s: %s offset:%d value:%x access_size : %d\n", __func__,
+            write ? "write" : "read",
+            offset, write ? *pvalue : (uint32_t) pvalue, access_size);
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    uint8_t offsetidx = (uint8_t)((offset & 0xF00) >> 8);
+    printh("offset_idx : %d\n", offsetidx);
+    result = _handler_map[offsetidx].handler(write, offset, pvalue,
+                                        access_size);
+    return result;
+}
+
+static int32_t vdev_gicd_read(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint32_t offset = info->fipa - _vdev_gicd_info.base;
+
+    return vdev_gicd_access_handler(0, offset, info->value, info->sas);
+}
+
+static int32_t vdev_gicd_write(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint32_t offset = info->fipa - _vdev_gicd_info.base;
+
+    return vdev_gicd_access_handler(1, offset, info->value, info->sas);
+}
+
+static int32_t vdev_gicd_post(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint8_t isize = 4;
+
+    if (regs->cpsr & 0x20) /* Thumb */
+        isize = 2;
+
+    regs->pc += isize;
+
+    return 0;
+}
+
+static int32_t vdev_gicd_check(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint32_t offset = info->fipa - _vdev_gicd_info.base;
+
+    if (info->fipa >= _vdev_gicd_info.base &&
+        offset < _vdev_gicd_info.size)
+        return 0;
+    return -1;
+}
+
+static hvmm_status_t vdev_gicd_reset_values(void)
+{
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;
+
     for (i = 0; i < NUM_GUESTS_STATIC; i++) {
         /*
          * ITARGETS[0~ 7], CPU Targets are set to 0,
@@ -432,23 +513,35 @@ static void vdev_gicd_reset_values(void)
         for (j = 0; j < 7; j++)
             _regs[i].ITARGETSR[j] = 0;
     }
-}
-
-
-hvmm_status_t vdev_gicd_init(uint32_t base_addr)
-{
-    hvmm_status_t result = HVMM_STATUS_BUSY;
-    vdev_gicd_reset_values();
-    _vdev_info.name     = "vgicd";
-    _vdev_info.base     = base_addr;
-    _vdev_info.size     = 4096;
-    _vdev_info.handler  = access_handler;
-    result = vdev_reg_device(&_vdev_info);
-    if (result == HVMM_STATUS_SUCCESS)
-        printh("%s: vdev registered:'%s'\n", __func__, _vdev_info.name);
-    else {
-        printh("%s: Unable to register vdev:'%s' code=%x\n",
-                __func__, _vdev_info.name, result);
-    }
     return result;
 }
+
+struct vdev_ops _vdev_gicd_ops = {
+    .init = vdev_gicd_reset_values,
+    .check = vdev_gicd_check,
+    .read = vdev_gicd_read,
+    .write = vdev_gicd_write,
+    .post = vdev_gicd_post,
+};
+
+struct vdev_module _vdev_gicd_module = {
+    .name = "K-Hypervisor vDevice GICD Module",
+    .author = "Kookmin Univ.",
+    .ops = &_vdev_gicd_ops,
+};
+
+hvmm_status_t vdev_gicd_init()
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+
+    result = vdev_register(VDEV_LEVEL_LOW, &_vdev_gicd_module);
+    if (result == HVMM_STATUS_SUCCESS)
+        printh("vdev registered:'%s'\n", _vdev_gicd_module.name);
+    else {
+        printh("%s: Unable to register vdev:'%s' code=%x\n",
+                __func__, _vdev_gicd_module.name, result);
+    }
+
+    return result;
+}
+vdev_module_low_init(vdev_gicd_init);

@@ -68,8 +68,16 @@ SECTIONS
   * where it won't get overwritten by kernel, initrd or atags.
   */
  .text : {
-    *(.text)
+    *(.text);
+    __vdev_module_high_start = .;
+    *(.vdev_module0.init);
+    __vdev_module_high_end = .;
+    *(.vdev_module1.init);
+    __vdev_module_middle_end = .;
+    *(.vdev_module2.init);
+    __vdev_module_low_end = .;
  }
+
  .= ALIGN(4);
  .rodata : {
     *(.rodata)

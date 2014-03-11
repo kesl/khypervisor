@@ -1,7 +1,13 @@
-#include "vdev_sample.h"
 #include <context.h>
-
+#include <gic.h>
+#include <gic_regs.h>
+#include <vdev.h>
+#define DEBUG
 #include <log/print.h>
+#include <asm-arm_inline.h>
+#include <virqmap.h>
+
+#define SAMPLE_BASE_ADDR 0x3FFFF000
 
 struct vdev_sample_regs {
     uint32_t axis_x;
@@ -9,14 +15,18 @@ struct vdev_sample_regs {
     uint32_t axis_z;
 };
 
-static struct vdev_info _vdev_info;
-static struct vdev_sample_regs regs[NUM_GUESTS_STATIC];
+static struct vdev_info _vdev_sample_info = {
+   .base = SAMPLE_BASE_ADDR,
+   .size = sizeof(struct vdev_sample_regs),
+};
 
-hvmm_status_t access_handler(uint32_t write, uint32_t offset,
+static struct vdev_sample_regs sample_regs[NUM_GUESTS_STATIC];
+
+static hvmm_status_t vdev_sample_access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
     printh("%s: %s offset:%d value:%x\n", __func__,
-            write ? "write" : "read", offset
+            write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     unsigned int vmid = context_current_vmid();
@@ -24,15 +34,15 @@ hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         /* READ */
         switch (offset) {
         case 0x0:
-            *pvalue = regs[vmid].axis_x;
+            *pvalue = sample_regs[vmid].axis_x;
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x4:
-            *pvalue = regs[vmid].axis_y;
+            *pvalue = sample_regs[vmid].axis_y;
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x8:
-            *pvalue = regs[vmid].axis_x + regs[vmid].axis_y;
+            *pvalue = sample_regs[vmid].axis_x + sample_regs[vmid].axis_y;
             result = HVMM_STATUS_SUCCESS;
             break;
         }
@@ -40,11 +50,11 @@ hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         /* WRITE */
         switch (offset) {
         case 0x0:
-            regs[vmid].axis_x = *pvalue;
+            sample_regs[vmid].axis_x = *pvalue;
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x4:
-            regs[vmid].axis_y = *pvalue;
+            sample_regs[vmid].axis_y = *pvalue;
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x8:
@@ -56,19 +66,78 @@ hvmm_status_t access_handler(uint32_t write, uint32_t offset,
     return result;
 }
 
-hvmm_status_t vdev_sample_init(uint32_t base_addr)
+static hvmm_status_t vdev_sample_read(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint32_t offset = info->fipa - _vdev_sample_info.base;
+
+    return vdev_sample_access_handler(0, offset, info->value, info->sas);
+}
+
+static hvmm_status_t vdev_sample_write(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint32_t offset = info->fipa - _vdev_sample_info.base;
+
+    return vdev_sample_access_handler(1, offset, info->value, info->sas);
+}
+
+static int32_t vdev_sample_post(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint8_t isize = 4;
+
+    if (regs->cpsr & 0x20) /* Thumb */
+        isize = 2;
+
+    regs->pc += isize;
+
+    return 0;
+}
+
+static int32_t vdev_sample_check(struct arch_vdev_info *info,
+                        struct arch_regs *regs)
+{
+    uint32_t offset = info->fipa - _vdev_sample_info.base;
+
+    if (info->fipa >= _vdev_sample_info.base &&
+        offset < _vdev_sample_info.size)
+        return 0;
+    return -1;
+}
+
+static hvmm_status_t vdev_sample_reset(void)
+{
+    printh("vdev init:'%s'\n", __func__);
+    return HVMM_STATUS_SUCCESS;
+}
+
+struct vdev_ops _vdev_sample_ops = {
+    .init = vdev_sample_reset,
+    .check = vdev_sample_check,
+    .read = vdev_sample_read,
+    .write = vdev_sample_write,
+    .post = vdev_sample_post,
+};
+
+struct vdev_module _vdev_sample_module = {
+    .name = "K-Hypervisor vDevice Sample Module",
+    .author = "Kookmin Univ.",
+    .ops = &_vdev_sample_ops,
+};
+
+hvmm_status_t vdev_sample_init()
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
-    _vdev_info.name     = "sample";
-    _vdev_info.base     = base_addr;
-    _vdev_info.size     = sizeof(struct vdev_sample_regs);
-    _vdev_info.handler  = access_handler;
-    result = vdev_reg_device(&_vdev_info);
+
+    result = vdev_register(VDEV_LEVEL_LOW, &_vdev_sample_module);
     if (result == HVMM_STATUS_SUCCESS)
-        printh("%s: vdev registered:'%s'\n", __func__, _vdev_info.name);
-    else
+        printh("vdev registered:'%s'\n", _vdev_sample_module.name);
+    else {
         printh("%s: Unable to register vdev:'%s' code=%x\n",
-                __func__, _vdev_info.name, result);
+                __func__, _vdev_sample_module.name, result);
+    }
 
     return result;
 }
+vdev_module_low_init(vdev_sample_init);
