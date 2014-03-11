@@ -32,23 +32,6 @@ hvmm_status_t virqmap_init(void);
  * @return      physical interrupt number.
  */
 uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq);
-/**
- * @breif Callback function called when Guest operates its GICD_INSENABLER/ICENABER register.
- * <pre>
- * It is called when Guest vm handles its Set-Enable registers,
- * GICD_ISENABLER or Clear-Enable Registers, GICD_ICENABLER.
- * When Guest vm sets its GICD_ISENABLER bit to 1,
- * this callback enables corresponding pirq.
- * When Guest vm sets its CICD_ICENABLER bit to 1,
- * this callback disables corresponding interrupt
- * from the Distributor to the CPU interface.
- * </pre>
- * @param vmid          Guest vm id.
- * @param istatus       Current ISENABLER status.
- * @param word_offset   The corresponding GICD_ISENABLER number n.
- */
-void virqmap_vgicd_changed_istatus_callback_handler(vmid_t vmid,
-        uint32_t istatus, uint8_t word_offset);
 
 #define VIRQMAP_ENTRY_NOTFOUND  0
 
