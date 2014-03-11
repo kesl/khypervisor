@@ -31,8 +31,31 @@
 #define EXTRACT_IL      25
 #define HSR_ISS_BIT     0x01FFFFFF
 
+/**
+ * @brief Return saved arm registers
+ * @return Saved arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ */
 struct arch_regs *trap_saved_regs(void);
+
+/**
+ * @brief Handles data abort exception.
+ *  <br> However this handler used to trap into hvc instead of conducting data abort.
+ * @param ISS register
+ * @param Arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this fuction uses current arm registers to send virtaul device emulator
+ * @return If vitual device is successfully emulated , it will be return HVMM_STATUS_SUCCESS, otherwise fail
+ */
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
+
+/**
+ * @brief Handles HVC exception
+ * @param Arm registers 
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this fuction uses current arm registers to save and dump as parameter
+ * @return Result of HVC exception, if return value is HYP_RESULT_STAY, it will be stay in hyp  
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
 
 #endif

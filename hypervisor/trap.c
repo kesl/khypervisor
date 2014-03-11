@@ -79,9 +79,11 @@
  */
 static struct arch_regs *_trap_hyp_saved_regs;
 /**
- * @brief Handler for data abort exception
- * @param Current register's value of general purpose, program counter, lr, cpsr
- * @return Status for Hypervisor
+ * @brief Handles data abort exception taken from a mode other than Hyp mode
+ * @param Arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this fuction uses current arm registers to dump and save as parameter
+ * @return Result of function process, it doesn't reach step of return due to infinte loop
  */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
@@ -92,9 +94,11 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 }
 
 /**
- * @brief Handler for IRQ exception
- * @param Current register's value of general purpose, program counter, lr, cpsr
- * @return Status for Hypervisor
+ * @brief Handles IRQ exception Whenever hardware interrupt break out
+ * @param Arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this fuction uses current arm registers to save as parameter
+ * @return Result of function process, if
  */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
@@ -105,9 +109,11 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
 }
 
 /**
- * @brief Handler for unhandled exception
- * @param Current register's value of general purpose, program counter, lr, cpsr
- * @return Status for Hypervisor
+ * @brief Handles unhandled exception Whenever undefined exception break out
+ * @param Arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this fuction uses current arm registers to save and dump as parameter
+ * @return Result of function process, it doesn't reach step of return due to infinte loop
  */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
@@ -120,7 +126,9 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 
 /**
  * @brief Indirecting _hyp_hvc_service function in file
- * @param Current register's value of general purpose, program counter, lr, cpsr
+ * @param Arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this parameter for _hyp_hvc_service
  * @return Result of HYP Service, if result is HYP_RESULT_STAY(1), it will remain in hyper mode
  */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
@@ -128,13 +136,6 @@ enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
     return _hyp_hvc_service(regs);
 }
 
-/**
- * @brief Handles data abort.
- *  <br> However this handler used to trap into hvc instead of conducting data abort.
- * @param ISS register
- * @param Current register's value of general purpose, program counter, lr, cpsr
- * @return Status for Hypervisor
- */
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -186,7 +187,7 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 }
 
 /**
- * @brief Showing register's(gpr, spsr, lr, sp) value for debugging mode
+ * @brief Showing arm registers(gpr, spsr, lr, sp) value for debugging mode
  */
 static void _trap_dump_bregs(void)
 {
@@ -217,11 +218,6 @@ static void _trap_dump_bregs(void)
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
 
-/**
- * @brief Handler for HYP exception
- * @param Current register's value of general purpose, program counter, lr, cpsr
- * @return Result of HYP Service, if result is HYP_RESULT_STAY(1), it will remain in hyper mode
- */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     unsigned int hsr = read_hsr();
