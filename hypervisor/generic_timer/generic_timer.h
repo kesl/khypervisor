@@ -31,9 +31,8 @@ enum {
 };
 
 /**
-* @brief Numbering generic timer each level : HYP, NSP, VIR
-* The init function should only be used in the entire system.
-* @return Notify work completion.
+* @brief  Initialize IRQ table.
+* @return Returns only "VMM_STATUS_SUCESS" for hard-coded.
 */
 hvmm_status_t generic_timer_init();
 /* Enable the timer interrupt. Specified by timer type */
