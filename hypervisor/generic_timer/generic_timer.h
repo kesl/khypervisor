@@ -30,7 +30,11 @@ enum {
     GENERIC_TIMER_REG_VIRT_OFF,
 };
 
-/* Calling this function is required only once in the entire system. */
+/**
+* @brief Numbering generic timer each level : HYP, NSP, VIR
+* The init function should only be used in the entire system.
+* @return Notify work completion.
+*/
 hvmm_status_t generic_timer_init();
 /* Enable the timer interrupt. Specified by timer type */
 hvmm_status_t generic_timer_enable_int();
