@@ -31,13 +31,15 @@ enum {
 };
 
 /**
-* @brief Register generic timer irqs such as HYP, NSP
+* @brief Register generic timer irqs such as HYP, NSP, VIR
 *
-* HYP : 26
-* NSP : 27
-* VIR : 30
+* DEVICE : IRQ number
+* HYP_TIMER : 26
+* NSP_TIMER : 27
+* VIR_TIMER : 30
 *
 * @return Returns success only.
+* Use MACRO instead of SUCCESS.
 */
 hvmm_status_t generic_timer_init();
 /* Enable the timer interrupt. Specified by timer type */
