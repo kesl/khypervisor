@@ -7,21 +7,28 @@
 include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
 COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
-OBJS += boot.o main.o drivers/uart.o \
+COMMON_COMMAND_DIR=$(COMMON_SOURCE_DIR)/guest/command
+OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
 	$(COMMON_SOURCE_DIR)/log/string.o \
+	$(COMMON_SOURCE_DIR)/guest/core/exception.o \
+	$(COMMON_SOURCE_DIR)/guest/core/gic.o \
+	$(COMMON_SOURCE_DIR)/guest/test/test_vtimer.o \
 	$(COMMON_LOADER_DIR)/loadlinux.o \
-	$(COMMON_LOADER_DIR)/loadguest.o
+	$(COMMON_LOADER_DIR)/loadguest.o \
+	$(COMMON_COMMAND_DIR)/command.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
-			 -I$(COMMON_LOADER_DIR)
+			 -I$(COMMON_LOADER_DIR) -I$(COMMON_COMMAND_DIR) -I$(COMMON_SOURCE_DIR)/guest \
+			 -I$(COMMON_SOURCE_DIR)/guest/core
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY	= $(CROSS_COMPILE)objcopy
+GUESTLOADERCONFIGS = -DBM_GUEST
 ifeq ($(LINUX), y)
-GUESTLOADERCONFIGS += -DLINUX_GUEST
+GUESTLOADERCONFIGS = -DLINUX_GUEST
 GUESTBIN	= ../../guestimages/zImage
 else
 GUESTBIN	= ../../guestimages/bmguest.bin
