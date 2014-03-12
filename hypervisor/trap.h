@@ -32,9 +32,9 @@
 #define HSR_ISS_BIT     0x01FFFFFF
 
 /**
- * @brief Returns saved arm registers
+ * @brief Returns saved ARM registers
  * <br> Arm registers are temporary saved registers in file
- * @return The saved arm registers
+ * @return The saved ARM registers
  */
 struct arch_regs *trap_saved_regs(void);
 
@@ -42,10 +42,10 @@ struct arch_regs *trap_saved_regs(void);
  * @brief Handles data abort exception
  * <br> however this handler used to trap into hvc instead of conducting data abort
  * @param iss iss is instruction specific syndrome and bits of HSR register 0~24
- * @param regs arm registers
+ * @param regs ARM registers
  * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP),
  * <br> 1 Link Register (LR), 1 Program Counter (PC)
- * <br> this fuction uses current arm registers to save and dump as parameter
+ * <br> this fuction uses current ARM registers to save and dump as parameter
  * @return If vitual device is successfully emulated,
  * <br> it will be return HVMM_STATUS_SUCCESS, otherwise failed
  */
@@ -54,7 +54,7 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
 /**
  * @brief Handles HVC exception called by virtual guest os or other
  * <br> when virtual guest excuted a hvc instruction, this function will be called
- * @param regs arm registers
+ * @param regs ARM registers
  * @return Result of HVC exception
  * <br> if return value is HYP_RESULT_STAY, it will be stay in hypervisor mode
  * <br> otherwise exception routine will be exit and return

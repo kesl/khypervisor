@@ -17,13 +17,26 @@ void vtimer_set_callback_chagned_status(
 {
     _write_status = callback;
 }
-
+/**
+ * @brief Calls whenever virtual guest reach virtual timer device
+ * @param vmid virtual guest id
+ * @param status value that virtual guest choose to receive or not receive the interrupt
+ * @return Void
+ */
 static void vtimer_changed_status(vmid_t vmid, uint32_t status)
 {
     if (_write_status != 0)
         _write_status(vmid, status);
 }
-
+/**
+ * @brief Handles virtual timer device
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute virtual timer handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {

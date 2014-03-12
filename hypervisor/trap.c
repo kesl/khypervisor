@@ -80,11 +80,11 @@
 static struct arch_regs *_trap_hyp_saved_regs;
 /**
  * @brief Handles data abort exception taken from a mode other than Hyp mode
- * @param regs arm registers
+ * @param regs ARM registers
  * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP),
  * <br> 1 Link Register (LR), 1 Program Counter (PC)
- * <br> this fuction uses current arm registers to dump and save as parameter
- * @return The result of function process, it doesn't reach step of return due to infinte loop
+ * <br> this fuction uses current ARM registers to dump and save as parameter
+ * @return it doesn't reach step of return due to infinte loop
  */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
@@ -95,10 +95,10 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 }
 
 /**
- * @brief Handles IRQ exception whenever hardware interrupt break out
+ * @brief Handles IRQ exception whenever interrupt is occured by hardware device
  * <br> this fucntion called gic interrupt and switched context
- * @param regs arm registers
- * @return The result of function process, if it reach last step, it will return HVMM_STATUS_SUCCESS
+ * @param regs ARM registers
+ * @return if it reach last step, it will return HVMM_STATUS_SUCCESS
  */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
@@ -109,9 +109,9 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
 }
 
 /**
- * @brief Handles unhandled exception whenever undefined exception break out
- * @param regs arm registers
- * @return The result of function process, it doesn't reach step of return due to infinte loop
+ * @brief Handles unhandled exception whenever undefined exceptionis is occured by hardware device
+ * @param regs ARM registers
+ * @return it doesn't reach step of return due to infinte loop
  */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
@@ -124,7 +124,7 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 
 /**
  * @brief Indirecting _hyp_hvc_service function in file
- * @param regs arm registers
+ * @param regs ARM registers
  * @return The result of _hyp_hvc_service() function
  */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
@@ -183,7 +183,7 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 }
 
 /**
- * @brief Showing arm registers(gpr, spsr, lr, sp) value for debugging mode
+ * @brief Shows ARM registers for debugging mode
  */
 static void _trap_dump_bregs(void)
 {
