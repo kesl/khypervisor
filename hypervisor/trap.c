@@ -80,10 +80,11 @@
 static struct arch_regs *_trap_hyp_saved_regs;
 /**
  * @brief Handles data abort exception taken from a mode other than Hyp mode
- * @param Arm registers
- * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
+ * @param regs arm registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP),
+ * <br> 1 Link Register (LR), 1 Program Counter (PC)
  * <br> this fuction uses current arm registers to dump and save as parameter
- * @return Result of function process, it doesn't reach step of return due to infinte loop
+ * @return The result of function process, it doesn't reach step of return due to infinte loop
  */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
@@ -94,11 +95,10 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 }
 
 /**
- * @brief Handles IRQ exception Whenever hardware interrupt break out
- * @param Arm registers
- * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
- * <br> this fuction uses current arm registers to save as parameter
- * @return Result of function process, if
+ * @brief Handles IRQ exception whenever hardware interrupt break out
+ * <br> this fucntion called gic interrupt and switched context
+ * @param regs arm registers
+ * @return The result of function process, if it reach last step, it will return HVMM_STATUS_SUCCESS
  */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
@@ -109,11 +109,9 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
 }
 
 /**
- * @brief Handles unhandled exception Whenever undefined exception break out
- * @param Arm registers
- * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
- * <br> this fuction uses current arm registers to save and dump as parameter
- * @return Result of function process, it doesn't reach step of return due to infinte loop
+ * @brief Handles unhandled exception whenever undefined exception break out
+ * @param regs arm registers
+ * @return The result of function process, it doesn't reach step of return due to infinte loop
  */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
@@ -126,10 +124,8 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 
 /**
  * @brief Indirecting _hyp_hvc_service function in file
- * @param Arm registers
- * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC)
- * <br> this parameter for _hyp_hvc_service
- * @return Result of HYP Service, if result is HYP_RESULT_STAY(1), it will remain in hyper mode
+ * @param regs arm registers
+ * @return The result of _hyp_hvc_service() function
  */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
