@@ -103,7 +103,17 @@ static struct gicd_handler_entry _handler_map[0x10] = {
     { 0x0E, handler_NSACR },            /* NSACR */
     { 0x0F, handler_F00 },            /* SGIR, CPENDSGIR, SPENDGIR, ICPIDR2 */
 };
-
+/**
+ * @brief Finds virtual gic handler using mapping table
+ * <br> this function find virtual gic handler using mapping table
+ * <br> and excute virtual gic handler
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -118,7 +128,16 @@ static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
 }
 
 
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {CTLR, TYPER, IIDR, IGROUPR}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -180,7 +199,16 @@ void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
     if (_cb_changed_istatus != 0)
         _cb_changed_istatus(vmid, istatus, word_offset);
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {ISCENABLER}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_ISCENABLER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -272,7 +300,16 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write,
     }
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {ISCPENDR}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -305,7 +342,16 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {ISCACTIVER}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_ISCACTIVER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -313,7 +359,16 @@ static hvmm_status_t handler_ISCACTIVER(uint32_t write,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {IPRIORITYR}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -334,7 +389,16 @@ static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {ITARGETSR}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -375,7 +439,16 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {ICFGR}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ */
 static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -395,7 +468,17 @@ static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {CA15}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ * @todo it need to implemented.
+ */
 static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -403,7 +486,17 @@ static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {NSACR}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ * @todo it need to implemented.
+ */
 static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -411,7 +504,17 @@ static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt
+ * <br> this furction called when virtual guest touched virtual gic register {SGIR, CPENDSGIR, SPENDGIR, ICPIDR2}
+ * @param write the choice that the argument Pvalue's status is weather written or read
+ * @param offset length from virtual timer device base address
+ * @param pvalue address of data to write or read
+ * @param access_size size of virtual timer device access
+ * @return if it excute handler to read or write on device
+ * <br> it turns success, otherwise bad access
+ * @todo it need to implemented.
+ */
 static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -419,7 +522,9 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Initialize virtual gic registers
+ */
 static void vdev_gicd_reset_values(void)
 {
     int i;

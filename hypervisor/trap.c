@@ -77,9 +77,15 @@
  For example, copying register values for context switching can be
  performed this way.
  */
-
 static struct arch_regs *_trap_hyp_saved_regs;
-
+/**
+ * @brief Handles data abort exception taken from a mode other than Hyp mode
+ * @param regs ARM registers
+ * <br> which includes 13 general purpose register r0-r12, 1 Stack Pointer (SP),
+ * <br> 1 Link Register (LR), 1 Program Counter (PC)
+ * <br> this fuction uses current ARM registers to dump and save as parameter
+ * @return it doesn't reach step of return due to infinte loop
+ */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -88,6 +94,12 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+/**
+ * @brief Handles IRQ exception whenever interrupt is occured by hardware device
+ * <br> this fucntion called gic interrupt and switched context
+ * @param regs ARM registers
+ * @return if it reach last step, it will return HVMM_STATUS_SUCCESS
+ */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -96,6 +108,11 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
     return HVMM_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Handles unhandled exception whenever undefined exceptionis is occured by hardware device
+ * @param regs ARM registers
+ * @return it doesn't reach step of return due to infinte loop
+ */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -105,14 +122,16 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+/**
+ * @brief Indirecting _hyp_hvc_service function in file
+ * @param regs ARM registers
+ * @return The result of _hyp_hvc_service() function
+ */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
     return _hyp_hvc_service(regs);
 }
 
-/*
-   Handles data abort case trapped into hvc, not dabort
- */
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -163,6 +182,9 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
     return result;
 }
 
+/**
+ * @brief Shows ARM registers for debugging mode
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -304,4 +326,3 @@ struct arch_regs *trap_saved_regs(void)
 {
     return _trap_hyp_saved_regs;
 }
-
