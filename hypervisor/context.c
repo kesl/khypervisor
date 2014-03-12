@@ -26,6 +26,9 @@
 
 #define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC
 
+/** \defgroup CPSR_MODE
+ * @{
+ */
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
 #define CPSR_MODE_IRQ   0x12
@@ -35,8 +38,14 @@
 #define CPSR_MODE_HYP   0x1A
 #define CPSR_MODE_UND   0x1B
 #define CPSR_MODE_SYS   0x1F
+/** \defgroup CPSR_MODE
+ * @{
+ */
 
 #define __CONTEXT_TRACE_VERBOSE__
+/**
+ * @brief Check the validation of vmid
+ */
 #define _valid_vmid(vmid) \
     (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
 
@@ -48,6 +57,11 @@ static int _next_guest_vmid = VMID_INVALID;
 static uint8_t _switch_locked;
 
 #ifdef DEBUG
+/**
+ * @brief Return mode name
+ * @param mode Mode value
+ * @return Mode name
+ */
 static char *_modename(uint8_t mode)
 {
     char *name = "Unknown";
@@ -108,6 +122,17 @@ void context_dump_regs(struct arch_regs *regs)
 #endif
 #endif
 }
+/**
+ * @brief Copy the register from source register to target register
+ *
+ * Copy registers
+ * - CPSR
+ * - PC
+ * - LR
+ * - R0-R12
+ * @param resgs_dst Target register
+ * @param regs_src Source register
+ */
 static void context_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
 {
@@ -119,8 +144,13 @@ static void context_copy_regs(struct arch_regs *regs_dst,
         regs_dst->gpr[i] = regs_src->gpr[i];
 }
 
-/* banked registers */
-
+/**
+ * @brief Initialize the banked registers
+ *
+ * Initialize the all mode's banked registers
+ * @param regs_banked Target banked registers
+ * @return void
+ */
 void context_init_banked(struct arch_regs_banked *regs_banked)
 {
     regs_banked->sp_usr = 0;
@@ -246,7 +276,13 @@ void context_restore_banked(struct arch_regs_banked *regs_banked)
                  : : "r"(regs_banked->r12_fiq) : "memory", "cc");
 }
 
-/* Co-processor state management: init/save/restore */
+/**
+ * @brief Coprocessor state management: init
+ *
+ * Initialize all coprocessor registers to zero
+ * @param regs_cop Initialize target
+ * @return void
+ */
 void context_init_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = 0;
@@ -256,6 +292,11 @@ void context_init_cops(struct arch_regs_cop *regs_cop)
     regs_cop->sctlr = 0;
 }
 
+/**
+ * @brief Coprocessor state management: save
+ * @param regs_cop Target strcuture
+ * @return void
+ */
 void context_save_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = read_vbar();
@@ -265,6 +306,11 @@ void context_save_cops(struct arch_regs_cop *regs_cop)
     regs_cop->sctlr = read_sctlr();
 }
 
+/**
+ * @brief Coprocessor state management: restore
+ * @param regs_cop Source structure variable
+ * @return void
+ */
 void context_restore_cops(struct arch_regs_cop *regs_cop)
 {
     write_vbar(regs_cop->vbar);
