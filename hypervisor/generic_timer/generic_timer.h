@@ -31,8 +31,13 @@ enum {
 };
 
 /**
-* @brief  Initialize IRQ table.
-* @return Returns only "VMM_STATUS_SUCESS" for hard-coded.
+* @brief Register generic timer irqs such as HYP, NSP
+*
+* HYP : 26
+* NSP : 27
+* VIR : 30
+*
+* @return Returns success only.
 */
 hvmm_status_t generic_timer_init();
 /* Enable the timer interrupt. Specified by timer type */
