@@ -31,11 +31,10 @@ enum {
 };
 
 /**
-* @brief Registers generic timer irqs such as hypervisor timer event, non-secure
-*        physical timer event and virtual timer event.
-*
-* The interrupt is actice-LOW level-sensitive.
-*
+* @brief Registers generic timer irqs such as hypervisor timer event
+* (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP),
+* and virtual timer event(GENERIC_TIMER_NSP).*
+* Those interrupts are actice-LOW level-sensitive.
 * @return Returns HVMM_STAUS_SUCESS only.
 */
 hvmm_status_t generic_timer_init();

@@ -131,7 +131,10 @@ static inline uint64_t generic_timer_reg_read64(int reg)
 }
 
 /**
- * @brief Each interrup source is identified by a unique ID.
+ * @brief Registers generic timer irqs such as hypervisor timer event
+ * (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ * and virtual timer event(GENERIC_TIMER_NSP).
+ * Each interrup source is identified by a unique ID.
  *
  * DEVICE : IRQ number
  * GENERIC_TIMER_HYP : 26
