@@ -31,15 +31,12 @@ enum {
 };
 
 /**
-* @brief Register generic timer irqs such as HYP, NSP, VIR
+* @brief Registers generic timer irqs such as hypervisor timer event, non-secure
+*        physical timer event and virtual timer event.
 *
-* DEVICE : IRQ number
-* HYP_TIMER : 26
-* NSP_TIMER : 27
-* VIR_TIMER : 30
+* The interrupt is actice-LOW level-sensitive.
 *
-* @return Returns success only.
-* Use MACRO instead of SUCCESS.
+* @return Returns HVMM_STAUS_SUCESS only.
 */
 hvmm_status_t generic_timer_init();
 /* Enable the timer interrupt. Specified by timer type */
