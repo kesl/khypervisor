@@ -18,7 +18,21 @@ void vdev_init(void)
         vdev_list[i].handler = 0x0;
     }
 }
-
+/**
+ * @brief Registers a new virtual device.
+<<<<<<< HEAD
+ * This function added a new virtual device including device name,
+ *  base address, size, and handler.
+ * @param new_vdev Information of new virtual device.
+ * @return It returns success when new virtual device is registered.
+=======
+ * <br> This function added a new virtual device including device name,\
+ *  base address, size, and handler.
+ * @param new_vdev information of new virtual device.
+ * @return When new virtual device registered successful,\
+ *  it returns success. otherwise it returns failed.
+>>>>>>> 18828ba... modified: vdev.h vdev.c
+ */
 hvmm_status_t vdev_reg_device(struct vdev_info *new_vdev)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
@@ -43,7 +57,37 @@ hvmm_status_t vdev_reg_device(struct vdev_info *new_vdev)
     HVMM_TRACE_EXIT();
     return result;
 }
-
+/**
+ * @brief Emulates virtual divice.
+<<<<<<< HEAD
+ * When virtual guest reach virtual device and hypervisor has virtual device.
+ * this function is called and handles virtual deivce to write or read.
+ * @param fipa HPFAR[39:12] of the faulting intermediate physical address.
+ * @param wnr Synchronous abort that was caused by a write or read operation.
+ * @param access_size Size of virtual device's access.
+ * @param srt Syndrome register transfer.
+ * The value of the Rt operand of the faulting instruction witch is
+ * the destination register for a load operation and the source register for
+ * a stroe operation.
+ * @param regs Current ARM registers.
+ * The ARM register includes 13 general purpose register r0-r12,
+=======
+ * <br> When virtual guest reach virtual device and hypervisor has\
+ * virtual device.
+ * this function is called and handles virtual deivce to write or read.
+ * @param fipa HPFAR[39:12] of the faulting intermediate physical address.
+ * @param wnr synchronous abort that was caused by a write or read operation.
+ * @param access_size size of virtual device's access.
+ * @param srt syndrome register transfer.
+ * The value of the Rt operand of the faulting instruction witch is \
+ * the destination register for a load operation and the source register for\
+ * a stroe operation.
+ * @param regs ARM registers.
+ * <br> The ARM register includes 13 general purpose register r0-r12,\
+>>>>>>> 18828ba... modified: vdev.h vdev.c
+ * 1 Stack Pointer (SP), 1 Link Register (LR), 1 Program Counter (PC).
+ * @return When virtual divice emulated, it returns success, otherwise failed.
+ */
 hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr,
                 enum vdev_access_size access_size, uint32_t srt,
                 struct arch_regs *regs)
