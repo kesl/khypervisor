@@ -26,10 +26,26 @@ struct vdev_info {
     unsigned int size;
     vdev_callback_t handler;
 };
-
-void vdev_init(void);
+/**
+ * @brief Initializes virtual device mapping table.
+ */
 int register_vdev(void);
+/**
+ * @brief Registers a new virtual device.
+ * @param new_vdev information of new virtual device.
+ * @return When new virtual device registered successful, it returns success.\
+ * otherwise it returns failed.
+ */
 hvmm_status_t vdev_reg_device(struct vdev_info *new_vdev);
+/**
+ * @brief Emulates virtual divice .
+ * @param fipa HPFAR[39:12] of the faulting intermediate physical address.
+ * @param wnr synchronous abort that was caused by a write or read operation.
+ * @param access_size size of virtual device's access.
+ * @param srt syndrome register transfer.
+ * @param regs ARM registers.
+ * @return When virtual divice emulated, it returns success, otherwise failed.
+ */
 hvmm_status_t vdev_emulate(uint32_t fipa, uint32_t wnr,
                 enum vdev_access_size access_size, uint32_t srt,
                 struct arch_regs *regs);
