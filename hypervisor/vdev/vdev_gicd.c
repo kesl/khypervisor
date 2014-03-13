@@ -103,7 +103,17 @@ static struct gicd_handler_entry _handler_map[0x10] = {
     { 0x0E, handler_NSACR },            /* NSACR */
     { 0x0F, handler_F00 },            /* SGIR, CPENDSGIR, SPENDGIR, ICPIDR2 */
 };
-
+/**
+ * @brief Finds virtual gic handler and executes founded handler.
+ * This function find virtual gic handler using mapping table and excute 
+ * virtual gic handler.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -116,9 +126,18 @@ static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
                                         access_size);
     return result;
 }
-
-
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {CTLR, TYPER, IIDR,
+ *  IGROUPR}.
+ * This furction called when virtual guest touched virtual gic register
+ * {CTLR, TYPER, IIDR, IGROUPR}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -180,7 +199,18 @@ void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
     if (_cb_changed_istatus != 0)
         _cb_changed_istatus(vmid, istatus, word_offset);
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {ISENABLER,
+ * ICENABLER}.
+ * This furction called when virtual guest touched virtual gic register
+ * {ISENABLER, ICENABLER}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_ISCENABLER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -272,7 +302,17 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write,
     }
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {ISPENDR, ICPENDR}.
+ * This furction called when virtual guest touched virtual gic register
+ * {ISPENDR, ICPENDR}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -305,7 +345,17 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {ISACTIVER}.
+ * This furction called when virtual guest touched virtual gic register
+ * {ISACTIVER}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_ISCACTIVER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -313,7 +363,17 @@ static hvmm_status_t handler_ISCACTIVER(uint32_t write,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {IPRIORITYR}.
+ * This furction called when virtual guest touched virtual gic register
+ * {IPRIORITYR}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -334,7 +394,17 @@ static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {ITARGETSR}.
+ * This furction called when virtual guest touched virtual gic register
+ * {ITARGETSR}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -375,7 +445,16 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {ICFGR}.
+ * This furction called when virtual guest touched virtual gic register{ICFGR}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -395,7 +474,17 @@ static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {PPISPISR_CA15}.
+ * This furction called when virtual guest touched virtual gic register
+ * {PPISPISR_CA15}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -403,7 +492,16 @@ static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {NSACR}.
+ * This furction called when virtual guest touched virtual gic register{NSACR}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -411,7 +509,18 @@ static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Handles virtual gic interrupt about gic register {SGIR, CPENDSGIR,
+ *  SPENDGIR}.
+ * This furction called when virtual guest touched virtual gic register
+ * {SGIR, CPENDSGIR, SPENDGIR, ICPIDR2}.
+ * @param write The choice is that the argument Pvalue's status is whether
+ * written or read.
+ * @param offset Length is that base address of virtual timer device.
+ * @param pvalue Address of data whether write or read.
+ * @param access_size Size of virtual timer device access.
+ * @return It turns success when it excute handler to read or write on device.
+ */
 static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
@@ -419,7 +528,9 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
     printh("vgicd:%s: not implemented\n", __func__);
     return result;
 }
-
+/**
+ * @brief Initialize virtual gic registers.
+ */
 static void vdev_gicd_reset_values(void)
 {
     int i;
@@ -433,8 +544,12 @@ static void vdev_gicd_reset_values(void)
             _regs[i].ITARGETSR[j] = 0;
     }
 }
-
-
+/**
+ * @brief Initialize virtual gic and register virtual gic as virtual device.
+ * This function initialze virtual gic and register gic timer.
+ * @param base_addr Base address of virtual gic deivce.
+ * @return It returns success, when virtual gic is registerd.
+ */
 hvmm_status_t vdev_gicd_init(uint32_t base_addr)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;

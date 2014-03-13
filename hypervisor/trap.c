@@ -35,7 +35,11 @@
  * - ISS[5:0] is a data fault status code(DFSC)
  * Additional register we should reference a DFSR
  */
-
+/**@brief This section defines variables.
+ * @var ARM registers.
+ * ARM registers include 13 general purpose register r0-r12,
+ * 1 Stack Pointer(SP), 1 Link Register(LR), 1 Program Counter (PC).
+ */
 #define ISS_VALID                        0x01000000
 
 #define ISS_FSR_MASK                      0x0000003F
@@ -79,7 +83,12 @@
  */
 
 static struct arch_regs *_trap_hyp_saved_regs;
-
+/**
+ * @brief Handles data abort exception taken from a mode other in Hyp mode.
+ * This fuction uses current ARM registers to dump and save as parameter.
+ * @param regs Current ARM registers.
+ * @return It doesn't reach last step due to infinte loop.
+ */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -87,7 +96,13 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
     hyp_abort_infinite();
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**
+ * @brief Handles IRQ exception when interrupt is occured by device.
+ * This fucntion called gic interrupt and switched context. also this fuction
+ * uses current ARM registers to dump and save as parameter.
+ * @param regs Current ARM registers.
+ * @return It always returns HVMM_STATUS_SUCCESS.
+ */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -95,7 +110,12 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
     context_perform_switch();
     return HVMM_STATUS_SUCCESS;
 }
-
+/**
+ * @brief Handles unhandled exception. unhanled exception has three category in
+ *  undifined, hypervisor, prefetch abort.
+ * @param regs Current ARM registers.
+ * @return It doesn't return due to infinte loop.
+ */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     _trap_hyp_saved_regs = regs;
@@ -104,7 +124,11 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**
+ * @brief Indirecting _hyp_hvc_service function in file.
+ * @param regs Current ARM registers.
+ * @return The same result of _hyp_hvc_service() function.
+ */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
     return _hyp_hvc_service(regs);
@@ -112,6 +136,14 @@ enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 
 /*
    Handles data abort case trapped into hvc, not dabort
+ */
+ /**
+ * @brief Handles data abort exception.
+ * However this handler traped into hvc instead of conducting data abort.
+ * @param iss ISS is instruction specific syndrome, bits of HSR register 0~24.
+ * @param regs Current ARM registers.
+ * @return If vitual device is successfully emulated, it will be return
+ * HVMM_STATUS_SUCCESS, otherwise failed.
  */
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
 {
@@ -162,7 +194,9 @@ hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs)
     HVMM_TRACE_EXIT();
     return result;
 }
-
+/**
+ * @brief Shows current ARM registers for debugging mode.
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -191,7 +225,14 @@ static void _trap_dump_bregs(void)
  * information included. It depends on EC field.
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
-
+/**
+ * @brief Handles HVC exception called by virtual guest os or others.
+ * When virtual guest executed a HVC instruction, this function will be called.
+ * @param regs Current ARM registers.
+ * @return The result of HVC exception.
+ * When result is HYP_RESULT_STAY, it will be stay in hypervisor mode,
+ * otherwise exception routine will be exit and return.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     unsigned int hsr = read_hsr();
