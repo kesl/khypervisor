@@ -130,6 +130,16 @@ static inline uint64_t generic_timer_reg_read64(int reg)
     return val;
 }
 
+/** @brief Registers generic timer irqs such as hypervisor timer event
+ *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ *  and virtual timer event(GENERIC_TIMER_NSP).
+ *  Each interrup source is identified by a unique ID.
+ *
+ *  DEVICE : IRQ number
+ *  GENERIC_TIMER_HYP : 26
+ *  GENERIC_TIMER_NSP : 30
+ *  GENERIC_TIMER_VIR : 27
+ */
 hvmm_status_t generic_timer_init()
 {
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
@@ -139,6 +149,9 @@ hvmm_status_t generic_timer_init()
     return HVMM_STATUS_SUCCESS;
 }
 
+/** @brief Configures time interval by PL2 physical timerValue register.
+ *  (VMSA : CNTHP_TVAL) Convets measurement from microseconds to count.
+ */
 hvmm_status_t generic_timer_set_tval(uint32_t tval)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -152,6 +165,10 @@ hvmm_status_t generic_timer_set_tval(uint32_t tval)
     return result;
 }
 
+/** @brief Enables the timer interrupt such as hypervisor timer event
+ *  by PL2 Physical Timer Control register(VMSA : CNTHP_CTL)
+ *  The Timer output signal is not masked.
+ */
 hvmm_status_t generic_timer_enable_int(void)
 {
     uint32_t ctrl;
@@ -168,6 +185,9 @@ hvmm_status_t generic_timer_enable_int(void)
     return result;
 }
 
+/** @brief Disable the timer interrupt such as hypervisor timer event
+ *  by PL2 physical timer control register.The Timer output signal is not masked.
+ */
 hvmm_status_t generic_timer_disable_int(void)
 {
     uint32_t ctrl;
@@ -189,6 +209,8 @@ static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
     _callback[GENERIC_TIMER_HYP](regs);
 }
 
+/** @brief Enables irq.
+ */
 hvmm_status_t generic_timer_enable_irq(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -206,6 +228,9 @@ hvmm_status_t generic_timer_enable_irq(void)
     return result;
 }
 
+/** @brief Configures callback by add callback.
+ *  Called when occur timer interrupt.
+ */
 hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
                 void *user)
 {
@@ -215,6 +240,8 @@ hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
     return HVMM_STATUS_SUCCESS;
 }
 
+/** @brief tries dump.
+ */
 hvmm_status_t generic_timer_dump(void)
 {
     HVMM_TRACE_ENTER();
