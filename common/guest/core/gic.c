@@ -4,7 +4,6 @@
 #include <hvmm_trace.h>
 #include <a15_cp15_sysregs.h>
 #include <armv7_p15.h>
-#include <test/test_vtimer.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
 
@@ -198,8 +197,6 @@ hvmm_status_t gic_init(void)
     if (result == HVMM_STATUS_SUCCESS)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
 
-    /* enable virtual timer */
-    vtimer_mask(0);
     HVMM_TRACE_EXIT();
     return result;
 }
