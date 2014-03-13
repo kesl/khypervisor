@@ -30,7 +30,13 @@ enum {
     GENERIC_TIMER_REG_VIRT_OFF,
 };
 
-/* Calling this function is required only once in the entire system. */
+/**
+* @brief Registers generic timer irqs such as hypervisor timer event
+* (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP),
+* and virtual timer event(GENERIC_TIMER_NSP).*
+* Those interrupts are actice-LOW level-sensitive.
+* @return Returns HVMM_STAUS_SUCESS only.
+*/
 hvmm_status_t generic_timer_init();
 /* Enable the timer interrupt. Specified by timer type */
 hvmm_status_t generic_timer_enable_int();

@@ -130,11 +130,22 @@ static inline uint64_t generic_timer_reg_read64(int reg)
     return val;
 }
 
+/**
+ * @brief Registers generic timer irqs such as hypervisor timer event
+ * (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ * and virtual timer event(GENERIC_TIMER_NSP).
+ * Each interrup source is identified by a unique ID.
+ *
+ * DEVICE : IRQ number
+ * GENERIC_TIMER_HYP : 26
+ * GENERIC_TIMER_NSP : 30
+ * GENERIC_TIMER_VIR : 27
+ */
 hvmm_status_t generic_timer_init()
 {
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
-    _timer_irqs[GENERIC_TIMER_NSP] = 27;
-    _timer_irqs[GENERIC_TIMER_VIR] = 30;
+    _timer_irqs[GENERIC_TIMER_NSP] = 30;
+    _timer_irqs[GENERIC_TIMER_VIR] = 27;
 
     return HVMM_STATUS_SUCCESS;
 }
