@@ -30,20 +30,49 @@ enum {
     GENERIC_TIMER_REG_VIRT_OFF,
 };
 
-/* Calling this function is required only once in the entire system. */
+/** @brief Registers generic timer irqs such as hypervisor timer event
+ *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP),
+ *  and virtual timer event(GENERIC_TIMER_NSP).*
+ *  Those interrupts are actice-LOW level-sensitive.
+ *  @return Returns HVMM_STAUS_SUCESS only.
+ *  @todo Have to implement VIR, NSP.
+ */
 hvmm_status_t generic_timer_init();
-/* Enable the timer interrupt. Specified by timer type */
+
+/** @brief Enables the timer interrupt such as hypervisor timer event
+ *  by PL2 physical timer control register.
+ *  @return Returns HVMM_STATUS_SUCCESS only.
+ *  @todo Have to implement VIR, NSP.
+ */
 hvmm_status_t generic_timer_enable_int();
-/* Disable the timer. Specified by timer type */
+
+/** @brief Disable the timer interrupt such as hypervisor timer event
+ *  by PL2 physical timer control register.
+ *  @return Returns HVMM_STATUS_SUCCESS only.
+ *  @todo Have to implement VIR, NSP.
+ */
 hvmm_status_t generic_timer_disable_int();
-/*
- * Sets time interval. Converts from microseconds
- * to count and sets time interval.
+
+/** @brief Configures time interval by PL2 physical timerValue register.
+ *  Convets measurement from microseconds to count.
+ *  @param tval The timer value
+ *  @return Returns HVMM_STATUS_SUCCESS only.
+ *  @todo Have to implement VIR, NSP.
  */
 hvmm_status_t generic_timer_set_tval(uint32_t tval);
-/* Enables timer irq.  */
+
+/** @brief Enables irq.
+ *  @return Returns HVMM_STATUS_SUCESS only
+ *  @todo Have to implement VIR, NSP.
+ */
 hvmm_status_t generic_timer_enable_irq();
-/* Adds callback funtion. Called when occur timer interrupt */
+
+/** @brief Adds callback function. Called when occur timer interrupt.
+ *  @param callback It is timer.
+ *  @param void* The user
+ *  @return Returns HVMM_STATUS_SUCCESS only.
+ *  @todo Apply parameter "void*" to function because it's unused parameter.
+ */
 hvmm_status_t generic_timer_set_callback(timer_callback_t callback, void *);
 
 #define GENERIC_TIMER_CTRL_ENABLE       (1 << 0)
