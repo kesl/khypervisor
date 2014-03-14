@@ -105,7 +105,7 @@ static struct gicd_handler_entry _handler_map[0x10] = {
 };
 /**
  * @brief Finds virtual gic handler and executes founded handler.
- * This function find virtual gic handler using mapping table and excute 
+ * This function find virtual gic handler using mapping table and excute
  * virtual gic handler.
  * @param write The choice is that the argument Pvalue's status is whether
  * written or read.
