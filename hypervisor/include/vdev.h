@@ -28,7 +28,6 @@ struct vdev_info {
 };
 /**
  * @brief Initializes virtual device mapping table.
-<<<<<<< HEAD
  * @return void
  */
 void vdev_init(void);
@@ -36,31 +35,15 @@ void vdev_init(void);
  * @brief Registers a new virtual device.
  * @param new_vdev Information of new virtual device.
  * @return When new virtual device registered successful, it returns success.
-=======
- */
-int register_vdev(void);
-/**
- * @brief Registers a new virtual device.
- * @param new_vdev information of new virtual device.
- * @return When new virtual device registered successful, it returns success.\
->>>>>>> 18828ba... modified: vdev.h vdev.c
  * otherwise it returns failed.
  */
 hvmm_status_t vdev_reg_device(struct vdev_info *new_vdev);
 /**
-<<<<<<< HEAD
  * @brief Emulates virtual divice.
  * @param fipa HPFAR[39:12] of the faulting intermediate physical address.
  * @param wnr Synchronous abort that was caused by a write or read operation.
  * @param access_Size size of virtual device's access.
  * @param srt Syndrome register transfer.
-=======
- * @brief Emulates virtual divice .
- * @param fipa HPFAR[39:12] of the faulting intermediate physical address.
- * @param wnr synchronous abort that was caused by a write or read operation.
- * @param access_size size of virtual device's access.
- * @param srt syndrome register transfer.
->>>>>>> 18828ba... modified: vdev.h vdev.c
  * @param regs ARM registers.
  * @return When virtual divice emulated, it returns success, otherwise failed.
  */
