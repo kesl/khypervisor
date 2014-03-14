@@ -35,19 +35,22 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/vgic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/trap.o					\
 	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev.o			\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_sample.o		\
-	$(HYPERVISOR_SOURCE_DIR)/virq.o					\
+	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
+	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_cp.o			\
 	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_gicd.o		\
+	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_hvc_ping.o	\
+	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_hvc_stay.o	\
+	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_hvc_yield.o	\
+	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_sample.o		\
+	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_timer.o		\
+	$(HYPERVISOR_SOURCE_DIR)/virq.o					\
 	$(HYPERVISOR_SOURCE_DIR)/gic/slotpirq.o			\
-	$(HYPERVISOR_SOURCE_DIR)/virqmap.o				\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_timer.o
+	$(HYPERVISOR_SOURCE_DIR)/virqmap.o
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
 	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
 	$(COMMON_SOURCE_DIR)/test/tests_vdev.o			\
-	$(COMMON_SOURCE_DIR)/test/tests_malloc.o		\
-	$(COMMON_SOURCE_DIR)/test/tests_vdev_timer.o
+	$(COMMON_SOURCE_DIR)/test/tests_malloc.o
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/log/string.o	\
 	$(COMMON_SOURCE_DIR)/log/format.o				\
