@@ -26,6 +26,32 @@
 
 #define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC
 
+/** \defgroup CPSR_Operating_modes
+ * @brief ARM Operating modes
+ *
+ * - User mode is the usual ARM program execution state,
+ *   and is used for executing most application programs.
+ * - Fast interrupt (FIQ) mod is used for handling fast interrupts.
+ * - Interrupt (IRQ) mode is used for general-purpose interrupt handling.
+ * - Supervisor mode is a protected mode for the operating system.
+ * - Abort mode is entered after a data or instruction Prefetch Abort.
+ * - System mode is a privileged user mode for the operating system.
+ * - Undefined mode is entered when an Undefined instruction exception occurs.
+ *
+ * <pre>
+ * Processor  mode  Encoding Privilege Implemented               Security state
+ * User       usr   10000    PL0       Always                        Both
+ * FIQ        fiq   10001    PL1       Always                        Both
+ * IRQ        irq   10010    PL1       Always                        Both
+ * Supervisor svc   10011    PL1       Always                        Both
+ * Monitor    mon   10110    PL1       With Security Extension      Secure only
+ * Abort      abt   10111    PL1       Always                        Both
+ * Hyp        hyp   11010    PL2       With Virtualization Extension Non-secure
+ * Undefined  und   11011    PL1       Always                        Both
+ * System     sys   11111    PL1       Always                        Both
+ * </pre>
+ * @{
+ */
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
 #define CPSR_MODE_IRQ   0x12
@@ -35,11 +61,19 @@
 #define CPSR_MODE_HYP   0x1A
 #define CPSR_MODE_UND   0x1B
 #define CPSR_MODE_SYS   0x1F
+/** @} */
 
 #define __CONTEXT_TRACE_VERBOSE__
+/**
+ * @brief Checks vmid is whether valid or invalid.
+ * 
+ * Verify that vmid is in range.
+ * - first_vmid <= vmid <= last_vmid
+ *
+ * @return Result of verification.
+ */
 #define _valid_vmid(vmid) \
-    (context_first_vmid() <= vmid && context_last_vmid() >= vmid)
-
+	(vmid >= context_first_vmid() && vmid <= context_last_vmid())
 
 static struct hyp_guest_context guest_contexts[NUM_GUEST_CONTEXTS];
 static int _current_guest_vmid = VMID_INVALID;
@@ -48,6 +82,15 @@ static int _next_guest_vmid = VMID_INVALID;
 static uint8_t _switch_locked;
 
 #ifdef DEBUG
+/**
+ * @brief Returns the name of operating mode of ARM.
+ *
+ * Checks the parameter and selects the operating mode name.
+ * - \ref CPSR_Operating_modes "Operating mode description".
+ *
+ * @param mode Operating mode value.
+ * @return Mode Operating mode name.
+ */
 static char *_modename(uint8_t mode)
 {
     char *name = "Unknown";
@@ -108,19 +151,38 @@ void context_dump_regs(struct arch_regs *regs)
 #endif
 #endif
 }
+/**
+ * @brief Copys the source register to destination register.
+ *
+ * Copy Architecture registers
+ * - R0-R12
+ * - LR
+ * - PC
+ * - CPSR
+ *
+ * @param regs_dst Destination register.
+ * @param regs_src Source register.
+ * @return void
+ */
 static void context_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
 {
     int i;
-    regs_dst->cpsr = regs_src->cpsr;
-    regs_dst->pc = regs_src->pc;
-    regs_dst->lr = regs_src->lr;
     for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
         regs_dst->gpr[i] = regs_src->gpr[i];
+    regs_dst->lr = regs_src->lr;
+    regs_dst->pc = regs_src->pc;
+    regs_dst->cpsr = regs_src->cpsr;
 }
 
-/* banked registers */
-
+/**
+ * @brief Initialize the banked registers.
+ *
+ * Initialize the banked registers of all mode
+ *
+ * @param regs_banked Target banked registers
+ * @return void
+ */
 void context_init_banked(struct arch_regs_banked *regs_banked)
 {
     regs_banked->sp_usr = 0;
@@ -146,6 +208,13 @@ void context_init_banked(struct arch_regs_banked *regs_banked)
     /* Cortex-A15 processor does not support sp_fiq */
 }
 
+/**
+ * @brief Copy currently running banked registers to storage.
+ *
+ * Copy the registers to the storage variable.
+ * @param regs_banked Target structure
+ * @return void
+ */
 void context_save_banked(struct arch_regs_banked *regs_banked)
 {
     /* USR banked register */
@@ -196,6 +265,13 @@ void context_save_banked(struct arch_regs_banked *regs_banked)
                  : "=r"(regs_banked->r12_fiq) : : "memory", "cc");
 }
 
+/**
+ * @brief Restore the banked registers from storage varible.
+ * to the currently running banked registers.
+ *
+ * @param regs_banked Source storage variable.
+ * @return void
+ */
 void context_restore_banked(struct arch_regs_banked *regs_banked)
 {
     /* USR banked register */
@@ -246,7 +322,19 @@ void context_restore_banked(struct arch_regs_banked *regs_banked)
                  : : "r"(regs_banked->r12_fiq) : "memory", "cc");
 }
 
-/* Co-processor state management: init/save/restore */
+/**
+ * @brief Initialize registers which access via the coprocessor.
+ *
+ * Initialize context registers which access via the coprocessor to zero.
+ * - VBAR
+ * - TTBR0
+ * - TTBR1
+ * - TTBCR
+ * - SCTLR
+ *
+ * @param regs_cop Initialize target registers.
+ * @return void
+ */
 void context_init_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = 0;
@@ -256,6 +344,14 @@ void context_init_cops(struct arch_regs_cop *regs_cop)
     regs_cop->sctlr = 0;
 }
 
+/**
+ * @brief Stores the currently running registers which access via coprocessor.
+ *
+ * Stores the currently running context registers which access via coprocessor.
+ *
+ * @param regs_cop Target storage variable.
+ * @return void
+ */
 void context_save_cops(struct arch_regs_cop *regs_cop)
 {
     regs_cop->vbar = read_vbar();
@@ -265,6 +361,14 @@ void context_save_cops(struct arch_regs_cop *regs_cop)
     regs_cop->sctlr = read_sctlr();
 }
 
+/**
+ * @brief Restoring the context of the registers which access via coprocessor.
+ *
+ * Restores the guest context of the registers which access via coprocessor.
+ *
+ * @param regs_cop Source storage variable
+ * @return void
+ */
 void context_restore_cops(struct arch_regs_cop *regs_cop)
 {
     write_vbar(regs_cop->vbar);
@@ -279,6 +383,24 @@ void context_restore_cops(struct arch_regs_cop *regs_cop)
    void context_switch_to_next_guest(struct arch_regs *regs_current)
  */
 
+/**
+ * @brief Switchs the current context to the next guest context.
+ *
+ * Saves the current running context of guest before restore the next context.
+ * And appling context of the next guest.
+ * - Detailed sequence
+ *  - Disable stage-2 translation. HCR.VM = 0
+ *  - Save the context of current current.
+ *  - Restores the translation table for the next guest.
+ *  - Enable Stage 2 Translation.
+ *  - The next guest becomes the current
+ *
+ * @param regs_current The current register.
+ * @param next_vmid The vmid of next guest.
+ * @return Switching result.<br>
+ *         If context switch is succseed, return HVMM_STATUS_SUCCESS.<br>
+ *         Else context switch is failed, return HVMM_STATUS_UNKNOWN_ERROR.
+ */
 static hvmm_status_t context_perform_switch_to_guest_regs(
                         struct arch_regs *regs_current, vmid_t next_vmid)
 {
@@ -334,7 +456,7 @@ static hvmm_status_t context_perform_switch_to_guest_regs(
     if (regs_current == 0) {
         /* init -> hyp mode -> guest */
         /*
-         * The actual context switching (Hyp to Normal mode)
+         * The actual context switch (Hyp to Normal mode)
          * handled in the asm code
          */
         __mon_switch_to_guest_context(&context->regs);
@@ -396,7 +518,6 @@ void context_switch_to_initial_guest(void)
     context_switchto(0);
     context_perform_switch();
 }
-
 
 void context_init_guests(void)
 {
