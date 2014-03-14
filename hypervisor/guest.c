@@ -12,7 +12,6 @@
 #include <interrupt.h>
 #include <vdev.h>
 #include <virqmap.h>
-#include <vdev/vdev_gicd.h>
 
 #define GUEST_SCHED_TICK 100000
 
@@ -91,22 +90,19 @@ void start_guest(void)
     /* Initialize Guests */
     context_init_guests();
 
-    /* Initialize Virtual Devices */
-    vdev_init();
-
-    /* Virtual GIC Distributor */
-    printh("tests: Registering sample vdev:'vgicd' at %x\n",
-            CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
-    vdev_gicd_init(CFG_GIC_BASE_PA | GIC_OFFSET_GICD);
-
-    /* Initialize PIRQ to VIRQ mapping */
-    virqmap_init();
-
     /* Initialize Timer */
     guest_timer_init(GUEST_SCHED_TICK);
 
     /* Initialize Scheduler */
     guest_sched_init();
+
+    /* Initialize Virtual Devices */
+    ret = vdev_init();
+    if (ret != HVMM_STATUS_SUCCESS)
+        uart_print("[start_guest] virtual device initialization failed...\n\r");
+
+    /* Initialize PIRQ to VIRQ mapping */
+    virqmap_init();
 
     /* Begin running test code for newly implemented features */
     hvmm_tests_main();

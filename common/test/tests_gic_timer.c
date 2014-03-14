@@ -9,7 +9,6 @@
 #include "pwm.h"
 #endif
 #include "virq.h"
-#include "vdev/vdev_timer.h"
 
 #include <config/cfg_platform.h>
 #include <log/print.h>
@@ -106,26 +105,15 @@ hvmm_status_t hvmm_tests_gic_timer(void)
     return HVMM_STATUS_SUCCESS;
 }
 
-static int _timer_status[NUM_GUESTS_STATIC] = {0, };
-
-void _timer_injection_changed_status(vmid_t vmid, uint32_t status)
-{
-    _timer_status[vmid] = status;
-}
-
-void callback_timer(void *pdata)
+void callback_test_timer(void *pdata)
 {
     vmid_t vmid;
     HVMM_TRACE_ENTER();
     vmid = context_current_vmid();
     printh("Injecting IRQ 30 to Guest:%d\n", vmid);
-    /*
-     * vgic_inject_virq_sw( 30, VIRQ_STATE_PENDING,
-     *      GIC_INT_PRIORITY_DEFAULT, smp_processor_id(), 1);
-     */
+
     /* SW VIRQ, No PIRQ */
-    if (_timer_status[vmid] == 0)
-        virq_inject(vmid, 30, 0, 0);
+    virq_inject(vmid, 30, 0, 0);
     HVMM_TRACE_EXIT();
 }
 
@@ -140,11 +128,7 @@ hvmm_status_t hvmm_tests_vgic(void)
      *      -> This should handle completion of deactivation and further
      *         injection if there is any pending virtual IRQ
      */
-    int i;
-    vtimer_set_callback_chagned_status(&_timer_injection_changed_status);
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
-        _timer_status[i] = 1;
+    timer_add_callback(TIMER_SCHED, &callback_test_timer);
 
-    timer_add_callback(TIMER_SCHED, &callback_timer);
     return HVMM_STATUS_SUCCESS;
 }
