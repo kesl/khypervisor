@@ -1,48 +1,30 @@
 #include <hvmm_trace.h>
 #include <armv7_p15.h>
 #include "trap.h"
-#include "context.h"
 #include "gic.h"
-#include "guest.h"
-#include "trap.h"
+#include <trap.h>
+#include <guest.h>
 #include <vdev.h>
 #define DEBUG
 #include <log/print.h>
 
-/* By holding the address to the saved regs struct,
- context or other modules can access to this structure
- through trap_saved_regs() call when it's needed.
- For example, copying register values for context switching can be
- performed this way.
- */
-
-static struct arch_regs *_trap_hyp_saved_regs;
-
-struct arch_regs *trap_saved_regs(void)
-{
-    return _trap_hyp_saved_regs;
-}
-
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
-    _trap_hyp_saved_regs = regs;
-    context_dump_regs(regs);
+    guest_dump_regs(regs);
     hyp_abort_infinite();
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
-    _trap_hyp_saved_regs = regs;
     gic_interrupt(0, regs);
-    context_perform_switch();
+    guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;
 }
 
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
-    _trap_hyp_saved_regs = regs;
-    context_dump_regs(regs);
+    guest_dump_regs(regs);
     hyp_abort_infinite();
 
     return HVMM_STATUS_UNKNOWN_ERROR;
@@ -96,7 +78,6 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     int level = VDEV_LEVEL_LOW;
 
     printh("[hvc] _hyp_hvc_service: enter\n\r");
-    _trap_hyp_saved_regs = regs;
     fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
     fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
     fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
@@ -135,7 +116,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
         printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
         printh("[hyp] hsr.ec= %x\n", ec);
         printh("[hyp] hsr= %x\n", hsr);
-        context_dump_regs(regs);
+        guest_dump_regs(regs);
         goto trap_error;
     }
 
@@ -155,7 +136,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     vdev_post(level, vdev_num, &info, regs);
 
     printh("[hyp] _hyp_hvc_service: done\n\r");
-    context_perform_switch();
+    guest_perform_switch(regs);
     return HYP_RESULT_ERET;
 trap_error:
     _trap_dump_bregs();

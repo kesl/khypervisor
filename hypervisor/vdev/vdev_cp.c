@@ -1,6 +1,6 @@
-#include <context.h>
 #define DEBUG
 #include <log/print.h>
+#include <guest.h>
 #include <trap.h>
 #include <vdev.h>
 #include <armv7_p15.h>

@@ -2,6 +2,7 @@
 #ifndef __VMM_H__
 #define __VMM_H__
 #include <hvmm_types.h>
+#include <guest.h>
 #include "lpae.h"
 
 union lpaed *vmm_vmid_ttbl(vmid_t vmid);
@@ -11,5 +12,8 @@ void vmm_init(void);
 
 extern uint32_t guest_bin_start;
 extern uint32_t guest2_bin_start;
+
+void vmm_lock(void);
+void vmm_unlock(struct guest_struct *guest);
 
 #endif

@@ -1,4 +1,3 @@
-#include <context.h>
 #include <guest.h>
 #include <gic.h>
 #include <gic_regs.h>
@@ -12,8 +11,7 @@ static int32_t vdev_hvc_yield_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
     printh("[hyp] _hyp_hvc_service:yield\n\r");
-    context_dump_regs(regs);
-    context_switchto(sched_policy_determ_next());
+    guest_switchto(sched_policy_determ_next(), 0);
     return 0;
 }
 

@@ -28,7 +28,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/lpae.o					\
 	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
-	$(HYPERVISOR_SOURCE_DIR)/context.o				\
+	$(HYPERVISOR_SOURCE_DIR)/hal/arm32ve/guest_hal.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/gic.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
 	$(HYPERVISOR_SOURCE_DIR)/generic_timer/generic_timer.o	\
@@ -47,7 +47,6 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/gic/slotpirq.o			\
 	$(HYPERVISOR_SOURCE_DIR)/virqmap.o
 
-
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
 	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
 	$(COMMON_SOURCE_DIR)/test/tests_vdev.o			\
@@ -62,6 +61,7 @@ LD_SCRIPT	= model.lds.S
 OBJS 		+= drivers/uart/uart_print.o
 
 INCLUDES    = -I $(HYPERVISOR_SOURCE_DIR)/include -I $(HYPERVISOR_SOURCE_DIR)
+INCLUDES    += -I $(HYPERVISOR_SOURCE_DIR)/hal/arm32ve/include
 INCLUDES    += -I. -I $(COMMON_SOURCE_DIR) -I $(COMMON_SOURCE_DIR)/include
 INCLUDES    +=  -I ./include
 

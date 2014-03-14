@@ -1,6 +1,6 @@
 #include <gic.h>
 #include <vgic.h>
-#include "context.h"
+#include "guest.h"
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
@@ -51,8 +51,8 @@ void interrupt_nsptimer(int irq, void *pregs, void *pdata)
     /* Test guest context switch */
     if ((regs->cpsr & 0x1F) != 0x1A) {
         /* Not from Hyp, switch the guest context */
-        context_dump_regs(regs);
-        context_switchto(sched_policy_determ_next());
+        guest_dump_regs(regs);
+        guest_switchto(sched_policy_determ_next(), 0);
     }
     HVMM_TRACE_EXIT();
     uart_print("=======================================\n\r");
@@ -109,7 +109,7 @@ void callback_test_timer(void *pdata)
 {
     vmid_t vmid;
     HVMM_TRACE_ENTER();
-    vmid = context_current_vmid();
+    vmid = guest_current_vmid();
     printh("Injecting IRQ 30 to Guest:%d\n", vmid);
 
     /* SW VIRQ, No PIRQ */

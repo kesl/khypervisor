@@ -4,7 +4,7 @@
 #include <gic.h>
 #include <gic_regs.h>
 #include <slotpirq.h>
-#include <context.h>
+#include <guest.h>
 #include <k-hypervisor-config.h>
 #include <asm-arm_inline.h>
 
@@ -241,7 +241,7 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
         uint32_t slot;
         uint32_t pirq;
         vmid_t vmid;
-        vmid = context_current_vmid();
+        vmid = guest_current_vmid();
         while (eisr) {
             slot = (31 - asm_clz(eisr));
             eisr &= ~(1 << slot);
