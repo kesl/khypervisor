@@ -1,4 +1,4 @@
-#include "generic_timer.h"
+#include <timer_hal.h>
 #include <hvmm_trace.h>
 
 #include <config/cfg_platform.h>
