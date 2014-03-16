@@ -1,4 +1,4 @@
-#include <context.h>
+#include <guest.h>
 #include <gic.h>
 #include <gic_regs.h>
 #include <vdev.h>
@@ -29,7 +29,7 @@ static hvmm_status_t vdev_sample_access_handler(uint32_t write, uint32_t offset,
             write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    unsigned int vmid = context_current_vmid();
+    unsigned int vmid = guest_current_vmid();
     if (!write) {
         /* READ */
         switch (offset) {

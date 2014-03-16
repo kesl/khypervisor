@@ -2,6 +2,7 @@
 #define __TRAP_H__
 
 #include <hvmm_types.h>
+#include <guest.h>
 
 /* HSR Exception Class. */
 #define TRAP_EC_ZERO_UNKNOWN        0x00
@@ -92,7 +93,6 @@
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
 
-struct arch_regs *trap_saved_regs(void);
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
 

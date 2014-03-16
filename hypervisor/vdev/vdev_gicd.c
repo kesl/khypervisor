@@ -1,4 +1,4 @@
-#include <context.h>
+#include <guest.h>
 #include <gic.h>
 #include <gic_regs.h>
 #include <vdev.h>
@@ -127,7 +127,7 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
     /* IIDR;              RO*/
     /* IGROUPR[32];       0x080 ~ 0x0FF */
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid = context_current_vmid();
+    vmid_t vmid = guest_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
     uint32_t woffset = offset / 4;
     switch (woffset) {
@@ -210,7 +210,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid = context_current_vmid();
+    vmid_t vmid = guest_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
@@ -302,7 +302,7 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid = context_current_vmid();
+    vmid_t vmid = guest_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
@@ -346,7 +346,7 @@ static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
     vmid_t vmid;
     struct gicd_regs *regs;
     uint32_t *preg;
-    vmid = context_current_vmid();
+    vmid = guest_current_vmid();
     regs = &_regs[vmid];
     /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
@@ -367,7 +367,7 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
     vmid_t vmid;
     struct gicd_regs *regs;
     uint32_t *preg;
-    vmid = context_current_vmid();
+    vmid = guest_current_vmid();
     regs = &_regs[vmid];
     preg = &(regs->ITARGETSR[(offset >> 2) - GICD_ITARGETSR]);
     if (access_size == VDEV_ACCESS_WORD) {
@@ -408,7 +408,7 @@ static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
     vmid_t vmid;
     struct gicd_regs *regs;
     uint32_t *preg;
-    vmid = context_current_vmid();
+    vmid = guest_current_vmid();
     regs = &_regs[vmid];
     /* FIXME: Support 8/16/32bit access */
     offset >>= 2;

@@ -1,8 +1,8 @@
 #ifndef __VDEV_H_
 #define __VDEV_H_
 
-#include <context.h>
 #include <hvmm_types.h>
+#include <guest.h>
 
 enum vdev_access_size {
     VDEV_ACCESS_BYTE = 0,

@@ -6,6 +6,7 @@
 #include <armv7_p15.h>
 #include <hvmm_trace.h>
 #include <gic_regs.h>
+#include <guest.h>
 
 #include <config/cfg_platform.h>
 #include <log/print.h>
@@ -402,4 +403,29 @@ hvmm_status_t vmm_set_vmid_ttbl(vmid_t vmid, union lpaed *ttbl)
     uart_print("\n\r");
 #endif
     return HVMM_STATUS_SUCCESS;
+}
+
+/* TODO: This code will moves another method. */
+void vmm_lock(void)
+{
+    /*
+     * We assume VTCR has been configured and initialized
+     * in the memory management module
+     */
+    /* Disable Stage 2 Translation: HCR.VM = 0 */
+    vmm_stage2_enable(0);
+}
+
+/* TODO: This code will moves another method. */
+void vmm_unlock(struct guest_struct *guest)
+{
+    struct arch_context *context = &guest->context;
+
+    /*
+     * Restore Translation Table for the next guest and
+     * Enable Stage 2 Translation
+     */
+    vmm_set_vmid_ttbl(guest->vmid, context->ttbl);
+    vmm_stage2_enable(1);
+
 }

@@ -1,6 +1,6 @@
 #include <k-hypervisor-config.h>
 #include "virqmap.h"
-#include "context.h"
+#include "guest.h"
 #include "hvmm_types.h"
 #include <asm-arm_inline.h>
 

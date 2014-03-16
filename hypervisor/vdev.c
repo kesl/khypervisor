@@ -1,4 +1,3 @@
-#include <context.h>
 #include <vdev.h>
 #include <hvmm_trace.h>
 #define DEBUG

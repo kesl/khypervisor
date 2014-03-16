@@ -2,7 +2,7 @@
 #include "armv7_p15.h"
 #include "a15_cp15_sysregs.h"
 #include "smp.h"
-#include "context.h"
+#include <guest.h>
 #include "hvmm_trace.h"
 #include <gic_regs.h>
 #include "virqmap.h"
