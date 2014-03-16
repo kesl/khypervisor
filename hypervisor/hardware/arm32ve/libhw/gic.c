@@ -5,7 +5,6 @@
 #include <guest.h>
 #include "hvmm_trace.h"
 #include <gic_regs.h>
-#include "virqmap.h"
 #include "virq.h"
 #include "hvmm_types.h"
 

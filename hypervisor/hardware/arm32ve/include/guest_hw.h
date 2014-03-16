@@ -1,12 +1,12 @@
-#ifndef _GUEST_HAL_H__
-#define _GUEST_HAL_H__
+#ifndef _GUEST_HW_H__
+#define _GUEST_HW_H__
 
 #include <k-hypervisor-config.h>
 #include <test/tests.h>
 #include <version.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <virqmap.h>
+#include <virq.h>
 #include <vgic.h>
 #include <lpae.h>
 

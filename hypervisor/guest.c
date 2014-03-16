@@ -8,7 +8,7 @@
 #include <mm.h>
 #include <interrupt.h>
 #include <vdev.h>
-#include <virqmap.h>
+#include <virq.h>
 #include <vmm.h>
 
 #define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC

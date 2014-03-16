@@ -5,7 +5,7 @@
 #include "timer.h"
 #include <log/uart_print.h>
 #include <hvmm_types.h>
-#include <guest_hal.h>
+#include <guest_hw.h>
 #include <vgic.h>
 
 enum hyp_hvc_result {
