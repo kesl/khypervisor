@@ -6,7 +6,7 @@
 #include <version.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <virqmap.h>
+#include <virq.h>
 #include <vgic.h>
 #include <lpae.h>
 

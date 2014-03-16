@@ -1,9 +1,6 @@
-#ifndef _VIRQMAP_H_
-#define _VIRQMAP_H_
-
-#include <arch_types.h>
-#include <hvmm_trace.h>
-#include <gic.h>
+#ifndef __VIRQ_H__
+#define __VIRQ_H__
+#include <hvmm_types.h>
 
 /**
  * @breif   Saves a mapping information to find a virq for injection.
@@ -16,6 +13,9 @@ struct virqmap_entry {
     vmid_t vmid;    /**< Guest vm id */
     uint32_t virq;  /**< Virtual interrupt nubmer */
 };
+
+
+#define VIRQMAP_ENTRY_NOTFOUND  0
 
 const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq);
 /**
@@ -33,6 +33,12 @@ hvmm_status_t virqmap_init(void);
  */
 uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq);
 
-#define VIRQMAP_ENTRY_NOTFOUND  0
-
+hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
+        uint32_t pirq, uint8_t hw);
+/**
+ * @brief   Initializes virq_entry structure and
+            Sets callback function about injection of queued VIRQs.
+ * @return  Always returns "success".
+ */
+hvmm_status_t virq_init(void);
 #endif

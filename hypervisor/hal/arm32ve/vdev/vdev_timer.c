@@ -5,7 +5,7 @@
 #define DEBUG
 #include <log/print.h>
 #include <asm-arm_inline.h>
-#include <virqmap.h>
+#include <virq.h>
 #include <trap.h>
 #include <timer.h>
 #include <virq.h>

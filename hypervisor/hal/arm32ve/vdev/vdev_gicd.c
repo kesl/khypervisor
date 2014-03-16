@@ -5,7 +5,7 @@
 #define DEBUG
 #include <log/print.h>
 #include <asm-arm_inline.h>
-#include <virqmap.h>
+#include <virq.h>
 
 #define VGICD_ITLINESNUM    128
 /* Lines:128, CPU:0, Security Extenstin:No */

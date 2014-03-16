@@ -5,7 +5,7 @@
 #define DEBUG
 #include <log/print.h>
 #include <asm-arm_inline.h>
-#include <virqmap.h>
+#include <virq.h>
 
 static int32_t vdev_hvc_stay_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
