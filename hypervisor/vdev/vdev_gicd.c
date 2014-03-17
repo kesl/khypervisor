@@ -112,7 +112,7 @@ static struct gicd_handler_entry _handler_map[0x10] = {
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it execute handler to read or write on device.
+ * @return It turns success when it excute handler to read or write on device.
  */
 static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)

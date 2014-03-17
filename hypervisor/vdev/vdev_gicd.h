@@ -12,7 +12,7 @@ typedef void (*vgicd_changed_istatus_callback_t)(vmid_t vmid,
                 uint32_t istatus, uint8_t word_offset);
 /**
  * @brief Calls a handler of registered virtual gic when gic_mask of
- * virtual guest or was changed.
+ * virtaul guest was changed.
  * @param callback Pointer of virtual gic handler.
  * @return void.
  */
