@@ -7,21 +7,43 @@
 #include <vdev.h>
 #define DEBUG
 #include <log/print.h>
-
+/**\defgroup Defines variables.
+ * <pre> ARM registers.
+ * ARM registers include 13 general purpose register r0-r12, 1 Stack Pointer,
+ * 1 Link Register (LR), 1 Program Counter (PC).
+ * </pre>
+ */
+/**
+ * @brief Handles data abort exception taken from a mode other in Hyp mode.
+ * This fuction uses current ARM registers to dump and save as parameter.
+ * @param regs Current ARM registers.
+ * @return It doesn't reach last step due to infinte loop.
+ */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
     hyp_abort_infinite();
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**
+ * @brief Handles IRQ exception when interrupt is occured by device.
+ * This fucntion called gic interrupt and switched context. also this fuction
+ * uses current ARM registers to dump and save as parameter.
+ * @param regs Current ARM registers.
+ * @return It always returns HVMM_STATUS_SUCCESS.
+ */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     gic_interrupt(0, regs);
     guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;
 }
-
+/**
+ * @brief Handles unhandled exception. unhanled exception has three category in
+ *  undifined, hypervisor, prefetch abort.
+ * @param regs Current ARM registers.
+ * @return It doesn't return due to infinte loop.
+ */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
@@ -29,12 +51,18 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**
+ * @brief Indirecting _hyp_hvc_service function in file.
+ * @param regs Current ARM registers.
+ * @return The same result of _hyp_hvc_service() function.
+ */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
     return _hyp_hvc_service(regs);
 }
-
+/**
+ * @brief Shows current ARM registers for debugging mode.
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -64,7 +92,14 @@ static void _trap_dump_bregs(void)
  * information included. It depends on EC field.
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
-
+/**
+ * @brief Handles HVC exception called by virtual guest os or others.
+ * When virtual guest executed a HVC instruction, this function will be called.
+ * @param regs Current ARM registers.
+ * @return The result of HVC exception.
+ * When result is HYP_RESULT_STAY, it will be stay in hypervisor mode,
+ * otherwise exception routine will be exit and return.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     int32_t vdev_num = -1;

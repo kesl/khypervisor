@@ -92,8 +92,19 @@
 #define HPFAR_FIPA_SHIFT                    4
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
-
+/**
+ * @brief Handles data abort exception.
+ * @param iss ISS is instruction specific syndrome, bits of HSR register 0~24.
+ * @param regs Current ARM registers.
+ * @return If vitual device is successfully emulated, it will be return
+ * HVMM_STATUS_SUCCESS, otherwise failed.
+ */
 hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
+/**
+ * @brief Handles HVC exception called by virtual guest os or others.
+ * @param regs Current ARM registers.
+ * @return The result of HVC exception.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
 
 #endif
