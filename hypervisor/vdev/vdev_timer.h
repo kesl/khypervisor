@@ -11,8 +11,8 @@
 hvmm_status_t vdev_timer_init(uint32_t base_addr);
 typedef void (*vtimer_changed_status_callback_t)(vmid_t vmid, uint32_t status);
 /**
- * @brief Calls a handler of registered virtual timer when it was changed by
- * virtual guest or others.
+ * @brief Calls a handler of registered virtual timer when timer_mask of
+ * virtaul guest was changed.
  * @param callback Pointer of virtual timer handler.
  * @return void.
  */

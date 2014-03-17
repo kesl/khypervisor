@@ -105,14 +105,14 @@ static struct gicd_handler_entry _handler_map[0x10] = {
 };
 /**
  * @brief Finds virtual gic handler and executes founded handler.
- * This function find virtual gic handler using mapping table and excute
+ * This function find virtual gic handler using mapping table and execute
  * virtual gic handler.
  * @param write The choice is that the argument Pvalue's status is whether
  * written or read.
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -136,7 +136,7 @@ static hvmm_status_t access_handler(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -209,7 +209,7 @@ void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus, uint8_t word_offset)
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_ISCENABLER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
@@ -311,7 +311,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -354,7 +354,7 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_ISCACTIVER(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
@@ -372,7 +372,7 @@ static hvmm_status_t handler_ISCACTIVER(uint32_t write,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -403,7 +403,7 @@ static hvmm_status_t handler_IPRIORITYR(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -453,7 +453,7 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -483,7 +483,7 @@ static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -500,7 +500,7 @@ static hvmm_status_t handler_PPISPISR_CA15(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
@@ -519,7 +519,7 @@ static hvmm_status_t handler_NSACR(uint32_t write, uint32_t offset,
  * @param offset Length is that base address of virtual timer device.
  * @param pvalue Address of data whether write or read.
  * @param access_size Size of virtual timer device access.
- * @return It turns success when it excute handler to read or write on device.
+ * @return It turns success when it execute handler to read or write on device.
  */
 static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
                         uint32_t *pvalue, enum vdev_access_size access_size)
