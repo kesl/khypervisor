@@ -35,9 +35,11 @@
  * - ISS[5:0] is a data fault status code(DFSC)
  * Additional register we should reference a DFSR
  */
-/**@brief This section defines variables.
- * @var ARM registers.
- * ARM registers include 13 general purpose register r0-r12,
+/**\defgroup Defines variables.
+ * <pre> ARM registers.
+ * ARM registers include 13 general purpose register r0-r12, 1 Stack Pointer,
+ * 1 Link Register (LR), 1 Program Counter (PC).
+ * </pre>
  */
 #define ISS_VALID                        0x01000000
 

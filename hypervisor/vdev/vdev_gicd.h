@@ -11,8 +11,8 @@ hvmm_status_t vdev_gicd_init(uint32_t base_addr);
 typedef void (*vgicd_changed_istatus_callback_t)(vmid_t vmid,
                 uint32_t istatus, uint8_t word_offset);
 /**
- * @brief Calls a handler of registered virtual gic When it was changed by
- * virtual guest or others.
+ * @brief Calls a handler of registered virtual gic when gic_mask of
+ * virtual guest or was changed.
  * @param callback Pointer of virtual gic handler.
  * @return void.
  */
