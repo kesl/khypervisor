@@ -7,9 +7,9 @@
 #include <mm.h>
 #include <interrupt.h>
 #include <vdev.h>
-#include <virqmap.h>
+#include <virq.h>
 #include <guest.h>
-#include <guest_hal.h>
+#include <guest_hw.h>
 #include <vmm.h>
 
 #define CPSR_MODE_USER  0x10

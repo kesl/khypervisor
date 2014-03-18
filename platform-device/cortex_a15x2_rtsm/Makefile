@@ -17,35 +17,37 @@ include config-default.mk
 endif
 
 HYPERVISOR_SOURCE_DIR=../../hypervisor
+HYPERVISOR_HW_DIR=../../hypervisor/hardware/arm32ve
+HYPERVISOR_HW_HWLIB_DIR=../../hypervisor/hardware/arm32ve/libhw
 COMMON_SOURCE_DIR=../../common
 
 BOOTLOADER	= boot.S
 
 OBJS 		= boot.o	\
 	main.o				\
-	$(HYPERVISOR_SOURCE_DIR)/vector.o				\
 	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
-	$(HYPERVISOR_SOURCE_DIR)/lpae.o					\
 	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
-	$(HYPERVISOR_SOURCE_DIR)/hal/arm32ve/guest_hal.o	\
-	$(HYPERVISOR_SOURCE_DIR)/gic/gic.o				\
-	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
-	$(HYPERVISOR_SOURCE_DIR)/generic_timer/generic_timer.o	\
-	$(HYPERVISOR_SOURCE_DIR)/gic/vgic.o				\
-	$(HYPERVISOR_SOURCE_DIR)/trap.o					\
+	$(HYPERVISOR_SOURCE_DIR)/virq.o					\
 	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
 	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_cp.o			\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_gicd.o		\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_hvc_ping.o	\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_hvc_stay.o	\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_hvc_yield.o	\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_sample.o		\
-	$(HYPERVISOR_SOURCE_DIR)/vdev/vdev_timer.o		\
-	$(HYPERVISOR_SOURCE_DIR)/virq.o					\
-	$(HYPERVISOR_SOURCE_DIR)/gic/slotpirq.o			\
-	$(HYPERVISOR_SOURCE_DIR)/virqmap.o
+	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
+	$(HYPERVISOR_HW_DIR)/guest_hw.o				\
+	$(HYPERVISOR_HW_DIR)/timer_hw.o				\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_cp.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_gicd.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ping.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_stay.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
+	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o			\
+	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
+	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
+	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
+	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o				\
+	$(HYPERVISOR_HW_HWLIB_DIR)/slotpirq.o
+
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
 	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
@@ -61,7 +63,8 @@ LD_SCRIPT	= model.lds.S
 OBJS 		+= drivers/uart/uart_print.o
 
 INCLUDES    = -I $(HYPERVISOR_SOURCE_DIR)/include -I $(HYPERVISOR_SOURCE_DIR)
-INCLUDES    += -I $(HYPERVISOR_SOURCE_DIR)/hal/arm32ve/include
+INCLUDES    += -I $(HYPERVISOR_HW_DIR)/include
+INCLUDES    += -I $(HYPERVISOR_HW_HWLIB_DIR)
 INCLUDES    += -I. -I $(COMMON_SOURCE_DIR) -I $(COMMON_SOURCE_DIR)/include
 INCLUDES    +=  -I ./include
 
