@@ -34,7 +34,6 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
 	$(HYPERVISOR_HW_DIR)/guest_hw.o				\
 	$(HYPERVISOR_HW_DIR)/timer_hw.o				\
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_cp.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_gicd.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ping.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_stay.o		\
@@ -46,7 +45,9 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o				\
-	$(HYPERVISOR_HW_HWLIB_DIR)/slotpirq.o
+	$(HYPERVISOR_HW_HWLIB_DIR)/slotpirq.o           \
+	$(HYPERVISOR_HW_DIR)/traps/trapped_mcr_mrc_handler.o  \
+	$(HYPERVISOR_HW_DIR)/traps/trapped_wfi_wfe_handler.o
 
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\

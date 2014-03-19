@@ -19,6 +19,9 @@ hvmm_status_t hvmm_interrupt_init(void)
         uart_print_hex32(hcr);
         uart_print("\n\r");
         hcr |= HCR_IMO | HCR_FMO;
+               /* wfe     wfi        smc       svc */
+        hcr |= HCR_TWE | HCR_TWI | HCR_TSC | HCR_TGE;
+        hcr |= HCR_TAC | HCR_TVM ;
         write_hcr(hcr);
         hcr = read_hcr();
         uart_print("hcr:");

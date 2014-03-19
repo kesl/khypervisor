@@ -8,13 +8,11 @@
 /*
 #define TESTS_ENABLE_SP804_TIMER
 */
-/*
 #define TESTS_TRAP_WFI
 #define TESTS_TRAP_SMC
 #define TESTS_TRAP_SCTLR
 #define TESTS_TRAP_DDCISW
 #define TESTS_TRAP_ACTLR
-*/
 
 int main()
 {
@@ -27,20 +25,22 @@ int main()
 #endif
 #ifdef TESTS_TRAP_WFI
     WFI();
+    WFE();
 #endif
 #ifdef TESTS_TRAP_SMC
     SMC();
+    SVC();
 #endif
 #ifdef TESTS_TRAP_SCTLR
-    READ_SCTLR(val);
     WRITE_SCTLR(val);
+    READ_SCTLR(val);
 #endif
 #ifdef TESTS_TRAP_DDCISW
     WRITE_DCCISW(val);
 #endif
 #ifdef TESTS_TRAP_ACTLR
-    READ_ACTLR(val);
     WRITE_ACTLR(val);
+    READ_ACTLR(val);
 #endif
     while (1)
         ;
