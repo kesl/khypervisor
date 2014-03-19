@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include <gic.h>
