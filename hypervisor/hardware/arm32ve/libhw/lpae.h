@@ -212,7 +212,7 @@
  * These are valid in the AttrIndx[2:0] field of an LPAE stage-1 page
  * table entry. They are indexes into the bytes of the MAIRx registers.
  * The 8-bit fields are packed little-endian into MAIR0 and MAIR1.
- * /ref
+ * /ref Memory_Attribute_Indirection_Register "MAIRx"
  * <pre>
  *                          ai    encoding
  *   ATTR_IDX_UNCACHED      000   0000 0000  -- Strongly Ordered
