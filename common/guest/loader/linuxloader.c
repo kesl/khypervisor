@@ -1,4 +1,4 @@
-#include "loadlinux.h"
+#include "linuxloader.h"
 #include <log/string.h>
 #include <guestloader.h>
 
@@ -94,9 +94,12 @@ struct atag {
 };
 
 static struct atag *_params; /* used to point at the current tag */
+#define INVALID 0
+uint32_t *atag_base_addr = INVALID;
 
 static void setup_core_tag(void *address, long pagesize)
 {
+    atag_base_addr = (uint32_t *)address;
     /* Initialise parameters to start at given address */
     _params = (struct atag *)address;
     /* start with the core tag */
@@ -147,26 +150,32 @@ static void setup_end_tag(void)
     _params->hdr.size = 0;                   /* zero length */
 }
 
-void loadlinux_setup_tags(uint32_t *src)
+#define SIZE_4K 4096
+#define TAG_POSITION (0x100/4)
+#define SIZE_256K 0x10000000
+
+void linuxloader_setup_atags(uint32_t src)
 {
     char *commandline =
             "root=/dev/ram rw earlyprintk console=ttyAMA0 "
             "mem=256M rdinit=/sbin/init";
     /* standard core tag 4k pagesize */
-    setup_core_tag(src+(0x100/4), 4096);
+    setup_core_tag((uint32_t *)src+(TAG_POSITION), SIZE_4K);
     /* commandline setting root device */
     setup_cmdline_tag(commandline);
     setup_revision_tag();
-    setup_mem_tag((uint32_t)src, 0x10000000);
-    setup_end_tag();                           /* end of tags */
+    setup_mem_tag(src, SIZE_256K);
+    /* end of tags */
+    setup_end_tag();
 }
 
-void loadlinux_run_zImage(uint32_t start_addr)
+uint32_t *linuxloader_get_atags_addr(void)
 {
-    uint32_t machineid = MACHINE_NUMBER;
-    uint32_t atagspointer = 0x80000100;
-    /* Jump to 0xA000_8000 */
-    asm volatile ("mov r1, %0" : : "r" (machineid) : "memory", "cc");
-    asm volatile ("mov r2, %0" : : "r" (atagspointer) : "memory", "cc");
-    asm volatile ("mov pc, %0" : : "r" (start_addr) : "memory", "cc");
+    if (atag_base_addr != INVALID)
+        return atag_base_addr;
+    else {
+        uart_print("[loadlinux] ERROR: SET ATAGS BEFORE JUMP TO ZIMAGE\n");
+        while (1)
+            ;
+    }
 }
