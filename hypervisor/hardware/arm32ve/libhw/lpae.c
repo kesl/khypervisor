@@ -3,13 +3,27 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-/* Long-descriptor translation table format */
+/**
+ * \defgroup LPAE_address_mask
+ *
+ * The address mask of each level descriptors.
+ * - TTBL_L1_OUTADDR_MASK[39:30] Level1 Block address mask.
+ * - TTBL_L2_OUTADDR_MASK[39:21] Level2 Block Address mask.
+ * - TTBL_L3_OUTADDR_MASK[39:12] Page address mask.
+ *
+ * - TTBL_L1_TABADDR_MASK[39:12] Level2 table descriptor address mask.
+ * - TTBL_L2_TABADDR_MASK]30:12] Level3 table descriptor address mask.
+ * @{
+ */
 #define TTBL_L1_OUTADDR_MASK    0x000000FFEC000000ULL
 #define TTBL_L2_OUTADDR_MASK    0x000000FFFFE00000ULL
 #define TTBL_L3_OUTADDR_MASK    0x000000FFFFFFF000ULL
 
 #define TTBL_L1_TABADDR_MASK    0x000000FFFFFFF000ULL
 #define TTBL_L2_TABADDR_MASK    0x000000FFFFFFF000ULL
+/**
+ * @}
+ */
 
 /*
  * Level 2 Block, 2MB, entry in LPAE Descriptor format

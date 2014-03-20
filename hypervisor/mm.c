@@ -8,86 +8,150 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-
-/* LPAE Memory region attributes, to match Linux's (non-LPAE) choices.
- * Indexed by the AttrIndex bits of a LPAE entry;
- * the 8-bit fields are packed little-endian into MAIR0 and MAIR1
+/**
+ * \defgroup Memory_Attribute_Indirection_Register
  *
- *                 ai    encoding
- *   UNCACHED      000   0000 0000  -- Strongly Ordered
- *   BUFFERABLE    001   0100 0100  -- Non-Cacheable
- *   WRITETHROUGH  010   1010 1010  -- Write-through
- *   WRITEBACK     011   1110 1110  -- Write-back
- *   DEV_SHARED    100   0000 0100  -- Device
- *   ??            101
- *   reserved      110
- *   WRITEALLOC    111   1111 1111  -- Write-back write-allocate
+ * It provide the memory attribute encodings corresponding to the possible
+ * AttrIndx values in a Long descriptor format translation table entry for
+ * stage-1 translations.
  *
- *   DEV_NONSHARED 100   (== DEV_SHARED)
- *   DEV_WC        001   (== BUFFERABLE)
- *   DEV_CACHED    011   (== WRITEBACK)
+ * - Only accessible from PL1 or higher.
+ * AttrIndx[2] selects the appropriate MAIR
+ * - AttrIndx[2] to 0 selects MAIR0
+ *               to 1 selects MAIR1
+ * - AttrIndx[1:0] gives the value of m in Attrm
+ * - The MAIR0 and MAIR1 bit assignments.
+ * <pre>
+ * |     |31       24|23       16|15        8|7         0|
+ * |-----|-----------|-----------|-----------|-----------|
+ * |MAIR0|   Attr3   |   Attr2   |   Attr1   |   Attr0   |
+ * |-----|-----------|-----------|-----------|-----------|
+ * |MAIR1|   Attr7   |   Attr6   |   Attr5   |   Attr4   |
+ * </pre>
+ * - MAIRn Attrm[7:4] encoding
+ * <pre>
+ * |Attrm[7:4]     |Meaning                                                   |
+ * |---------------|----------------------------------------------------------|
+ * |0000           |Strongly-ordered or Device memory, see encoding Attrm[3:0]|
+ * |---------------|----------------------------------------------------------|
+ * |00RW, RW not 00| - UNPREDICTABLE or                                       |
+ * |               | - Normal memory, Outer Write-Through transient.          |
+ * |---------------|----------------------------------------------------------|
+ * |0100           |Normal memory, Outer non-cacheable.
+ * |---------------|----------------------------------------------------------|
+ * |01RW, RW not 00| - UNPREDICTABLE or                                       |
+ * |               | - Normal memory, Outer Write-back transient.             |
+ * |---------------|----------------------------------------------------------|
+ * |10RW           |Normal memory, Outer Write-Through Cacheable, Non-transient
+ * |---------------|----------------------------------------------------------|
+ * |11RW           |Normal memory, Ouet Write-Back Cacheable, Non-transient.  |
+ * </pre>
+ *
+ * - MAIRn Attrm[3:0] encoding
+ * <pre>
+ * |Attrm[3:0]|When Attrm[7:4] is 0b000|When Attrm[7:4] is not 0b0000
+ * |----------|------------------------|--------------------------------------|
+ * |0000      |Strongly-ordered memory |UNPREDICTABLE                         |
+ * |----------|------------------------|--------------------------------------|
+ * |00RW,     |UNPREDICTABLE           | - UNPREDICTABLE or                   |
+ * |RW not 00 |                        | - Normal memory, Inner Write-Through |
+ * |          |                        |   transient.                         |
+ * |----------|------------------------|--------------------------------------|
+ * |0100      |Device memory           |Normal memory, Inner Non-cacheable.   |
+ * |----------|------------------------|--------------------------------------|
+ * |01RW,     |UNPREDICTABLE           | - UNPREDICATBLE or                   |
+ * |RW not 00 |                        | - Normal memory, Inner Write-Back    |
+ * |          |                        |   Transient.                         |
+ * |----------|------------------------|--------------------------------------|
+ * |10RW      |UNPREDICTABLE           |Normal memory, Inner Write-Through    |
+ * |          |                        |Cacheable, Non-transient.             |
+ * |----------|------------------------|--------------------------------------|
+ * |11RW      |UNPREDICTABLE           |Normal memory, Inner Write-back       |
+ * |          |                        |Cacheable, Non-transient.             |
+ * </pre>
+ * 
+ * -R, W bit mean read-allocate and wrtie-allocate.
+ *
+ * - Initial value of MAIR0, MAIR1.
+ * <pre>
+ * |     |31       24|23       16|15        8|7         0|
+ * |-----|-----------|-----------|-----------|-----------|
+ * |MAIR0|1110 1110  |1010 1010  |0100 0100  |0000 0000  |
+ * |-----|-----------|-----------|-----------|-----------|
+ * |MAIR1|1111 1111  |0000 0000  |0000 0000  |0000 0100  |
+ * </pre>
+ * @{
  */
 #define INITIAL_MAIR0VAL 0xeeaa4400
 #define INITIAL_MAIR1VAL 0xff000004
 #define INITIAL_MAIRVAL (INITIAL_MAIR0VAL|INITIAL_MAIR1VAL<<32)
+/** @}*/
 
-/*
- * Attribute Indexes.
+/**
+ * \defgroup SCTLR
  *
- * These are valid in the AttrIndx[2:0] field of an LPAE stage 1 page
- * table entry. They are indexes into the bytes of the MAIR*
- * registers, as defined above.
- *
+ * System Control Register.
+ * The SCTLR provides the top level control of the system, including its memory
+ * system.
+ * HSCTLR is a subset of this
+ * 
+ * @{
  */
-#define UNCACHED      0x0
-#define BUFFERABLE    0x1
-#define WRITETHROUGH  0x2
-#define WRITEBACK     0x3
-#define DEV_SHARED    0x4
-#define WRITEALLOC    0x7
-#define DEV_NONSHARED DEV_SHARED
-#define DEV_WC        BUFFERABLE
-#define DEV_CACHED    WRITEBACK
+#define SCTLR_TE        (1<<30) /**< Thumb Exception enable. */
+#define SCTLR_AFE       (1<<29) /**< Access Flag Enable. */
+#define SCTLR_TRE       (1<<28) /**< TEX Remp Enable. */
+#define SCTLR_NMFI      (1<<27) /**< Non-Maskable FIQ(NMFI) support. */
+#define SCTLR_EE        (1<<25) /**< Exception Endianness. */
+#define SCTLR_VE        (1<<24) /**< Interrupt Vectors Enable. */
+#define SCTLR_U         (1<<22) /**< In ARMv7 this bit is RAO/SBOP. */
+#define SCTLR_FI        (1<<21) /**< Fast Interrupts configuration enable. */
+#define SCTLR_WXN       (1<<19) /**< Write permission emplies XN. */
+#define SCTLR_HA        (1<<17) /**< Hardware Access flag enable. */
+#define SCTLR_RR        (1<<14) /**< Round Robin select. */
+#define SCTLR_V         (1<<13) /**< Vectors bit. */
+#define SCTLR_I         (1<<12) /**< Instruction cache enable.  */
+#define SCTLR_Z         (1<<11) /**< Branch prediction enable. */
+#define SCTLR_SW        (1<<10) /**< SWP and SWPB enable. */
+#define SCTLR_B         (1<<7)  /**< In ARMv7 this bit is RAZ/SBZP. */
+#define SCTLR_C         (1<<2)  /**< Cache enable. */
+#define SCTLR_A         (1<<1)  /**< Alignment check enable. */
+#define SCTLR_M         (1<<0)  /**< MMU enable. */
+#define SCTLR_BASE        0x00c50078  /**< STCLR Base address */
+#define HSCTLR_BASE       0x30c51878  /**< HSTCLR Base address */
+/** @}*/
 
-/* SCTLR System Control Register. */
-/* HSCTLR is a subset of this. */
-#define SCTLR_TE        (1<<30)
-#define SCTLR_AFE       (1<<29)
-#define SCTLR_TRE       (1<<28)
-#define SCTLR_NMFI      (1<<27)
-#define SCTLR_EE        (1<<25)
-#define SCTLR_VE        (1<<24)
-#define SCTLR_U         (1<<22)
-#define SCTLR_FI        (1<<21)
-#define SCTLR_WXN       (1<<19)
-#define SCTLR_HA        (1<<17)
-#define SCTLR_RR        (1<<14)
-#define SCTLR_V         (1<<13)
-#define SCTLR_I         (1<<12)
-#define SCTLR_Z         (1<<11)
-#define SCTLR_SW        (1<<10)
-#define SCTLR_B         (1<<7)
-#define SCTLR_C         (1<<2)
-#define SCTLR_A         (1<<1)
-#define SCTLR_M         (1<<0)
-#define SCTLR_BASE        0x00c50078
-#define HSCTLR_BASE       0x30c51878
+/**
+ * \defgroup HTTBR
+ * @brief Hyp Translation Table Base Register
+ *
+ * The HTTBR holds the base address of the translation table for the stasge-1
+ * translation of memory accesses from Hyp mode.
+ * @{
+ */
+#define HTTBR_INITVAL               0x0000000000000000ULL
+#define HTTBR_BADDR_MASK            0x000000FFFFFFF000ULL
+#define HTTBR_BADDR_SHIFT           12
+/** @}*/
 
-/* HTTBR */
-#define HTTBR_INITVAL                                   0x0000000000000000ULL
-#define HTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
-#define HTTBR_BADDR_SHIFT                               12
-
-/* HTCR */
-#define HTCR_INITVAL                                    0x80000000
-#define HTCR_SH0_MASK                                   0x00003000
-#define HTCR_SH0_SHIFT                                  12
-#define HTCR_ORGN0_MASK                                 0x00000C00
-#define HTCR_ORGN0_SHIFT                                10
-#define HTCR_IRGN0_MASK                                 0x00000300
-#define HTCR_IRGN0_SHIFT                                8
-#define HTCR_T0SZ_MASK                                  0x00000003
-#define HTCR_T0SZ_SHIFT                                 0
+/**
+ * \defgroup HTCR
+ * @brief Hyp Translation Control Register
+ *
+ * The HTCR controls the translation table walks required for the stage-1
+ * translation of memory accesses from Hyp mode, and holds cacheability and
+ * shareability information for the accesses.
+ * @{
+ */
+#define HTCR_INITVAL                0x80000000
+#define HTCR_SH0_MASK               0x00003000 /**< \ref Shareability */
+#define HTCR_SH0_SHIFT              12
+#define HTCR_ORGN0_MASK             0x00000C00 /**< \ref Outer_cacheability */
+#define HTCR_ORGN0_SHIFT            10
+#define HTCR_IRGN0_MASK             0x00000300 /**< \ref Inner_cacheability */
+#define HTCR_IRGN0_SHIFT            8
+#define HTCR_T0SZ_MASK              0x00000003
+#define HTCR_T0SZ_SHIFT             0
+/** @} */
 
 /* PL2 Stage 1 Level 1 */
 #define HMM_L1_PTE_NUM  512
@@ -134,7 +198,14 @@ uint32_t last_valid_address; /* last mapping address */
 static union header freep_base; /* empty list to get started */
 static union header *freep; /* start of free list */
 
-/* malloc init */
+/**
+ * @brief Initilization of heap memory region.
+ *
+ * Initializes the configure variable of heap region for malloc operation.
+ * - mm_break = mm_prev_break = last_valid_address = HEAD_ADDR
+ *
+ * @return void
+ */
 void hmm_heap_init(void)
 {
     mm_break = HEAP_ADDR;
@@ -148,19 +219,32 @@ void hmm_heap_init(void)
  * PL2 Stage1 Translation
  * VA32 -> PA
  */
-
+/**
+ * @brief Initializes the host monitor memory management.
+ *
+ * Initialize and setting the translation table descriptors of the Hyp mode.
+ * - Target environment.
+ *   - PL2, stage-1 translation table.
+ *   - Virtual address -> Physical address
+ * - Generate configurations.
+ *   - Translation table level1, level2, and level3.
+ * <pre>
+ * Name         Physical address range    Location     Attribute Index Setting
+ * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - ATTR_IDX_DEV_SHARED
+ * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - ATTR_IDX_UNCACHED
+ * Partition 2: 0x80000000 ~ 0xBFFFFFFF - Guest      - ATTR_IDX_UNCACHED
+ * Partition 3: 0xC0000000 ~ 0xFFFFFFFF - Hypervisor
+ *                                      - Level2 and level3 translation table
+ * </pre>
+ *
+ * @return void
+ */
 static void _hmm_init(void)
 {
     int i, j;
     uint64_t pa = 0x00000000ULL;
-    /*
-     * Partition 0: 0x00000000 ~ 0x3FFFFFFF - Peripheral - DEV_SHARED
-     * Partition 1: 0x40000000 ~ 0x7FFFFFFF - Unused     - UNCACHED
-     * Partition 2: 0x80000000 ~ 0xBFFFFFFF - Guest         - UNCACHED
-     * Partition 3: 0xC0000000 ~ 0xFFFFFFFF - Monitor
-     *                                      - LV2 translation table address
-     */
-    _hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, DEV_SHARED);
+
+    _hmm_pgtable[0] = hvmm_mm_lpaed_l1_block(pa, ATTR_IDX_DEV_SHARED);
     pa += 0x40000000;
     uart_print("&_hmm_pgtable[0]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[0]);
@@ -168,7 +252,7 @@ static void _hmm_init(void)
     uart_print("lpaed:");
     uart_print_hex64(_hmm_pgtable[0].bits);
     uart_print("\n\r");
-    _hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, UNCACHED);
+    _hmm_pgtable[1] = hvmm_mm_lpaed_l1_block(pa, ATTR_IDX_UNCACHED);
     pa += 0x40000000;
     uart_print("&_hmm_pgtable[1]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[1]);
@@ -176,7 +260,7 @@ static void _hmm_init(void)
     uart_print("lpaed:");
     uart_print_hex64(_hmm_pgtable[1].bits);
     uart_print("\n\r");
-    _hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, WRITEALLOC);
+    _hmm_pgtable[2] = hvmm_mm_lpaed_l1_block(pa, ATTR_IDX_WRITEALLOC);
     pa += 0x40000000;
     uart_print("&_hmm_pgtable[2]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[2]);
@@ -204,10 +288,10 @@ static void _hmm_init(void)
             /* 0xF2000000 ~ 0xFF000000 - Heap memory 208MB */
             if (pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE) {
                 _hmm_pgtable_l3[i][j] =
-                        hvmm_mm_lpaed_l3_table(pa, WRITEALLOC, 0);
+                        hvmm_mm_lpaed_l3_table(pa, ATTR_IDX_WRITEALLOC, 0);
             } else {
                 _hmm_pgtable_l3[i][j] =
-                        hvmm_mm_lpaed_l3_table(pa, UNCACHED, 1);
+                        hvmm_mm_lpaed_l3_table(pa, ATTR_IDX_UNCACHED, 1);
             }
         }
     }
@@ -218,12 +302,12 @@ static void _hmm_init(void)
 int hvmm_mm_init(void)
 {
 /*
- *    MAIR0, MAIR1
- *    HMAIR0, HMAIR1
- *    HTCR
- *    HTCTLR
- *    HTTBR
- *     HTCTLR
+ * MAIR0, MAIR1
+ * HMAIR0, HMAIR1
+ * HTCR
+ * HTCTLR
+ * HTTBR
+ * HTCTLR
  */
     uint32_t mair, htcr, hsctlr, hcr;
     uint64_t httbr;
@@ -382,6 +466,13 @@ int hvmm_mm_init(void)
     return HVMM_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Flush TLB
+ *
+ * Invalidate entire unified TLB.
+ *
+ * @return void
+ */
 void hmm_flushTLB(void)
 {
     /* Invalidate entire unified TLB */
@@ -390,6 +481,18 @@ void hmm_flushTLB(void)
     asm volatile("isb");
 }
 
+/**
+ * @brief Returns the level 3 table entry.
+ *
+ * Returns the level3 translation table descriptor by matching
+ * The virtual address and number of pages.
+ * If delivered virtual address is over the max memory size,
+ * returns zero value.
+ *
+ * @param virt Virtual address.
+ * @param npages Number of pages.
+ * @return The level 3 table entry.
+ */
 union lpaed *hmm_get_l3_table_entry(unsigned long virt, unsigned long npages)
 {
     int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
@@ -426,9 +529,15 @@ void hmm_map(unsigned long phys, unsigned long virt, unsigned long npages)
     hmm_flushTLB();
 }
 
-/* General-purpose sbrk, basic memory management system calls
- * Returns -1 if there was no space.
-*/
+/**
+ * @brief General-purpose sbrk, basic memory management system calls.
+ *
+ * General-purpose sbrk, basic memory management system calls.
+ * If there was no heap memory space, returns the value -1.
+ *
+ * @param  incr Size of memory wanted.
+ * @return Pointer of allocated heap memory.
+ */
 void *hmm_sbrk(unsigned int incr)
 {
     unsigned int required_addr;
@@ -475,6 +584,17 @@ void hmm_free(void *ap)
     freep = p;
 }
 
+/**
+ * @brief Obtains storage from the heap memory.
+ *
+ * Obtains storage from hyp mode heap memory.
+ * If wanted size of block is not bigger then NALLOC value,
+ * This function obtains minimally NALLOC bytes(1024 Bytes).
+ * After obtains storage, makes free this area by call free function.
+ *
+ * @param nu Number of units, allocate size.
+ * @return Pointer of free list block header & memory area.
+ */
 static union header *morecore(unsigned int nu)
 {
     char *cp;
