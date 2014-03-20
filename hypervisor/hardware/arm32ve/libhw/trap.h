@@ -93,7 +93,11 @@
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
 
-hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
+/**@brief Handles HSR which holds syndrome information for any synchronous
+ *  exception taken to Hyp mode.
+ * @param regs ARM registers used by current virtual machine.
+ * @return Returns the result of exception using HSR.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
 
 #endif
