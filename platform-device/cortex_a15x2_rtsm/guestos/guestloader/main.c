@@ -1,34 +1,67 @@
-#include <arch_types.h>
-#include <guestloader.h>
+#include <gic.h>
+#include <cli.h>
+#include <version.h>
+#include <asm-arm_inline.h>
 #include <log/uart_print.h>
-#include <loadlinux.h>
-#include <loadguest.h>
-/**
-* @brief Load guest.
-* @param type Guest type. There are bmguest and Linux guest.
-*/
-static void load_guest(uint32_t type)
+#include "drivers/timer.h"
+
+#define MAX_CMD_STR_SIZE    256
+#define PROMPT  "kboot# "
+#define BOOTCMD "boot"
+
+int autoboot;
+
+void guestloader_init(void)
 {
-    copy_loader_next_to_guest();
-    copy_guestos_to_start_addr(START_ADDR);
-    switch (type) {
-    case GUEST_TYPE_BM:
-        load_bmguest(START_ADDR);
-        break;
-    case GUEST_TYPE_LINUX:
-        load_linuxguest(START_ADDR);
-        break;
-    default:
-        uart_print("[loadbmguest] ERROR: CANT'T NOT MATCH GUEST TYPE\n\r");
-        break;
-    }
-    /* The code flow must not reach here */
-    uart_print("[loadbmguest] ERROR: CODE MUST NOT REACH HERE\n\r");
-    while (1)
-        ;
+    /* Initializes serial */
+    uart_init();
+    /* Initializes GIC */
+    gic_init();
+    /* Ready to accept irqs with GIC. Enable it now */
+    irq_enable();
+    /* Initializes timer */
+    timer_init();
+    /* Initializes autoboot flag */
+    autoboot = 0;
 }
+
+void guestloader_flag_autoboot(int flag)
+{
+    autoboot = flag;
+}
+
+void guestloader_autoboot(void)
+{
+    /* Disable timer for guest os */
+    timer_disable();
+    cli_exec_cmd(BOOTCMD);
+}
+
+void guestloader_cliboot(void)
+{
+    char line[MAX_CMD_STR_SIZE];
+    /* Disable timer for guest os */
+    timer_disable();
+    while (1) {
+        uart_print(PROMPT);
+        uart_gets(line, MAX_CMD_STR_SIZE);
+        cli_exec_cmd(line);
+    }
+}
+
 void main(void)
 {
-    uart_print("\n\r=== starting guestloader.\n\r");
-    load_guest(GUEST_TYPE);
+    /* Initializes guestloder */
+    guestloader_init();
+    /* Show Hypervisor Banner */
+    uart_print(BANNER_STRING);
+    /* Auto boot or CLI boot */
+    while (1) {
+        /* Auto boot */
+        if (autoboot)
+            guestloader_autoboot();
+        /* Use CLI, if press any key */
+        else if (uart_tst_fifo())
+            guestloader_cliboot();
+    }
 }
