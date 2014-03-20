@@ -7,21 +7,43 @@
 #include <vdev.h>
 #define DEBUG
 #include <log/print.h>
-
+/**\defgroup ARM terms.
+ * <pre> ARM registers.
+ * ARM registers include 13 general purpose registers r0-r12, 1 Stack Pointer,
+ * 1 Link Register (LR), 1 Program Counter (PC).
+ * </pre>
+ */
+/**@brief Handles data abort exception taken from a mode other in Hyp mode.
+ * This function uses current ARM registers to dump.
+ * @param regs ARM registers used by current virtual machine.
+ * \ref ARM
+ * @return Returns HVMM_STATUS_UNKNOWN_ERROR only.
+ */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
     hyp_abort_infinite();
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**@brief Handles IRQ exception when interrupt is occured by a device.
+ * This funcntion calls gic interrupt, context switch.
+ * @param regs ARM registers used by current virtual machine.
+ * \ref ARM
+ * @return Returns HVMM_STATUS_SUCCESS only.
+ */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     gic_interrupt(0, regs);
     guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;
 }
-
+/**@brief Handles undefined, hypervisor, prefetch abort as unhandled exception.
+ * Also this function dumps state of the virtual machine registers.
+ * We don't support these exceptions now.
+ * @param regs ARM registers used by current virtual machine.
+ * \ref ARM
+ * @return Returns HVMM_STATUS_UNKNOWN_ERROR only.
+ */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
@@ -29,12 +51,17 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
-
+/**@brief Indirects _hyp_hvc_service function in file.
+ * @param regs ARM registers used by current virtual machine.
+ * \ref ARM
+ * @return Returns the same result of _hyp_hvc_service() function.
+ */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
     return _hyp_hvc_service(regs);
 }
-
+/**@brief Shows temporary banked registers for debugging.
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -64,7 +91,19 @@ static void _trap_dump_bregs(void)
  * information included. It depends on EC field.
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
-
+/**@brief Handles HVC instruction called by virtual machine, Data Abort
+ * exception taken from a mode other than Hyp mode and routed to Hyp mode.
+ * <pre>
+ *  Finds virtual device number.
+ *  Decides whether write or read on virtual device. Then it runs.
+ *  Switches virtual machine (context switch).
+ * </prev>
+ * @param regs ARM registers used by current virtual machine.
+ * \ref ARM
+ * @return Returns the result of HVC exception or Data Abort exception.
+ * When result is HYP_RESULT_STAY, Current mode will be stay in hypervisor mode,
+ * Otherwise it will revert to previous routine.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     int32_t vdev_num = -1;
