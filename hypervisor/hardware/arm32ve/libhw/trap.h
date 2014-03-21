@@ -93,7 +93,6 @@
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
 
-hvmm_status_t trap_hvc_dabort(unsigned int iss, struct arch_regs *regs);
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
 
 #endif
