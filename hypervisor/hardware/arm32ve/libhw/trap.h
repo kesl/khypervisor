@@ -93,6 +93,10 @@
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
 
+/**@brief Handles every exceptions taken from a mode other than Hyp mode.
+ * @param regs ARM registers for current virtual machine.
+ * @return Returns the result of exception using HSR.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
 
 #endif
