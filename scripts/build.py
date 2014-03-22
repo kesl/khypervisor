@@ -36,6 +36,11 @@ def RenameGeustImage(guest, product, dir, build_script, image_name):
     src_image = PLATFORM_DIR + "/" + product + "/" + dir + "/" + image_name
     print src_image
     guest_dir = str(os.getenv('GUEST_IMAGE_DIR'))
+    guest_image_dir = PLATFORM_DIR + "/" + product + "/" + guest_dir
+
+    if not os.path.exists(guest_image_dir):
+        os.makedirs(guest_image_dir)
+
     dest_image = PLATFORM_DIR + "/" + product + "/" + guest_dir + "/guest" + str(guest) + ".bin"
     print dest_image
 
@@ -58,6 +63,12 @@ def BuildNativeUboot(product):
 def BuildGuests(product):
     retcode = 0
     print '@BuildGeust'
+    guest_dir = str(os.getenv('GUEST_IMAGE_DIR'))
+    guest_image_dir = PLATFORM_DIR + "/" + product + "/" + guest_dir
+
+    if not os.path.exists(guest_image_dir):
+        os.makedirs(guest_image_dir)
+
     guest_count = int(os.getenv('GUEST_COUNT'))
     print "guest_count" + str(guest_count)
     for n in range(0, guest_count):
