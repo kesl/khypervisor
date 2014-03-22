@@ -12,7 +12,11 @@ ROOT_DIR = os.path.dirname(TRUNK_DIR)
 PATCH_FILE = "pull_request.patch"
 
 def GetPullRequestPatch() :
-    url = str(os.getenv('GIT_URL')) + "pull/"
+    url = str(os.getenv('GIT_URL'))
+    if url[-1:] == '/':
+        url += "pull/"
+    else:
+        url += "/pull/"
     url += str(os.getenv('ghprbPullId')) + ".patch"
     print url
     u = urllib2.urlopen(url)
