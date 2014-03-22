@@ -1,9 +1,38 @@
-#include <timer_hw.h>
 #include <hvmm_trace.h>
+#include "armv7_p15.h"
+#include "gic.h"
+#include <timer.h>
+#include <log/uart_print.h>
+#include <asm-arm_inline.h>
 
-#include <config/cfg_platform.h>
+enum generic_timer_type {
+    GENERIC_TIMER_HYP,      /* IRQ 26 */
+    GENERIC_TIMER_VIR,      /* IRQ 27 */
+    GENERIC_TIMER_NSP,      /* IRQ 30 */
+    GENERIC_TIMER_NUM_TYPES
+};
 
-static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata);
+enum {
+    GENERIC_TIMER_REG_FREQ,
+    GENERIC_TIMER_REG_HCTL,
+    GENERIC_TIMER_REG_KCTL,
+    GENERIC_TIMER_REG_HYP_CTRL,
+    GENERIC_TIMER_REG_HYP_TVAL,
+    GENERIC_TIMER_REG_HYP_CVAL,
+    GENERIC_TIMER_REG_PHYS_CTRL,
+    GENERIC_TIMER_REG_PHYS_TVAL,
+    GENERIC_TIMER_REG_PHYS_CVAL,
+    GENERIC_TIMER_REG_VIRT_CTRL,
+    GENERIC_TIMER_REG_VIRT_TVAL,
+    GENERIC_TIMER_REG_VIRT_CVAL,
+    GENERIC_TIMER_REG_VIRT_OFF,
+};
+
+#define GENERIC_TIMER_CTRL_ENABLE       (1 << 0)
+#define GENERIC_TIMER_CTRL_IMASK        (1 << 1)
+#define GENERIC_TIMER_CTRL_ISTATUS      (1 << 2)
+#define generic_timer_pcounter_read()   read_cntpct()
+#define generic_timer_vcounter_read()   read_cntvct()
 
 static uint32_t _timer_irqs[GENERIC_TIMER_NUM_TYPES];
 static uint32_t _tvals[GENERIC_TIMER_NUM_TYPES];
@@ -130,7 +159,7 @@ static inline uint64_t generic_timer_reg_read64(int reg)
     return val;
 }
 
-hvmm_status_t generic_timer_init()
+static hvmm_status_t generic_timer_init()
 {
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
     _timer_irqs[GENERIC_TIMER_NSP] = 27;
@@ -139,7 +168,7 @@ hvmm_status_t generic_timer_init()
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t generic_timer_set_tval(uint32_t tval)
+static hvmm_status_t generic_timer_set_tval(uint32_t tval)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
@@ -152,7 +181,7 @@ hvmm_status_t generic_timer_set_tval(uint32_t tval)
     return result;
 }
 
-hvmm_status_t generic_timer_enable_int(void)
+static hvmm_status_t generic_timer_enable_int(void)
 {
     uint32_t ctrl;
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -168,7 +197,7 @@ hvmm_status_t generic_timer_enable_int(void)
     return result;
 }
 
-hvmm_status_t generic_timer_disable_int(void)
+static hvmm_status_t generic_timer_disable_int(void)
 {
     uint32_t ctrl;
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -189,7 +218,7 @@ static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
     _callback[GENERIC_TIMER_HYP](regs);
 }
 
-hvmm_status_t generic_timer_enable_irq(void)
+static hvmm_status_t generic_timer_enable_irq(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
@@ -206,7 +235,7 @@ hvmm_status_t generic_timer_enable_irq(void)
     return result;
 }
 
-hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
+static hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
                 void *user)
 {
     HVMM_TRACE_ENTER();
@@ -215,7 +244,7 @@ hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t generic_timer_dump(void)
+static hvmm_status_t generic_timer_dump(void)
 {
     HVMM_TRACE_ENTER();
     HVMM_TRACE_EXIT();

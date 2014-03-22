@@ -34,7 +34,7 @@ static void context_copy_regs(struct arch_regs *regs_dst,
 }
 
 /* banked registers */
-void context_init_banked(struct regs_banked *regs_banked)
+static void context_init_banked(struct regs_banked *regs_banked)
 {
     regs_banked->sp_usr = 0;
     regs_banked->spsr_svc = 0;
@@ -59,7 +59,7 @@ void context_init_banked(struct regs_banked *regs_banked)
     /* Cortex-A15 processor does not support sp_fiq */
 }
 
-void context_save_banked(struct regs_banked *regs_banked)
+static void context_save_banked(struct regs_banked *regs_banked)
 {
     /* USR banked register */
     asm volatile(" mrs     %0, sp_usr\n\t"
@@ -109,7 +109,7 @@ void context_save_banked(struct regs_banked *regs_banked)
                  : "=r"(regs_banked->r12_fiq) : : "memory", "cc");
 }
 
-void context_restore_banked(struct regs_banked *regs_banked)
+static void context_restore_banked(struct regs_banked *regs_banked)
 {
     /* USR banked register */
     asm volatile(" msr    sp_usr, %0\n\t"
@@ -160,7 +160,7 @@ void context_restore_banked(struct regs_banked *regs_banked)
 }
 
 /* Co-processor state management: init/save/restore */
-void context_init_cops(struct regs_cop *regs_cop)
+static void context_init_cops(struct regs_cop *regs_cop)
 {
     regs_cop->vbar = 0;
     regs_cop->ttbr0 = 0;
@@ -169,7 +169,7 @@ void context_init_cops(struct regs_cop *regs_cop)
     regs_cop->sctlr = 0;
 }
 
-void context_save_cops(struct regs_cop *regs_cop)
+static void context_save_cops(struct regs_cop *regs_cop)
 {
     regs_cop->vbar = read_vbar();
     regs_cop->ttbr0 = read_ttbr0();
@@ -178,7 +178,7 @@ void context_save_cops(struct regs_cop *regs_cop)
     regs_cop->sctlr = read_sctlr();
 }
 
-void context_restore_cops(struct regs_cop *regs_cop)
+static void context_restore_cops(struct regs_cop *regs_cop)
 {
     write_vbar(regs_cop->vbar);
     write_ttbr0(regs_cop->ttbr0);
@@ -224,7 +224,7 @@ static char *_modename(uint8_t mode)
 }
 #endif
 
-hvmm_status_t guest_save(struct guest_struct *guest,
+static hvmm_status_t guest_save(struct guest_struct *guest,
                 struct arch_regs *regs_current)
 {
     struct arch_regs *regs = &guest->regs;
@@ -243,7 +243,7 @@ hvmm_status_t guest_save(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t guest_restore(struct guest_struct *guest,
+static hvmm_status_t guest_restore(struct guest_struct *guest,
                 struct arch_regs *regs_current)
 {
     struct arch_context *context = &guest->context;
@@ -256,7 +256,7 @@ hvmm_status_t guest_restore(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t guest_init(struct guest_struct *guest,
+static hvmm_status_t guest_init(struct guest_struct *guest,
                 struct arch_regs *regs)
 {
     struct arch_context *context = &guest->context;
@@ -273,7 +273,7 @@ hvmm_status_t guest_init(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t guest_dump(uint8_t verbose, struct arch_regs *regs)
+static hvmm_status_t guest_dump(uint8_t verbose, struct arch_regs *regs)
 {
     if (verbose & GUEST_VERBOSE_LEVEL_0) {
         uart_print("cpsr: ");
