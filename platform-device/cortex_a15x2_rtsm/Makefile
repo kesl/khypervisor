@@ -28,25 +28,24 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
 	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
-	$(HYPERVISOR_SOURCE_DIR)/virq.o					\
 	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
 	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
-	$(HYPERVISOR_HW_DIR)/guest_hw.o				\
-	$(HYPERVISOR_HW_DIR)/timer_hw.o				\
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_cp.o			\
+	$(HYPERVISOR_HW_DIR)/guest_hw.o					\
+	$(HYPERVISOR_HW_DIR)/timer_hw.o					\
+	$(HYPERVISOR_HW_DIR)/interrupt_hw.o				\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_cp.o				\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_gicd.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ping.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_stay.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
-	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o			\
+	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
-	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o				\
-	$(HYPERVISOR_HW_HWLIB_DIR)/slotpirq.o
+	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o
 
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
@@ -151,4 +150,3 @@ force: ;
 Makefile: ;
 
 .PHONY: all semi clean distclean config.mk config-default.mk
-

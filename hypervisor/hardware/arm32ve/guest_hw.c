@@ -7,7 +7,6 @@
 #include <mm.h>
 #include <interrupt.h>
 #include <vdev.h>
-#include <virq.h>
 #include <guest.h>
 #include <guest_hw.h>
 #include <vmm.h>
@@ -224,11 +223,15 @@ static char *_modename(uint8_t mode)
 }
 #endif
 
-static hvmm_status_t guest_save(struct guest_struct *guest,
+static hvmm_status_t guest_hw_save(struct guest_struct *guest,
                 struct arch_regs *regs_current)
 {
     struct arch_regs *regs = &guest->regs;
     struct arch_context *context = &guest->context;
+
+    vmm_lock();
+    if (!regs)
+        return HVMM_STATUS_SUCCESS;
 
     context_copy_regs(regs, regs_current);
     context_save_cops(&context->regs_cop);
@@ -243,11 +246,23 @@ static hvmm_status_t guest_save(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_restore(struct guest_struct *guest,
+static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
                 struct arch_regs *regs_current)
 {
     struct arch_context *context = &guest->context;
 
+    vmm_unlock(guest);
+    if (!regs_current) {
+        /* init -> hyp mode -> guest */
+        /*
+         * The actual context switching (Hyp to Normal mode)
+         * handled in the asm code
+         */
+        __mon_switch_to_guest_context(&guest->regs);
+        return HVMM_STATUS_SUCCESS;
+    }
+
+    /* guest -> hyp -> guest */
     vgic_restore_status(&context->vgic_status, guest->vmid);
     context_copy_regs(regs_current, &guest->regs);
     context_restore_cops(&context->regs_cop);
@@ -256,7 +271,7 @@ static hvmm_status_t guest_restore(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_init(struct guest_struct *guest,
+static hvmm_status_t guest_hw_init(struct guest_struct *guest,
                 struct arch_regs *regs)
 {
     struct arch_context *context = &guest->context;
@@ -273,7 +288,7 @@ static hvmm_status_t guest_init(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_dump(uint8_t verbose, struct arch_regs *regs)
+static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
 {
     if (verbose & GUEST_VERBOSE_LEVEL_0) {
         uart_print("cpsr: ");
@@ -319,10 +334,10 @@ static hvmm_status_t guest_dump(uint8_t verbose, struct arch_regs *regs)
 }
 
 struct guest_ops _guest_ops = {
-    .init = guest_init,
-    .save = guest_save,
-    .restore = guest_restore,
-    .dump = guest_dump,
+    .init = guest_hw_init,
+    .save = guest_hw_save,
+    .restore = guest_hw_restore,
+    .dump = guest_hw_dump,
 };
 
 struct guest_module _guest_module = {

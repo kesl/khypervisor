@@ -5,10 +5,9 @@
 #define DEBUG
 #include <log/print.h>
 #include <asm-arm_inline.h>
-#include <virq.h>
 #include <trap.h>
 #include <timer.h>
-#include <virq.h>
+#include <interrupt.h>
 
 #define VTIMER_BASE_ADDR 0x3FFFE000
 #define VTIMER_IRQ 30
@@ -104,7 +103,7 @@ void callback_timer(void *pdata)
     vmid_t vmid = guest_current_vmid();
 
     if (_timer_status[vmid] == 0)
-        virq_inject(vmid, VTIMER_IRQ, 0, 0);
+        interrupt_guest_inject(vmid, VTIMER_IRQ, 0);
 }
 
 static hvmm_status_t vdev_vtimer_reset(void)

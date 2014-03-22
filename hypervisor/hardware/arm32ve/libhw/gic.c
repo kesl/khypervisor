@@ -5,7 +5,6 @@
 #include <guest.h>
 #include "hvmm_trace.h"
 #include <gic_regs.h>
-#include "virq.h"
 #include "hvmm_types.h"
 
 #include <log/print.h>
@@ -38,7 +37,6 @@ struct gic {
     volatile uint32_t *ba_gicvi;/**< Virtual CPU interface */
     uint32_t lines;             /**< The Maximum number of interrupts */
     uint32_t cpus;              /**< The number of implemented CPU interfaces */
-    gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS]; /**< IRQ handler */
     uint32_t initialized;       /**< Check whether initializing GIC. */
 };
 
@@ -263,20 +261,16 @@ hvmm_status_t gic_disable_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
+hvmm_status_t gic_completion_irq(uint32_t irq)
+{
+    _gic.ba_gicc[GICC_EOIR] = irq;
+    return HVMM_STATUS_SUCCESS;
+}
+
 hvmm_status_t gic_deactivate_irq(uint32_t irq)
 {
     _gic.ba_gicc[GICC_DIR] = irq;
     return HVMM_STATUS_SUCCESS;
-}
-
-hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler)
-{
-    hvmm_status_t result = HVMM_STATUS_BUSY;
-    if (irq < GIC_NUM_MAX_IRQS) {
-        _gic.handlers[irq] = handler;
-        result = HVMM_STATUS_SUCCESS;
-    }
-    return result;
 }
 
 volatile uint32_t *gic_vgic_baseaddr(void)
@@ -292,10 +286,7 @@ volatile uint32_t *gic_vgic_baseaddr(void)
 hvmm_status_t gic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-    int i;
     HVMM_TRACE_ENTER();
-    for (i = 0; i < GIC_NUM_MAX_IRQS; i++)
-        _gic.handlers[i] = 0;
     /*
      * Determining VA of GIC base adddress has not been defined yet.
      * Let is use the PA for the time being
@@ -358,7 +349,8 @@ hvmm_status_t gic_configure_irq(uint32_t irq,
     return result;
 }
 
-void gic_interrupt(int fiq, void *pregs)
+
+uint32_t gic_get_irq_number(void)
 {
     /*
      * 1. ACK - CPU Interface - GICC_IAR read
@@ -367,28 +359,10 @@ void gic_interrupt(int fiq, void *pregs)
      */
     uint32_t iar;
     uint32_t irq;
-    struct arch_regs *regs = pregs;
-    const struct virqmap_entry *virq_entry;
     /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
-    if (irq < _gic.lines) {
-        virq_entry = virqmap_for_pirq(irq);
-        /* ISR */
-        printh("ISR(irq):%x\n", irq);
-        /* IRQ INJECTION */
-        if (virq_entry != VIRQMAP_ENTRY_NOTFOUND) {
-            /* priority drop only for hanlding irq in guest */
-            _gic.ba_gicc[GICC_EOIR] = irq;
-            virq_inject(virq_entry->vmid, virq_entry->virq, irq, 1);
-        } else {
-            if (_gic.handlers[irq])
-                _gic.handlers[irq](irq, regs, 0);
-            /* Completion & Deactivation */
-            _gic.ba_gicc[GICC_EOIR] = irq;
-            _gic.ba_gicc[GICC_DIR] = irq;
-        }
-    } else {
-        printh("gic:no pending irq:%x\n", irq);
-    }
+
+    return irq;
 }
+

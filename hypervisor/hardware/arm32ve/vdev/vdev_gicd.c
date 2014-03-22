@@ -2,10 +2,10 @@
 #include <gic.h>
 #include <gic_regs.h>
 #include <vdev.h>
+#include <asm-arm_inline.h>
+
 #define DEBUG
 #include <log/print.h>
-#include <asm-arm_inline.h>
-#include <virq.h>
 
 #define VGICD_ITLINESNUM    128
 /* Lines:128, CPU:0, Security Extenstin:No */
@@ -169,8 +169,8 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
     return result;
 }
 
-void vgicd_changed_istatus(vmid_t vmid,
-        uint32_t istatus, uint8_t word_offset)
+static void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus,
+                uint8_t word_offset)
 {
     uint32_t cstatus;   /* changed bits only */
     uint32_t minirq;
@@ -190,12 +190,11 @@ void vgicd_changed_istatus(vmid_t vmid,
             if (istatus & (1 << bit)) {
                 printh("[%s : %d] enabled irq num is %d\n",
                         __func__, __LINE__, bit + minirq);
-                gic_configure_irq(pirq, GIC_INT_POLARITY_LEVEL,
-                        gic_cpumask_current(), GIC_INT_PRIORITY_DEFAULT);
+                interrupt_host_configure(pirq);
             } else {
                 printh("[%s : %d] disabled irq num is %d\n",
                         __func__, __LINE__, bit + minirq);
-                gic_disable_irq(pirq);
+                interrupt_host_disable(pirq);
             }
         } else {
             printh("WARNING: Ignoring virq %d for guest %d has "
@@ -504,6 +503,8 @@ static hvmm_status_t vdev_gicd_reset_values(void)
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;
 
+    printh("vdev init:'%s'\n", __func__);
+
     for (i = 0; i < NUM_GUESTS_STATIC; i++) {
         /*
          * ITARGETS[0~ 7], CPU Targets are set to 0,
@@ -536,7 +537,7 @@ hvmm_status_t vdev_gicd_init()
 
     result = vdev_register(VDEV_LEVEL_LOW, &_vdev_gicd_module);
     if (result == HVMM_STATUS_SUCCESS)
-        printh("vdev registered:'%s'\n", _vdev_gicd_module.name);
+        printH("vdev registered:'%s'\n", _vdev_gicd_module.name);
     else {
         printh("%s: Unable to register vdev:'%s' code=%x\n",
                 __func__, _vdev_gicd_module.name, result);

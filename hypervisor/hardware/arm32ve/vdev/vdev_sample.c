@@ -5,7 +5,6 @@
 #define DEBUG
 #include <log/print.h>
 #include <asm-arm_inline.h>
-#include <virq.h>
 
 #define SAMPLE_BASE_ADDR 0x3FFFF000
 

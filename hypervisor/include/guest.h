@@ -5,8 +5,8 @@
 #include "timer.h"
 #include <log/uart_print.h>
 #include <hvmm_types.h>
-#include <guest_hw.h>
 #include <vgic.h>
+#include <guest_hw.h>
 
 enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
@@ -101,6 +101,6 @@ vmid_t guest_current_vmid(void);
 vmid_t guest_waiting_vmid(void);
 hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
-void start_guest(void);
+hvmm_status_t guest_init();
 
 #endif
