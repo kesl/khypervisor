@@ -5,8 +5,11 @@
 #include <trap.h>
 #include <guest.h>
 #include <vdev.h>
+
 #define DEBUG
 #include <log/print.h>
+
+#include <traps.h>
 
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
@@ -70,6 +73,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     int32_t vdev_num = -1;
     uint32_t hsr = read_hsr();
     uint32_t ec = (hsr & HSR_EC_BIT) >> EXTRACT_EC;
+    uint32_t il = (hsr & HSR_IL_BIT) >> EXTRACT_IL;
     uint32_t iss = hsr & HSR_ISS_BIT;
     uint32_t far = read_hdfar();
     uint32_t fipa;
@@ -90,50 +94,115 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 
     switch (ec) {
     case TRAP_EC_ZERO_UNKNOWN:
+        printH("Unknown reason: %x\n", hsr);
+        break;
     case TRAP_EC_ZERO_WFI_WFE:
+        printH("Trapped WFI or WFE instruction: %x\n", hsr);
+        emulate_wfi_wfe(iss, il);
+		regs->pc += 4;
+        break;
     case TRAP_EC_ZERO_MCR_MRC_CP15:
+        printH("Trapped MCR or MRC access to CP15: %x\n", hsr);
+        emulate_access_to_cp15(iss, il);
+		regs->pc += 4;
+        break;
     case TRAP_EC_ZERO_MCRR_MRRC_CP15:
+        printH("Trapped MCRR or MRRC access to CP15: %x\n", hsr);
+        break;
     case TRAP_EC_ZERO_MCR_MRC_CP14:
+        printH("Trapped MCR or MRC access to CP14: %x\n", hsr);
+        emulate_access_to_cp14(iss, il);
+		regs->pc += 4;
+        break;
     case TRAP_EC_ZERO_LDC_STC_CP14:
+        printH("Trapped LDC or STC access to CP14: %x\n", hsr);
+        break;
     case TRAP_EC_ZERO_HCRTR_CP0_CP13:
+        printH("HCPTR-trapped access to CP0-CP13: %x\n", hsr);
+        break;
     case TRAP_EC_ZERO_MRC_VMRS_CP10:
+        printH("Trapped MRC or VMRS access to CP10, for ID group traps: %x\n", 
+                hsr);
+        emulate_access_to_cp10(iss, il);
+		regs->pc += 4;
+        break;
     case TRAP_EC_ZERO_BXJ:
+        printH("Trapped BXJ instruction: %x\n", hsr);
+        break;
     case TRAP_EC_ZERO_MRRC_CP14:
+        printH("Trapped MRRC access to CP14: %x\n", hsr);
+        break;
     case TRAP_EC_NON_ZERO_SVC:
+        printH("Supervisor Call exception routed to Hyp mode: %x\n", hsr);
+        break;
     case TRAP_EC_NON_ZERO_SMC:
+        printH("Trapped SMC instruction: %x\n", hsr);
+		regs->pc += 4;
+        break;
     case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_OTHER_MODE:
+        printH("Prefetch Abort routed to Hyp mode: %x\n", hsr);
+        break;
     case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_HYP_MODE:
-    case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_HYP_MODE:
-        level = VDEV_LEVEL_HIGH;
+        printH("Prefetch Abort taken from Hyp mode: %x\n", hsr);
         break;
-    case TRAP_EC_NON_ZERO_HVC:
-        level = VDEV_LEVEL_MIDDLE;
-        break;
-    case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE:
-        level = VDEV_LEVEL_LOW;
-        break;
-    default:
-        printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
+	case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_HYP_MODE:
+		level = VDEV_LEVEL_HIGH;
+		vdev_num = vdev_find(level, &info, regs);
+		if (vdev_num < 0) {
+				printh("[hvc] cann't search vdev number\n\r");
+				goto trap_error;
+		}
+
+		if (iss & ISS_WNR) {
+				if (vdev_write(level, vdev_num, &info, regs) < 0)
+						goto trap_error;
+		} else {
+				if (vdev_read(level, vdev_num, &info, regs) < 0)
+						goto trap_error;
+		}
+		vdev_post(level, vdev_num, &info, regs);
+		break;
+	case TRAP_EC_NON_ZERO_HVC:
+		level = VDEV_LEVEL_MIDDLE;
+		vdev_num = vdev_find(level, &info, regs);
+		if (vdev_num < 0) {
+				printh("[hvc] cann't search vdev number\n\r");
+				goto trap_error;
+		}
+
+		if (iss & ISS_WNR) {
+				if (vdev_write(level, vdev_num, &info, regs) < 0)
+						goto trap_error;
+		} else {
+				if (vdev_read(level, vdev_num, &info, regs) < 0)
+						goto trap_error;
+		}
+		vdev_post(level, vdev_num, &info, regs);
+		break;
+	case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE:
+		level = VDEV_LEVEL_LOW;
+		vdev_num = vdev_find(level, &info, regs);
+		if (vdev_num < 0) {
+				printh("[hvc] cann't search vdev number\n\r");
+				goto trap_error;
+		}
+
+		if (iss & ISS_WNR) {
+				if (vdev_write(level, vdev_num, &info, regs) < 0)
+						goto trap_error;
+		} else {
+				if (vdev_read(level, vdev_num, &info, regs) < 0)
+						goto trap_error;
+		}
+		vdev_post(level, vdev_num, &info, regs);
+		break;
+	default:
+		printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
         printh("[hyp] hsr.ec= %x\n", ec);
         printh("[hyp] hsr= %x\n", hsr);
         guest_dump_regs(regs);
         goto trap_error;
     }
-
-    vdev_num = vdev_find(level, &info, regs);
-    if (vdev_num < 0) {
-        printh("[hvc] cann't search vdev number\n\r");
-        goto trap_error;
-    }
-
-    if (iss & ISS_WNR) {
-        if (vdev_write(level, vdev_num, &info, regs) < 0)
-            goto trap_error;
-    } else {
-        if (vdev_read(level, vdev_num, &info, regs) < 0)
-            goto trap_error;
-    }
-    vdev_post(level, vdev_num, &info, regs);
 
     printh("[hyp] _hyp_hvc_service: done\n\r");
     guest_perform_switch(regs);
