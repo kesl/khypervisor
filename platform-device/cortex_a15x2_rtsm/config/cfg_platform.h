@@ -83,42 +83,4 @@
    CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, LPAED_STAGE2_MEMATTR_DM },\
 {0, 0, 0, 0, 0} \
 }
-#define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
-    do {                                \
-        name[_pirq].virq = _virq;       \
-        name[_pirq].vmid = id;          \
-    } while (0)
 
-/*
- *  vimm-0, pirq-69, virq-69 = pwm timer driver
- *  vimm-0, pirq-32, virq-32 = WDT: shared driver
- *  vimm-0, pirq-34, virq-34 = SP804: shared driver
- *  vimm-0, pirq-35, virq-35 = SP804: shared driver
- *  vimm-0, pirq-36, virq-36 = RTC: shared driver
- *  vimm-0, pirq-38, virq-37 = UART: dedicated driver IRQ 37 for guest 0
- *  vimm-1, pirq-39, virq-37 = UART: dedicated driver IRQ 37 for guest 1
- *  vimm-0, pirq-43, virq-43 = ACCI: shared driver
- *  vimm-0, pirq-44, virq-44 = KMI: shared driver
- *  vimm-0, pirq-45, virq-45 = KMI: shared driver
- */
-
-#define CFG_GUEST_VIRQMAP(name) \
-do { \
-    DECLARE_VIRQMAP(name, 0, 1, 1);     \
-    DECLARE_VIRQMAP(name, 0, 31, 31);   \
-    DECLARE_VIRQMAP(name, 0, 33, 33);   \
-    DECLARE_VIRQMAP(name, 0, 16, 16);   \
-    DECLARE_VIRQMAP(name, 0, 17, 17);   \
-    DECLARE_VIRQMAP(name, 0, 18, 18);   \
-    DECLARE_VIRQMAP(name, 0, 19, 19);   \
-    DECLARE_VIRQMAP(name, 0, 69, 69);   \
-    DECLARE_VIRQMAP(name, 0, 32, 32);   \
-    DECLARE_VIRQMAP(name, 0, 34, 34);   \
-    DECLARE_VIRQMAP(name, 0, 35, 35);   \
-    DECLARE_VIRQMAP(name, 0, 36, 36);   \
-    DECLARE_VIRQMAP(name, 0, 38, 37);   \
-    DECLARE_VIRQMAP(name, 1, 39, 37);   \
-    DECLARE_VIRQMAP(name, 0, 43, 43);   \
-    DECLARE_VIRQMAP(name, 0, 44, 44);   \
-    DECLARE_VIRQMAP(name, 0, 45, 45);   \
-    } while (0)

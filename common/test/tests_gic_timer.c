@@ -8,10 +8,9 @@
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
-#include "virq.h"
-
 #include <config/cfg_platform.h>
 #include <log/print.h>
+#include <interrupt.h>
 
 static void test_start_timer(void)
 {
@@ -93,12 +92,9 @@ hvmm_status_t hvmm_tests_gic_timer(void)
      */
     HVMM_TRACE_ENTER();
     /* handler */
-    gic_set_irq_handler(30, &interrupt_nsptimer);
+    interrupt_request(30, &interrupt_nsptimer);
     /* configure and enable interrupt */
-    gic_configure_irq(30,
-                      GIC_INT_POLARITY_LEVEL,
-                      gic_cpumask_current(),
-                      GIC_INT_PRIORITY_DEFAULT);
+    interrupt_host_configure(30);
     /* start timer */
     test_start_timer();
     HVMM_TRACE_EXIT();
@@ -113,7 +109,7 @@ void callback_test_timer(void *pdata)
     printh("Injecting IRQ 30 to Guest:%d\n", vmid);
 
     /* SW VIRQ, No PIRQ */
-    virq_inject(vmid, 30, 0, 0);
+    interrupt_guest_inject(vmid, 30, 0);
     HVMM_TRACE_EXIT();
 }
 

@@ -1,9 +1,12 @@
-#include <hvmm_trace.h>
 #include "armv7_p15.h"
 #include "gic.h"
 #include <timer.h>
 #include <log/uart_print.h>
 #include <asm-arm_inline.h>
+#include <hvmm_trace.h>
+#include <interrupt.h>
+
+#include <config/cfg_platform.h>
 
 enum generic_timer_type {
     GENERIC_TIMER_HYP,      /* IRQ 26 */
@@ -224,12 +227,10 @@ static hvmm_status_t generic_timer_enable_irq(void)
 
     if (_timer_type == GENERIC_TIMER_HYP) {
         uint32_t irq = _timer_irqs[_timer_type];
-        gic_set_irq_handler(irq, &_generic_timer_hyp_irq_handler);
-        gic_configure_irq(irq,
-                               GIC_INT_POLARITY_LEVEL,
-                               gic_cpumask_current(),
-                               GIC_INT_PRIORITY_DEFAULT);
-        result = HVMM_STATUS_SUCCESS;
+        if (interrupt_request(irq, &_generic_timer_hyp_irq_handler))
+            return HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+        result = interrupt_host_configure(irq);
     }
 
     return result;

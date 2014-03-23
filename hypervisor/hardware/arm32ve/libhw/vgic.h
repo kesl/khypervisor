@@ -61,5 +61,15 @@ uint32_t vgic_inject_virq(uint32_t virq, uint32_t slot, enum virq_state state,
             uint8_t maintenance);
 hvmm_status_t vgic_setcallback_virq_flush(void (*callback)(vmid_t vmid));
 hvmm_status_t vgic_injection_enable(uint8_t enable);
+/**
+ * @brief   Initializes all physical irq slot and virtual irq slot.
+ */
+void vgic_slotpirq_init(void);
+void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq);
+uint32_t vgic_slotpirq_get(vmid_t vmid, uint32_t slot);
+void vgic_slotpirq_clear(vmid_t vmid, uint32_t slot);
+void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq);
+uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq);
+void vgic_slotvirq_clear(vmid_t vmid, uint32_t slot);
 
 #endif

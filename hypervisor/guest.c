@@ -1,14 +1,11 @@
 #include <k-hypervisor-config.h>
-#include <test/tests.h>
-#include <version.h>
-#include <log/print.h>
-#include <hvmm_trace.h>
 #include <guest.h>
 #include <timer.h>
-#include <mm.h>
 #include <interrupt.h>
+#include <mm.h>
 #include <vdev.h>
-#include <virq.h>
+#include <log/print.h>
+#include <hvmm_trace.h>
 #include <vmm.h>
 
 #define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC
@@ -33,33 +30,26 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_current_guest_vmid == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
-    vmm_lock();
-    if (regs != 0) {
-        /* save the current guest's context */
-        guest = &guests[_current_guest_vmid];
-        _guest_module.ops->save(guest, regs);
+    /* save the current guest's context */
+    if (_guest_module.ops->save) {
+        result = _guest_module.ops->save(&guests[_current_guest_vmid], regs);
+        if (result)
+            return result;
     }
+
     /* The context of the next guest */
     guest = &guests[next_vmid];
     _current_guest = guest;
     _current_guest_vmid = next_vmid;
-    vmm_unlock(guest);
 
-    _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
+    if (_guest_module.ops->dump)
+        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
     /* The next becomes the current */
-    if (regs == 0) {
-        /* init -> hyp mode -> guest */
-        /*
-         * The actual context switching (Hyp to Normal mode)
-         * handled in the asm code
-         */
-        __mon_switch_to_guest_context(&guest->regs);
-    } else {
-        /* guest -> hyp -> guest */
-        _guest_module.ops->restore(guest, regs);
-    }
-    result = HVMM_STATUS_SUCCESS;
+    if (_guest_module.ops->restore)
+        result = _guest_module.ops->restore(guest, regs);
+        if (result)
+            return result;
 
     return result;
 }
@@ -105,7 +95,8 @@ void guest_sched_start(void)
     /* Select the first guest context to switch to. */
     _current_guest_vmid = VMID_INVALID;
     guest = &guests[0];
-    _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
+    if (_guest_module.ops->dump)
+        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
     /* Context Switch with current context == none */
     guest_switchto(0, 0);
     guest_perform_switch(&guest->regs);
@@ -186,7 +177,8 @@ void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
 
-    _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
+    if (_guest_module.ops->dump)
+        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
     /*
      * Note: As of guest_switchto() and guest_perform_switch()
      * are available, no need to test if trapped from Hyp mode.
@@ -197,8 +189,9 @@ void guest_schedule(void *pdata)
     guest_switchto(sched_policy_determ_next(), 0);
 }
 
-static void guest_init()
+hvmm_status_t guest_init()
 {
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
     struct guest_struct *guest;
     struct arch_regs *regs = 0;
     int i;
@@ -210,54 +203,23 @@ static void guest_init()
         guest = &guests[i];
         regs = &guest->regs;
         guest->vmid = i;
-        _guest_module.ops->init(guest, regs);
+        if (_guest_module.ops->init)
+            _guest_module.ops->init(guest, regs);
     }
     printh("[hyp] init_guests: return\n");
 
-    timer_add_callback(TIMER_SCHED, &guest_schedule);
-    timer_start(TIMER_SCHED);
-}
-
-void start_guest(void)
-{
-    hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
-
-    init_print();
-    printh("[%s : %d] Starting...\n", __func__, __LINE__);
-
-    /* Initialize Memory Management */
-    ret = hvmm_mm_init();
-    if (ret != HVMM_STATUS_SUCCESS)
-        printh("[start_guest] virtual memory initialization failed...\n");
-
-    /* Initialize Interrupt Management */
-    ret = hvmm_interrupt_init();
-    if (ret != HVMM_STATUS_SUCCESS)
-        printh("[start_guest] interrupt initialization failed...\n");
-
-    /* Initialize Timer */
-    timer_init(TIMER_SCHED);
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
-    timer_set_interval(TIMER_SCHED, GUEST_SCHED_TICK);
+    result = timer_set_interval(TIMER_SCHED, GUEST_SCHED_TICK);
+    if (result != HVMM_STATUS_SUCCESS)
+        printh("[%s] settup the timer interval failed...\n", __func__);
 
-    /* Initialize Guests */
-    guest_init();
+    result = timer_add_callback(TIMER_SCHED, &guest_schedule);
+    if (result != HVMM_STATUS_SUCCESS)
+        printh("[%s] settup the timer callback failed...\n", __func__);
 
-    /* Initialize Virtual Devices */
-    ret = vdev_init();
-    if (ret != HVMM_STATUS_SUCCESS)
-        printh("[start_guest] virtual device initialization failed...\n");
+    result = timer_start(TIMER_SCHED);
+    if (result != HVMM_STATUS_SUCCESS)
+        printh("[%s] timer startup failed...\n", __func__);
 
-    /* Begin running test code for newly implemented features */
-    hvmm_tests_main();
-
-    /* Print Banner */
-    printH("%s", BANNER_STRING);
-
-    /* Switch to the first guest */
-    guest_sched_start();
-
-    /* The code flow must not reach here */
-    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
-    hyp_abort_infinite();
+    return result;
 }

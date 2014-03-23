@@ -7,6 +7,7 @@
 #include <vdev.h>
 #define DEBUG
 #include <log/print.h>
+#include <interrupt.h>
 
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
@@ -17,7 +18,10 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
-    gic_interrupt(0, regs);
+    uint32_t irq;
+
+    irq = gic_get_irq_number();
+    interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;
 }

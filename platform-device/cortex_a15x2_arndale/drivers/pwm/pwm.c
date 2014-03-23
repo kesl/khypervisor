@@ -3,6 +3,7 @@
 #include "gic.h"
 #include "hvmm_trace.h"
 #include <io-exynos.h>
+#include <interrupt.h>
 uint32_t tcntb1;
 static pwm_timer_callback_t _callback;
 
@@ -51,12 +52,9 @@ hvmm_status_t pwm_timer_enable_irq()
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     /* handler */
-    gic_set_irq_handler(69, &_pwm_timer_irq_handler);
+    interrupt_request(69, &_pwm_timer_irq_handler);
     /* configure and enable interrupt */
-    gic_configure_irq(69,
-                           GIC_INT_POLARITY_LEVEL,
-                           gic_cpumask_current(),
-                           GIC_INT_PRIORITY_DEFAULT);
+    interrupt_host_configure(69);
     result = HVMM_STATUS_SUCCESS;
     return result;
 }
