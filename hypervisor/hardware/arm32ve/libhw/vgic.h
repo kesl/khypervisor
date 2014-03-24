@@ -71,5 +71,19 @@ void vgic_slotpirq_clear(vmid_t vmid, uint32_t slot);
 void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq);
 uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq);
 void vgic_slotvirq_clear(vmid_t vmid, uint32_t slot);
+/**
+ * @breif       Returns pirq mapped to virq for vm.
+ * @param vmid  Guest vm id
+ * @param virq  Virtual interrupt number.
+ * @return      physical interrupt number.
+ */
 
+hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
+        uint32_t pirq, uint8_t hw);
+/**
+ * @brief   Initializes virq_entry structure and
+            Sets callback function about injection of queued VIRQs.
+ * @return  Always returns "success".
+ */
+hvmm_status_t virq_init(void);
 #endif
