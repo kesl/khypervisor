@@ -86,18 +86,6 @@ static hvmm_status_t guest_interrupt_init(void)
     return result;
 }
 
-static hvmm_status_t guest_interrupt_enable(uint32_t irq)
-{
-    /* TODO : enable injection */
-    return HVMM_STATUS_SUCCESS;
-}
-
-static hvmm_status_t guest_interrupt_disable(uint32_t irq)
-{
-    /* TODO : disable injection */
-    return HVMM_STATUS_SUCCESS;
-}
-
 static hvmm_status_t guest_interrupt_end(uint32_t irq)
 {
     return gic_completion_irq(irq);
@@ -141,8 +129,6 @@ struct interrupt_ops _host_interrupt_ops = {
 
 struct interrupt_ops _guest_interrupt_ops = {
     .init = guest_interrupt_init,
-    .enable = guest_interrupt_enable,
-    .disable = guest_interrupt_disable,
     .end = guest_interrupt_end,
     .inject = guest_interrupt_inject,
     .save = guest_interrupt_save,

@@ -9,12 +9,13 @@
 #define PLATFORM_BASIC_TESTS 0
 
 #define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
-    do {                                \
-        name[_pirq].virq = _virq;       \
-        name[_pirq].vmid = id;          \
+    do {                                        \
+        name[id].map[_pirq].virq = _virq;       \
+        name[id].map[_virq].pirq = _pirq;       \
     } while (0)
 
-static struct virqmap_entry _virqmap[MAX_IRQS];
+
+static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
 
 /*
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
@@ -22,12 +23,16 @@ static struct virqmap_entry _virqmap[MAX_IRQS];
  */
 void setup_interrupt()
 {
-    int i;
+    int i, j;
+    struct virqmap_entry *map;
 
-    for (i = 0; i < MAX_IRQS; i++) {
-        _virqmap[i].vmid = VMID_INVALID;
-        _virqmap[i].virq = 0;
-        _virqmap[i].pirq = 0;
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+        map = _guest_virqmap[i].map;
+        for (j = 0; j < MAX_IRQS; j++) {
+            map[j].enabled = GUEST_IRQ_DISABLE;
+            map[j].virq = VIRQ_INVALID;
+            map[j].pirq = PIRQ_INVALID;
+        }
     }
 
     /*
@@ -48,23 +53,23 @@ void setup_interrupt()
      *  vimm-0, pirq-44, virq-44 = KMI: shared driver
      *  vimm-0, pirq-45, virq-45 = KMI: shared driver
      */
-    DECLARE_VIRQMAP(_virqmap, 0, 1, 1);
-    DECLARE_VIRQMAP(_virqmap, 0, 31, 31);
-    DECLARE_VIRQMAP(_virqmap, 0, 33, 33);
-    DECLARE_VIRQMAP(_virqmap, 0, 16, 16);
-    DECLARE_VIRQMAP(_virqmap, 0, 17, 17);
-    DECLARE_VIRQMAP(_virqmap, 0, 18, 18);
-    DECLARE_VIRQMAP(_virqmap, 0, 19, 19);
-    DECLARE_VIRQMAP(_virqmap, 0, 69, 69);
-    DECLARE_VIRQMAP(_virqmap, 0, 32, 32);
-    DECLARE_VIRQMAP(_virqmap, 0, 34, 34);
-    DECLARE_VIRQMAP(_virqmap, 0, 35, 35);
-    DECLARE_VIRQMAP(_virqmap, 0, 36, 36);
-    DECLARE_VIRQMAP(_virqmap, 0, 38, 37);
-    DECLARE_VIRQMAP(_virqmap, 1, 39, 37);
-    DECLARE_VIRQMAP(_virqmap, 0, 43, 43);
-    DECLARE_VIRQMAP(_virqmap, 0, 44, 44);
-    DECLARE_VIRQMAP(_virqmap, 0, 45, 45);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 31, 31);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 33, 33);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 17, 17);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 18, 18);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 19, 19);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 32, 32);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 34, 34);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 35, 35);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 36, 36);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 38, 37);
+    DECLARE_VIRQMAP(_guest_virqmap, 1, 39, 37);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 43, 43);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 44, 44);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 45, 45);
 }
 
 void setup_memory()
@@ -82,7 +87,7 @@ int main_cpu_init()
     /* Initialize PIRQ to VIRQ mapping */
     setup_interrupt();
     /* Initialize Interrupt Management */
-    if (interrupt_init(_virqmap))
+    if (interrupt_init(_guest_virqmap))
         printh("[start_guest] interrupt initialization failed...\n");
 
     /* Initialize Timer */
