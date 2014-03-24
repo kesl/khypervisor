@@ -17,19 +17,75 @@
 /* Stage 2 Level 2 */
 #define VMM_L2_PTE_NUM          512
 #define VMM_L3_PTE_NUM          512
+/**
+ * @brief Gets total number of level 2 and level 3 page table entry.
+ *
+ * <pre>
+ * VMM_L2_PTE_NUM * VMM_L3_PTE_NUM = /
+ * Total Number Of Level 3 Page Table Entry
+ * + VMM_L2_PTE_NUM = Total Number Of Level 2 Page Table Entry
+ * </pre>
+ *
+ * @return Total number of l2, l3 table entry.
+ */
 #define VMM_L2L3_PTE_NUM_TOTAL  (VMM_L2_PTE_NUM \
         * VMM_L3_PTE_NUM + VMM_L2_PTE_NUM)
+/**
+ * @brief Gets total number of all page table entries.
+ */
 #define VMM_PTE_NUM_TOTAL  (VMM_L1_PTE_NUM                  \
         + VMM_L1_PADDING_PTE_NUM + VMM_L2L3_PTE_NUM_TOTAL   \
         * VMM_L1_PTE_NUM)
-/* VTTBR */
+/**
+ * \defgroup VTTBR
+ *
+ * Virtualization Translation Table Base Register(VTTBR) is almost the same as
+ * \ref TTBRx "64bit TTBRx". It is just different from ASID to VMID.
+ *
+ * - VMID[55:48]
+ *   - The VMID for the translation table.
+ * @{
+ */
 #define VTTBR_INITVAL                                   0x0000000000000000ULL
 #define VTTBR_VMID_MASK                                 0x00FF000000000000ULL
 #define VTTBR_VMID_SHIFT                                48
 #define VTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
 #define VTTBR_BADDR_SHIFT                               12
+/** @} */
 
-/* VTCR */
+/**
+ * \defgroup VTCR
+ *
+ * Virtualization Translation Control Register(VTCR) controls the translation
+ * table walks required for stage-2 translation of memory accesses from
+ * non-secure modes other than hyp mode, and holds cacheability and
+ * shareability information for the acceeses.
+ *
+ * - bit[31]
+ *   - UNK/SBOP.
+ * - SH0[13:12]
+ *   - Shareability attribute.
+ *   - \ref Shareability
+ * - ORGN0[11:10]
+ *   - Outer cacheability attribute for memory.
+ *   - \ref Outer_cacheability
+ * - IRGN0[9:8]
+ *   - Inner cacheability attribute for memory.
+ *   - \ref Inner_cacheability
+ * - SL0[7:6]
+ *   - Starting level for translation table walks using VTTBR.
+ * <pre>
+ * SL0 Meaning
+ * - 00 : Start at second level
+ * - 01 : Start at first level
+ * </pre>
+ * - S[4]
+ *   - Sign extension bit. this bit must be programmed to the value of the
+ *     T0SZ[3].
+ * - T0SZ[3:0]
+ *   - The size offset of the memory region addressed by VTTBR.
+ * @{
+ */
 #define VTCR_INITVAL                                    0x80000000
 #define VTCR_SH0_MASK                                   0x00003000
 #define VTCR_SH0_SHIFT                                  12
@@ -43,6 +99,7 @@
 #define VTCR_S_SHIFT                                    4
 #define VTCR_T0SZ_MASK                                  0x00000003
 #define VTCR_T0SZ_SHIFT                                 0
+/** @} */
 
 /*
  * Stage 2 Translation Table, look up begins at second level
@@ -58,6 +115,16 @@ _ttbl_guest0[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 static union lpaed
 _ttbl_guest1[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 
+/**
+ * @brief Memory map descriptor.
+ *
+ * Memory map information descriptor.
+ * - label Name of the descriptor.
+ * - va Intermediate physical address(IPA).
+ * - pa Physical address.
+ * - size Size of this memory area.
+ * - attr Memory attribute value.
+ */
 struct memmap_desc {
     char *label;
     uint64_t va;
@@ -66,27 +133,44 @@ struct memmap_desc {
     enum lpaed_stage2_memattr attr;
 };
 
+/**
+ * \defgroup Guest_memory_map_descriptor
+ *
+ * Descriptor setting order
+ * - label
+ * - Intermediate Physical Address (IPA)
+ * - Physical Address (PA)
+ * - Size of memory region
+ * - Memory Attribute
+ * @{
+ */
 static struct memmap_desc guest_md_empty[] = {
-    {       0, 0, 0, 0,  0},
+    {0, 0, 0, 0, 0},
 };
 /*  label, ipa, pa, size, attr */
 static struct memmap_desc guest_device_md0[] = CFG_GUEST0_DEVICE_MEMORY;
 static struct memmap_desc guest_device_md1[] = CFG_GUEST1_DEVICE_MEMORY;
 
+/**
+ * @brief Memory map for guest 0.
+ */
 static struct memmap_desc guest_memory_md0[] = {
     /* 756MB */
     {"start", 0x00000000, 0, 0x30000000,
      LPAED_STAGE2_MEMATTR_NORMAL_OWB | LPAED_STAGE2_MEMATTR_NORMAL_IWB
     },
-    {0, 0, 0, 0,  0},
+    {0, 0, 0, 0, 0},
 };
 
+/**
+ * @brief Memory map for guest 1.
+ */
 static struct memmap_desc guest_memory_md1[] = {
     /* 256MB */
     {"start", 0x00000000,          0, 0x10000000,
      LPAED_STAGE2_MEMATTR_NORMAL_OWB | LPAED_STAGE2_MEMATTR_NORMAL_IWB
     },
-    {0, 0, 0, 0,  0},
+    {0, 0, 0, 0, 0},
 };
 
 /* Memory Map for Guest 0 */
@@ -106,17 +190,47 @@ static struct memmap_desc *guest_mdlist1[] = {
     &guest_md_empty[0],
     0
 };
+/** @}*/
 
-/* Returns address of L3 TTBL at 'l2index' entry of L2
-    union lpaed *TTBL_L3(union lpaed *ttbl_l2, uint32_t index_l2);
+
+/**
+ * @brief Obtains TTBL_L3 entry.
+ * Returns the address of TTBL l3 at 'index_l2' entry of L2.
+ *
+ * - union lpaed *TTBL_L3(union lpaed *ttbl_l2, uint32_t index_l2);
+ *
  */
 #define TTBL_L3(ttbl_l2, index_l2) \
     (&ttbl_l2[VMM_L2_PTE_NUM + (VMM_L3_PTE_NUM * (index_l2))])
+/**
+ * @brief Obtains TTBL_L2 Entry.
+ * Returns the address of TTBL l2 at 'index_l1' entry of L1.
+ *
+ * - union lpaed *TTBL_L2(union lpaed *ttbl_l1, uint32_t index_l1);
+ *
+ */
 #define TTBL_L2(ttbl_l1, index_l1) \
     (&ttbl_l1[(VMM_L1_PTE_NUM + VMM_L1_PADDING_PTE_NUM) \
               + (VMM_L2L3_PTE_NUM_TOTAL * (index_l1))])
 
-
+/**
+ * @brief Maps physical address of the guest to level 3 descriptors.
+ *
+ * Maps physical address to the target level 3 translation table descriptor.
+ * Configure bits of the target descriptor whiche are initialized by initial
+ * function. (lpaed_stage2_map_page)
+ *
+ * @param *ttbl3 Level 3 translation table descriptor.
+ * @param offset Offset from the level 3 table descriptor.
+ *        - 0 ~ (2MB - pages * 4KB), start contiguous virtual address within
+ *          level 2 block (2MB).
+ *        - It is aligned L3 descriptor lock size(4KB).
+ * @param pages Number of pages.
+ *        - 0 ~ 512
+ * @param pa Physical address.
+ * @param mattr Memory Attribute.
+ * @return void
+ */
 static void vmm_ttbl3_map(union lpaed *ttbl3, uint64_t offset, uint32_t pages,
                 uint64_t pa, enum lpaed_stage2_memattr mattr)
 {
@@ -134,6 +248,21 @@ static void vmm_ttbl3_map(union lpaed *ttbl3, uint64_t offset, uint32_t pages,
     }
 }
 
+/**
+ * @brief Unmap level 3 descriptors.
+ *
+ * Unmap descriptors of ttbl3 which is in between offset and offset + pages and
+ * makes valid bit zero.
+ *
+ * @param *ttbl3 Level 3 translation table descriptor.
+ * @param offset Offset from the level 3 table descriptor.
+ *        - 0 ~ (2MB - pages * 4KB), start contiguous virtual address within
+ *          level 2 block (2MB).
+ *        - It is aligned L3 descriptor lock size(4KB).
+ * @param pages Number of pages.
+ *        - 0 ~ 512
+ * @return void
+ */
 static void vmm_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
                 uint32_t pages)
 {
@@ -146,12 +275,25 @@ static void vmm_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
         ttbl3[index_l3].pt.valid = 0;
 }
 
-/*
- * va_offset: 0 ~ (1GB - size), start contiguous
- * virtual address within level 1 block (1GB),
- *      L2 lock size(2MB) aligned
- * size: <= 1GB
- *      page size aligned
+/**
+ * @brief Unmap ttbl2 and ttbl3 descriptors which is in target virtual
+ *        address area.
+ *
+ * Unmap descriptors of ttbl2 and ttbl3 by making valid bit to zero.
+ *
+ * - First, make level 2 descriptors invalidate.
+ * - Second, if lefts space which can't be covered by level 2 descriptor
+ *   (to small), make level 3 descriptors invalidate.
+ *
+ * @param *ttbl2 Level 2 translation table descriptor.
+ * @param va_offset Offset of the virtual address.
+ *        - 0 ~ (1GB - size), start contiguous virtual address within level 1
+ *          block (1GB).
+ *        - It is aligned L2 descriptor lock size(2MB).
+ * @param size
+ *        - <= 1GB.
+ *        - It is aligned page size.
+ * @return void
  */
 static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
                 uint32_t size)
@@ -162,7 +304,7 @@ static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
     /* Initialize the address spaces with 'invalid' state */
     num_blocks = size >> LPAE_BLOCK_L2_SHIFT;
     index_l2 = va_offset >> LPAE_BLOCK_L2_SHIFT;
-    index_l2_last = num_blocks;
+    index_l2_last = index_l2 + num_blocks;
 
     for (; index_l2 < index_l2_last; index_l2++)
         ttbl2[index_l2].pt.valid = 0;
@@ -175,6 +317,30 @@ static void vmm_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
     }
 }
 
+/**
+ * @brief Map ttbl2 descriptors.
+ *
+ * Maps physical address to ttbl2 and ttbl3 descriptors and apply memory
+ * attributes.
+ *
+ * - First, compute index of the target ttbl2 descriptor and block offset.
+ * - Second, maps physical address to ttbl3 descriptors if head of block is
+ *   not fits size of the ttbl2 descriptor.
+ * - Third, maps left physical address to ttbl2 descriptors.
+ * - Finally, if lefts the memory, maps it to ttbl3 descriptors.
+ *
+ * @param *ttbl2 Level 2 translation table descriptor.
+ * @param va_offset
+ *        - 0 ~ (1GB - size), start contiguous virtual address within level 1
+ *          block (1GB).
+ *        - It is aligned l2 descriptor lock size(2MB).
+ * @param pa Physical address
+ * @param size Size of target memory.
+ *        - <= 1GB.
+ *        - It is aligned page size.
+ * @param Memory Attribute
+ * @return void
+ */
 static void vmm_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset, uint64_t pa,
                 uint32_t size, enum lpaed_stage2_memattr mattr)
 {
@@ -235,6 +401,15 @@ static void vmm_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset, uint64_t pa,
     HVMM_TRACE_EXIT();
 }
 
+/**
+ * @brief Initialize ttbl2 entries.
+ *
+ * Configures ttbl2 descriptor by mapping address of ttbl3 descriptor.
+ * And configure all valid bit of ttbl3 descriptors to zero.
+ *
+ * @param *ttbl2 Level 2 translation table descriptor.
+ * @return void
+ */
 static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
 {
     int i, j;
@@ -250,7 +425,16 @@ static void vmm_ttbl2_init_entries(union lpaed *ttbl2)
     HVMM_TRACE_EXIT();
 }
 
-
+/**
+ * @brief Initialize delivered ttbl2 descriptors.
+ *
+ * Initialize ttbl2 descriptors and unmap the descriptors.
+ * Finally, map the ttbl2 descriptors by memory map descriptors.
+ *
+ * @param *ttbl2 Level 2 translation table descriptor.
+ * @param *md Device memory map descriptor.
+ * @return void
+ */
 static void vmm_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
 {
     int i = 0;
@@ -269,6 +453,15 @@ static void vmm_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
     HVMM_TRACE_EXIT();
 }
 
+/**
+ * @brief Configure stage-2 translation table descriptors of guest.
+ *
+ * Configures the translation table based on the memory descriptor list.
+ *
+ * @param *ttbl Target translation table descriptor.
+ * @param *mdlist[] Memory map descriptor list.
+ * @return void
+ */
 static void vmm_init_ttbl(union lpaed *ttbl, struct memmap_desc *mdlist[])
 {
     int i = 0;
@@ -287,7 +480,19 @@ static void vmm_init_ttbl(union lpaed *ttbl, struct memmap_desc *mdlist[])
     HVMM_TRACE_EXIT();
 }
 
-
+/**
+ * @brief Configures Virtualization Translation Control Register(VTCR).
+ *
+ * Configure translation control bits by modifing the VTCR.
+ * \ref VTCR
+ * .
+ * - Configuration.
+ *   - SL0 - Start at first level
+ *   - ORGN0 - Normal memory, outer write-back no write allocate cacheable.
+ *   - IRGN0 - Normal memory, inner write-back no write allocate cacheable.
+ *
+ * @return void
+ */
 static void vmm_init_mmu(void)
 {
     uint32_t vtcr, vttbr;
@@ -363,8 +568,18 @@ union lpaed *vmm_vmid_ttbl(vmid_t vmid)
     return ttbl;
 }
 
-/* Enable/Disable Stage2 Translation */
-void vmm_stage2_enable(int enable)
+/**
+ * @brief Enables or disables the stage-2 MMU.
+ *
+ * Configures Hyper Configuration Register(HCR) to enable or disable the
+ * virtualization MMU.
+ *
+ * @param enable Enable or disable the MMU.
+ *        - 1 : Enable the MMU.
+ *        - 0 : Disable the MMU.
+ * @return void
+ */
+static void stage2_mmu_enable(int enable)
 {
     uint32_t hcr;
     /* HCR.VM[0] = enable */
@@ -413,7 +628,7 @@ void vmm_lock(void)
      * in the memory management module
      */
     /* Disable Stage 2 Translation: HCR.VM = 0 */
-    vmm_stage2_enable(0);
+    stage2_mmu_enable(MMU_OFF);
 }
 
 /* TODO: This code will moves another method. */
@@ -426,6 +641,6 @@ void vmm_unlock(struct guest_struct *guest)
      * Enable Stage 2 Translation
      */
     vmm_set_vmid_ttbl(guest->vmid, context->ttbl);
-    vmm_stage2_enable(1);
+    stage2_mmu_enable(MMU_ON);
 
 }
