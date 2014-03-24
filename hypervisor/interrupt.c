@@ -14,38 +14,52 @@
 #define VALID_PIRQ(pirq) \
     (pirq >= VIRQ_MIN_VALID_PIRQ && pirq < VIRQ_NUM_MAX_PIRQS)
 
-static struct virqmap_entry *_virqmap;
+
 static struct interrupt_ops *_guest_ops;
 static struct interrupt_ops *_host_ops;
+
+static struct guest_virqmap *_guest_virqmap;
 
 /**< IRQ handler */
 static interrupt_handler_t _host_handlers[MAX_IRQS];
 
-const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq)
+const int32_t interrupt_check_guest_irq(uint32_t pirq)
 {
-    const struct virqmap_entry *result = VIRQMAP_ENTRY_NOTFOUND;
+    int i;
+    struct virqmap_entry *map;
 
-    if (_virqmap[pirq].vmid != VMID_INVALID)
-        result = &_virqmap[pirq];
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+        map = _guest_virqmap[i].map;
+        if (map[pirq].virq != VIRQ_INVALID)
+            return GUEST_IRQ;
+    }
 
-    return result;
+    return HOST_IRQ;
 }
 
-uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq)
+const uint32_t interrupt_pirq_to_virq(vmid_t vmid, uint32_t pirq)
 {
-    uint32_t pirq = PIRQ_INVALID;
-    /*
-     * FIXME: This is ridiculously inefficient to
-     * loop up to GIC_NUM_MAX_IRQS
-     */
-    int i;
-    for (i = 0; i < MAX_IRQS; i++) {
-        if (_virqmap[i].vmid == vmid && _virqmap[i].virq == virq) {
-            pirq = i;
-            break;
-        }
-    }
-    return pirq;
+    struct virqmap_entry *map = _guest_virqmap[vmid].map;
+
+    return map[pirq].virq;
+}
+
+const uint32_t interrupt_virq_to_pirq(vmid_t vmid, uint32_t virq)
+{
+    struct virqmap_entry *map = _guest_virqmap[vmid].map;
+
+    return map[virq].pirq;
+}
+
+const uint32_t interrupt_pirq_to_enabled_virq(vmid_t vmid, uint32_t pirq)
+{
+    uint32_t virq = VIRQ_INVALID;
+    struct virqmap_entry *map = _guest_virqmap[vmid].map;
+
+    if (map[pirq].enabled)
+        virq = map[pirq].virq;
+
+    return virq;
 }
 
 hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq)
@@ -95,38 +109,49 @@ hvmm_status_t interrupt_host_configure(uint32_t irq)
     return ret;
 }
 
-hvmm_status_t interrupt_guest_enable(uint32_t irq)
+hvmm_status_t interrupt_guest_enable(vmid_t vmid, uint32_t irq)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+    struct virqmap_entry *map = _guest_virqmap[vmid].map;
 
-    if (_guest_ops->enable)
-        ret =  _guest_ops->enable(irq);
+    map[irq].enabled = GUEST_IRQ_ENABLE;
 
     return ret;
 }
 
-hvmm_status_t interrupt_guest_disable(uint32_t irq)
+hvmm_status_t interrupt_guest_disable(vmid_t vmid, uint32_t irq)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+    struct virqmap_entry *map = _guest_virqmap[vmid].map;
 
-    if (_guest_ops->disable)
-        ret = _guest_ops->disable(irq);
+    map[irq].enabled = GUEST_IRQ_DISABLE;
 
     return ret;
+}
+
+static void interrupt_inject_enabled_guest(int num_of_guests, uint32_t irq)
+{
+    int i;
+    uint32_t virq;
+
+    for (i = 0; i < num_of_guests; i++) {
+        virq = interrupt_pirq_to_enabled_virq(i, irq);
+        if (virq == VIRQ_INVALID)
+            continue;
+        _guest_ops->inject(i, virq, irq);
+    }
 }
 
 void interrupt_service_routine(int irq, void *current_regs, void *pdata)
 {
     struct arch_regs *regs = (struct arch_regs *)current_regs;
-    const struct virqmap_entry *virq_entry;
 
     if (irq < MAX_IRQS) {
-        virq_entry = virqmap_for_pirq(irq);
-        if (virq_entry != VIRQMAP_ENTRY_NOTFOUND) {
+        if (interrupt_check_guest_irq(irq) == GUEST_IRQ) {
             /* IRQ INJECTION */
             /* priority drop only for hanlding irq in guest */
             _guest_ops->end(irq);
-            _guest_ops->inject(virq_entry->vmid, virq_entry->virq, irq);
+            interrupt_inject_enabled_guest(NUM_GUESTS_STATIC, irq);
         } else {
             /* host irq */
             if (_host_handlers[irq])
@@ -163,13 +188,14 @@ hvmm_status_t interrupt_restore(void)
     return ret;
 }
 
-hvmm_status_t interrupt_init(struct virqmap_entry *virqmap)
+hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+
     _host_ops = _interrupt_module.host_ops;
     _guest_ops = _interrupt_module.guest_ops;
 
-    _virqmap = virqmap;
+    _guest_virqmap = virqmap;
 
     if (_host_ops->init) {
         ret = _host_ops->init();
