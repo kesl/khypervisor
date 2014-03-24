@@ -1,6 +1,12 @@
 #ifndef __INTERRUPT_H__
 #define __INTERRUPT_H__
 #include "hvmm_types.h"
+#include <k-hypervisor-config.h>
+
+#define HOST_IRQ 0
+#define GUEST_IRQ 1
+#define GUEST_IRQ_ENABLE 1
+#define GUEST_IRQ_DISABLE 0
 
 /**
  * @breif   Saves a mapping information to find a virq for injection.
@@ -10,32 +16,15 @@
  *                     a sharing device among guests.
  */
 struct virqmap_entry {
-    vmid_t vmid;    /**< Guest vm id */
-    uint32_t virq;  /**< Virtual interrupt nubmer */
-    uint32_t pirq;  /**< Pysical interrupt nubmer */
+    uint32_t enabled;   /**< virqmap enabled flag */
+    uint32_t virq;      /**< Virtual interrupt nubmer */
+    uint32_t pirq;      /**< Pysical interrupt nubmer */
 };
 
-#define VIRQMAP_ENTRY_NOTFOUND  0
-
-const struct virqmap_entry *virqmap_for_pirq(uint32_t pirq);
-/**
- * @breif       Returns pirq mapped to virq for vm.
- * @param vmid  Guest vm id
- * @param virq  Virtual interrupt number.
- * @return      physical interrupt number.
- */
-uint32_t virqmap_pirq(vmid_t vmid, uint32_t virq);
-
-hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
-        uint32_t pirq, uint8_t hw);
-/**
- * @brief   Initializes virq_entry structure and
-            Sets callback function about injection of queued VIRQs.
- * @return  Always returns "success".
- */
-hvmm_status_t virq_init(void);
-
-
+struct guest_virqmap {
+    vmid_t vmid;
+    struct virqmap_entry map[MAX_IRQS];
+};
 
 typedef void (*interrupt_handler_t)(int irq, void *regs, void *pdata);
 
@@ -43,28 +32,28 @@ struct interrupt_ops {
     /** Initalize interrupt state */
     hvmm_status_t (*init)(void);
 
-    /** Save registers for context switch */
+    /** Enable interrupt */
     hvmm_status_t (*enable)(uint32_t);
 
-    /** Restore registers for context switch */
+    /** Disable interrupt */
     hvmm_status_t (*disable)(uint32_t);
 
-    /** Restore registers for context switch */
+    /** Cofigure interrupt */
     hvmm_status_t (*configure)(uint32_t);
 
-    /** Restore registers for context switch */
+    /** End of interrupt */
     hvmm_status_t (*end)(uint32_t);
 
-    /** Restore registers for context switch */
+    /** Inject to guest */
     hvmm_status_t (*inject)(vmid_t, uint32_t, uint32_t);
 
-    /** Restore registers for context switch */
+    /** Save inetrrupt state */
     hvmm_status_t (*save)(void);
 
-    /** Restore registers for context switch */
+    /** Restore interrupt state */
     hvmm_status_t (*restore)(void);
 
-    /** Dump state of the guest */
+    /** Dump state of the interrupt */
     hvmm_status_t (*dump)(void);
 };
 
@@ -113,16 +102,20 @@ extern struct interrupt_module _interrupt_module;
  * @return  If all initialization is success, then returns "success"
  *          otherwise returns "unknown error"
  */
-hvmm_status_t interrupt_init(struct virqmap_entry *virqmap);
+hvmm_status_t interrupt_init(struct guest_virqmap *virqmap);
 hvmm_status_t interrupt_request(uint32_t irq, interrupt_handler_t handler);
 hvmm_status_t interrupt_host_enable(uint32_t irq);
 hvmm_status_t interrupt_host_disable(uint32_t irq);
 hvmm_status_t interrupt_host_configure(uint32_t irq);
 hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq);
-hvmm_status_t interrupt_guest_enable(uint32_t irq);
-hvmm_status_t interrupt_guest_disable(uint32_t irq);
+hvmm_status_t interrupt_guest_enable(vmid_t vmid, uint32_t irq);
+hvmm_status_t interrupt_guest_disable(vmid_t vmid, uint32_t irq);
 hvmm_status_t interrupt_save(void);
 hvmm_status_t interrupt_restore(void);
 void interrupt_service_routine(int irq, void *current_regs, void *pdata);
+const int32_t interrupt_check_guest_irq(uint32_t pirq);
+const uint32_t interrupt_pirq_to_virq(vmid_t vmid, uint32_t pirq);
+const uint32_t interrupt_virq_to_pirq(vmid_t vmid, uint32_t virq);
+const uint32_t interrupt_pirq_to_enabled_virq(vmid_t vmid, uint32_t pirq);
 
 #endif
