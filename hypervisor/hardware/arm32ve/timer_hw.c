@@ -165,8 +165,8 @@ static inline uint64_t generic_timer_reg_read64(int reg)
 static hvmm_status_t generic_timer_init()
 {
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
-    _timer_irqs[GENERIC_TIMER_NSP] = 27;
-    _timer_irqs[GENERIC_TIMER_VIR] = 30;
+    _timer_irqs[GENERIC_TIMER_NSP] = 30;
+    _timer_irqs[GENERIC_TIMER_VIR] = 27;
 
     return HVMM_STATUS_SUCCESS;
 }
