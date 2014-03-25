@@ -41,12 +41,12 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
-	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_status.o \
+	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o			\
 	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o
-
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
 	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
