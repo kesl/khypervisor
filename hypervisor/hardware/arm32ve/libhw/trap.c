@@ -8,7 +8,18 @@
 #define DEBUG
 #include <log/print.h>
 #include <interrupt.h>
+/**\defgroup ARM
+ * <pre> ARM registers.
+ * ARM registers include 13 general purpose registers r0-r12, 1 Stack Pointer,
+ * 1 Link Register (LR), 1 Program Counter (PC).
+ */
 
+/**@brief Handles data abort exception taken in Hyp mode.
+ * This function uses current ARM registers to dump.
+ * @param regs ARM registers for current virtual machine.
+ * \ref ARM
+ * @return Returns HVMM_STATUS_UNKNOWN_ERROR only.
+ */
 hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
@@ -16,29 +27,48 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+/**@brief Handles IRQ exception when interrupt is occured by a device.
+ * This funcntion calls gic interrupt, context switch.
+ * @param regs ARM registers for current virtual machine.
+ * \ref ARM
+ * @return Returns HVMM_STATUS_SUCCESS only.
+ */
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     uint32_t irq;
-
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;
 }
 
+/**@brief Handles undefined, hypervisor, prefetch abort as unhandled exception.
+ * Also this function dumps state of the virtual machine registers, We don't
+ * support these exceptions now.
+ * @param regs ARM registers for current virtual machine.
+ * \ref ARM
+ * @return Returns HVMM_STATUS_UNKNOWN_ERROR only.
+ */
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
     hyp_abort_infinite();
-
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
+/**@brief Indirects _hyp_hvc_service function in file.
+ * @param regs ARM registers for current virtual machine.
+ * \ref ARM
+ * @return Returns the result is the same as _hyp_hvc_service().
+ * @todo Within the near future, this function will be deleted.
+ */
 enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
 {
     return _hyp_hvc_service(regs);
 }
 
+/**@brief Shows temporary banked registers for debugging.
+ */
 static void _trap_dump_bregs(void)
 {
     uint32_t spsr, lr, sp;
@@ -69,6 +99,32 @@ static void _trap_dump_bregs(void)
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
 
+/**@brief Handles every exceptions taken from a mode other than Hyp mode.
+ * <pre> Exception class
+ *     Unknown reason
+ *     Trapped WFI or WFE instruction
+ *     Trapped MCR or MRC access to CP15
+ *     Trapped MCRR or MRRC access to CP15
+ *     Trapped MCR or MRC access to CP14
+ *     Trapped LDC or STC access to CP14
+ *     HCPTR-trapped access to CP0-CP13
+ *     Trapped MRC or VMRS access to CP10, for ID group traps
+ *     Trapped BXJ instruction
+ *     Trapped MRRC access to CP14
+ *     Supervisor Call exception routed to Hyp mode
+ *     Hypervisor Call
+ *     Trapped SMC instruction
+ *     Prefetch Abort routed to Hyp mode
+ *     Prefetch Abort taken from Hyp mode
+ *     Data Abort routed to Hyp mode
+ *     Data Abort taken from Hyp mode
+ *</pre>
+ * @param regs ARM registers for current virtual machine.
+ * \ref ARM
+ * @return Returns the result of exceptions.
+ * If hypervisor can b handled the exception then it returns HYP_RESULT_ERET.
+ * If not, hypervisor should be stopped into trap_error in handler.
+ */
 enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
 {
     int32_t vdev_num = -1;
