@@ -162,6 +162,19 @@ static inline uint64_t generic_timer_reg_read64(int reg)
     return val;
 }
 
+/** @brief Registers generic timer irqs such as hypervisor timer event
+ *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ *  and virtual timer event(GENERIC_TIMER_NSP).
+ *  Each interrup source is identified by a unique ID.
+ *  cf. "Cortex™-A15 Technical Reference Manual" 8.2.3 Interrupt sources
+ *
+ *  DEVICE : IRQ number
+ *  GENERIC_TIMER_HYP : 26
+ *  GENERIC_TIMER_NSP : 30
+ *  GENERIC_TIMER_VIR : 27
+ *
+ *  @note "Cortex™-A15 Technical Reference Manual", 8.2.3 Interrupt sources
+ */
 static hvmm_status_t generic_timer_init()
 {
     _timer_irqs[GENERIC_TIMER_HYP] = 26;
@@ -171,6 +184,13 @@ static hvmm_status_t generic_timer_init()
     return HVMM_STATUS_SUCCESS;
 }
 
+/** @brief Configures time interval by PL2 physical timerValue register.
+ *  Read CNTHP_TVAL into R0.
+ *
+ *  "CNTHP_TVAL" characteristics
+ *  -Holds the timer values for the Hyp mode physical timer.
+ *  -Only accessible from Hyp mode, or from Monitor mode when SCR.NS is  set to 1.
+ */
 static hvmm_status_t generic_timer_set_tval(uint32_t tval)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -184,6 +204,13 @@ static hvmm_status_t generic_timer_set_tval(uint32_t tval)
     return result;
 }
 
+/** @brief Enables the timer interrupt such as hypervisor timer event
+ *  by PL2 Physical Timer Control register(VMSA : CNTHP_CTL)
+ *  The Timer output signal is not masked.
+ *
+ *  The Cortex-A15 processor implements a 5-bit version of the interrupt
+ *  priority field for 32 interrupt priority levels.
+ */
 static hvmm_status_t generic_timer_enable_int(void)
 {
     uint32_t ctrl;
@@ -200,6 +227,9 @@ static hvmm_status_t generic_timer_enable_int(void)
     return result;
 }
 
+/** @brief Disable the timer interrupt such as hypervisor timer event
+ *  by PL2 physical timer control register.The Timer output signal is not masked.
+ */
 static hvmm_status_t generic_timer_disable_int(void)
 {
     uint32_t ctrl;
@@ -216,11 +246,15 @@ static hvmm_status_t generic_timer_disable_int(void)
     return result;
 }
 
+
 static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
 {
     _callback[GENERIC_TIMER_HYP](regs);
 }
 
+/** @brief Enables generic timer irq such a s hypervisor timer event
+ *  (GENERIC_TIMER_HYP)
+ */
 static hvmm_status_t generic_timer_enable_irq(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
@@ -236,6 +270,12 @@ static hvmm_status_t generic_timer_enable_irq(void)
     return result;
 }
 
+/** @brief Registers timer callback for each timer such as hypervisor timer
+ *  event(GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ *  and virtual timer event(GENERIC_TIMER_NSP).
+ *  Each timer callback are registered with the timer interrput source.
+ *  A timer callback called when the timer interrupt occurs.
+ */
 static hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
                 void *user)
 {
@@ -245,6 +285,9 @@ static hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
     return HVMM_STATUS_SUCCESS;
 }
 
+/** @brief dump at time.
+ *  @todo have to write dump with meaningful printing.
+ */
 static hvmm_status_t generic_timer_dump(void)
 {
     HVMM_TRACE_ENTER();
