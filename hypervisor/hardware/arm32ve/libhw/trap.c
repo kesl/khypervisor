@@ -30,7 +30,6 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     guest_dump_regs(regs);
     hyp_abort_infinite();
-
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
