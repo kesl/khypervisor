@@ -45,7 +45,7 @@ struct interrupt_ops {
     hvmm_status_t (*end)(uint32_t);
 
     /** Inject to guest */
-    hvmm_status_t (*inject)(vmid_t, uint32_t, uint32_t);
+    hvmm_status_t (*inject)(vmid_t, uint32_t, uint32_t, uint8_t);
 
     /** Save inetrrupt state */
     hvmm_status_t (*save)(void);
@@ -107,7 +107,8 @@ hvmm_status_t interrupt_request(uint32_t irq, interrupt_handler_t handler);
 hvmm_status_t interrupt_host_enable(uint32_t irq);
 hvmm_status_t interrupt_host_disable(uint32_t irq);
 hvmm_status_t interrupt_host_configure(uint32_t irq);
-hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq);
+hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq,
+                uint8_t hw);
 hvmm_status_t interrupt_guest_enable(vmid_t vmid, uint32_t irq);
 hvmm_status_t interrupt_guest_disable(vmid_t vmid, uint32_t irq);
 hvmm_status_t interrupt_save(void);

@@ -92,10 +92,10 @@ static hvmm_status_t guest_interrupt_end(uint32_t irq)
 }
 
 static hvmm_status_t guest_interrupt_inject(vmid_t vmid, uint32_t virq,
-                        uint32_t pirq)
+                        uint32_t pirq, uint8_t hw)
 {
     /* TODO : checking the injected bitmap */
-    return virq_inject(vmid, virq, pirq, 1);
+    return virq_inject(vmid, virq, pirq, hw);
 }
 
 static hvmm_status_t guest_interrupt_save(void)

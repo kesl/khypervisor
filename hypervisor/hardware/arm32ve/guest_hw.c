@@ -230,7 +230,7 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     struct arch_context *context = &guest->context;
 
     vmm_lock();
-    if (!regs)
+    if (!regs_current)
         return HVMM_STATUS_SUCCESS;
 
     context_copy_regs(regs, regs_current);
