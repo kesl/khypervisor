@@ -8,6 +8,9 @@
 #define GUEST_IRQ_ENABLE 1
 #define GUEST_IRQ_DISABLE 0
 
+#define INJECT_SW 0
+#define INJECT_HW 1
+
 /**
  * @breif   Saves a mapping information to find a virq for injection.
  *

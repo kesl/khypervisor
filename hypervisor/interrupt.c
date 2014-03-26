@@ -139,7 +139,7 @@ static void interrupt_inject_enabled_guest(int num_of_guests, uint32_t irq)
         virq = interrupt_pirq_to_enabled_virq(i, irq);
         if (virq == VIRQ_INVALID)
             continue;
-        interrupt_guest_inject(i, virq, irq, 1);
+        interrupt_guest_inject(i, virq, irq, INJECT_HW);
     }
 }
 
