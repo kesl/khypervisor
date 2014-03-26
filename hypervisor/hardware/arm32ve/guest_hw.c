@@ -224,16 +224,16 @@ static char *_modename(uint8_t mode)
 #endif
 
 static hvmm_status_t guest_hw_save(struct guest_struct *guest,
-                struct arch_regs *regs_current)
+                struct arch_regs *current_regs)
 {
     struct arch_regs *regs = &guest->regs;
     struct arch_context *context = &guest->context;
 
     vmm_lock();
-    if (!regs_current)
+    if (!current_regs)
         return HVMM_STATUS_SUCCESS;
 
-    context_copy_regs(regs, regs_current);
+    context_copy_regs(regs, current_regs);
     context_save_cops(&context->regs_cop);
     context_save_banked(&context->regs_banked);
     vgic_save_status(&context->vgic_status, guest->vmid);
@@ -247,12 +247,12 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
 }
 
 static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
-                struct arch_regs *regs_current)
+                struct arch_regs *current_regs)
 {
     struct arch_context *context = &guest->context;
 
     vmm_unlock(guest);
-    if (!regs_current) {
+    if (!current_regs) {
         /* init -> hyp mode -> guest */
         /*
          * The actual context switching (Hyp to Normal mode)
@@ -264,7 +264,7 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
 
     /* guest -> hyp -> guest */
     vgic_restore_status(&context->vgic_status, guest->vmid);
-    context_copy_regs(regs_current, &guest->regs);
+    context_copy_regs(current_regs, &guest->regs);
     context_restore_cops(&context->regs_cop);
     context_restore_banked(&context->regs_banked);
 
