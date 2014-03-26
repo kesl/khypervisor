@@ -62,12 +62,13 @@ const uint32_t interrupt_pirq_to_enabled_virq(vmid_t vmid, uint32_t pirq)
     return virq;
 }
 
-hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq)
+hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq,
+                uint8_t hw)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
     if (_guest_ops->inject)
-        ret = _guest_ops->inject(vmid, virq, pirq);
+        ret = _guest_ops->inject(vmid, virq, pirq, hw);
 
     return ret;
 }
@@ -138,7 +139,7 @@ static void interrupt_inject_enabled_guest(int num_of_guests, uint32_t irq)
         virq = interrupt_pirq_to_enabled_virq(i, irq);
         if (virq == VIRQ_INVALID)
             continue;
-        _guest_ops->inject(i, virq, irq);
+        interrupt_guest_inject(i, virq, irq, INJECT_HW);
     }
 }
 
