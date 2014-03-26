@@ -7,7 +7,6 @@
 #include <log/print.h>
 #include <hvmm_trace.h>
 #include <vgic.h>
-#include <lpae.h>
 
 #define ARCH_REGS_NUM_GPR    13
 
@@ -60,7 +59,6 @@ struct arch_context {
     struct vgic_status vgic_status;
     struct regs_cop regs_cop;
     struct regs_banked regs_banked;
-    union lpaed *ttbl;
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include "arch_types.h"
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 
 
 #ifdef CFG_GENERIC_CA15

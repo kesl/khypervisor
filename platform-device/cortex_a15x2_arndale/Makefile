@@ -25,8 +25,7 @@ BOOTLOADER	= boot.S
 
 OBJS 		= boot.o	\
 	main.o				\
-	$(HYPERVISOR_SOURCE_DIR)/mm.o					\
-	$(HYPERVISOR_SOURCE_DIR)/vmm.o					\
+	$(HYPERVISOR_SOURCE_DIR)/memory.o				\
 	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
 	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
 	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
@@ -34,6 +33,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/guest_hw.o					\
 	$(HYPERVISOR_HW_DIR)/timer_hw.o					\
 	$(HYPERVISOR_HW_DIR)/interrupt_hw.o				\
+	$(HYPERVISOR_HW_DIR)/memory_hw.o				\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_gicd.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ping.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_stay.o		\

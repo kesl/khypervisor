@@ -4,12 +4,11 @@
 #include <log/print.h>
 #include <hvmm_trace.h>
 #include <timer.h>
-#include <mm.h>
+#include <memory.h>
 #include <interrupt.h>
 #include <vdev.h>
 #include <guest.h>
 #include <guest_hw.h>
-#include <vmm.h>
 
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
@@ -229,7 +228,6 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     struct arch_regs *regs = &guest->regs;
     struct arch_context *context = &guest->context;
 
-    vmm_lock();
     if (!current_regs)
         return HVMM_STATUS_SUCCESS;
 
@@ -251,7 +249,6 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
 {
     struct arch_context *context = &guest->context;
 
-    vmm_unlock(guest);
     if (!current_regs) {
         /* init -> hyp mode -> guest */
         /*
@@ -280,7 +277,6 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
     /* supervisor mode */
     regs->cpsr = 0x1d3;
     /* regs->gpr[] = whatever */
-    context->ttbl = vmm_vmid_ttbl(guest->vmid);
     context_init_cops(&context->regs_cop);
     context_init_banked(&context->regs_banked);
     vgic_init_status(&context->vgic_status, guest->vmid);

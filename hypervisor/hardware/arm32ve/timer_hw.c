@@ -5,8 +5,7 @@
 #include <asm-arm_inline.h>
 #include <hvmm_trace.h>
 #include <interrupt.h>
-
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 
 enum generic_timer_type {
     GENERIC_TIMER_HYP,      /* IRQ 26 */
