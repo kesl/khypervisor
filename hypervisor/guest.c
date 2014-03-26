@@ -2,11 +2,10 @@
 #include <guest.h>
 #include <timer.h>
 #include <interrupt.h>
-#include <mm.h>
+#include <memory.h>
 #include <vdev.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <vmm.h>
 
 #define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC
 
@@ -30,6 +29,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_current_guest_vmid == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
+    memory_save();
     /* save the current guest's context */
     if (_guest_module.ops->save) {
         result = _guest_module.ops->save(&guests[_current_guest_vmid], regs);
@@ -45,6 +45,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
+    memory_restore(_current_guest_vmid);
     /* The next becomes the current */
     if (_guest_module.ops->restore)
         result = _guest_module.ops->restore(guest, regs);

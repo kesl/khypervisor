@@ -1,8 +1,10 @@
+#include <k-hypervisor-config.h>
 #include <guest.h>
 #include <interrupt.h>
 #include <timer.h>
 #include <vdev.h>
-#include <mm.h>
+#include <memory.h>
+#include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
 
@@ -16,6 +18,93 @@
 
 
 static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
+
+/**
+ * \defgroup Guest_memory_map_descriptor
+ *
+ * Descriptor setting order
+ * - label
+ * - Intermediate Physical Address (IPA)
+ * - Physical Address (PA)
+ * - Size of memory region
+ * - Memory Attribute
+ * @{
+ */
+static struct memmap_desc guest_md_empty[] = {
+    {       0, 0, 0, 0,  0},
+};
+/*  label, ipa, pa, size, attr */
+static struct memmap_desc guest_device_md0[] = {
+    { "sysreg", 0x1C010000, 0x1C010000, SZ_4K, MEMATTR_DM },
+    { "sysctl", 0x1C020000, 0x1C020000, SZ_4K, MEMATTR_DM },
+    { "aaci", 0x1C040000, 0x1C040000, SZ_4K, MEMATTR_DM },
+    { "mmci", 0x1C050000, 0x1C050000, SZ_4K, MEMATTR_DM },
+    { "kmi", 0x1C060000, 0x1C060000,  SZ_4K, MEMATTR_DM },
+    { "kmi2", 0x1C070000, 0x1C070000, SZ_4K, MEMATTR_DM },
+    { "v2m_serial0", 0x1C090000, 0x1C0A0000, SZ_4K, MEMATTR_DM },
+    { "v2m_serial1", 0x1C0A0000, 0x1C090000, SZ_4K, MEMATTR_DM },
+    { "v2m_serial2", 0x1C0B0000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
+    { "v2m_serial3", 0x1C0C0000, 0x1C0C0000, SZ_4K, MEMATTR_DM },
+    { "wdt", 0x1C0F0000, 0x1C0F0000, SZ_4K, MEMATTR_DM },
+    { "v2m_timer01(sp804)", 0x1C110000, 0x1C110000, SZ_4K,
+            MEMATTR_DM },
+    { "v2m_timer23", 0x1C120000, 0x1C120000, SZ_4K, MEMATTR_DM },
+    { "rtc", 0x1C170000, 0x1C170000, SZ_4K, MEMATTR_DM },
+    { "clcd", 0x1C1F0000, 0x1C1F0000, SZ_4K, MEMATTR_DM },
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+            CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K,
+            MEMATTR_DM },
+    { 0, 0, 0, 0, 0 }
+};
+
+static struct memmap_desc guest_device_md1[] = {
+    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
+    { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
+    {0, 0, 0, 0, 0}
+};
+
+/**
+ * @brief Memory map for guest 0.
+ */
+static struct memmap_desc guest_memory_md0[] = {
+    /* 756MB */
+    {"start", 0x00000000, 0, 0x30000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+/**
+ * @brief Memory map for guest 1.
+ */
+static struct memmap_desc guest_memory_md1[] = {
+    /* 256MB */
+    {"start", 0x00000000, 0, 0x10000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+/* Memory Map for Guest 0 */
+static struct memmap_desc *guest_mdlist0[] = {
+    guest_device_md0,   /* 0x0000_0000 */
+    guest_md_empty,     /* 0x4000_0000 */
+    guest_memory_md0,
+    guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
+    0
+};
+
+/* Memory Map for Guest 0 */
+static struct memmap_desc *guest_mdlist1[] = {
+    guest_device_md1,
+    guest_md_empty,
+    guest_memory_md1,
+    guest_md_empty,
+    0
+};
+/** @}*/
 
 /*
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
@@ -74,14 +163,20 @@ void setup_interrupt()
 
 void setup_memory()
 {
-    /* TODO: Here is guest memory setup */
+    /*
+     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
+     * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
+     * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
+     */
+    guest_memory_md0[0].pa = (uint64_t)((uint32_t) &_guest_bin_start);
+    guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
 }
 
 int main_cpu_init()
 {
-    setup_memory();
     /* Initialize Memory Management */
-    if (hvmm_mm_init())
+    setup_memory();
+    if (memory_init(guest_mdlist0, guest_mdlist1))
         printh("[start_guest] virtual memory initialization failed...\n");
 
     /* Initialize PIRQ to VIRQ mapping */

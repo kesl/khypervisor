@@ -9,7 +9,7 @@
 
 #include <log/print.h>
 #include <log/uart_print.h>
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
 

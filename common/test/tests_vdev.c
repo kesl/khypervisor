@@ -2,7 +2,7 @@
 #include <gic_regs.h>
 #include <asm-arm_inline.h>
 #include <gic.h>
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 #include <log/print.h>
 
 hvmm_status_t hvmm_tests_vdev(void)

@@ -12,7 +12,7 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 ENTRY(start)
 
-#include "config/memmap.cfg"
+#include <k-hypervisor-config.h>
 
 INPUT(./guestimages/guest0.bin)
 INPUT(./guestimages/guest1.bin)
@@ -43,9 +43,9 @@ SECTIONS
 
 /* Guest 1 */
  . = CFG_MEMMAP_GUEST_OFFSET;
-  guest_bin_start = .;
+  _guest_bin_start = .;
   .guest : { ./guestimages/guest0.bin}
-  guest_bin_end = .;
+  _guest_bin_end = .;
 
  . = GUEST_STACK;
  guest_stacktop = .;
@@ -54,9 +54,9 @@ SECTIONS
 
 /* Guest 2 */
  . = CFG_MEMMAP_GUEST2_OFFSET;
-  guest2_bin_start = .;
+  _guest2_bin_start = .;
  .guest2 : { ./guestimages/guest1.bin }
-  guest2_bin_end = .;
+  _guest2_bin_end = .;
 
  . = GUEST2_STACK;
  guest2_stacktop = .;

@@ -8,7 +8,7 @@
  */
 
 #define NS_BIT	0x1
-#include "config/cfg_platform.h"
+#include <k-hypervisor-config.h>
 	.syntax	unified
 	.arch_extension sec
 	.arch_extension virt

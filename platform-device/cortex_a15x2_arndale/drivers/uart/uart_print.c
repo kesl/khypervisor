@@ -1,7 +1,7 @@
 #include "arch_types.h"
 #include "exynos-uart.h"
 
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 
 #ifdef CFG_EXYNOS5250
 #ifdef CFG_BOARD_ARNDALE

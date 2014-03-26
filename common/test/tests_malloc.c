@@ -1,10 +1,10 @@
 #include "tests_malloc.h"
 #include "hvmm_trace.h"
 #include "lpae.h"
-#include "mm.h"
+#include "memory.h"
 #include "armv7_p15.h"
 
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 #include <log/print.h>
 
 hvmm_status_t hvmm_tests_malloc(void)
@@ -15,21 +15,21 @@ hvmm_status_t hvmm_tests_malloc(void)
     int *test3;
     int *test4;
     int *test5;
-    test1 = (int *)hmm_malloc(100);
+    test1 = (int *)memory_alloc(100);
     printh("%s[%d] %x\n", __func__, __LINE__, test1);
-    test2 = (int *)hmm_malloc(1024);
+    test2 = (int *)memory_alloc(1024);
     printh("%s[%d] %x\n", __func__, __LINE__, test2);
-    test3 = (int *)hmm_malloc(1025);
+    test3 = (int *)memory_alloc(1025);
     printh("%s[%d] %x\n", __func__, __LINE__, test3);
-    test4 = (int *)hmm_malloc(750 * 8);
+    test4 = (int *)memory_alloc(750 * 8);
     printh("%s[%d] %x\n", __func__, __LINE__, test4);
-    test5 = (int *)hmm_malloc(218095616 - 8);
+    test5 = (int *)memory_alloc(218095616 - 8);
     printh("%s[%d] %x\n", __func__, __LINE__, test5);
-    hmm_free(test1);
-    hmm_free(test2);
-    hmm_free(test3);
-    hmm_free(test4);
-    hmm_free(test5);
+    memory_free(test1);
+    memory_free(test2);
+    memory_free(test3);
+    memory_free(test4);
+    memory_free(test5);
     HVMM_TRACE_EXIT();
     return HVMM_STATUS_SUCCESS;
 }

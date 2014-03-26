@@ -1,6 +1,7 @@
 #ifndef __LPAE_H__
 #define __LPAE_H__
 #include <arch_types.h>
+#include <memory.h>
 
 /**
  * @file lpae.h
@@ -408,22 +409,6 @@ union lpaed {
 };
 
 /**
- * @brief Enum values of the lpae stage2 memory attribute.
- *
- * \ref Memory_attribute "Memory attribute configuration"
- */
-enum lpaed_stage2_memattr {
-    LPAED_STAGE2_MEMATTR_SO = 0x0,   /**< Strongly Ordered */
-    LPAED_STAGE2_MEMATTR_DM = 0x1,   /**< Device memory */
-    LPAED_STAGE2_MEMATTR_NORMAL_ONC = 0x4,  /**< Outer Non-cacheable */
-    LPAED_STAGE2_MEMATTR_NORMAL_OWT = 0x8,  /**< Outer Write-through */
-    LPAED_STAGE2_MEMATTR_NORMAL_OWB = 0xC,  /**< Outer Write-back */
-    LPAED_STAGE2_MEMATTR_NORMAL_INC = 0x1,  /**< Inner Non-cacheable */
-    LPAED_STAGE2_MEMATTR_NORMAL_IWT = 0x2,  /**< Inner Write-through */
-    LPAED_STAGE2_MEMATTR_NORMAL_IWB = 0x3,  /**< Inner Write-back */
-};
-
-/**
  * @brief Level 1 block, 1GB, entry in LPAE descriptor format
  * for the given physical address.
  *
@@ -443,7 +428,7 @@ enum lpaed_stage2_memattr {
  * @param  attr_idx Attribute index for memory this descriptor.
  * @return  Generated level1 block LPAE descriptor.
  */
-union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
+union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx);
 /**
  * @brief Level 2 block, 2MB, entry in LPAE Descriptor format
  * for the given physical address.
@@ -462,8 +447,8 @@ union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx);
  * @param mattr Memory attribute index.
  * @return Generated level 2 block LPAE descriptor.
  */
-union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
-                enum lpaed_stage2_memattr mattr);
+union lpaed lpaed_host_l2_block(uint64_t pa,
+                enum memattr mattr);
 /**
  * @brief Level 1, 1GB, each entry refer level2 page table
  *
@@ -480,7 +465,7 @@ union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
  * @param pa Physical address Refers level2 page table.
  * @return Generated level 1 page table LPAE descriptor.
  */
-union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa);
+union lpaed lpaed_host_l1_table(uint64_t pa);
 /**
  * @brief Level 2, 2MB, each entry refer level3 page table
  *
@@ -497,7 +482,7 @@ union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa);
  * @param pa Physical address Refers level3 page table.
  * @return Generated level 2 page table LPAE descriptor.
  */
-union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa);
+union lpaed lpaed_host_l2_table(uint64_t pa);
 /**
  * @brief Level 3, each entry refer 4KB physical address
  *
@@ -517,7 +502,7 @@ union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa);
  * @param valid Validation of table descriptor.
  * @return Generated level 3 page table LPAE descriptor.
  */
-union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
+union lpaed lpaed_host_l3_table(uint64_t pa, uint8_t attr_idx,
                 uint8_t valid);
 /**
  * @brief Configures the stage-1 level 3 table entry.
@@ -533,7 +518,7 @@ union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa, uint8_t attr_idx,
  * @param valid Validate
  * @return void
  */
-void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
+void lpaed_guest_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
                 uint8_t valid);
 /**
  * @brief Disables the stage-1 level 3 table entry.
@@ -544,7 +529,7 @@ void lpaed_stage1_conf_l3_table(union lpaed *ttbl3, uint64_t baddr,
  * @param *ttbl3 Pointer of level 3 table descriptor.
  * @return void
  */
-void lpaed_stage1_disable_l3_table(union lpaed *ttbl2);
+void lpaed_guest_stage1_disable_l3_table(union lpaed *ttbl2);
 /**
  * @brief Mapping the stage-2 level 2 lpae descriptor to physical address
  * and memory attribute.
@@ -561,8 +546,8 @@ void lpaed_stage1_disable_l3_table(union lpaed *ttbl2);
  * @param mattr Memory entry.
  * @return void
  */
-void lpaed_stage2_map_page(union lpaed *pte, uint64_t pa,
-        enum lpaed_stage2_memattr mattr);
+void lpaed_guest_stage2_map_page(union lpaed *pte, uint64_t pa,
+        enum memattr mattr);
 /**
  * @brief Configure valid & table bit of the stage-2 level 1 table descriptor.
  * And set the base address.
@@ -579,7 +564,7 @@ void lpaed_stage2_map_page(union lpaed *pte, uint64_t pa,
  * @param valid Validation
  * @return void
  */
-void lpaed_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
+void lpaed_guest_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
         uint8_t valid);
 /**
  * @brief Configure the stage-2 level 2 table entry's valid & table bit
@@ -597,7 +582,7 @@ void lpaed_stage2_conf_l1_table(union lpaed *ttbl1, uint64_t baddr,
  * @param valid Validation.
  * @return void
  */
-void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
+void lpaed_guest_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
         uint8_t valid);
 /**
  * @brief Enables the stage-2 level2 table entry.
@@ -610,7 +595,7 @@ void lpaed_stage2_conf_l2_table(union lpaed *ttbl2, uint64_t baddr,
  * @param *ttbl2 The stage-2 Level2 translation table descriptor.
  * @return void
  */
-void lpaed_stage2_enable_l2_table(union lpaed *ttbl2);
+void lpaed_guest_stage2_enable_l2_table(union lpaed *ttbl2);
 /**
  * @brief Disables the stage-2 level2 table entry.
  *
@@ -622,6 +607,6 @@ void lpaed_stage2_enable_l2_table(union lpaed *ttbl2);
  * @param *ttbl2 the stage-2 level2 translation table descriptor.
  * @return void
  */
-void lpaed_stage2_disable_l2_table(union lpaed *ttbl2);
+void lpaed_guest_stage2_disable_l2_table(union lpaed *ttbl2);
 
 #endif

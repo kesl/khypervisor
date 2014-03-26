@@ -29,8 +29,8 @@
  * Level 2 Block, 2MB, entry in LPAE Descriptor format
  * for the given physical address
  */
-union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
-        enum lpaed_stage2_memattr mattr)
+union lpaed lpaed_host_l2_block(uint64_t pa,
+        enum memattr mattr)
 {
     /* lpae.c */
     union lpaed lpaed;
@@ -59,7 +59,7 @@ union lpaed hvmm_mm_lpaed_l2_block(uint64_t pa,
  * Level 1 Block, 1GB, entry in LPAE Descriptor format
  * for the given physical address
  */
-union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx)
+union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx)
 {
     /* lpae.c */
     union lpaed lpaed;
@@ -91,59 +91,8 @@ union lpaed hvmm_mm_lpaed_l1_block(uint64_t pa, uint8_t attr_idx)
     return lpaed;
 }
 
-
-void lpaed_stage2_conf_l1_table(union lpaed *ttbl1,
-        uint64_t baddr, uint8_t valid)
-{
-    ttbl1->pt.valid = valid ? 1 : 0;
-    ttbl1->pt.table = valid ? 1 : 0;
-    ttbl1->bits &= ~TTBL_L1_TABADDR_MASK;
-    ttbl1->bits |= baddr & TTBL_L1_TABADDR_MASK;
-}
-
-void lpaed_stage2_conf_l2_table(union lpaed *ttbl2,
-        uint64_t baddr, uint8_t valid)
-{
-    ttbl2->pt.valid = valid ? 1 : 0;
-    ttbl2->pt.table = valid ? 1 : 0;
-    ttbl2->bits &= ~TTBL_L2_TABADDR_MASK;
-    ttbl2->bits |= baddr & TTBL_L2_TABADDR_MASK;
-}
-
-void lpaed_stage2_enable_l2_table(union lpaed *ttbl2)
-{
-    ttbl2->pt.valid = 1;
-    ttbl2->pt.table = 1;
-}
-void lpaed_stage2_disable_l2_table(union lpaed *ttbl2)
-{
-    ttbl2->pt.valid = 0;
-}
-
-void lpaed_stage2_map_page(union lpaed *pte, uint64_t pa,
-        enum lpaed_stage2_memattr mattr)
-{
-    pte->pt.valid = 1;
-    pte->pt.table = 1;
-    pte->bits &= ~TTBL_L3_OUTADDR_MASK;
-    pte->bits |= pa & TTBL_L3_OUTADDR_MASK;
-    pte->p2m.sbz3 = 0;
-    /* Lower block attributes */
-    pte->p2m.mattr = mattr & 0x0F;
-    pte->p2m.read = 1;        /* Read/Write */
-    pte->p2m.write = 1;
-    pte->p2m.sh = 0;    /* Non-shareable */
-    pte->p2m.af = 1;    /* Access Flag set to 1? */
-    pte->p2m.sbz4 = 0;
-    /* Upper block attributes */
-    pte->p2m.hint = 0;
-    pte->p2m.sbz2 = 0;
-    pte->p2m.xn = 0;    /* eXecute Never = 0 */
-    pte->p2m.sbz1 = 0;
-}
-
 /* Level 1 Table, 1GB, each entry refer level2 page table */
-union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa)
+union lpaed lpaed_host_l1_table(uint64_t pa)
 {
     union lpaed lpaed;
     /* Valid Table Entry */
@@ -164,7 +113,7 @@ union lpaed hvmm_mm_lpaed_l1_table(uint64_t pa)
 }
 
 /* Level 2 Table, 2MB, each entry refer level3 page table.*/
-union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa)
+union lpaed lpaed_host_l2_table(uint64_t pa)
 {
     union lpaed lpaed;
     /* Valid Table Entry */
@@ -185,7 +134,7 @@ union lpaed hvmm_mm_lpaed_l2_table(uint64_t pa)
 }
 
 /* Level 3 Table, each entry refer 4KB physical address */
-union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa,
+union lpaed lpaed_host_l3_table(uint64_t pa,
         uint8_t attr_idx, uint8_t valid)
 {
     union lpaed lpaed;
@@ -212,7 +161,57 @@ union lpaed hvmm_mm_lpaed_l3_table(uint64_t pa,
     return lpaed;
 }
 
-void lpaed_stage1_conf_l3_table(union lpaed *ttbl3,
+void lpaed_guest_stage2_conf_l1_table(union lpaed *ttbl1,
+        uint64_t baddr, uint8_t valid)
+{
+    ttbl1->pt.valid = valid ? 1 : 0;
+    ttbl1->pt.table = valid ? 1 : 0;
+    ttbl1->bits &= ~TTBL_L1_TABADDR_MASK;
+    ttbl1->bits |= baddr & TTBL_L1_TABADDR_MASK;
+}
+
+void lpaed_guest_stage2_conf_l2_table(union lpaed *ttbl2,
+        uint64_t baddr, uint8_t valid)
+{
+    ttbl2->pt.valid = valid ? 1 : 0;
+    ttbl2->pt.table = valid ? 1 : 0;
+    ttbl2->bits &= ~TTBL_L2_TABADDR_MASK;
+    ttbl2->bits |= baddr & TTBL_L2_TABADDR_MASK;
+}
+
+void lpaed_guest_stage2_enable_l2_table(union lpaed *ttbl2)
+{
+    ttbl2->pt.valid = 1;
+    ttbl2->pt.table = 1;
+}
+void lpaed_guest_stage2_disable_l2_table(union lpaed *ttbl2)
+{
+    ttbl2->pt.valid = 0;
+}
+
+void lpaed_guest_stage2_map_page(union lpaed *pte, uint64_t pa,
+        enum memattr mattr)
+{
+    pte->pt.valid = 1;
+    pte->pt.table = 1;
+    pte->bits &= ~TTBL_L3_OUTADDR_MASK;
+    pte->bits |= pa & TTBL_L3_OUTADDR_MASK;
+    pte->p2m.sbz3 = 0;
+    /* Lower block attributes */
+    pte->p2m.mattr = mattr & 0x0F;
+    pte->p2m.read = 1;        /* Read/Write */
+    pte->p2m.write = 1;
+    pte->p2m.sh = 0;    /* Non-shareable */
+    pte->p2m.af = 1;    /* Access Flag set to 1? */
+    pte->p2m.sbz4 = 0;
+    /* Upper block attributes */
+    pte->p2m.hint = 0;
+    pte->p2m.sbz2 = 0;
+    pte->p2m.xn = 0;    /* eXecute Never = 0 */
+    pte->p2m.sbz1 = 0;
+}
+
+void lpaed_guest_stage1_conf_l3_table(union lpaed *ttbl3,
         uint64_t baddr, uint8_t valid)
 {
     ttbl3->pt.valid = valid ? 1 : 0;
@@ -220,7 +219,7 @@ void lpaed_stage1_conf_l3_table(union lpaed *ttbl3,
     ttbl3->bits |= baddr & TTBL_L3_OUTADDR_MASK;
 }
 
-void lpaed_stage1_disable_l3_table(union lpaed *ttbl3)
+void lpaed_guest_stage1_disable_l3_table(union lpaed *ttbl3)
 {
     ttbl3->pt.valid = 0;
 }

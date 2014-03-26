@@ -8,7 +8,7 @@
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
-#include <config/cfg_platform.h>
+#include <k-hypervisor-config.h>
 #include <log/print.h>
 #include <interrupt.h>
 
