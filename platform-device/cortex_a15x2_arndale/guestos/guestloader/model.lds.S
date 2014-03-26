@@ -18,9 +18,10 @@ LOADER_PHYS_START = LDS_LOADER_PHYS_START;
 SECTIONS
 {
  . = GUEST_START;
- guest_bin_start = .;
+ guest_start = .;
  .guest : {GUEST_PATH}
- guest_bin_end = .;
+ guest_end = .;
+ loader_end = .;
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {
@@ -40,8 +41,12 @@ SECTIONS
     *(.bss)
  }
  end_bss = .;
- . = PHYS_STACK;
- guestloader_stacktop = .;
- . = PHYS_STACK - 0x00400000;
- guestloader_stacklimit = .;
+
+. = PHYS_STACK;
+guestloader_stacktop_svc = .;
+. = PHYS_STACK + 0x00400000;
+guestloader_stacklimit_svc = .;
+guestloader_stacktop_irq = .;
+. = PHYS_STACK + 0x00800000;
+guestloader_stacklimit_irq = .;
 }
