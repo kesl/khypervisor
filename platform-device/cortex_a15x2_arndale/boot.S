@@ -73,7 +73,6 @@ vectors:
 
 	.globl	start
 start:
-#ifdef SMP
 	@
 	@ Program architected timer frequency
 	@
@@ -129,22 +128,24 @@ start:
 	cmp	r0, #0				@ primary CPU?
 	beq	2f
 
-	@
-	@ Secondary CPUs (following the RealView SMP booting protocol)
-	@
-	enter_hyp
-
-	ldr	r1, =fs_start - 0x100
-	adr	r2, 1f
-	ldmia	r2, {r3 - r7}			@ move the code to a location
-	stmia	r1, {r3 - r7}			@ less likely to be overridden
-	mov	pc, r1				@ branch to the relocated code
-1:
-    wfe
-	ldr	r1, [r0]
-	cmp	r1, #0
-	beq	1b
-	mov	pc, r1				@ branch to the given address
+#ifdef _SMP_
+    @ Check CPU nr again
+    mrc p15, 0, r0, c0, c0, 5       @ MPIDR (ARMv7 only)
+    @ CPU number, taking multicluster into account
+    bfc r0, #24, #8
+    cmp r0, #0              @ primary CPU?
+    beq 2f
+    ldr     sp, =sec_stacklimit
+    mrc     p15, 0, r0, c0, c0, 5
+    ands    r0, r0, #0xFF
+    mov r1, #SEC_STACK_SIZE
+    mul r1, r1, r0
+    sub sp, sp, r1
+    @
+    @ Secondary CPUs
+    @
+    bl mon_init
+    bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
 #endif
 
 2:
@@ -165,7 +166,7 @@ start:
 	ldr     sp, =sec_stacklimit
 
 	bl mon_init
-    bl mon_enter_hyp   // Secure -> NS.Hyp -> hyp_main()
+    bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
 
 	@ Never reached
 1:	b 1b
@@ -184,8 +185,8 @@ start:
     pop {r0 - r2, pc}
 .type mon_init, % function
 
-.global mon_enter_hyp
-    mon_enter_hyp:
+.global mon_to_hyp
+    mon_to_hyp:
     smc #0  @ -> trap_smc
     hvc #0  @ -> trap_hyp_entry
     /* Place the right Hyp exception vector for the first time */
@@ -195,7 +196,7 @@ start:
     @ never come back
     1:
     b 1b
-.type mon_enter_hyp, % function
+.type mon_to_hyp, % function
 
 .global __mon_switch_to_guest_context
 __mon_switch_to_guest_context:    @ struct arch_regs *r0

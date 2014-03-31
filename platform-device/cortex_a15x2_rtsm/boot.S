@@ -73,7 +73,6 @@ vectors:
 
 	.globl	start
 start:
-#ifdef SMP
 	@
 	@ Program architected timer frequency
 	@
@@ -121,31 +120,26 @@ start:
 	orr	r0, r0, r1
 	mcr	p15, 0, r0, c1, c1, 2
 
+#ifdef _SMP_
 	@ Check CPU nr again
 	mrc	p15, 0, r0, c0, c0, 5		@ MPIDR (ARMv7 only)
 	@ CPU number, taking multicluster into account
 	bfc	r0, #24, #8
 	cmp	r0, #0				@ primary CPU?
 	beq	2f
-
-	@
-	@ Secondary CPUs (following the RealView SMP booting protocol)
-	@
-	enter_hyp
-
-	ldr	r1, =fs_start - 0x100
-	adr	r2, 1f
-	ldmia	r2, {r3 - r7}			@ move the code to a location
-	stmia	r1, {r3 - r7}			@ less likely to be overridden
-	ldr	r0, =0x1c010030			@ VE SYS_FLAGS register
-	mov	pc, r1				@ branch to the relocated code
-1:
-	wfe
-	ldr	r1, [r0]
-	cmp	r1, #0
-	beq	1b
-	mov	pc, r1				@ branch to the given address
+    ldr     sp, =sec_stacklimit
+    mrc     p15, 0, r0, c0, c0, 5
+    ands    r0, r0, #0xFF
+    mov r1, #SEC_STACK_SIZE
+    mul r1, r1, r0
+    sub sp, sp, r1
+    @
+    @ Secondary CPUs
+    @
+    bl mon_init
+    bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
 #endif
+
 
 2:
 	@
@@ -175,16 +169,16 @@ start:
 	mov	r1, #0xc300
 	orr	r1, #0x0001			@ cr
 	str	r1, [r0, #0x30]
-/* Initialize bss section */
+    /* Initialize bss section */
     ldr  r2, =begin_bss
     ldr  r3, =end_bss
     mov  r0, #0
 1:  str  r0, [r2], #4    @ clear bss
     cmp  r2, r3
     blo  1b
-	@ Now we've got rid of the secondary CPUs, set up a stack
-	@ for CPU 0 so we can write most of this in C.
-	ldr     sp, =sec_stacklimit
+    @ Now we've got rid of the secondary CPUs, set up a stack
+    @ for CPU 0 so we can write most of this in C.
+    ldr     sp, =sec_stacklimit
 
     bl mon_init
     bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
