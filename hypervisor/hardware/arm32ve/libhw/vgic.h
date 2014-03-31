@@ -47,7 +47,7 @@ hvmm_status_t vgic_init(void);
  * @return          Always returns "success".
  */
 hvmm_status_t vgic_init_status(struct vgic_status *status, vmid_t vmid);
-hvmm_status_t vgic_save_status(struct vgic_status *status, vmid_t vmid);
+hvmm_status_t vgic_save_status(struct vgic_status *status);
 hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid);
 hvmm_status_t vgic_flush_virqs(vmid_t vmid);
 /* returns slot index if successful, VGIC_SLOT_NOTFOUND otherwise */

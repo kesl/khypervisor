@@ -160,28 +160,22 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
         printh("interrupt:no pending irq:%x\n", irq);
 }
 
-hvmm_status_t interrupt_save(void)
+hvmm_status_t interrupt_save(vmid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
-    if (_host_ops->save)
-        ret =  _host_ops->save();
-
-    if (_guest_ops->save && !ret)
-        ret = _guest_ops->save();
+    if (_guest_ops->save)
+        ret = _guest_ops->save(vmid);
 
     return ret;
 }
 
-hvmm_status_t interrupt_restore(void)
+hvmm_status_t interrupt_restore(vmid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
-    if (_host_ops->restore)
-        ret = _host_ops->restore();
-
-    if (_guest_ops->restore && !ret)
-        ret = _guest_ops->restore();
+    if (_guest_ops->restore)
+        ret = _guest_ops->restore(vmid);
 
     return ret;
 }

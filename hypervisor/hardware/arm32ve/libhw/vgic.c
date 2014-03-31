@@ -636,7 +636,7 @@ hvmm_status_t vgic_init_status(struct vgic_status *status, vmid_t vmid)
     return result;
 }
 
-hvmm_status_t vgic_save_status(struct vgic_status *status, vmid_t vmid)
+hvmm_status_t vgic_save_status(struct vgic_status *status)
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;

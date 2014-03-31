@@ -30,6 +30,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
     memory_save();
+    interrupt_save(_current_guest_vmid);
     /* save the current guest's context */
     if (_guest_module.ops->save) {
         result = _guest_module.ops->save(&guests[_current_guest_vmid], regs);
@@ -44,7 +45,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
-
+    interrupt_restore(_current_guest_vmid);
     memory_restore(_current_guest_vmid);
     /* The next becomes the current */
     if (_guest_module.ops->restore)

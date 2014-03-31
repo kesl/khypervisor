@@ -56,7 +56,6 @@ struct arch_regs {
 
 /* Defines the architecture specific information, except general regsiters */
 struct arch_context {
-    struct vgic_status vgic_status;
     struct regs_cop regs_cop;
     struct regs_banked regs_banked;
 };
