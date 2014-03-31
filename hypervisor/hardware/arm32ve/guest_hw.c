@@ -1,12 +1,6 @@
 #include <k-hypervisor-config.h>
-#include <test/tests.h>
-#include <version.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <timer.h>
-#include <memory.h>
-#include <interrupt.h>
-#include <vdev.h>
 #include <guest.h>
 #include <guest_hw.h>
 

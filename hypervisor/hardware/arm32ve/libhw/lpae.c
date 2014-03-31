@@ -1,4 +1,4 @@
-#include "lpae.h"
+#include <lpae.h>
 
 #include <log/print.h>
 #include <log/uart_print.h>

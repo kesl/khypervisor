@@ -1,12 +1,11 @@
-#include "gic.h"
-#include "armv7_p15.h"
-#include "a15_cp15_sysregs.h"
-#include "smp.h"
+#include <gic.h>
+#include <armv7_p15.h>
+#include <a15_cp15_sysregs.h>
+#include <smp.h>
 #include <guest.h>
-#include "hvmm_trace.h"
+#include <hvmm_trace.h>
 #include <gic_regs.h>
-#include "hvmm_types.h"
-
+#include <hvmm_types.h>
 #include <log/print.h>
 #include <log/uart_print.h>
 #include <k-hypervisor-config.h>

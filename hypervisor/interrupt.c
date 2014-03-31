@@ -1,10 +1,7 @@
 #define DEBUG
-#include "hvmm_types.h"
-#include "gic.h"
-#include "armv7_p15.h"
-#include "guest.h"
-#include "hvmm_trace.h"
-#include "vgic.h"
+#include <hvmm_types.h>
+#include <guest.h>
+#include <hvmm_trace.h>
 #include <log/uart_print.h>
 #include <interrupt.h>
 

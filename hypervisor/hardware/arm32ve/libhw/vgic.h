@@ -1,7 +1,7 @@
 #ifndef __VGIC_H__
 #define __VGIC_H__
-#include "arch_types.h"
-#include "hvmm_types.h"
+#include <arch_types.h>
+#include <hvmm_types.h>
 
 #define VGIC_NUM_MAX_SLOTS              64
 #define VGIC_SLOT_NOTFOUND              (0xFFFFFFFF)

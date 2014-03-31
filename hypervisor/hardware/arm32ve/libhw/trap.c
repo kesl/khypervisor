@@ -1,7 +1,6 @@
 #include <hvmm_trace.h>
 #include <armv7_p15.h>
-#include "trap.h"
-#include "gic.h"
+#include <gic.h>
 #include <trap.h>
 #include <guest.h>
 #include <vdev.h>
