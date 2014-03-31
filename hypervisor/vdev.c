@@ -146,6 +146,52 @@ hvmm_status_t vdev_post(int level, int num, struct arch_vdev_trigger_info *info,
     return result;
 }
 
+hvmm_status_t vdev_save(vmid_t vmid)
+{
+    int i, j;
+    struct vdev_module *vdev;
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    for (i = 0; i < VDEV_LEVEL_MAX; i++) {
+        for (j = 0; j < _vdev_size[i]; j++) {
+            vdev = _vdev_module[i][j];
+            if (!vdev->ops->save)
+                continue;
+
+            result = vdev->ops->save(vmid);
+            if (result) {
+                printh("vdev : save error, name : %s\n", vdev->name);
+                return result;
+            }
+        }
+    }
+
+    return result;
+}
+
+hvmm_status_t vdev_restore(vmid_t vmid)
+{
+    int i, j;
+    struct vdev_module *vdev;
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    for (i = 0; i < VDEV_LEVEL_MAX; i++) {
+        for (j = 0; j < _vdev_size[i]; j++) {
+            vdev = _vdev_module[i][j];
+            if (!vdev->ops->restore)
+                continue;
+
+            result = vdev->ops->restore(vmid);
+            if (result) {
+                printh("vdev : save error, name : %s\n", vdev->name);
+                return result;
+            }
+        }
+    }
+
+    return result;
+}
+
 hvmm_status_t vdev_module_initcall(initcall_t fn)
 {
     return  fn();
