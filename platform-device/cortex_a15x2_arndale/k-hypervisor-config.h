@@ -11,6 +11,13 @@
 #define CFG_UART1         0x12C10000
 #define CFG_UART0         0x12C20000
 
+#define CFG_NUMBER_OF_CPUS  2
+
+#define MON_SIZE            0x0F000000
+#define MON_STACK_SIZE      0x00C00000
+#define SEC_STACK_SIZE      0x00400000
+#define GUEST_SIZE_MAX      0x0F000000
+
 /*
  *  SOC param
  */

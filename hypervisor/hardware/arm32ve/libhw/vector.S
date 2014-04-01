@@ -9,7 +9,7 @@
     .arch_extension sec
     .arch_extension virt
     .text
-
+#include <k-hypervisor-config.h>
 /* ---[Secure Mode]------------------------------------------------------ */
 /*
  * Secure Monitor Vector Table
@@ -45,6 +45,14 @@ vector_smc:
 vector_hyp_entry:
     /* Setup stack for Hyp for the first time */
     ldr sp, = mon_stacklimit
+#ifdef _SMP_
+    ldr     sp, =mon_stacklimit
+    mrc     p15, 0, r0, c0, c0, 5
+    ands    r0, r0, #0xFF
+    mov r1, #MON_STACK_SIZE
+    mul r1, r1, r0
+    sub sp, sp, r1
+#endif
     /* Stay in Hyp mode and branch to where hvc invoked. */
     mrs lr, elr_hyp
     mov pc, lr

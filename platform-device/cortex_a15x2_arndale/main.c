@@ -207,6 +207,9 @@ void setup_memory()
 
 int main_cpu_init()
 {
+    init_print();
+    printH("[%s : %d] Starting...Main CPU : #%d\n", __func__, __LINE__);
+
     setup_memory();
     /* Initialize Memory Management */
     if (memory_init(guest_mdlist0, guest_mdlist1))
@@ -246,17 +249,69 @@ int main_cpu_init()
 
 }
 
-int main(void)
+
+#ifdef _SMP_
+void secondary_cpu_init(uint32_t cpu)
 {
-    uint32_t cpu = smp_processor_id();
+    if (cpu >= CFG_NUMBER_OF_CPUS)
+        hyp_abort_infinite();
 
     init_print();
-    printh("[%s : %d] Starting...\n", __func__, __LINE__);
+    printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
+
+    hyp_abort_infinite();
+
+    /* Initialize Memory Management */
+    setup_memory();
+    if (memory_init(guest_mdlist0, guest_mdlist1))
+        printh("[start_guest] virtual memory initialization failed...\n");
+
+    /* Initialize PIRQ to VIRQ mapping */
+    setup_interrupt();
+    /* Initialize Interrupt Management */
+    if (interrupt_init(_guest_virqmap))
+        printh("[start_guest] interrupt initialization failed...\n");
+
+    /* Initialize Timer */
+    if (timer_init(TIMER_SCHED))
+        printh("[start_guest] timer initialization failed...\n");
+
+    /* Initialize Guests */
+    if (guest_init())
+        printh("[start_guest] guest initialization failed...\n");
+
+    /* Initialize Virtual Devices */
+    if (vdev_init())
+        printh("[start_guest] virtual device initialization failed...\n");
+
+    /* Begin running test code for newly implemented features */
+    if (basic_tests_run(PLATFORM_BASIC_TESTS))
+        printh("[start_guest] basic testing failed...\n");
+
+    /* Print Banner */
+    printH("%s", BANNER_STRING);
+
+    /* Switch to the first guest */
+    guest_sched_start();
+
+    /* The code flow must not reach here */
+    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
+    hyp_abort_infinite();
+}
+#endif
+
+
+int main(void)
+{
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
 
     if (!cpu)
         main_cpu_init();
     else
-        printh("Second CPU Starting...\n", __func__, __LINE__);
-
+        secondary_cpu_init(cpu);
+#else
+    main_cpu_init();
+#endif
     return 0;
 }
