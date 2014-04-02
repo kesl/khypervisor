@@ -20,8 +20,8 @@ export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
 export GUEST0_BUILD_SCRIPT="cd ../linux && \
 make ARCH=arm vexpress_minhw_defconfig && \
-cp -a ../../linuxguest/fs.cpio . && \
-cp -a ../../linuxguest/host-a15.dtb . && \
+cp -a ../../patch/fs.cpio . && \
+cp -a ../../patch/host-a15.dtb . && \
 make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 && \
 cat host-a15.dtb >> arch/arm/boot/zImage && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
