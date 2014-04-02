@@ -28,8 +28,8 @@ int main()
     WFE();
 #endif
 #ifdef TESTS_TRAP_SMC
-    SMC();
     SVC();
+/*    SMC(); */
 #endif
 #ifdef TESTS_TRAP_SCTLR
     WRITE_SCTLR(val);
@@ -42,6 +42,7 @@ int main()
     WRITE_ACTLR(val);
     READ_ACTLR(val);
 #endif
+
     while (1)
         ;
     return 0;

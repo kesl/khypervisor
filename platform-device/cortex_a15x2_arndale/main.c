@@ -107,6 +107,8 @@ static struct memmap_desc *guest_mdlist1[] = {
     0
 };
 
+static uint32_t _timer_irq;
+
 /*
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
  * Mapping of between pirq and virq is hard-coded.
@@ -205,6 +207,24 @@ void setup_memory()
     guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
 }
 
+/** @brief Registers generic timer irqs such as hypervisor timer event
+ *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ *  and virtual timer event(GENERIC_TIMER_NSP).
+ *  Each interrup source is identified by a unique ID.
+ *  cf. "Cortex™-A15 Technical Reference Manual" 8.2.3 Interrupt sources
+ *
+ *  DEVICE : IRQ number
+ *  GENERIC_TIMER_HYP : 26
+ *  GENERIC_TIMER_NSP : 30
+ *  GENERIC_TIMER_VIR : 27
+ *
+ *  @note "Cortex™-A15 Technical Reference Manual", 8.2.3 Interrupt sources
+ */
+void setup_timer()
+{
+    _timer_irq = 26; /* GENERIC_TIMER_HYP */
+}
+
 int main_cpu_init()
 {
     init_print();
@@ -222,7 +242,8 @@ int main_cpu_init()
         printh("[start_guest] interrupt initialization failed...\n");
 
     /* Initialize Timer */
-    if (timer_init(TIMER_SCHED))
+    setup_timer();
+    if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
 
     /* Initialize Guests */
@@ -273,7 +294,8 @@ void secondary_cpu_init(uint32_t cpu)
         printh("[start_guest] interrupt initialization failed...\n");
 
     /* Initialize Timer */
-    if (timer_init(TIMER_SCHED))
+    setup_timer();
+    if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
 
     /* Initialize Guests */
