@@ -108,8 +108,8 @@ a0000000-dfffffff : System RAM
 
 ### $ cat /proc/interrupts
 <pre>
-# cat interrupts 
-           CPU0       
+# cat interrupts
+           CPU0
  34:    2439979       GIC  timer
  36:          0       GIC  rtc-pl031
  37:       3037       GIC  uart-pl011

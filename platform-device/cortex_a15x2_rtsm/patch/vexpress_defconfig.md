@@ -44,7 +44,7 @@
     - interrupt: 2
     - 0x3 00120000 ~, 0x1000
     - interrupt: 3
-    
+
 - Motherboard (rtsm_ve-cortex_a15x1.dts)
 	- 0x08000000 ~ 0x04000000
     - 0x14000000 ~ 0x04000000
@@ -123,8 +123,8 @@ a0000000-dfffffff : System RAM
 
 ### $ cat /proc/interrupts
 <pre>
-# cat interrupts 
-           CPU0       
+# cat interrupts
+           CPU0
  34:    2439979       GIC  timer
  36:          0       GIC  rtc-pl031
  37:       3037       GIC  uart-pl011
