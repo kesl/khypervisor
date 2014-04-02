@@ -152,6 +152,7 @@ hvmm_status_t vdev_save(vmid_t vmid)
     struct vdev_module *vdev;
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* TODO : change one level iteration */
     for (i = 0; i < VDEV_LEVEL_MAX; i++) {
         for (j = 0; j < _vdev_size[i]; j++) {
             vdev = _vdev_module[i][j];
@@ -175,6 +176,7 @@ hvmm_status_t vdev_restore(vmid_t vmid)
     struct vdev_module *vdev;
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* TODO : change one level iteration */
     for (i = 0; i < VDEV_LEVEL_MAX; i++) {
         for (j = 0; j < _vdev_size[i]; j++) {
             vdev = _vdev_module[i][j];
