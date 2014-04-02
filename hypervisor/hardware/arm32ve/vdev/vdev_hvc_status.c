@@ -1,7 +1,4 @@
 #define DEBUG
-#include <guest.h>
-#include <gic.h>
-#include <gic_regs.h>
 #include <vdev.h>
 #include <log/print.h>
 #include <asm-arm_inline.h>

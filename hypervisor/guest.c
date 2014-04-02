@@ -20,6 +20,28 @@ struct guest_struct *_current_guest;
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked;
 
+
+static hvmm_status_t guest_save(struct guest_struct *guest,
+                        struct arch_regs *regs)
+{
+    /* save the current guest's context */
+    if (_guest_module.ops->save) {
+        return  _guest_module.ops->save(&guests[_current_guest_vmid], regs);
+    }
+
+    return HVMM_STATUS_UNKNOWN_ERROR;
+}
+
+static hvmm_status_t guest_restore(struct guest_struct *guest,
+                        struct arch_regs *regs)
+{
+    /* The next becomes the current */
+     if (_guest_module.ops->restore)
+         return  _guest_module.ops->restore(guest, regs);
+
+     return HVMM_STATUS_UNKNOWN_ERROR;
+}
+
 static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 {
     /* _curreng_guest_vmid -> next_vmid */
@@ -29,13 +51,10 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_current_guest_vmid == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
+    guest_save(&guests[_current_guest_vmid], regs);
     memory_save();
-    /* save the current guest's context */
-    if (_guest_module.ops->save) {
-        result = _guest_module.ops->save(&guests[_current_guest_vmid], regs);
-        if (result)
-            return result;
-    }
+    interrupt_save(_current_guest_vmid);
+    vdev_save(_current_guest_vmid);
 
     /* The context of the next guest */
     guest = &guests[next_vmid];
@@ -45,12 +64,10 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
+    vdev_restore(_current_guest_vmid);
+    interrupt_restore(_current_guest_vmid);
     memory_restore(_current_guest_vmid);
-    /* The next becomes the current */
-    if (_guest_module.ops->restore)
-        result = _guest_module.ops->restore(guest, regs);
-        if (result)
-            return result;
+    guest_restore(guest, regs);
 
     return result;
 }

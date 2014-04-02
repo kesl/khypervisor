@@ -90,6 +90,12 @@ struct vdev_ops {
     /** Post for remain on the job */
     hvmm_status_t (*post)(struct arch_vdev_trigger_info *, struct arch_regs *);
 
+    /** Save virtual device state */
+    hvmm_status_t (*save)(vmid_t vmid);
+
+    /** Restore virtual device state */
+    hvmm_status_t (*restore)(vmid_t vmid);
+
     /** Dump state of the vdev */
     hvmm_status_t (*dump)(void);
 
@@ -133,6 +139,8 @@ int32_t vdev_write(int level, int num, struct arch_vdev_trigger_info *info,
             struct arch_regs *regs);
 hvmm_status_t vdev_post(int level, int num, struct arch_vdev_trigger_info *info,
             struct arch_regs *regs);
+hvmm_status_t vdev_save(vmid_t vmid);
+hvmm_status_t vdev_restore(vmid_t vmid);
 hvmm_status_t vdev_init(void);
 
 #endif /* __VDEV_H_ */

@@ -1,7 +1,6 @@
 #include <k-hypervisor-config.h>
 #include <memory.h>
-#include "armv7_p15.h"
-#include "arch_types.h"
+#include <arch_types.h>
 #include <log/print.h>
 #include <log/uart_print.h>
 

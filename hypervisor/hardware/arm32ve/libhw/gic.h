@@ -1,9 +1,9 @@
 #ifndef __GIC_H__
 #define __GIC_H__
 
-#include "hvmm_types.h"
-#include "arch_types.h"
-#include "smp.h"
+#include <hvmm_types.h>
+#include <arch_types.h>
+#include <smp.h>
 #include <interrupt.h>
 
 #define GIC_NUM_MAX_IRQS    1024

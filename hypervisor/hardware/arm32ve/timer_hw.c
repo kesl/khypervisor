@@ -1,11 +1,10 @@
-#include "armv7_p15.h"
-#include "gic.h"
+#include <k-hypervisor-config.h>
+#include <armv7_p15.h>
 #include <timer.h>
 #include <log/uart_print.h>
 #include <asm-arm_inline.h>
 #include <hvmm_trace.h>
 #include <interrupt.h>
-#include <k-hypervisor-config.h>
 
 enum generic_timer_type {
     GENERIC_TIMER_HYP,      /* IRQ 26 */

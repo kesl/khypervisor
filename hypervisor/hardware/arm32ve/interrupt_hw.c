@@ -4,6 +4,8 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
+static struct vgic_status _vgic_status[NUM_GUESTS_STATIC];
+
 static hvmm_status_t host_interrupt_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
@@ -54,18 +56,6 @@ static hvmm_status_t host_interrupt_end(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t host_interrupt_save(void)
-{
-    /* TODO : save interrupt infomation */
-    return HVMM_STATUS_SUCCESS;
-}
-
-static hvmm_status_t host_interrupt_restore(void)
-{
-    /* TODO : restore interrupt infomation */
-    return HVMM_STATUS_SUCCESS;
-}
-
 static hvmm_status_t host_interrupt_dump(void)
 {
     /* TODO : dumpping the interrupt status & count */
@@ -98,16 +88,14 @@ static hvmm_status_t guest_interrupt_inject(vmid_t vmid, uint32_t virq,
     return virq_inject(vmid, virq, pirq, hw);
 }
 
-static hvmm_status_t guest_interrupt_save(void)
+static hvmm_status_t guest_interrupt_save(vmid_t vmid)
 {
-    /* TODO : save guest interrupt infomation */
-    return HVMM_STATUS_SUCCESS;
+    return vgic_save_status(&_vgic_status[vmid]);
 }
 
-static hvmm_status_t guest_interrupt_restore(void)
+static hvmm_status_t guest_interrupt_restore(vmid_t vmid)
 {
-    /* TODO : restore guest interrupt infomation */
-    return HVMM_STATUS_SUCCESS;
+    return vgic_restore_status(&_vgic_status[vmid], vmid);
 }
 
 static hvmm_status_t guest_interrupt_dump(void)
@@ -122,8 +110,6 @@ struct interrupt_ops _host_interrupt_ops = {
     .disable = host_interrupt_disable,
     .configure = host_interrupt_configure,
     .end = host_interrupt_end,
-    .save = host_interrupt_save,
-    .restore = host_interrupt_restore,
     .dump = host_interrupt_dump,
 };
 

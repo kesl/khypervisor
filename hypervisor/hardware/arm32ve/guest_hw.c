@@ -1,12 +1,6 @@
 #include <k-hypervisor-config.h>
-#include <test/tests.h>
-#include <version.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <timer.h>
-#include <memory.h>
-#include <interrupt.h>
-#include <vdev.h>
 #include <guest.h>
 #include <guest_hw.h>
 
@@ -234,7 +228,6 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     context_copy_regs(regs, current_regs);
     context_save_cops(&context->regs_cop);
     context_save_banked(&context->regs_banked);
-    vgic_save_status(&context->vgic_status, guest->vmid);
     printh("context: saving vmid[%d] mode(%x):%s pc:0x%x\n",
             _current_guest->vmid,
            regs->cpsr & 0x1F,
@@ -260,7 +253,6 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
     }
 
     /* guest -> hyp -> guest */
-    vgic_restore_status(&context->vgic_status, guest->vmid);
     context_copy_regs(current_regs, &guest->regs);
     context_restore_cops(&context->regs_cop);
     context_restore_banked(&context->regs_banked);
@@ -279,7 +271,6 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
     /* regs->gpr[] = whatever */
     context_init_cops(&context->regs_cop);
     context_init_banked(&context->regs_banked);
-    vgic_init_status(&context->vgic_status, guest->vmid);
 
     return HVMM_STATUS_SUCCESS;
 }

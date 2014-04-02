@@ -1,10 +1,6 @@
-#include <guest.h>
-#include <gic.h>
-#include <gic_regs.h>
 #include <vdev.h>
 #define DEBUG
 #include <log/print.h>
-#include <asm-arm_inline.h>
 
 #define SAMPLE_BASE_ADDR 0x3FFFF000
 
