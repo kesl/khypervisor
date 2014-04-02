@@ -115,6 +115,7 @@ void callback_test_timer(void *pdata)
 
 hvmm_status_t hvmm_tests_vgic(void)
 {
+    struct timer_val timer;
     /* VGIC test
      *  - Implementation Not Complete
      *  - TODO: specify guest to receive the virtual IRQ
@@ -124,7 +125,9 @@ hvmm_status_t hvmm_tests_vgic(void)
      *      -> This should handle completion of deactivation and further
      *         injection if there is any pending virtual IRQ
      */
-    timer_add_callback(TIMER_SCHED, &callback_test_timer);
+    timer.interval_us = GUEST_SCHED_TICK;
+    timer.callback = &callback_test_timer;
+    timer_set(&timer, HOST_TIMER);
 
     return HVMM_STATUS_SUCCESS;
 }

@@ -207,6 +207,7 @@ void guest_schedule(void *pdata)
     guest_switchto(sched_policy_determ_next(), 0);
 }
 
+static struct timer_val timer;
 hvmm_status_t guest_init()
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
@@ -227,15 +228,9 @@ hvmm_status_t guest_init()
     printh("[hyp] init_guests: return\n");
 
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
-    result = timer_set_interval(TIMER_SCHED, GUEST_SCHED_TICK);
-    if (result != HVMM_STATUS_SUCCESS)
-        printh("[%s] settup the timer interval failed...\n", __func__);
-
-    result = timer_add_callback(TIMER_SCHED, &guest_schedule);
-    if (result != HVMM_STATUS_SUCCESS)
-        printh("[%s] settup the timer callback failed...\n", __func__);
-
-    result = timer_start(TIMER_SCHED);
+    timer.interval_us = GUEST_SCHED_TICK;
+    timer.callback = &guest_schedule;
+    result = timer_set(&timer, HOST_TIMER);
     if (result != HVMM_STATUS_SUCCESS)
         printh("[%s] timer startup failed...\n", __func__);
 
