@@ -4,6 +4,8 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
+#define GUEST_TIMER 0
+#define HOST_TIMER 1
 /*
  * Implements Timer functionality such as,
  *
@@ -26,76 +28,14 @@
  *  timer_start( TIMER_SCHED );
  */
 
-#define TIMER_MAX_CHANNEL_CALLBACKS 8
-
-enum timer_channel_type {
-    TIMER_SCHED = 0,
-    TIMER_NUM_MAX_CHANNELS
-};
-
 typedef void(*timer_callback_t)(void *pdata);
 
-struct timer_channel {
+struct timer_val {
     uint32_t interval_us;
-    timer_callback_t callbacks[TIMER_MAX_CHANNEL_CALLBACKS];
+    timer_callback_t callback;
 };
 
-/*
- * Calling this function is required only once in the entire system
- * prior to calls to other functions of Timer module.
- */
-hvmm_status_t timer_init(enum timer_channel_type channel);
-
-/*
- * Starts the timer channel specified by 'channel'. The callback,
- * if set, will be periodically called until it's unset or the channel stops by
- * 'timer_stop(timer_channel)'
- */
-hvmm_status_t timer_start(enum timer_channel_type channel);
-
-/*
- *  Stops the timer channel specified by 'channel'
- */
-hvmm_status_t timer_stop(enum timer_channel_type channel);
-
-/*
- * Sets time interval, in microseconds, for the timer channel.
- * If the channel has been started and a callback function is set,
- * it will be called in the next interval
- */
-hvmm_status_t timer_set_interval(enum timer_channel_type channel,
-                uint32_t interval_us);
-
-/*
- * Returns the time interval for the timer channel if it was set previously.
- * Unknown value is returned otherwise.
- */
-uint32_t timer_get_interval(enum timer_channel_type channel);
-
-/*
- * Adds a callback function for the timer channel.
- */
-hvmm_status_t timer_add_callback(enum timer_channel_type channel,
-                timer_callback_t handler);
-
-/*
- * Removes the callback function from the timer channel's
- * registered callback function list
- * if it previously has been added.
- */
-hvmm_status_t timer_remove_callback(enum timer_channel_type channel,
-        timer_callback_t handler);
-
-/*
- * Converts from microseconds to system counter.
- */
-uint64_t timer_t2c(uint64_t time_us);
-
-
 struct timer_ops {
-    /** Set the callback function */
-    hvmm_status_t (*set_callbacks)(timer_callback_t, void *user);
-
     /** The init function should only be used in the entire system */
     hvmm_status_t (*init)(void);
 
@@ -105,14 +45,8 @@ struct timer_ops {
     /** Disable the timer interrupt */
     hvmm_status_t (*disable)(void);
 
-    /** Register the timer interrupt */
-    hvmm_status_t (*request_irq)(void);
-
-    /** Free the timer interrupt */
-    hvmm_status_t (*free_irq)(void);
-
     /** Set timer duration */
-    hvmm_status_t (*set_interval)(uint32_t);
+    hvmm_status_t (*set_interval)(uint64_t);
 
     /** Dump state of the timer */
     hvmm_status_t (*dump)(void);
@@ -149,5 +83,11 @@ struct timer_module {
 };
 
 extern struct timer_module _timer_module;
+/*
+ * Calling this function is required only once in the entire system
+ * prior to calls to other functions of Timer module.
+ */
+hvmm_status_t timer_init(uint32_t irq);
+hvmm_status_t timer_set(struct timer_val *timer, uint32_t host);
 
 #endif
