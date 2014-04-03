@@ -4,13 +4,14 @@
 #include <gic.h>
 #include <test/tests.h>
 #include <drivers/pwm_timer.h>
+#include <log/print.h>
 
 /* #define TESTS_ENABLE_PWM_TIMER */
 
 int main()
 {
-    uart_print(GUEST_LABEL);
-    uart_print("=== Starting platform main n\r");
+    printH(GUEST_LABEL);
+    printH("=== Starting platform main n\r");
 #ifdef TESTS_ENABLE_PWM_TIMER
     hvmm_tests_pwm_timer();
 #endif

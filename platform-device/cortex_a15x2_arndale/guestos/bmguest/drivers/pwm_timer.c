@@ -4,6 +4,7 @@
 #include "pwm_timer.h"
 #include "io-exynos.h"
 #include <log/uart_print.h>
+#include <log/print.h>
 
 uint32_t tcntb1;
 static pwm_timer_callback_t _callback;
@@ -94,10 +95,10 @@ void pwm_timer_init()
 void interrupt_pwmtimer(int irq, void *pregs, void *pdata)
 {
     pwm_timer_disable_int();
-    uart_print("=======================================\n\r");
+    printH("=======================================\n\r");
     HVMM_TRACE_ENTER();
     HVMM_TRACE_EXIT();
-    uart_print("=======================================\n\r");
+    printH("=======================================\n\r");
     pwm_timer_enable_int();
 }
 
