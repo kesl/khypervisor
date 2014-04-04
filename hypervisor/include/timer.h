@@ -4,29 +4,7 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
-#define GUEST_TIMER 0
-#define HOST_TIMER 1
-/*
- * Implements Timer functionality such as,
- *
- * - timer channel: periodic callback at a given time interval
- * - current time: time since boot-up
- *
- * ==Example Usage==
- *
- * Initialize the timer module
- *  timer_init(TIMER_SCHED);
- *
- * Set interval 10 to timer_sched channel
- *  timer_set_interval( TIMER_SCHED, 10 );
- *
- * Set cb1 callback function to timer_scehd channel.
- * cb1 call after 10 interval.
- *  timer_set_callback( TIMER_SCHED, &cb1 );
- *
- * Start timer_sched channel. cb1 call after 10 interval.
- *  timer_start( TIMER_SCHED );
- */
+#define MAX_TIMER 8
 
 typedef void(*timer_callback_t)(void *pdata);
 
@@ -88,6 +66,6 @@ extern struct timer_module _timer_module;
  * prior to calls to other functions of Timer module.
  */
 hvmm_status_t timer_init(uint32_t irq);
-hvmm_status_t timer_set(struct timer_val *timer, uint32_t host);
+hvmm_status_t timer_set(struct timer_val *timer);
 
 #endif
