@@ -46,41 +46,21 @@ static void gic_dump_registers(void)
     uint32_t midr;
     HVMM_TRACE_ENTER();
     midr = read_midr();
-    uart_print("midr:");
-    uart_print_hex32(midr);
-    uart_print("\n\r");
+    printh("midr:%x\n",midr);
     if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
         uint32_t value;
-        uart_print("cbar:");
-        uart_print_hex32(_gic.baseaddr);
-        uart_print("\n\r");
-        uart_print("ba_gicd:");
-        uart_print_hex32((uint32_t)_gic.ba_gicd);
-        uart_print("\n\r");
-        uart_print("ba_gicc:");
-        uart_print_hex32((uint32_t)_gic.ba_gicc);
-        uart_print("\n\r");
-        uart_print("ba_gich:");
-        uart_print_hex32((uint32_t)_gic.ba_gich);
-        uart_print("\n\r");
-        uart_print("ba_gicv:");
-        uart_print_hex32((uint32_t)_gic.ba_gicv);
-        uart_print("\n\r");
-        uart_print("ba_gicvi:");
-        uart_print_hex32((uint32_t)_gic.ba_gicvi);
-        uart_print("\n\r");
+        printh("cbar:%x\n",_gic.baseaddr);
+        printh("ba_gicd:%x\n",(uint32_t)_gic.ba_gicd);
+        printh("ba_gicc:%x\n",(uint32_t)_gic.ba_gicc);
+        printh("ba_gich:%x\n",(uint32_t)_gic.ba_gich);
+        printh("ba_gicv:%x\n",(uint32_t)_gic.ba_gicv);
+        printh("ba_gicvi:%x\n",(uint32_t)_gic.ba_gicvi);
         value = _gic.ba_gicd[GICD_CTLR];
-        uart_print("GICD_CTLR:");
-        uart_print_hex32(value);
-        uart_print("\n\r");
+        printh("GICD_CTLR:%x\n",value);
         value = _gic.ba_gicd[GICD_TYPER];
-        uart_print("GICD_TYPER:");
-        uart_print_hex32(value);
-        uart_print("\n\r");
+        printh("GICD_TYPER:%x\n",value);
         value = _gic.ba_gicd[GICD_IIDR];
-        uart_print("GICD_IIDR:");
-        uart_print_hex32(value);
-        uart_print("\n\r");
+        printh("GICD_IIDR:%x\n",value);
     }
     HVMM_TRACE_EXIT();
 }
@@ -120,9 +100,7 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     HVMM_TRACE_ENTER();
     midr = read_midr();
-    uart_print("midr:");
-    uart_print_hex32(midr);
-    uart_print("\n\r");
+    printh("midr:%x\n",midr);
     /*
      * Note:
      * We currently support GICv2 with Cortex-A15 only.
@@ -136,9 +114,7 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
                     0x00000000FFFFFFFFULL);
         }
         _gic.baseaddr = (uint32_t) va_base;
-        uart_print("cbar:");
-        uart_print_hex32(_gic.baseaddr);
-        uart_print("\n\r");
+        printh("cbar:%x\n",_gic.baseaddr);
         _gic.ba_gicd = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICD);
         _gic.ba_gicc = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICC);
         _gic.ba_gich = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICH);
@@ -146,10 +122,8 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
         _gic.ba_gicvi = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICVI);
         result = HVMM_STATUS_SUCCESS;
     } else {
-        uart_print("GICv2 Unsupported\n\r");
-        uart_print("midr.ppn:");
-        uart_print_hex32(midr & MIDR_MASK_PPN);
-        uart_print("\n\r");
+        printh("GICv2 Unsupported\n\r");
+        printh("midr.ppn:%x\n",midr & MIDR_MASK_PPN);
         result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     }
     HVMM_TRACE_EXIT();
@@ -178,13 +152,9 @@ static hvmm_status_t gic_init_dist(void)
     type = _gic.ba_gicd[GICD_TYPER];
     _gic.lines = 32 * ((type & GICD_TYPE_LINES_MASK) + 1);
     _gic.cpus = 1 + ((type & GICD_TYPE_CPUS_MASK) >> GICD_TYPE_CPUS_SHIFT);
-    uart_print("GIC: lines:");
-    uart_print_hex32(_gic.lines);
-    uart_print(" cpus:");
-    uart_print_hex32(_gic.cpus);
-    uart_print(" IID:");
-    uart_print_hex32(_gic.ba_gicd[GICD_IIDR]);
-    uart_print("\n\r");
+    printh("GIC: lines:%x",_gic.lines);
+    printh(" cpus:%x",_gic.cpus);
+    printh(" IID:%x\n",_gic.ba_gicd[GICD_IIDR]);
     /* Interrupt polarity for SPIs (Global Interrupts) active-low */
     for (i = 32; i < _gic.lines; i += 16)
         _gic.ba_gicd[GICD_ICFGR + i / 16] = 0x0;
@@ -276,7 +246,7 @@ volatile uint32_t *gic_vgic_baseaddr(void)
 {
     if (_gic.initialized != GIC_SIGNATURE_INITIALIZED) {
         HVMM_TRACE_ENTER();
-        uart_print("gic: ERROR - not initialized\n\r");
+        printh("gic: ERROR - not initialized\n\r");
         HVMM_TRACE_EXIT();
     }
     return _gic.ba_gich;
@@ -339,9 +309,7 @@ hvmm_status_t gic_configure_irq(uint32_t irq,
             result = gic_enable_irq(irq);
         }
     } else {
-        uart_print("invalid irq:");
-        uart_print_hex32(irq);
-        uart_print("\n\r");
+        printh("invalid irq:%x\n",irq);
         result = HVMM_STATUS_UNSUPPORTED_FEATURE;
     }
     HVMM_TRACE_EXIT();

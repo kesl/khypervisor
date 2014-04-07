@@ -14,15 +14,11 @@ static hvmm_status_t host_interrupt_init(void)
     {
         uint32_t hcr;
         hcr = read_hcr();
-        uart_print("hcr:");
-        uart_print_hex32(hcr);
-        uart_print("\n\r");
+        printh("hcr:%x\n",hcr);
         hcr |= HCR_IMO | HCR_FMO;
         write_hcr(hcr);
         hcr = read_hcr();
-        uart_print("hcr:");
-        uart_print_hex32(hcr);
-        uart_print("\n\r");
+        printh("hcr:%x\n",hcr);
     }
 
     /* Physical Interrupt: GIC Distributor & CPU Interface */

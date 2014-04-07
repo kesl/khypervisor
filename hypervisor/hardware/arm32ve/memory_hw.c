@@ -1198,12 +1198,12 @@ static void guest_memory_init(struct memmap_desc **guest_map,
 static int memory_hw_init(struct memmap_desc **guest0,
             struct memmap_desc **guest1)
 {
-    uart_print("[memory] memory_init: enter\n\r");
+    printh("[memory] memory_init: enter\n\r");
     guest_memory_init(guest0, guest1);
     host_memory_init();
     memory_enable();
     host_memory_heap_init();
-    uart_print("[memory] memory_init: exit\n\r");
+    printh("[memory] memory_init: exit\n\r");
 
     return HVMM_STATUS_SUCCESS;
 }

@@ -74,9 +74,7 @@ void nrm_loop(void)
 #endif
     for (i = 0; i < NUM_ITERATIONS; i++) {
         uart_print(GUEST_LABEL);
-        printh("iteration ");
-        uart_print_hex32(i);
-        uart_print("\n\r");
+        printh("iteration %x\n",i);
         nrm_delay();
 #ifdef __MONITOR_CALL_HVC__
         /* Hyp monitor guest run in Non-secure supervisor mode.

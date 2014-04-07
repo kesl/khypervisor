@@ -67,9 +67,7 @@ union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx)
     printh(" pa:");
     uart_print_hex64(pa);
     printh("\n\r");
-    printh(" attr_idx:");
-    uart_print_hex32((uint32_t) attr_idx);
-    printh("\n\r");
+    printh(" attr_idx:%x\n",(uint32_t) attr_idx);
     /* Valid Block Entry */
     lpaed.pt.valid = 1;
     lpaed.pt.table = 0;

@@ -343,10 +343,7 @@ static void _vgic_dump_regs(void)
     uart_print("   LR:\n\r");
     for (i = 0; i < _vgic.num_lr; i++) {
         if (vgic_is_free_slot(i) != i) {
-            uart_print_hex32(_vgic.base[GICH_LR + i]);
-            uart_print(" - ");
-            uart_print_hex32(i);
-            uart_print("\n\r");
+            printh("%x - %x\n",_vgic.base[GICH_LR + i],i)           
         }
     }
     HVMM_TRACE_EXIT();
