@@ -17,8 +17,8 @@ struct timer {
     int32_t count_per_irq;
 };
 
-static struct timer timers[MAX_TIMER];
-uint32_t timers_index;
+static struct timer _timers[MAX_TIMER];
+uint32_t _timers_index;
 static struct timer_ops *_ops;
 
 /*
@@ -34,10 +34,12 @@ static inline uint64_t timer_t2c(uint64_t time_us)
  */
 static inline int32_t timer_count_per_irq(int32_t interval_us)
 {
+    int32_t count;
+
     if (interval_us <= 0)
         return -1;
 
-    int32_t count = interval_us / COUNT_PER_USEC;
+    count = interval_us / COUNT_PER_USEC;
 
     /* needs to compensate count value. Because zero count value is invalid. */
     return count == 0 ? 1 : count;
@@ -48,7 +50,7 @@ static inline int32_t timer_count_per_irq(int32_t interval_us)
  */
 static inline uint32_t timer_is_full()
 {
-    return (timers_index >= MAX_TIMER);
+    return (_timers_index >= MAX_TIMER);
 }
 
 /*
@@ -80,19 +82,19 @@ static void timer_check_each_timers(void *pregs)
 {
     uint32_t i;
 
-    for (i = 0; i < timers_index && i < MAX_TIMER; i++) {
+    for (i = 0; i < _timers_index && i < MAX_TIMER; i++) {
         /* if interval_us is negative value, skip it. */
-        if (timers[i].timer_info.interval_us > 0) {
+        if (_timers[i].timer_info.interval_us > 0) {
             /* consumes count_per_irq value. */
-            timers[i].count_per_irq--;
+            _timers[i].count_per_irq--;
 
-            if (timers[i].count_per_irq < 0) {
+            if (_timers[i].count_per_irq < 0) {
                 /* calls callback with pregs */
-                timers[i].timer_info.callback(pregs);
+                _timers[i].timer_info.callback(pregs);
 
                 /* re-calculates count_per_irq. */
-                timers[i].count_per_irq = timer_count_per_irq(
-                        timers[i].timer_info.interval_us);
+                _timers[i].count_per_irq = timer_count_per_irq(
+                        _timers[i].timer_info.interval_us);
             }
         }
     }
@@ -143,7 +145,7 @@ hvmm_status_t timer_set(struct timer_val *timer)
      * TODO: Storing time_val into array of timers needs a lock mechanism
      * for preventing concurrent access.
      */
-    timers[timers_index++] = stimer;
+    _timers[_timers_index++] = stimer;
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -152,7 +154,7 @@ hvmm_status_t timer_init(uint32_t irq)
 {
     _ops = _timer_module.ops;
 
-    timers_index = 0;
+    _timers_index = 0;
 
     if (_ops->init)
         _ops->init();
