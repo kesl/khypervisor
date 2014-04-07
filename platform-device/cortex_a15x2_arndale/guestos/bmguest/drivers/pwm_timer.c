@@ -95,10 +95,10 @@ void pwm_timer_init()
 void interrupt_pwmtimer(int irq, void *pregs, void *pdata)
 {
     pwm_timer_disable_int();
-    printH("=======================================\n\r");
+    printh("=======================================\n\r");
     HVMM_TRACE_ENTER();
     HVMM_TRACE_EXIT();
-    printH("=======================================\n\r");
+    printh("=======================================\n\r");
     pwm_timer_enable_int();
 }
 

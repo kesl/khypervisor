@@ -278,14 +278,14 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
 static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
 {
     if (verbose & GUEST_VERBOSE_LEVEL_0) {
-        printH("cpsr: %x\n\r",regs->cpsr);
-        printH("  pc: %x\n\r",regs->pc);
-        printH("  lr: %x\n\r",regs->lr);
+        printh("cpsr: %x\n\r",regs->cpsr);
+        printh("  pc: %x\n\r",regs->pc);
+        printh("  lr: %x\n\r",regs->lr);
         {
             int i;
-            printH(" gpr:\n\r");
+            printh(" gpr:\n\r");
             for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
-                printH("     %x\n\r",regs->gpr[i]);
+                printh("     %x\n\r",regs->gpr[i]);
             }
         }
     }

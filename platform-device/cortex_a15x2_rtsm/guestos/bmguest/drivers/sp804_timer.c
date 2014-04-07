@@ -99,14 +99,14 @@ void interrupt_sp804_timer(int irq, void *pregs, void *pdata)
     uint32_t ctl;
     uint32_t val;
     vmid_t vmid;
-    printH("=======================================\n\r");
+    printh("=======================================\n\r");
     HVMM_TRACE_ENTER();
     val = sp804_read(SP804_BASE);
-    printH("sp804:%x\n\r",val);
+    printh("sp804:%x\n\r",val);
     /* irq clear */
     sp804_irq_clear(SP804_BASE);
     HVMM_TRACE_EXIT();
-    printH("=======================================\n\r");
+    printh("=======================================\n\r");
 }
 
 hvmm_status_t hvmm_tests_sp804_timer(void)

@@ -10,8 +10,8 @@
 
 int main()
 {
-    printH(GUEST_LABEL);
-    printH("=== Starting platform main n\r");
+    printh(GUEST_LABEL);
+    printh("=== Starting platform main n\r");
 #ifdef TESTS_ENABLE_PWM_TIMER
     hvmm_tests_pwm_timer();
 #endif

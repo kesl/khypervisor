@@ -16,20 +16,20 @@ void test_vdev_sample()
     volatile uint32_t *reg_c = base + VDEV_OFFSET_REGC;
     int i;
     int v1, v2, r;
-    printH("vdev_sample: Starting test..., base:%x\n\r",(uint32_t) base);
+    printh("vdev_sample: Starting test..., base:%x\n\r",(uint32_t) base);
     for (i = 0; i < 10; i++) {
         v1 = (1 + i) * 2;
         v2 = (1 + i) * 3;
-        printH("v1(%x)+v2(%x)\n\r",v1,v2);
+        printh("v1(%x)+v2(%x)\n\r",v1,v2);
         *reg_a = v1;
         *reg_b = v2;
         r = *reg_c;
         if (r == (v1 + v2))
-            printH("    = r(%x) - OK",r);
+            printh("    = r(%x) - OK",r);
         else
-            printH("    = r(%x) - FAILED",r);
+            printh("    = r(%x) - FAILED",r);
 
-        printH("\n\r");
+        printh("\n\r");
     }
-    printH("vdev_sample: End\n\r");
+    printh("vdev_sample: End\n\r");
 }

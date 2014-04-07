@@ -303,13 +303,11 @@ static void _vgic_dump_status(void)
      * Virtual Machine Control
      *  -
      */
-    uart_print("=== VGIC Status ===\n\r");
-    uart_print(" Initialized:");
+    printh("=== VGIC Status ===\n\r");
+    printh(" Initialized:");
     uart_print((VGIC_READY() ? "Yes" : "No"));
     uart_print("\n\r");
-    uart_print(" Num ListRegs:");
-    uart_print_hex32(_vgic.num_lr);
-    uart_print("\n\r");
+    printh(" Num ListRegs:%x\n",_vgic.num_lr);
     uart_print(" LR_MASK:");
     uart_print_hex64(_vgic.valid_lr_mask);
     uart_print("\n\r");
@@ -333,33 +331,15 @@ static void _vgic_dump_regs(void)
 #ifndef __VGIC_DISABLE_TRACE__
     int i;
     HVMM_TRACE_ENTER();
-    uart_print("  hcr:");
-    uart_print_hex32(_vgic.base[GICH_HCR]);
-    uart_print("\n\r");
-    uart_print("  vtr:");
-    uart_print_hex32(_vgic.base[GICH_VTR]);
-    uart_print("\n\r");
-    uart_print(" vmcr:");
-    uart_print_hex32(_vgic.base[GICH_VMCR]);
-    uart_print("\n\r");
-    uart_print(" misr:");
-    uart_print_hex32(_vgic.base[GICH_MISR]);
-    uart_print("\n\r");
-    uart_print("eisr0:");
-    uart_print_hex32(_vgic.base[GICH_EISR0]);
-    uart_print("\n\r");
-    uart_print("eisr1:");
-    uart_print_hex32(_vgic.base[GICH_EISR1]);
-    uart_print("\n\r");
-    uart_print("elsr0:");
-    uart_print_hex32(_vgic.base[GICH_ELSR0]);
-    uart_print("\n\r");
-    uart_print("elsr1:");
-    uart_print_hex32(_vgic.base[GICH_ELSR1]);
-    uart_print("\n\r");
-    uart_print("  apr:");
-    uart_print_hex32(_vgic.base[GICH_APR]);
-    uart_print("\n\r");
+    printh("  hcr:%x\n",_vgic.base[GICH_HCR]);
+    printh("  vtr:%x\n",_vgic.base[GICH_VTR]);
+    printh(" vmcr:%x\n",_vgic.base[GICH_VMCR]);
+    printh(" misr:%x\n",_vgic.base[GICH_MISR]);
+    printh("eisr0:%x\n",_vgic.base[GICH_EISR0]);
+    printh("eisr1:%x\n",_vgic.base[GICH_EISR1]);
+    printh("elsr0:%x\n",_vgic.base[GICH_ELSR0]);
+    printh("elsr1:%x\n",_vgic.base[GICH_ELSR1]);
+    printh("  apr:%x\n",_vgic.base[GICH_APR]);
     uart_print("   LR:\n\r");
     for (i = 0; i < _vgic.num_lr; i++) {
         if (vgic_is_free_slot(i) != i) {

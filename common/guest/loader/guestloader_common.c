@@ -2,6 +2,7 @@
 #include <arch_types.h>
 #include <linuxloader.h>
 #include <guestloader_common.h>
+#include <log/print.h>
 
 #define SET_MACHINE_TYPE_TO_R1() \
     asm volatile ("mov r1, %0" : : "r" (MACHINE_TYPE) : "memory", "cc")
@@ -40,7 +41,7 @@ void copy_image_to_addr(enum guest_image_type img_type, uint32_t *dst_addr)
 
 void loader_boot_guest(uint32_t guest_os_type)
 {
-    uart_print("Booting guest os...\n");
+    printh("Booting guest os...\n");
 
     uint32_t offset;
     uint32_t pc;
@@ -73,7 +74,7 @@ void loader_boot_guest(uint32_t guest_os_type)
     JUMP_TO_ADDRESS(START_ADDR);
 
     /* The code must not reach here */
-    uart_print("[loadbmguest] ERROR: CODE MUST NOT REACH HERE\n\r");
+    printh("[loadbmguest] ERROR: CODE MUST NOT REACH HERE\n\r");
     while (1)
         ;
 }
