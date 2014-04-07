@@ -61,6 +61,16 @@ int format_print(const char *format, __builtin_va_list ap)
                 format_printi(va_arg(ap, unsigned int), HEXADECIMAL, 'a');
             if (*p == 'X')
                 format_printi(va_arg(ap, unsigned int), HEXADECIMAL, 'A');
+            if (*p == 'l')
+                {
+                        ++p;
+                        if(*p == 'd')
+                        {
+                        unsigned long long hex_64bit = va_arg(ap, unsigned long long);
+                        format_printi(hex_64bit >> 32, HEXADECIMAL, 'A');
+                        format_printi((uint32_t)(hex_64bit & 0xFFFFFFFF), HEXADECIMAL, 'A');
+                        }
+                }
         } else {
             if (*p == '\n') {
                 format_putc(*p);
