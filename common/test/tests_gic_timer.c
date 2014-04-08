@@ -115,7 +115,7 @@ void callback_test_timer(void *pdata)
 
 hvmm_status_t hvmm_tests_vgic(void)
 {
-    struct timer_val timer;
+    struct timer timer;
     /* VGIC test
      *  - Implementation Not Complete
      *  - TODO: specify guest to receive the virtual IRQ

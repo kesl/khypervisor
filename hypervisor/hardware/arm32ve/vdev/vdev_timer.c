@@ -104,7 +104,7 @@ void callback_timer(void *pdata)
 static hvmm_status_t vdev_vtimer_reset(void)
 {
     int i;
-    struct timer_val timer;
+    struct timer timer;
 
     for (i = 0; i < NUM_GUESTS_STATIC; i++)
         _timer_status[i] = 1;

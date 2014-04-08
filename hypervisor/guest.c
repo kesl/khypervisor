@@ -209,7 +209,7 @@ void guest_schedule(void *pdata)
 
 hvmm_status_t guest_init()
 {
-    struct timer_val timer;
+    struct timer timer;
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     struct guest_struct *guest;
     struct arch_regs *regs = 0;
