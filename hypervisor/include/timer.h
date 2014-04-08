@@ -4,11 +4,14 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
-#define MAX_TIMER 8
+#define MAX_TIMERS_COUNT    8
+#define TRUE                1
+#define FALSE               0
+#define ERROR_COUNT         -1
 
 typedef void(*timer_callback_t)(void *pdata);
 
-struct timer_val {
+struct timer {
     uint32_t interval_us;
     timer_callback_t callback;
 };
@@ -28,7 +31,6 @@ struct timer_ops {
 
     /** Dump state of the timer */
     hvmm_status_t (*dump)(void);
-
 };
 
 struct timer_module {
@@ -57,7 +59,6 @@ struct timer_module {
 
     /** Timer Operation */
     struct timer_ops *ops;
-
 };
 
 extern struct timer_module _timer_module;
@@ -66,6 +67,6 @@ extern struct timer_module _timer_module;
  * prior to calls to other functions of Timer module.
  */
 hvmm_status_t timer_init(uint32_t irq);
-hvmm_status_t timer_set(struct timer_val *timer);
+hvmm_status_t timer_set(const struct timer *timer);
 
 #endif
