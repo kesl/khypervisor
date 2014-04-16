@@ -1,0 +1,210 @@
+#include "gic.h"
+#include "gic_regs.h"
+#include <log/uart_print.h>
+#include <hvmm_trace.h>
+#include <a15_cp15_sysregs.h>
+#include <armv7_p15.h>
+#include <log/print.h>
+
+#define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
+
+#define ARM_CPUID_CORTEXA15   0x412fc0f1
+
+#define MIDR_MASK_PPN        (0x0FFF << 4)
+#define MIDR_PPN_CORTEXA15    (0xC0F << 4)
+
+
+#define GIC_INT_PRIORITY_DEFAULT_WORD    ((GIC_INT_PRIORITY_DEFAULT << 24) \
+                                         |(GIC_INT_PRIORITY_DEFAULT << 16) \
+                                         |(GIC_INT_PRIORITY_DEFAULT << 8) \
+                                         |(GIC_INT_PRIORITY_DEFAULT))
+#define GIC_NUM_MAX_IRQS    102
+
+#define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
+
+/*
+ * Note:
+ * The proper implementation of GIC in a guest is to access GIC Distributor
+ * and GIC CPU Interface as if it were accessing the physical GIC registers
+ * and the Hypervisor traps access to GIC Distributor from guests and remap
+ * GIC CPU Interface register address to GIC Virtual CPU Interface.
+ *
+ * However, in the current implementation below, we simply access
+ * GIC Virtual CPU Interface directly
+ * - simon
+ */
+
+/* Determined by Hypervisor's Stage2 Address Translation Table */
+#ifdef ARNDALE
+#define GIC_BASEADDR_GUEST                (0x10480000)
+#else
+#define GIC_BASEADDR_GUEST                (0x2C000000)
+#endif
+
+struct gic {
+    uint32_t baseaddr;
+    volatile uint32_t *ba_gicd;
+    volatile uint32_t *ba_gicc;
+    uint32_t lines;
+    uint32_t cpus;
+    gic_irq_handler_t handlers[GIC_NUM_MAX_IRQS];
+    uint32_t initialized;
+};
+
+static struct gic _gic;
+
+static void gic_test_vdev_access(void)
+{
+    volatile uint8_t *s_reg8;
+    HVMM_TRACE_ENTER();
+    _gic.ba_gicd[GICD_ISENABLER + 33 / 32] = (1u << (33 % 32));
+    _gic.ba_gicd[GICD_ICENABLER + 33 / 32] = (1u << (33 % 32));
+    _gic.ba_gicd[GICD_ISENABLER + 1 / 32] = (1u << (1 % 32));
+    _gic.ba_gicd[GICD_ICENABLER + 1 / 32] = (1u << (1 % 32));
+    _gic.ba_gicd[GICD_ISENABLER + 31 / 32] = (1u << (31 % 32));
+    _gic.ba_gicd[GICD_ICENABLER + 31 / 32] = (1u << (31 % 32));
+    /* 8/16 bit access test */
+    s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ISENABLER]);
+    s_reg8[2] = 0xf;
+    printh("%x\n\r",_gic.ba_gicd[GICD_ISENABLER]);
+    s_reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ICENABLER]);
+    s_reg8[2] = 0xf;
+    printh("%x\n\r",_gic.ba_gicd[GICD_ISENABLER]);
+    HVMM_TRACE_EXIT();
+}
+
+static void gic_dump_registers(void)
+{
+    uint32_t midr;
+    HVMM_TRACE_ENTER();
+    midr = read_midr();
+    printh("midr:%x\n\r",midr);
+    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+        uint32_t value;
+        printh("gic baseaddr:%x\n\r",_gic.baseaddr);
+        printh("ba_gicd:%x\n\r",(uint32_t)_gic.ba_gicd);
+        printh("GICD_TYPER:%x\n\r",_gic.ba_gicd[GICD_TYPER]);
+        printh("ba_gicc:%x\n\r",(uint32_t)_gic.ba_gicc);
+        printh("GICC_CTLR:%x\n\r",_gic.ba_gicc[GICC_CTLR]);
+        printh(" GICC_PMR:%x\n\r",_gic.ba_gicc[GICC_PMR]);
+        printh(" GICC_BPR:%x\n\r",_gic.ba_gicc[GICC_BPR]);
+        printh(" GICC_RPR:%x\n\r",_gic.ba_gicc[(0x0014 / 4)]);
+        printh("GICC_HPPIR:%x\n\r",_gic.ba_gicc[(0x0018 / 4)]);
+        printh("GICC_IIDR:%x\n\r",_gic.ba_gicc[(0x00FC / 4)]);
+        /* Test to see if VGICD on monitor side works as we expect */
+        gic_test_vdev_access();
+    }
+    HVMM_TRACE_EXIT();
+}
+
+static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
+{
+    uint32_t midr;
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+    HVMM_TRACE_ENTER();
+    midr = read_midr();
+    printh("midr:%x\n\r",midr);
+    /*
+     * Note:
+     * We currently support GICv2 with Cortex-A15 only.
+     * Other architectures with GICv2 support will be further
+     * listed and added for support later.
+     */
+    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+        _gic.baseaddr = (uint32_t) va_base;
+        _gic.ba_gicd = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICD);
+        _gic.ba_gicc = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICC);
+        result = HVMM_STATUS_SUCCESS;
+    } else {
+        printh("GICv2 Unsupported\n\r");
+        printh("midr.ppn:%x\n\r",midr & MIDR_MASK_PPN);
+        result = HVMM_STATUS_UNSUPPORTED_FEATURE;
+    }
+    HVMM_TRACE_EXIT();
+    return result;
+}
+
+
+/* API functions */
+hvmm_status_t gic_enable_irq(uint32_t irq)
+{
+    _gic.ba_gicd[GICD_ISENABLER + irq / 32] = (1u << (irq % 32));
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t gic_disable_irq(uint32_t irq)
+{
+    _gic.ba_gicd[GICD_ICENABLER + irq / 32] = (1u << (irq % 32));
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t gic_set_irq_handler(int irq, gic_irq_handler_t handler,
+                void *pdata)
+{
+    hvmm_status_t result = HVMM_STATUS_BUSY;
+    if (irq < GIC_NUM_MAX_IRQS) {
+        _gic.handlers[irq] = handler;
+        result = HVMM_STATUS_SUCCESS;
+    }
+    return result;
+}
+
+hvmm_status_t gic_init(void)
+{
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+    int i;
+    HVMM_TRACE_ENTER();
+    for (i = 0; i < GIC_NUM_MAX_IRQS; i++)
+        _gic.handlers[i] = 0;
+
+    result = gic_init_baseaddr((uint32_t *) GIC_BASEADDR_GUEST);
+    /* enable group0 and group1 interrupts */
+    _gic.ba_gicc[GICC_CTLR] |= 0x213;
+    /* no priority masking */
+    _gic.ba_gicc[GICC_PMR] = 0xFF;
+    if (result == HVMM_STATUS_SUCCESS)
+        gic_dump_registers();
+
+    _gic.lines = 1022;
+    result = HVMM_STATUS_SUCCESS;
+    if (result == HVMM_STATUS_SUCCESS)
+        _gic.initialized = GIC_SIGNATURE_INITIALIZED;
+
+    HVMM_TRACE_EXIT();
+    return result;
+}
+
+void gic_interrupt(int fiq, void *pregs)
+{
+    /*
+     * 1. ACK - CPU Interface - GICC_IAR read
+     * 2. Completion - CPU Interface - GICC_EOIR
+     * 2.1 Deactivation - CPU Interface - GICC_DIR
+     */
+    uint32_t iar;
+    uint32_t irq;
+    struct arch_regs *regs = pregs;
+    /* ACK */
+    iar = _gic.ba_gicc[GICC_IAR];
+    irq = iar & GICC_IAR_INTID_MASK;
+    if (irq < _gic.lines) {
+<<<<<<< HEAD
+        printh(".");
+=======
+        uart_print(".");
+>>>>>>> test
+        if (irq == 0) {
+            printh("ba_gicd:%x\n\r",(uint32_t) _gic.ba_gicd);
+            printh("ba_gicc:%x\n\r",(uint32_t) _gic.ba_gicc);
+        }
+        /* ISR */
+        if (_gic.handlers[irq])
+            _gic.handlers[irq](irq, regs, 0);
+
+        /* Completion & Deactivation */
+        _gic.ba_gicc[GICC_EOIR] = irq;
+        _gic.ba_gicc[GICC_DIR] = irq;
+    } else {
+        printh("end of irq(no pending):%x\n\r",irq);
+    }
+}

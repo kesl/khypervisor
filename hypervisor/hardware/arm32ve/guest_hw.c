@@ -302,9 +302,7 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
     if (verbose & GUEST_VERBOSE_LEVEL_2) {
         uint64_t pct = read_cntpct();
         uint32_t tval = read_cnthp_tval();
-        uart_print("cntpct:");
-        uart_print_hex64(pct);
-        uart_print("\n\r");
+        printh("cntpct:%ld\n\r",pct);
         printh("cnth_tval:%x\n\r",tval);
     }
     return HVMM_STATUS_SUCCESS;
