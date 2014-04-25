@@ -22,7 +22,9 @@ static void test_start_timer(void)
     tval = read_cntfrq();
     write_cntp_tval(tval);
     pct = read_cntpct();
-    printh("cntpct:%ld\n\r",pct);
+    uart_print("cntpct:");
+    uart_print_hex64(pct);
+    uart_print("\n\r");
     printh("cntp_tval:%x\n\r",tval);
     /* enable timer */
     ctl = read_cntp_ctl();
@@ -123,7 +125,11 @@ hvmm_status_t hvmm_tests_vgic(void)
      */
     timer.interval_us = GUEST_SCHED_TICK;
     timer.callback = &callback_test_timer;
+<<<<<<< HEAD
+    timer_set(&timer, HOST_TIMER);
+=======
     timer_set(&timer);
+>>>>>>> test
 
     return HVMM_STATUS_SUCCESS;
 }

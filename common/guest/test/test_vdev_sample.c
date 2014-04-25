@@ -1,5 +1,6 @@
 #include <arch_types.h>
 #include <log/uart_print.h>
+#include <log/print.h>
 
 #define VDEV_SAMPLE_BASE    0x3FFFF000
 #define VDEV_OFFSET_REGA    0x00
@@ -15,28 +16,20 @@ void test_vdev_sample()
     volatile uint32_t *reg_c = base + VDEV_OFFSET_REGC;
     int i;
     int v1, v2, r;
-    uart_print("vdev_sample: Starting test..., base:");
-    uart_print_hex32((uint32_t) base);
-    uart_print("\n\r");
+    printh("vdev_sample: Starting test..., base:%x\n\r",(uint32_t) base);
     for (i = 0; i < 10; i++) {
         v1 = (1 + i) * 2;
         v2 = (1 + i) * 3;
-        uart_print("v1(");
-        uart_print_hex32(v1);
-        uart_print(")+v2(");
-        uart_print_hex32(v2);
-        uart_print(")\n\r");
+        printh("v1(%x)+v2(%x)\n\r",v1,v2);
         *reg_a = v1;
         *reg_b = v2;
         r = *reg_c;
-        uart_print("    = r(");
-        uart_print_hex32(r);
         if (r == (v1 + v2))
-            uart_print(") - OK");
+            printh("    = r(%x) - OK",r);
         else
-            uart_print(") - FAILED");
+            printh("    = r(%x) - FAILED",r);
 
-        uart_print("\n\r");
+        printh("\n\r");
     }
-    uart_print("vdev_sample: End\n\r");
+    printh("vdev_sample: End\n\r");
 }

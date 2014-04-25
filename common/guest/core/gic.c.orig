@@ -188,7 +188,11 @@ void gic_interrupt(int fiq, void *pregs)
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
     if (irq < _gic.lines) {
+<<<<<<< HEAD
         printh(".");
+=======
+        uart_print(".");
+>>>>>>> test
         if (irq == 0) {
             printh("ba_gicd:%x\n\r",(uint32_t) _gic.ba_gicd);
             printh("ba_gicc:%x\n\r",(uint32_t) _gic.ba_gicc);

@@ -5,6 +5,7 @@
 #include <asm-arm_inline.h>
 #include <hvmm_trace.h>
 #include <interrupt.h>
+#include <log/print.h>
 
 enum generic_timer_type {
     GENERIC_TIMER_HYP,      /* IRQ 26 */
@@ -66,7 +67,7 @@ static inline void generic_timer_reg_write(int reg, uint32_t val)
         write_cntv_tval(val);
         break;
     default:
-        uart_print("Trying to write invalid generic-timer register\n\r");
+        printh("Trying to write invalid generic-timer register\n\r");
         break;
     }
     isb();
@@ -104,7 +105,7 @@ static inline uint32_t generic_timer_reg_read(int reg)
         val = read_cntv_tval();
         break;
     default:
-        uart_print("Trying to read invalid generic-timer register\n\r");
+        printh("Trying to read invalid generic-timer register\n\r");
         break;
     }
     return val;
@@ -126,7 +127,7 @@ static inline void generic_timer_reg_write64(int reg, uint64_t val)
         write_cntvoff(val);
         break;
     default:
-        uart_print("Trying to write invalid generic-timer register\n\r");
+        printh("Trying to write invalid generic-timer register\n\r");
         break;
     }
     isb();
@@ -149,7 +150,7 @@ static inline uint64_t generic_timer_reg_read64(int reg)
         val = read_cntvoff();
         break;
     default:
-        uart_print("Trying to read invalid generic-timer register\n\r");
+        printh("Trying to read invalid generic-timer register\n\r");
         break;
     }
     return val;

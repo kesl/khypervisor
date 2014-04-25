@@ -1,6 +1,7 @@
 #include <cli.h>
 #include <guestloader_common.h>
 #include <version.h>
+#include <log/print.h>
 
 #define hvc_dump_status()     asm("hvc #0xFFFC")
 
@@ -46,9 +47,9 @@ static enum cmd_type convert_to_cmd_type(char *input_cmd)
  */
 static void print_cli_usage(void)
 {
-    uart_print("help         - List commands and their usage\n"
-               "boot         - Boot guestos\n"
-               "status       - Print the K-Hypervisor status\n");
+    printh("help         - List commands and their usage\n"
+           "boot         - Boot guestos\n"
+           "status       - Print the K-Hypervisor status\n");
 }
 
 /** @brief Prints K-hypervisor's status.
@@ -57,7 +58,7 @@ static void print_cli_usage(void)
  */
 static void dump_hyp_status(void)
 {
-    uart_print("Dump K-Hypervisor's registers\n");
+    printh("Dump K-Hypervisor's registers\n");
     hvc_dump_status();
 }
 

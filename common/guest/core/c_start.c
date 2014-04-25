@@ -27,6 +27,7 @@
 #include <gic.h>
 #include <test/tests.h>
 #include <test/test_vtimer.h>
+#include <log/print.h>
 
 /* #define TESTS_ENABLE_VDEV_SAMPLE */
 
@@ -57,7 +58,7 @@ void nrm_loop(void)
     int i = 0;
     uart_init();
     uart_print(GUEST_LABEL);
-    uart_print("=== Starting commom start up\n\r");
+    printh("=== Starting commom start up\n\r");
     gic_init();
     /* Enables receiving virtual timer interrupt */
     vtimer_mask(0);
@@ -73,9 +74,7 @@ void nrm_loop(void)
 #endif
     for (i = 0; i < NUM_ITERATIONS; i++) {
         uart_print(GUEST_LABEL);
-        uart_print("iteration ");
-        uart_print_hex32(i);
-        uart_print("\n\r");
+        printh("iteration %x\n",i);
         nrm_delay();
 #ifdef __MONITOR_CALL_HVC__
         /* Hyp monitor guest run in Non-secure supervisor mode.
@@ -83,16 +82,16 @@ void nrm_loop(void)
          */
         if (i & 0x1) {
             uart_print(GUEST_LABEL);
-            uart_print("hsvc_ping()\n\r");
+            printh("hsvc_ping()\n\r");
             hsvc_ping();
             uart_print(GUEST_LABEL);
-            uart_print("returned from hsvc_ping()\n\r");
+            printh("returned from hsvc_ping()\n\r");
         } else {
             uart_print(GUEST_LABEL);
-            uart_print("hsvc_yield()\n\r");
+            printh("hsvc_yield()\n\r");
             hsvc_yield();
             uart_print(GUEST_LABEL);
-            uart_print("returned from hsvc_yield()\n\r");
+            printh("returned from hsvc_yield()\n\r");
         }
 #else
         /* Secure monitor guest run in Non-secure supervisor mode
@@ -104,8 +103,8 @@ void nrm_loop(void)
     }
 
     uart_print(GUEST_LABEL);
-    uart_print("common nrm_loop done\n\r");
-    uart_print("\n[K-HYPERVISOR]TEST#INSTALLATION#BMGUEST-BOOT#PASS\n\r");
+    printh("common nrm_loop done\n\r");
+    printh("\n[K-HYPERVISOR]TEST#INSTALLATION#BMGUEST-BOOT#PASS\n\r");
     /* start platform start up code */
     main();
 }
