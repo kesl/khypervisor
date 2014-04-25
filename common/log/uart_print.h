@@ -30,6 +30,8 @@ void uart_print_dec(uint32_t v);
 /** @brief Reads character from the uart.
  *  @return Character from the uart's FIFO.
  */
+
+char uart_get_character(void);
 char uart_getc(void);
 
 /** @brief Likes gets. Reads characters from the uart(stdin).
