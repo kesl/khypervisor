@@ -16,9 +16,10 @@
 #define UART_BASE     (UART0 + UTXH)
 
 #define TX_FIFO_FULL_MASK       (1 << 24)
+#define RX_FIFO_FULL_MASK	0
 #define    readl(a)         (*(volatile unsigned int *)(a))
 #define    writeb(v, a)         (*(volatile unsigned char *)(a) = (v))
-
+#define    writch(a, v)		((v)=*(volatile unsigned char *)(a) )
 static int serial_err_check(int op)
 {
     struct s5p_uart *const uart = (struct s5p_uart *) UART2_BASE;
