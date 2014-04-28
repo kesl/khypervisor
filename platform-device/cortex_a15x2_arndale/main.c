@@ -7,7 +7,7 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
-
+#include <drivers/mct/mct_priv.h>
 #define PLATFORM_BASIC_TESTS 0
 
 #define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
@@ -28,7 +28,7 @@ static struct memmap_desc guest_device_md0[] = {
     { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, MEMATTR_DM },
     { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, MEMATTR_DM },
     { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, MEMATTR_DM },
-    { "uart.1", 0x12C10000, 0x12C10000, SZ_64K, MEMATTR_DM },
+    { "uart.1", 0x12C10000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
     { "chipid", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
@@ -257,6 +257,8 @@ int main_cpu_init()
     /* Begin running test code for newly implemented features */
     if (basic_tests_run(PLATFORM_BASIC_TESTS))
         printh("[start_guest] basic testing failed...\n");
+
+    mct_init();
 
     /* Print Banner */
     printH("%s", BANNER_STRING);
