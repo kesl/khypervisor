@@ -27,7 +27,7 @@ static void vtimer_changed_status(vmid_t vmid, uint32_t status)
 static hvmm_status_t vdev_vtimer_access_handler(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
-    printh("%s: %s offset:%d value:%x\n", __func__,
+    printH("%s: %s offset:%d value:%x\n", __func__,
             write ? "write" : "read",
             offset, write ? *pvalue : (uint32_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
@@ -104,11 +104,15 @@ void callback_timer(void *pdata)
 static hvmm_status_t vdev_vtimer_reset(void)
 {
     int i;
+    struct timer_val timer;
 
     for (i = 0; i < NUM_GUESTS_STATIC; i++)
         _timer_status[i] = 1;
 
-    timer_add_callback(TIMER_SCHED, &callback_timer);
+    timer.interval_us = GUEST_SCHED_TICK;
+    timer.callback = &callback_timer;
+
+    timer_set(&timer);
 
     return HVMM_STATUS_SUCCESS;
 }

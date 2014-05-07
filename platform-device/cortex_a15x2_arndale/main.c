@@ -7,7 +7,7 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
-
+#include <drivers/mct/mct_priv.h>
 #define PLATFORM_BASIC_TESTS 0
 
 #define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
@@ -28,7 +28,7 @@ static struct memmap_desc guest_device_md0[] = {
     { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, MEMATTR_DM },
     { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, MEMATTR_DM },
     { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, MEMATTR_DM },
-    { "uart.1", 0x12C10000, 0x12C10000, SZ_64K, MEMATTR_DM },
+    { "uart.1", 0x12C10000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
     { "chipid", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
@@ -106,6 +106,8 @@ static struct memmap_desc *guest_mdlist1[] = {
     guest_md_empty,
     0
 };
+
+static uint32_t _timer_irq;
 
 /*
  * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
@@ -205,6 +207,24 @@ void setup_memory()
     guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
 }
 
+/** @brief Registers generic timer irqs such as hypervisor timer event
+ *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
+ *  and virtual timer event(GENERIC_TIMER_NSP).
+ *  Each interrup source is identified by a unique ID.
+ *  cf. "Cortex™-A15 Technical Reference Manual" 8.2.3 Interrupt sources
+ *
+ *  DEVICE : IRQ number
+ *  GENERIC_TIMER_HYP : 26
+ *  GENERIC_TIMER_NSP : 30
+ *  GENERIC_TIMER_VIR : 27
+ *
+ *  @note "Cortex™-A15 Technical Reference Manual", 8.2.3 Interrupt sources
+ */
+void setup_timer()
+{
+    _timer_irq = 26; /* GENERIC_TIMER_HYP */
+}
+
 int main_cpu_init()
 {
     init_print();
@@ -222,7 +242,8 @@ int main_cpu_init()
         printh("[start_guest] interrupt initialization failed...\n");
 
     /* Initialize Timer */
-    if (timer_init(TIMER_SCHED))
+    setup_timer();
+    if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
 
     /* Initialize Guests */
@@ -236,6 +257,8 @@ int main_cpu_init()
     /* Begin running test code for newly implemented features */
     if (basic_tests_run(PLATFORM_BASIC_TESTS))
         printh("[start_guest] basic testing failed...\n");
+
+    mct_init();
 
     /* Print Banner */
     printH("%s", BANNER_STRING);
@@ -273,7 +296,8 @@ void secondary_cpu_init(uint32_t cpu)
         printh("[start_guest] interrupt initialization failed...\n");
 
     /* Initialize Timer */
-    if (timer_init(TIMER_SCHED))
+    setup_timer();
+    if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
 
     /* Initialize Guests */

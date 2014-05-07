@@ -9,119 +9,159 @@
 #include <k-hypervisor-config.h>
 #include <hvmm_trace.h>
 #include <timer.h>
+#include <interrupt.h>
+#include <log/print.h>
 
-static struct timer_channel _channels[TIMER_NUM_MAX_CHANNELS];
-static struct timer_ops *_timer_ops;
+struct timer {
+    struct timer_val timer_info;
+    int32_t count_per_irq;
+};
 
-static void _timer_each_callback_channel(enum timer_channel_type channel,
-                void *param)
-{
-    int i;
+static struct timer _timers[MAX_TIMER];
+uint32_t _timers_index;
+static struct timer_ops *_ops;
 
-    for (i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++)
-        if (_channels[channel].callbacks[i])
-            _channels[channel].callbacks[i](param);
-}
-
-static int _timer_channel_num_callbacks(enum timer_channel_type channel)
-{
-    int i, count = 0;
-
-    for (i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++)
-        if (_channels[channel].callbacks[i])
-            count++;
-
-    return count;
-}
-
-static void _timer_hw_callback(void *pdata)
-{
-    _timer_ops->disable();
-    _timer_each_callback_channel(TIMER_SCHED, pdata);
-    _timer_ops->set_interval(_channels[TIMER_SCHED].interval_us);
-    _timer_ops->enable();
-}
-
-hvmm_status_t timer_init(enum timer_channel_type channel)
-{
-    int i;
-
-    for (i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++)
-        _channels[channel].callbacks[i] = 0;
-
-    _timer_ops = _timer_module.ops;
-    _timer_ops->init();
-
-    return HVMM_STATUS_SUCCESS;
-}
-
-hvmm_status_t timer_start(enum timer_channel_type channel)
-{
-    if (_timer_channel_num_callbacks(channel) > 0) {
-        _timer_ops->set_callbacks(&_timer_hw_callback, (void *)0);
-        _timer_ops->set_interval(_channels[channel].interval_us);
-        _timer_ops->request_irq();
-        _timer_ops->enable();
-    }
-
-    return HVMM_STATUS_SUCCESS;
-}
-
-hvmm_status_t timer_stop(enum timer_channel_type channel)
-{
-    _timer_ops->disable();
-
-    return HVMM_STATUS_SUCCESS;
-}
-
-hvmm_status_t timer_set_interval(enum timer_channel_type channel,
-                uint32_t interval_us)
-{
-    _channels[channel].interval_us = timer_t2c(interval_us);
-
-    return HVMM_STATUS_SUCCESS;
-}
-
-uint32_t timer_get_interval(enum timer_channel_type channel)
-{
-    return _channels[channel].interval_us;
-}
-
-hvmm_status_t timer_add_callback(enum timer_channel_type channel,
-                    timer_callback_t callback)
-{
-    int i;
-    hvmm_status_t result = HVMM_STATUS_BUSY;
-
-    for (i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++) {
-        if (_channels[channel].callbacks[i] == 0) {
-            _channels[channel].callbacks[i] = callback;
-            result = HVMM_STATUS_SUCCESS;
-            break;
-        }
-    }
-
-    return result;
-}
-
-hvmm_status_t timer_remove_callback(enum timer_channel_type channel,
-                timer_callback_t callback)
-{
-    int i;
-    hvmm_status_t result = HVMM_STATUS_NOT_FOUND;
-
-    for (i = 0; i < TIMER_MAX_CHANNEL_CALLBACKS; i++) {
-        if (_channels[channel].callbacks[i] == callback) {
-            _channels[channel].callbacks[i] = 0;
-            result = HVMM_STATUS_SUCCESS;
-            break;
-        }
-    }
-
-    return result;
-}
-
-uint64_t timer_t2c(uint64_t time_us)
+/*
+ * Converts from microseconds to system counter.
+ */
+static inline uint64_t timer_t2c(uint64_t time_us)
 {
     return time_us * COUNT_PER_USEC;
+}
+
+/*
+ * Calculates count per IRQ using interval value.
+ */
+static inline int32_t timer_count_per_irq(int32_t interval_us)
+{
+    int32_t count;
+
+    if (interval_us <= 0)
+        return -1;
+
+    count = interval_us / COUNT_PER_USEC;
+
+    /* needs to compensate count value. Because zero count value is invalid. */
+    return count == 0 ? 1 : count;
+}
+
+/*
+ * Checks array of timers.
+ */
+static inline uint32_t timer_is_full()
+{
+    return (_timers_index >= MAX_TIMER);
+}
+
+/*
+ * Starts the timer.
+ */
+static hvmm_status_t timer_start(void)
+{
+    if (_ops->enable)
+        return _ops->enable();
+
+    return HVMM_STATUS_UNSUPPORTED_FEATURE;
+}
+
+/*
+ *  Stops the timer.
+ */
+static hvmm_status_t timer_stop(void)
+{
+    if (_ops->disable)
+        return _ops->disable();
+
+    return HVMM_STATUS_UNSUPPORTED_FEATURE;
+}
+
+/*
+ * Checks each timers and calls its callback when interval was expired.
+ */
+static void timer_check_each_timers(void *pregs)
+{
+    uint32_t i;
+
+    for (i = 0; i < _timers_index && i < MAX_TIMER; i++) {
+        /* if interval_us is negative value, skip it. */
+        if (_timers[i].timer_info.interval_us > 0) {
+            /* consumes count_per_irq value. */
+            _timers[i].count_per_irq--;
+
+            if (_timers[i].count_per_irq < 0) {
+                /* calls callback with pregs */
+                _timers[i].timer_info.callback(pregs);
+
+                /* re-calculates count_per_irq. */
+                _timers[i].count_per_irq = timer_count_per_irq(
+                        _timers[i].timer_info.interval_us);
+            }
+        }
+    }
+}
+
+/*
+ * Sets the timer interval(microsecond).
+ */
+static hvmm_status_t timer_set_interval(uint32_t interval_us)
+{
+    if (_ops->set_interval)
+        return _ops->set_interval(timer_t2c(interval_us));
+
+    return HVMM_STATUS_UNSUPPORTED_FEATURE;
+}
+
+/*
+ * This method handles all timer IRQ.
+ */
+static void timer_handler(int irq, void *pregs, void *pdata)
+{
+    timer_stop();
+    timer_check_each_timers(pregs);
+    timer_set_interval(COUNT_PER_USEC);
+    timer_start();
+}
+
+static hvmm_status_t timer_requset_irq(uint32_t irq)
+{
+    if (interrupt_request(irq, &timer_handler))
+        return HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+    return interrupt_host_configure(irq);
+}
+
+hvmm_status_t timer_set(struct timer_val *timer)
+{
+    /* checks it first. */
+    if (timer_is_full())
+        return HVMM_STATUS_UNSUPPORTED_FEATURE;
+
+    struct timer stimer;
+    stimer.timer_info.callback = timer->callback;
+    stimer.timer_info.interval_us = timer->interval_us;
+    stimer.count_per_irq = timer_count_per_irq(timer->interval_us);
+
+    /*
+     * TODO: Storing time_val into array of timers needs a lock mechanism
+     * for preventing concurrent access.
+     */
+    _timers[_timers_index++] = stimer;
+
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t timer_init(uint32_t irq)
+{
+    _ops = _timer_module.ops;
+
+    _timers_index = 0;
+
+    if (_ops->init)
+        _ops->init();
+
+    timer_requset_irq(irq);
+
+    timer_start();
+
+    return HVMM_STATUS_SUCCESS;
 }

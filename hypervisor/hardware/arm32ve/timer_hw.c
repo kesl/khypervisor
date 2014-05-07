@@ -35,11 +35,6 @@ enum {
 #define generic_timer_pcounter_read()   read_cntpct()
 #define generic_timer_vcounter_read()   read_cntvct()
 
-static uint32_t _timer_irqs[GENERIC_TIMER_NUM_TYPES];
-static uint32_t _tvals[GENERIC_TIMER_NUM_TYPES];
-static timer_callback_t _callback[GENERIC_TIMER_NUM_TYPES];
-static enum generic_timer_type _timer_type = GENERIC_TIMER_HYP;
-
 static inline void generic_timer_reg_write(int reg, uint32_t val)
 {
     switch (reg) {
@@ -160,28 +155,6 @@ static inline uint64_t generic_timer_reg_read64(int reg)
     return val;
 }
 
-/** @brief Registers generic timer irqs such as hypervisor timer event
- *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
- *  and virtual timer event(GENERIC_TIMER_NSP).
- *  Each interrup source is identified by a unique ID.
- *  cf. "Cortex™-A15 Technical Reference Manual" 8.2.3 Interrupt sources
- *
- *  DEVICE : IRQ number
- *  GENERIC_TIMER_HYP : 26
- *  GENERIC_TIMER_NSP : 30
- *  GENERIC_TIMER_VIR : 27
- *
- *  @note "Cortex™-A15 Technical Reference Manual", 8.2.3 Interrupt sources
- */
-static hvmm_status_t generic_timer_init()
-{
-    _timer_irqs[GENERIC_TIMER_HYP] = 26;
-    _timer_irqs[GENERIC_TIMER_NSP] = 30;
-    _timer_irqs[GENERIC_TIMER_VIR] = 27;
-
-    return HVMM_STATUS_SUCCESS;
-}
-
 /** @brief Configures time interval by PL2 physical timerValue register.
  *  Read CNTHP_TVAL into R0.
  *
@@ -189,13 +162,16 @@ static hvmm_status_t generic_timer_init()
  *  -Holds the timer values for the Hyp mode physical timer.
  *  -Only accessible from Hyp mode, or from Monitor mode when SCR.NS is  set to 1.
  */
-static hvmm_status_t generic_timer_set_tval(uint32_t tval)
+static hvmm_status_t generic_timer_set_tval(enum generic_timer_type timer_type,
+        uint32_t tval)
 {
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
-    if (_timer_type == GENERIC_TIMER_HYP) {
-        _tvals[_timer_type] = tval;
+    if (timer_type == GENERIC_TIMER_HYP) {
         generic_timer_reg_write(GENERIC_TIMER_REG_HYP_TVAL, tval);
+        result = HVMM_STATUS_SUCCESS;
+    } else if (timer_type == GENERIC_TIMER_VIR) {
+        generic_timer_reg_write(GENERIC_TIMER_REG_VIRT_TVAL, tval);
         result = HVMM_STATUS_SUCCESS;
     }
 
@@ -209,16 +185,22 @@ static hvmm_status_t generic_timer_set_tval(uint32_t tval)
  *  The Cortex-A15 processor implements a 5-bit version of the interrupt
  *  priority field for 32 interrupt priority levels.
  */
-static hvmm_status_t generic_timer_enable_int(void)
+static hvmm_status_t generic_timer_enable(enum generic_timer_type timer_type)
 {
     uint32_t ctrl;
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
-    if (_timer_type == GENERIC_TIMER_HYP) {
+    if (timer_type == GENERIC_TIMER_HYP) {
         ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
         ctrl |= GENERIC_TIMER_CTRL_ENABLE;
         ctrl &= ~GENERIC_TIMER_CTRL_IMASK;
         generic_timer_reg_write(GENERIC_TIMER_REG_HYP_CTRL, ctrl);
+        result = HVMM_STATUS_SUCCESS;
+    } else if (timer_type == GENERIC_TIMER_VIR) {
+        ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_VIRT_CTRL);
+        ctrl |= GENERIC_TIMER_CTRL_ENABLE;
+        ctrl &= ~GENERIC_TIMER_CTRL_IMASK;
+        generic_timer_reg_write(GENERIC_TIMER_REG_VIRT_CTRL, ctrl);
         result = HVMM_STATUS_SUCCESS;
     }
 
@@ -228,84 +210,63 @@ static hvmm_status_t generic_timer_enable_int(void)
 /** @brief Disable the timer interrupt such as hypervisor timer event
  *  by PL2 physical timer control register.The Timer output signal is not masked.
  */
-static hvmm_status_t generic_timer_disable_int(void)
+static hvmm_status_t generic_timer_disable(enum generic_timer_type timer_type)
 {
     uint32_t ctrl;
     hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
 
-    if (_timer_type == GENERIC_TIMER_HYP) {
+    if (timer_type == GENERIC_TIMER_HYP) {
         ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
         ctrl &= ~GENERIC_TIMER_CTRL_ENABLE;
         ctrl |= GENERIC_TIMER_CTRL_IMASK;
         generic_timer_reg_write(GENERIC_TIMER_REG_HYP_CTRL, ctrl);
+        result = HVMM_STATUS_SUCCESS;
+    } else if (timer_type == GENERIC_TIMER_VIR) {
+        ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_VIRT_CTRL);
+        ctrl &= ~GENERIC_TIMER_CTRL_ENABLE;
+        ctrl |= GENERIC_TIMER_CTRL_IMASK;
+        generic_timer_reg_write(GENERIC_TIMER_REG_VIRT_CTRL, ctrl);
         result = HVMM_STATUS_SUCCESS;
     }
 
     return result;
 }
 
-
-static void _generic_timer_hyp_irq_handler(int irq, void *regs, void *pdata)
+static hvmm_status_t timer_disable()
 {
-    _callback[GENERIC_TIMER_HYP](regs);
+    return generic_timer_disable(GENERIC_TIMER_HYP);
 }
 
-/** @brief Enables generic timer irq such a s hypervisor timer event
- *  (GENERIC_TIMER_HYP)
- */
-static hvmm_status_t generic_timer_enable_irq(void)
+static hvmm_status_t timer_enable()
 {
-    hvmm_status_t result = HVMM_STATUS_UNSUPPORTED_FEATURE;
-
-    if (_timer_type == GENERIC_TIMER_HYP) {
-        uint32_t irq = _timer_irqs[_timer_type];
-        if (interrupt_request(irq, &_generic_timer_hyp_irq_handler))
-            return HVMM_STATUS_UNSUPPORTED_FEATURE;
-
-        result = interrupt_host_configure(irq);
-    }
-
-    return result;
+    return generic_timer_enable(GENERIC_TIMER_HYP);
 }
 
-/** @brief Registers timer callback for each timer such as hypervisor timer
- *  event(GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
- *  and virtual timer event(GENERIC_TIMER_NSP).
- *  Each timer callback are registered with the timer interrput source.
- *  A timer callback called when the timer interrupt occurs.
- */
-static hvmm_status_t generic_timer_set_callback(timer_callback_t callback,
-                void *user)
+static hvmm_status_t timer_set_tval(uint64_t tval)
 {
-    HVMM_TRACE_ENTER();
-    _callback[_timer_type] = callback;
-    HVMM_TRACE_EXIT();
-    return HVMM_STATUS_SUCCESS;
+    return generic_timer_set_tval(GENERIC_TIMER_HYP, tval);
 }
+
 
 /** @brief dump at time.
  *  @todo have to write dump with meaningful printing.
  */
-static hvmm_status_t generic_timer_dump(void)
+static hvmm_status_t timer_dump(void)
 {
     HVMM_TRACE_ENTER();
     HVMM_TRACE_EXIT();
     return HVMM_STATUS_SUCCESS;
 }
 
-struct timer_ops generic_timer_ops = {
-    .init = generic_timer_init,
-    .request_irq = generic_timer_enable_irq,
-    .free_irq = (void *)0,
-    .enable = generic_timer_enable_int,
-    .disable = generic_timer_disable_int,
-    .set_interval = generic_timer_set_tval,
-    .set_callbacks = generic_timer_set_callback,
-    .dump = generic_timer_dump,
+struct timer_ops _timer_ops = {
+    .enable = timer_enable,
+    .disable = timer_disable,
+    .set_interval = timer_set_tval,
+    .dump = timer_dump,
 };
 
 struct timer_module _timer_module = {
     .name = "K-Hypervisor Timer Module",
     .author = "Kookmin Univ.",
-    .ops = &generic_timer_ops,
+    .ops = &_timer_ops,
 };
