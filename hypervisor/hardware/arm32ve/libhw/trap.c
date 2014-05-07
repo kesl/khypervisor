@@ -1,3 +1,5 @@
+#define DEBUG
+#include <log/print.h>
 #include <hvmm_trace.h>
 #include <armv7_p15.h>
 #include <gic.h>
@@ -5,9 +7,6 @@
 #include <guest.h>
 #include <vdev.h>
 #include <traps.h>
-
-#define DEBUG
-#include <log/print.h>
 #include <interrupt.h>
 
 /**\defgroup ARM
@@ -39,6 +38,13 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     uint32_t irq;
     irq = gic_get_irq_number();
+
+    //char test =0;
+    //test = uart_getc_character();
+
+    //if(test!=0)
+    //{printh("test:%c\r\n",test);test=0;}
+
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;

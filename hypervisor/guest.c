@@ -20,6 +20,17 @@ struct guest_struct *_current_guest;
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked;
 
+void uart_Rx_flag_check(void)
+{
+    char get_character=0;
+    get_character = uart_getc_character();
+
+    if(get_character!=0)
+    {
+        printH("uart RX flag set : %c \r\n",get_character);
+        get_character=0;
+    } 
+}
 
 static hvmm_status_t guest_save(struct guest_struct *guest,
                         struct arch_regs *regs)
@@ -202,7 +213,7 @@ void guest_schedule(void *pdata)
      * are available, no need to test if trapped from Hyp mode.
      * guest_perform_switch() takes care of it
      */
-
+    uart_Rx_flag_check();
     /* Switch request, actually performed at trap exit */
     guest_switchto(sched_policy_determ_next(), 0);
 }

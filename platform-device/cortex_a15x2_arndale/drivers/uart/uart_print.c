@@ -16,8 +16,10 @@
 #define UART_BASE     (UART0 + UTXH)
 
 #define TX_FIFO_FULL_MASK       (1 << 24)
+#define RX_FIFO_FULL_MASK       0
 #define    readl(a)         (*(volatile unsigned int *)(a))
 #define    writeb(v, a)         (*(volatile unsigned char *)(a) = (v))
+#define    writch(a, v)         ((v)=*(volatile unsigned char *)(a) )
 
 static int serial_err_check(int op)
 {
@@ -29,6 +31,23 @@ static int serial_err_check(int op)
         mask = 0xf;
     return readl(&uart->uerstat) & mask;
 }
+
+
+char uart_getc_character(void)
+{
+    unsigned char ch=0;
+    struct s5p_uart *const uart = (struct s5p_uart *) UART2_BASE;
+
+    //while (!(readl(&uart->ufstat) | RX_FIFO_FULL_MASK));
+
+    if((readl(&uart->ufstat) | RX_FIFO_FULL_MASK))
+    {writch(&uart->urxh , ch);}
+
+    return ch;
+
+}
+
+
 
 void uart_putc(const char c)
 {
