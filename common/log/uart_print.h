@@ -2,6 +2,8 @@
 #define __UART_PRINT_H__
 #include "arch_types.h"
 
+char uart_get_character(void);
+
 /** @brief Writes a character to the uart.
  *  @param v Character for print.
  */

@@ -40,6 +40,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_uart.o			\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\

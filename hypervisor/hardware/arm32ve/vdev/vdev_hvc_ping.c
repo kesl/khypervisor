@@ -1,5 +1,4 @@
 #include <vdev.h>
-#define DEBUG
 #include <log/print.h>
 #include <asm-arm_inline.h>
 
