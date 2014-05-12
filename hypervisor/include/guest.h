@@ -103,4 +103,9 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
 
+
+
+unsigned char rx_status_flag(void);
+void uart_Rx_flag_check(void);
+
 #endif

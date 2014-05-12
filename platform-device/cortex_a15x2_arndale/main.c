@@ -28,7 +28,7 @@ static struct memmap_desc guest_device_md0[] = {
     { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, MEMATTR_DM },
     { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, MEMATTR_DM },
     { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, MEMATTR_DM },
-    { "uart.1", 0x12C10000, 0x12C20000, SZ_64K, MEMATTR_DM },
+ //   { "uart.1", 0x12C10000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
     { "chipid", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
@@ -66,7 +66,7 @@ static struct memmap_desc guest_device_md0[] = {
 };
 
 static struct memmap_desc guest_device_md1[] = {
-    { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
+//    { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },

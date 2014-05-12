@@ -25,6 +25,26 @@ static hvmm_status_t vdev_uart_access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
 
+
+  unsigned int vmid = guest_current_vmid();
+
+  unsigned char op = rx_status_flag();
+  //printH("## char: %d, vmid: %d \n", op, vmid);
+
+  
+
+  if (op == '1' && vmid == 0)
+    ;
+  else if (op == '2' && vmid == 1)
+    ;
+  else if ( op == 56 || op == 0 )
+    ;
+  else if ( op == '3')
+    ;
+  else
+    return HVMM_STATUS_SUCCESS;
+   
+//  printH("insert\n");
   if (access_size == VDEV_ACCESS_WORD) {
         if(write) {
             uint32_t *pUART = (uint32_t *) PUART_BASE_ADDR;

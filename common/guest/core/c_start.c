@@ -42,7 +42,7 @@
 #endif
 
 #ifndef NUM_ITERATIONS
-#define NUM_ITERATIONS 10
+#define NUM_ITERATIONS 1000000
 #endif
 
 inline void nrm_delay(void)

@@ -20,17 +20,33 @@ struct guest_struct *_current_guest;
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked;
 
+
+
+unsigned char savechar=0;
+
+unsigned char rx_status_flag(void)
+{
+  //  char temp=0;
+  //  temp=savechar;savechar=0;
+    return savechar;
+}
+
+
+
 void uart_Rx_flag_check(void)
 {
-    char get_character=0;
-    get_character = uart_getc_character();
+    unsigned char temp = 0;
+    temp = uart_getc_character();
 
-    if(get_character!=0)
+    if(temp!=0)
     {
-        printH("uart RX flag set : %c \r\n",get_character);
-        get_character=0;
-    } 
+        savechar = temp;
+        printH("\nuart RX flag set : %c \r\n",savechar);
+    }
 }
+
+
+
 
 static hvmm_status_t guest_save(struct guest_struct *guest,
                         struct arch_regs *regs)

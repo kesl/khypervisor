@@ -146,7 +146,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     struct arch_vdev_trigger_info info;
     int level = VDEV_LEVEL_LOW;
 
-    printh("[hvc] _hyp_hvc_service: enter\n\r");
+ //   printh("[hvc] _hyp_hvc_service: enter\n\r");
     fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
     fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
     fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
@@ -269,7 +269,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
         goto trap_error;
     }
 
-    printh("[hyp] _hyp_hvc_service: done\n\r");
+//    printh("[hyp] _hyp_hvc_service: done\n\r");
     guest_perform_switch(regs);
     return HYP_RESULT_ERET;
 trap_error:
