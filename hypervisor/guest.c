@@ -24,10 +24,9 @@ static uint8_t _switch_locked;
 static hvmm_status_t guest_save(struct guest_struct *guest,
                         struct arch_regs *regs)
 {
-    /* save the current guest's context */
-    if (_guest_module.ops->save) {
+    /* guest_hw_save : save the current guest's context*/
+    if (_guest_module.ops->save)
         return  _guest_module.ops->save(&guests[_current_guest_vmid], regs);
-    }
 
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
@@ -35,9 +34,9 @@ static hvmm_status_t guest_save(struct guest_struct *guest,
 static hvmm_status_t guest_restore(struct guest_struct *guest,
                         struct arch_regs *regs)
 {
-    /* The next becomes the current */
-     if (_guest_module.ops->restore)
-         return  _guest_module.ops->restore(guest, regs);
+    /* guest_hw_restore : The next becomes the current */
+    if (_guest_module.ops->restore)
+        return  _guest_module.ops->restore(guest, regs);
 
      return HVMM_STATUS_UNKNOWN_ERROR;
 }
@@ -61,6 +60,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     _current_guest = guest;
     _current_guest_vmid = next_vmid;
 
+    /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
@@ -113,6 +113,7 @@ void guest_sched_start(void)
     /* Select the first guest context to switch to. */
     _current_guest_vmid = VMID_INVALID;
     guest = &guests[0];
+    /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
     /* Context Switch with current context == none */
@@ -157,6 +158,7 @@ vmid_t guest_waiting_vmid(void)
 
 void guest_dump_regs(struct arch_regs *regs)
 {
+    /* guest_hw_dump */
     _guest_module.ops->dump(GUEST_VERBOSE_ALL, regs);
 }
 
@@ -195,6 +197,7 @@ void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
 
+    /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
     /*
@@ -222,6 +225,7 @@ hvmm_status_t guest_init()
         guest = &guests[i];
         regs = &guest->regs;
         guest->vmid = i;
+        /* guest_hw_init */
         if (_guest_module.ops->init)
             _guest_module.ops->init(guest, regs);
     }

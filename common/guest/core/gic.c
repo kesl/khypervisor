@@ -2,7 +2,6 @@
 #include "gic_regs.h"
 #include <log/uart_print.h>
 #include <hvmm_trace.h>
-#include <a15_cp15_sysregs.h>
 #include <armv7_p15.h>
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF

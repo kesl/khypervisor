@@ -198,10 +198,12 @@ void setup_timer()
     _timer_irq = 26; /* GENERIC_TIMER_HYP */
 }
 
+uint8_t secondary_smp_pen;
+
 int main_cpu_init()
 {
     init_print();
-    printH("[%s : %d] Starting...Main CPU : #%d\n", __func__, __LINE__);
+    printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
 
     /* Initialize Memory Management */
     setup_memory();
@@ -213,6 +215,11 @@ int main_cpu_init()
     /* Initialize Interrupt Management */
     if (interrupt_init(_guest_virqmap))
         printh("[start_guest] interrupt initialization failed...\n");
+
+#ifdef _SMP_
+    printH("wake up...other CPUs\n");
+    secondary_smp_pen = 1;
+#endif
 
     /* Initialize Timer */
     setup_timer();
@@ -251,6 +258,7 @@ void secondary_cpu_init(uint32_t cpu)
     init_print();
     printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
 
+    wfi();
     hyp_abort_infinite();
 
     /* Initialize Memory Management */
