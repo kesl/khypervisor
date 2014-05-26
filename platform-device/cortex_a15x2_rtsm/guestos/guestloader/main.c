@@ -29,6 +29,7 @@ static void load_guest(uint32_t type)
 }
 void main(void)
 {
+    uart_init();
     uart_print("\n\r=== starting guestloader.\n\r");
     load_guest(GUEST_TYPE);
 }

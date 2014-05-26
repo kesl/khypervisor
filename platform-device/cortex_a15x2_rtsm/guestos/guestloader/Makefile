@@ -45,7 +45,7 @@ endif
 boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -O2 -ffreestanding -I.  -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -O0 -ffreestanding -I.  -c -o $@ $<
 model.lds: $(LD_SCRIPT) Makefile $(GUESTBIN)
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -E -P -C -o $@ $<
 force: ;
