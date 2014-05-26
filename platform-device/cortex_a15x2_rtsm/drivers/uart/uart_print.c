@@ -12,14 +12,15 @@
 
 void uart_print(const char *str)
 {
-    volatile char *pUART = (char *) UART0_BASE;
     while (*str) {
-        *pUART = *str++;
+        uart_putc(*str++);
     }
 }
 
 void uart_putc(const char c)
 {
+    while (*((uint32_t *)(UART0_BASE + 0x18)) & 0x20)
+        ;
     volatile char *pUART = (char *) UART0_BASE;
     *pUART = c;
 }
