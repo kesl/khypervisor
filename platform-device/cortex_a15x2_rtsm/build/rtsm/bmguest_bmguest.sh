@@ -6,6 +6,7 @@ export GUEST_COUNT=2
 
 export HYPERVISOR_BIN="hvc-man-switch.axf"
 export HYPERVISOR_BUILD_SCRIPT="make clean && \
+cp patch/rtsm/model.lds.S ./ && \
 make"
 export HYPERVISOR_CLEAN_SCRIPT="make clean"
 
