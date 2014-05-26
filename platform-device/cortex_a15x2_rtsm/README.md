@@ -28,6 +28,8 @@ $ git submodule update
 $ ./scripts/apply_patch.sh
 </pre>
 
+# How to build RTSM support hypervisor
+
 # How to test bmguest + bmguest
 
 ## Make a build in one step continuous integration
@@ -35,7 +37,7 @@ Go to "Testing bmguest on RTSM"
 this section, if you done this process first.
 <pre>
 $ cd khypervisor
-$ source platform-device/cortex_a15x2_rtsm/build/bmguest_bmguest.sh
+$ source platform-device/cortex_a15x2_rtsm/build/rtsm/bmguest_bmguest.sh
 $ make
 </pre>
 
@@ -63,6 +65,8 @@ $ cp guestloader.bin ../../guestimages/guest1.bin
 ## Building the k-hypervisor
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_rtsm
+$ cp patch/rtsm/model.lds.S ./
+$ cp patch/rtsm/cfg_platform.h ./config/
 $ make
 </pre>
 
@@ -88,7 +92,7 @@ Go to "Testing bmguest+linuxguest on RTSM"
 this section, if you done this process first.
 <pre>
 $ cd khypervisor
-$ source platform-device/cortex_a15x2_rtsm/build/linux_bmguest.sh
+$ source platform-device/cortex_a15x2_rtsm/build/rtsm/linux_bmguest.sh
 $ make
 </pre>
 
@@ -132,6 +136,8 @@ $ cp guestloader.bin ../../guestimages/guest1.bin
 ## Building the k-hypervisor
 <pre>
 $ cd platform-device/cortex_a15x2_rtsm
+$ cp patch/rtsm/model.lds.S ./
+$ cp patch/rtsm/cfg_platform.h ./config/
 $ make
 </pre>
 
@@ -149,3 +155,157 @@ RTSM_A15-A7x14_VE/models/Linux64_GCC-4.1/RTSM_VE_Cortex-A15x1-A7x1 --cadi-server
 ARM/FastModelsTools_8.2/bin/maxview
 </pre>
  4. load hvc-man-switch.axf
+
+# How to build Vexpress support hypervisor
+
+# How to test bmguest + bmguest
+
+## Make a build in one step continuous integration
+Go to "Testing bmguest on Vexpress"
+this section, if you done this process first.
+<pre>
+$ cd khypervisor
+$ source platform-device/cortex_a15x2_rtsm/build/vexpress/bmguest_bmguest.sh
+$ make
+</pre>
+
+## Building the bmguest
+<pre>
+$ cd platform-device/cortex_a15x2_rtsm/guestos/bmguest/
+$ make
+</pre>
+
+## Building the guest loader
+1. Copy guest image to guestimages directory
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/bmguest.bin
+</pre>
+2. Build guestloader for bmguest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/guestos/guestloader
+$ make
+$ cp guestloader.bin ../../guestimages/guest0.bin
+$ cp guestloader.bin ../../guestimages/guest1.bin
+</pre>
+</pre>
+
+## Building the k-hypervisor
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm
+$ cp patch/vexpress/model.lds.S ./
+$ cp patch/vexpress/cfg_platform.h ./config/
+$ make
+</pre>
+
+## Building the u-boot
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/u-boot-native
+$ cp ../patch/vexpress/vexpress_ca15_tc2_bm.h \
+$ ./include/configs/vexpress_ca15_tc2.h
+$ make vexpress_ca15_tc2 CROSS_COMPILE=arm-none-eabi-
+</pre>
+
+## Testing bmguest on Vexpress
+1. Copy hypervisor, guest images, u-boot binary files
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm
+$ cp hvc-man-switch.bin /media/VEMSD/SOFTWARE/TC2/hvc.bin
+$ cp guestimages/guest0.bin /media/VEMSD/SOFTWARE/TC2/guest0.bin
+$ cp guestimages/guest1.bin /media/VEMSD/SOFTWARE/TC2/guest1.bin
+$ cp u-boot-native/u-boot.bin /media/VEMSD/SOFTWARE/u-boot.bin
+$ eject VEMSD
+</pre>
+2. Run minicom setting - baudrate 38400, 8N1
+<pre>
+$ sudo minicom -s
+</pre>
+ 3. Run vexpress
+<pre>
+$ reboot
+$ flash run u-boot
+</pre>
+
+# How to test bmguset + linux guest
+
+## Make a build in one step continuous integration
+Go to "Testing bmguest+linuxguest on Vexpress"
+this section, if you done this process first.
+<pre>
+$ cd khypervisor
+$ source platform-device/cortex_a15x2_rtsm/build/vexpress/linux_bmguest.sh
+$ make
+</pre>
+
+## Building the bmguest
+<pre>
+$ cd platform-device/cortex_a15x2_rtsm/guestos/bmguest/
+$ make
+</pre>
+
+## Building the linux guset
+1. Building linux guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/guestos/linux
+$ cp ../../linuxguest/fs.cpio .
+$ cp ../../linuxguest/host-a15.dtb .
+$ make ARCH=arm vexpress_minhw_defconfig
+$ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
+$ cat host-a15.dtb >> arch/arm/boot/zImage
+</pre>
+
+## Build guest loader
+1. Copy guest image to guestimages directory
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm
+$ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/zImage
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/bmguest.bin
+</pre>
+2. Build guestloader for linux guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/guestos/guestloader
+$ make LINUX=y
+$ cp guestloader.bin ../../guestimages/guest0.bin
+</pre>
+3. Build guestloader for bmguest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/guestos/guestloader
+$ make
+$ cp guestloader.bin ../../guestimages/guest1.bin
+</pre>
+
+## Building the k-hypervisor
+<pre>
+$ cd platform-device/cortex_a15x2_rtsm
+$ cp patch/vexpress/model.lds.S ./
+$ cp patch/vexpress/cfg_platform.h ./config/
+$ make
+</pre>
+
+## Building the u-boot
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm/u-boot-native
+$ cp ../patch/vexpress/vexpress_ca15_tc2_linux.h \
+$ ./include/configs/vexpress_ca15_tc2.h
+$ make vexpress_ca15_tc2 CROSS_COMPILE=arm-none-eabi-
+</pre>
+
+## Testing bmguest on Vexpress
+1. Copy hypervisor, guest images, u-boot binary files
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_rtsm
+$ cp hvc-man-switch.bin /media/VEMSD/SOFTWARE/TC2/hvc.bin
+$ cp guestimages/guest0.bin /media/VEMSD/SOFTWARE/TC2/guest0.bin
+$ cp guestimages/guest1.bin /media/VEMSD/SOFTWARE/TC2/guest1.bin
+$ cp u-boot-native/u-boot.bin /media/VEMSD/SOFTWARE/u-boot.bin
+$ eject VEMSD
+</pre>
+2. Run minicom setting - baudrate 38400, 8N1
+<pre>
+$ sudo minicom -s
+</pre>
+ 3. Run vexpress
+<pre>
+$ reboot
+$ flash run u-boot
+</pre>
