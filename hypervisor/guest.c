@@ -16,6 +16,11 @@ static struct guest_struct guests[NUM_GUEST_CONTEXTS];
 static int _current_guest_vmid = VMID_INVALID;
 static int _next_guest_vmid = VMID_INVALID;
 struct guest_struct *_current_guest;
+#if _SMP_
+static struct guest_struct secondary_guest;
+static int _current_secondary_guest_vmid = VMID_INVALID;
+struct guest_struct *_current_secondary_guest;
+#endif
 
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked;
@@ -104,6 +109,42 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
     return result;
 }
 
+#if _SMP_
+static hvmm_status_t secondary_perform_switch(struct arch_regs *regs)
+{
+    /* _curreng_guest_vmid -> next_vmid */
+    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
+    guest_save(&secondary_guest, regs);
+    memory_save();
+
+    _current_secondary_guest_vmid = 2;
+
+    memory_restore(_current_secondary_guest_vmid);
+    guest_restore(&secondary_guest, regs);
+
+    return result;
+}
+
+
+hvmm_status_t guest_secondary_perform_switch(struct arch_regs *regs)
+{
+    hvmm_status_t result = HVMM_STATUS_IGNORED;
+
+    /*
+     * If the scheduler is not already running, launch default
+     * first guest. It occur in initial time.
+     */
+    printh("context: launching the first guest\n");
+
+    if (_current_secondary_guest_vmid == VMID_INVALID)
+        result = secondary_perform_switch(0);
+
+    _switch_locked = 0;
+    return result;
+}
+#endif
+
 /* Switch to the first guest */
 void guest_sched_start(void)
 {
@@ -120,6 +161,22 @@ void guest_sched_start(void)
     guest_switchto(0, 0);
     guest_perform_switch(&guest->regs);
 }
+
+#if _SMP_
+void guest_secondary_sched_start(void)
+{
+    struct guest_struct *guest = 0;
+
+    printh("[hyp] switch_to_initial_guest:\n");
+    /* Select the first guest context to switch to. */
+    guest = &secondary_guest;
+    /* guest_hw_dump */
+    if (_guest_module.ops->dump)
+        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
+
+    guest_secondary_perform_switch(&guest->regs);
+}
+#endif
 
 vmid_t guest_first_vmid(void)
 {
@@ -240,3 +297,25 @@ hvmm_status_t guest_init()
 
     return result;
 }
+
+#if _SMP_
+hvmm_status_t guest_secondary_init()
+{
+    hvmm_status_t result = HVMM_STATUS_SUCCESS;
+    struct guest_struct *guest;
+    struct arch_regs *regs = 0;
+
+    printh("[hyp] init_guests: enter\n");
+
+    guest = &secondary_guest;
+    regs = &guest->regs;
+    guest->vmid = 2;
+    /* guest_hw_init */
+    if (_guest_module.ops->init)
+        _guest_module.ops->init(guest, regs);
+
+    printh("[hyp] init_guests: return\n");
+
+    return result;
+}
+#endif

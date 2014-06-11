@@ -139,6 +139,9 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     uint32_t srt;
     struct arch_vdev_trigger_info info;
     int level = VDEV_LEVEL_LOW;
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
+#endif
 
     printh("[hvc] _hyp_hvc_service: enter\n\r");
     fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
@@ -264,7 +267,14 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     }
 
     printh("[hyp] _hyp_hvc_service: done\n\r");
-    guest_perform_switch(regs);
+
+#ifdef _SMP_
+    if (cpu)
+        guest_secondary_perform_switch(regs);
+    else
+#endif
+        guest_perform_switch(regs);
+
     return HYP_RESULT_ERET;
 trap_error:
     _trap_dump_bregs();

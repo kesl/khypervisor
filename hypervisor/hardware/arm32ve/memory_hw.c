@@ -7,6 +7,10 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
+#ifdef _SMP_
+#include <smp.h>
+#endif
+
 /**
  * \defgroup Memory_Attribute_Indirection_Register
  *
@@ -267,10 +271,18 @@
  */
 
 static union lpaed *_vmid_ttbl[NUM_GUESTS_STATIC];
+#ifdef _SMP_
+static union lpaed *_vmid_secondary_ttbl;
+#endif
 static union lpaed
 _ttbl_guest0[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 static union lpaed
 _ttbl_guest1[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
+
+#ifdef _SMP_
+static union lpaed
+_ttbl_secondary_guest[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
+#endif
 
 /**
  * @brief Obtains TTBL_L3 entry.
@@ -1207,9 +1219,24 @@ static void guest_memory_init(struct memmap_desc **guest_map,
 
     guest_memory_init_ttbl(&_ttbl_guest0[0], guest_map);
     guest_memory_init_ttbl(&_ttbl_guest1[0], guest2_map);
-    guest_memory_init_mmu();
     HVMM_TRACE_EXIT();
 }
+
+#ifdef _SMP_
+static void guest_secondary_memory_init(struct memmap_desc **guest_map)
+{
+    /*
+     * Initializes Translation Table for Stage2 Translation (IPA -> PA)
+     */
+    HVMM_TRACE_ENTER();
+
+    _vmid_secondary_ttbl = &_ttbl_secondary_guest[0];
+
+    guest_memory_init_ttbl(&_ttbl_secondary_guest[0], guest_map);
+
+    HVMM_TRACE_EXIT();
+}
+#endif
 
 /**
  * @brief Configures the memory management features.
@@ -1242,11 +1269,30 @@ static void guest_memory_init(struct memmap_desc **guest_map,
 static int memory_hw_init(struct memmap_desc **guest0,
             struct memmap_desc **guest1)
 {
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
+#endif
     uart_print("[memory] memory_init: enter\n\r");
-    guest_memory_init(guest0, guest1);
-    host_memory_init();
+
+#ifdef _SMP_
+    if (cpu)
+        guest_secondary_memory_init(guest0);
+    else
+#endif
+        guest_memory_init(guest0, guest1);
+
+    guest_memory_init_mmu();
+
+#ifdef _SMP_
+    if (!cpu)
+#endif
+       host_memory_init();
+
     memory_enable();
-    host_memory_heap_init();
+#ifdef _SMP_
+    if (!cpu)
+#endif
+        host_memory_heap_init();
     uart_print("[memory] memory_init: exit\n\r");
 
     return HVMM_STATUS_SUCCESS;
@@ -1295,7 +1341,15 @@ static hvmm_status_t memory_hw_restore(vmid_t vmid)
      * Restore Translation Table for the next guest and
      * Enable Stage 2 Translation
      */
-    guest_memory_set_vmid_ttbl(vmid, _vmid_ttbl[vmid]);
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
+
+    if (cpu)
+        guest_memory_set_vmid_ttbl(vmid, _vmid_secondary_ttbl);
+    else
+#endif
+        guest_memory_set_vmid_ttbl(vmid, _vmid_ttbl[vmid]);
+
     guest_memory_stage2_enable(1);
 
     return HVMM_STATUS_SUCCESS;
