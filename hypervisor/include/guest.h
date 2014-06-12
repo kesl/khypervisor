@@ -80,7 +80,7 @@ extern uint32_t guest_secondary_bin_start;
 extern uint32_t guest_secondary_bin_end;
 #endif
 extern struct guest_module _guest_module;
-extern struct guest_struct *_current_guest;
+extern struct guest_struct *_current_guest[NUM_CPUS];
 
 /**
  * sched_policy_determ_next() should be used to determine next virtual
