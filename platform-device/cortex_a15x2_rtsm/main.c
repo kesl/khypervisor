@@ -59,6 +59,7 @@ static struct memmap_desc guest_device_md0[] = {
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
             CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K,
             MEMATTR_DM },
+    { "SMSC91c111i", 0x1A000000, 0x1A000000, SZ_16M, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
 };
 
@@ -149,6 +150,7 @@ void setup_interrupt()
      *  vimm-0, pirq-43, virq-43 = ACCI: shared driver
      *  vimm-0, pirq-44, virq-44 = KMI: shared driver
      *  vimm-0, pirq-45, virq-45 = KMI: shared driver
+     *  vimm-0, pirq-47, virq-47 = SMSC 91C111, Ethernet - etc0
      */
     DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 31, 31);
@@ -167,6 +169,7 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 43, 43);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 44, 44);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 45, 45);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 47, 47);
 }
 
 void setup_memory()
