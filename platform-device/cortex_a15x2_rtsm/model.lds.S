@@ -16,7 +16,9 @@ ENTRY(start)
 
 INPUT(./guestimages/guest0.bin)
 INPUT(./guestimages/guest1.bin)
-
+#ifdef _SMP_
+INPUT(./guestimages/guest2.bin)
+#endif
 
 MON_STACK   = CFG_MEMMAP_MON_OFFSET + MON_SIZE;
 SEC_STACKTOP = MON_STACK + MON_STACK_SIZE;
@@ -24,7 +26,9 @@ SEC_STACKTOP = MON_STACK + MON_STACK_SIZE;
 /* NS.SVC mode code space */
 GUEST_STACK     = CFG_MEMMAP_GUEST_OFFSET + GUEST_SIZE_MAX;
 GUEST2_STACK    = CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX;
-
+#ifdef _SMP_
+SECONDARY_GUEST_STACK    = CFG_MEMMAP_SECONDARY_GUEST_OFFSET + GUEST_SIZE_MAX;
+#endif
 SECTIONS
 {
  . = CFG_MEMMAP_PHYS_START;
@@ -56,6 +60,18 @@ SECTIONS
  . = GUEST2_STACK + 0x01000000;
  guest2_stacklimit = .;
 
+#ifdef _SMP_
+ /* Secondary Guest */
+ . = CFG_MEMMAP_SECONDARY_GUEST_OFFSET;
+  _guest_secondary_bin_start = .;
+ .secondary_guest : { ./guestimages/guest2.bin }
+  _guest_secondary_bin_end = .;
+
+ . = SECONDARY_GUEST_STACK;
+ secondary_guest_stacktop = .;
+ . = SECONDARY_GUEST_STACK + 0x01000000;
+ secondary_stacklimit = .;
+#endif
  . = CFG_MEMMAP_MON_OFFSET;
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.

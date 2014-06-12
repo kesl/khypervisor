@@ -27,6 +27,9 @@
 #include <gic.h>
 #include <test/tests.h>
 #include <test/test_vtimer.h>
+#ifdef _SMP_
+#include <smp.h>
+#endif
 
 /* #define TESTS_ENABLE_VDEV_SAMPLE */
 
@@ -55,9 +58,23 @@ inline void nrm_delay(void)
 void nrm_loop(void)
 {
     int i = 0;
+#if _SMP_
+    uint32_t cpu = smp_processor_id();
+#endif
     uart_init();
     uart_print(GUEST_LABEL);
+
+#if _SMP_
+    while (1) {
+        nrm_delay();
+        if (!cpu)
+            uart_print("=== Starting commom start up CPU 0\n\r");
+        else
+            uart_print("=== Starting commom start up CPU 1\n\r");
+    }
+#else
     uart_print("=== Starting commom start up\n\r");
+#endif
     gic_init();
     /* Enables receiving virtual timer interrupt */
     vtimer_mask(0);

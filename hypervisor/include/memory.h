@@ -89,6 +89,7 @@ struct memory_module {
 extern struct memory_module _memory_module;
 extern uint32_t _guest_bin_start;
 extern uint32_t _guest2_bin_start;
+extern uint32_t _guest_secondary_bin_start;
 
 void memory_free(void *ap);
 void *memory_alloc(unsigned long size);

@@ -71,6 +71,16 @@ static struct memmap_desc guest_device_md1[] = {
     {0, 0, 0, 0, 0}
 };
 
+#if _SMP_
+static struct memmap_desc guest_secondary_device_md0[] = {
+    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
+    { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
+    {0, 0, 0, 0, 0}
+};
+#endif
+
 /**
  * @brief Memory map for guest 0.
  */
@@ -93,6 +103,16 @@ static struct memmap_desc guest_memory_md1[] = {
     {0, 0, 0, 0,  0},
 };
 
+#if _SMP_
+static struct memmap_desc guest_secondary_memory_md0[] = {
+    /* 256MB */
+    {"start", 0x00000000, 0, 0x10000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+#endif
+
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest_mdlist0[] = {
     guest_device_md0,   /* 0x0000_0000 */
@@ -110,6 +130,16 @@ static struct memmap_desc *guest_mdlist1[] = {
     guest_md_empty,
     0
 };
+
+#if _SMP_
+static struct memmap_desc *guest_secondary_mdlist0[] = {
+    guest_secondary_device_md0,
+    guest_md_empty,
+    guest_secondary_memory_md0,
+    guest_md_empty,
+    0
+};
+#endif
 
 /** @}*/
 
@@ -183,6 +213,18 @@ void setup_memory()
     guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
 }
 
+#if _SMP_
+void setup_secondary_memory()
+{
+    /*
+     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
+     * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
+     * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
+     */
+    guest_secondary_memory_md0[0].pa = (uint64_t)((uint32_t) &_guest_secondary_bin_start);
+}
+#endif
+
 /** @brief Registers generic timer irqs such as hypervisor timer event
  *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
  *  and virtual timer event(GENERIC_TIMER_NSP).
@@ -201,10 +243,12 @@ void setup_timer()
     _timer_irq = 26; /* GENERIC_TIMER_HYP */
 }
 
+uint8_t secondary_smp_pen;
+
 int main_cpu_init()
 {
     init_print();
-    printH("[%s : %d] Starting...Main CPU : #%d\n", __func__, __LINE__);
+    printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
 
     /* Initialize Memory Management */
     setup_memory();
@@ -216,6 +260,11 @@ int main_cpu_init()
     /* Initialize Interrupt Management */
     if (interrupt_init(_guest_virqmap))
         printh("[start_guest] interrupt initialization failed...\n");
+
+#ifdef _SMP_
+    printH("wake up...other CPUs\n");
+    secondary_smp_pen = 1;
+#endif
 
     /* Initialize Timer */
     setup_timer();
@@ -254,13 +303,25 @@ void secondary_cpu_init(uint32_t cpu)
     init_print();
     printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
 
-    hyp_abort_infinite();
-
     /* Initialize Memory Management */
-    setup_memory();
-    if (memory_init(guest_mdlist0, guest_mdlist1))
+    setup_secondary_memory();
+    if (memory_init(guest_secondary_mdlist0, 0))
         printh("[start_guest] virtual memory initialization failed...\n");
 
+    /* Initialize Guests */
+    if (guest_secondary_init())
+        printh("[start_guest] guest initialization failed...\n");
+
+    /* Print Banner */
+    printH("%s", BANNER_STRING);
+
+    /* Switch to the first guest */
+    guest_secondary_sched_start();
+    /* The code flow must not reach here */
+    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
+    hyp_abort_infinite();
+
+#if 0
     /* Initialize PIRQ to VIRQ mapping */
     setup_interrupt();
     /* Initialize Interrupt Management */
@@ -279,16 +340,10 @@ void secondary_cpu_init(uint32_t cpu)
     /* Initialize Virtual Devices */
     if (vdev_init())
         printh("[start_guest] virtual device initialization failed...\n");
-
+#endif
     /* Begin running test code for newly implemented features */
     if (basic_tests_run(PLATFORM_BASIC_TESTS))
         printh("[start_guest] basic testing failed...\n");
-
-    /* Print Banner */
-    printH("%s", BANNER_STRING);
-
-    /* Switch to the first guest */
-    guest_sched_start();
 
     /* The code flow must not reach here */
     printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
@@ -301,12 +356,11 @@ int main(void)
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
-    if (!cpu)
-        main_cpu_init();
-    else
+    if (cpu)
         secondary_cpu_init(cpu);
-#else
-    main_cpu_init();
+    else
 #endif
+        main_cpu_init();
+
     return 0;
 }
