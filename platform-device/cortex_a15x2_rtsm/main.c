@@ -200,6 +200,8 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 44, 44);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 45, 45);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 47, 47);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41); // mmci-pl18x
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42); // mmci-pl18x
 }
 
 void setup_memory()
