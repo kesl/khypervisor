@@ -270,7 +270,7 @@
  * Statically allocated for now
  */
 
-static union lpaed *_vmid_ttbl[NUM_GUESTS_STATIC];
+static union lpaed *_vmid_ttbl[NUM_GUESTS_CPU0_STATIC];
 #ifdef _SMP_
 static union lpaed *_vmid_secondary_ttbl;
 #endif
@@ -1211,7 +1211,7 @@ static void guest_memory_init(struct memmap_desc **guest_map,
     int i;
 
     HVMM_TRACE_ENTER();
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++)
         _vmid_ttbl[i] = 0;
 
     _vmid_ttbl[0] = &_ttbl_guest0[0];

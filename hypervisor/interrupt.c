@@ -25,7 +25,7 @@ const int32_t interrupt_check_guest_irq(uint32_t pirq)
     int i;
     struct virqmap_entry *map;
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
         map = _guest_virqmap[i].map;
         if (map[pirq].virq != VIRQ_INVALID)
             return GUEST_IRQ;
@@ -149,7 +149,7 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
             /* IRQ INJECTION */
             /* priority drop only for hanlding irq in guest */
             _guest_ops->end(irq);
-            interrupt_inject_enabled_guest(NUM_GUESTS_STATIC, irq);
+            interrupt_inject_enabled_guest(NUM_GUESTS_CPU0_STATIC, irq);
         } else {
             /* host irq */
             if (_host_handlers[irq])

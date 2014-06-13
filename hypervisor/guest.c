@@ -8,7 +8,7 @@
 #include <hvmm_trace.h>
 #include <smp.h>
 
-#define NUM_GUEST_CONTEXTS        NUM_GUESTS_STATIC
+#define NUM_GUEST_CONTEXTS        NUM_GUESTS_CPU0_STATIC
 
 #define _valid_vmid(vmid) \
     (guest_first_vmid() <= vmid && guest_last_vmid() >= vmid)
@@ -19,7 +19,6 @@ static int _next_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 struct guest_struct *_current_guest[NUM_CPUS];
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked;
-
 
 static hvmm_status_t guest_save(struct guest_struct *guest,
                         struct arch_regs *regs)
@@ -47,6 +46,18 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     struct guest_struct *guest = 0;
 	uint32_t cpu = smp_processor_id();
+
+#if _SMP_
+    /* below code is hard code, we will remove this in the future */
+    if (cpu) {
+        guest_save(&guests[cpu], regs);
+        memory_save();
+        _current_guest_vmid[cpu] = next_vmid;
+        memory_restore(_current_guest_vmid[cpu]);
+        guest_restore(&guests[cpu], regs);
+        return result;
+    }
+#endif
 
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
@@ -76,8 +87,16 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 hvmm_status_t guest_perform_switch(struct arch_regs *regs)
 {
     hvmm_status_t result = HVMM_STATUS_IGNORED;
-	uint32_t cpu = smp_processor_id();
+    uint32_t cpu = smp_processor_id();
 
+#if _SMP_
+    if (cpu) {
+        if (_current_guest_vmid[cpu] == VMID_INVALID)
+            result = perform_switch(0, 2);
+        goto out;
+    }
+
+#endif
     if (_current_guest_vmid[cpu] == VMID_INVALID) {
         /*
          * If the scheduler is not already running, launch default
@@ -102,47 +121,13 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
          */
         vgic_flush_virqs(_current_guest_vmid[cpu]);
     }
-    _switch_locked = 0;
-    return result;
-}
 
 #if _SMP_
-static hvmm_status_t secondary_perform_switch(struct arch_regs *regs)
-{
-    /* _curreng_guest_vmid -> next_vmid */
-    hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-	uint32_t cpu = smp_processor_id();
-
-    guest_save(&guests[cpu], regs);
-    memory_save();
-
-    _current_guest_vmid[cpu] = 2;
-
-    memory_restore(_current_guest_vmid[cpu]);
-    guest_restore(&guests[cpu], regs);
-
-    return result;
-}
-
-
-hvmm_status_t guest_secondary_perform_switch(struct arch_regs *regs)
-{
-    hvmm_status_t result = HVMM_STATUS_IGNORED;
-	uint32_t cpu = smp_processor_id();
-
-    /*
-     * If the scheduler is not already running, launch default
-     * first guest. It occur in initial time.
-     */
-    printh("context: launching the first guest\n");
-
-    if (_current_guest_vmid[cpu] == VMID_INVALID)
-        result = secondary_perform_switch(0);
-
+out:
+#endif
     _switch_locked = 0;
     return result;
 }
-#endif
 
 /* Switch to the first guest */
 void guest_sched_start(void)
@@ -158,26 +143,18 @@ void guest_sched_start(void)
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
     /* Context Switch with current context == none */
+#if _SMP_
+    if (cpu) {
+        guest_perform_switch(&guest->regs);
+    } else {
+        guest_switchto(0, 0);
+        guest_perform_switch(&guest->regs);
+    }
+#else
     guest_switchto(0, 0);
     guest_perform_switch(&guest->regs);
-}
-
-#if _SMP_
-void guest_secondary_sched_start(void)
-{
-    struct guest_struct *guest = 0;
-    uint32_t cpu = smp_processor_id();
-
-    printh("[hyp] switch_to_initial_guest:\n");
-    /* Select the first guest context to switch to. */
-    guest = &guests[cpu];
-    /* guest_hw_dump */
-    if (_guest_module.ops->dump)
-        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
-
-    guest_secondary_perform_switch(&guest->regs);
-}
 #endif
+}
 
 vmid_t guest_first_vmid(void)
 {
@@ -277,21 +254,31 @@ hvmm_status_t guest_init()
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     struct guest_struct *guest;
     struct arch_regs *regs = 0;
-    int i;
+    int i, j;
+    int guest_count;
+    int vmid_mul = 0;
     uint32_t cpu = smp_processor_id();
 
     printh("[hyp] init_guests: enter\n");
     /* Initializes 2 guests */
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
-        /* Guest i @guest_bin_start */
-        guest = &guests[cpu][i];
-        regs = &guest->regs;
-        guest->vmid = i;
-        /* guest_hw_init */
-        if (_guest_module.ops->init)
-            _guest_module.ops->init(guest, regs);
+    for (j = 0; j < NUM_CPUS; j++) {
+        guest_count = num_of_guest(j);
+        for (i = 0; i < guest_count; i++) {
+            /* Guest i @guest_bin_start */
+            guest = &guests[cpu][i];
+            regs = &guest->regs;
+            guest->vmid = i + j * vmid_mul;
+            /* guest_hw_init */
+            if (_guest_module.ops->init)
+                _guest_module.ops->init(guest, regs);
+        }
+        vmid_mul += guest_count;
     }
     printh("[hyp] init_guests: return\n");
+#if _SMP_
+    if (cpu)
+        return result;
+#endif
 
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
     timer.interval_us = GUEST_SCHED_TICK;
@@ -302,26 +289,3 @@ hvmm_status_t guest_init()
 
     return result;
 }
-
-#if _SMP_
-hvmm_status_t guest_secondary_init()
-{
-    hvmm_status_t result = HVMM_STATUS_SUCCESS;
-    struct guest_struct *guest;
-    struct arch_regs *regs = 0;
-    uint32_t cpu = smp_processor_id();
-
-    printh("[hyp] init_guests: enter\n");
-
-    guest = &guests[cpu];
-    regs = &guest->regs;
-    guest->vmid = 2;
-    /* guest_hw_init */
-    if (_guest_module.ops->init)
-        _guest_module.ops->init(guest, regs);
-
-    printh("[hyp] init_guests: return\n");
-
-    return result;
-}
-#endif

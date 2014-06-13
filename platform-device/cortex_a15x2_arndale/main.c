@@ -17,7 +17,7 @@
         name[id].map[_virq].pirq = _pirq;       \
     } while (0)
 
-static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
+static struct guest_virqmap _guest_virqmap[NUM_GUESTS_CPU0_STATIC];
 
 static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
@@ -119,7 +119,7 @@ void setup_interrupt()
     int i, j;
     struct virqmap_entry *map;
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
         map = _guest_virqmap[i].map;
         for (j = 0; j < MAX_IRQS; j++) {
             map[j].enabled = GUEST_IRQ_DISABLE;

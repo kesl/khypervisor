@@ -22,7 +22,7 @@
     } while (0)
 
 
-static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
+static struct guest_virqmap _guest_virqmap[NUM_GUESTS_CPU0_STATIC];
 
 /**
  * \defgroup Guest_memory_map_descriptor
@@ -154,7 +154,7 @@ void setup_interrupt()
     int i, j;
     struct virqmap_entry *map;
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
         map = _guest_virqmap[i].map;
         for (j = 0; j < MAX_IRQS; j++) {
             map[j].enabled = GUEST_IRQ_DISABLE;
@@ -311,14 +311,14 @@ void secondary_cpu_init(uint32_t cpu)
         printh("[start_guest] virtual memory initialization failed...\n");
 
     /* Initialize Guests */
-    if (guest_secondary_init())
+    if (guest_init())
         printh("[start_guest] guest initialization failed...\n");
 
     /* Print Banner */
     printH("%s", BANNER_STRING);
 
     /* Switch to the first guest */
-    guest_secondary_sched_start();
+    guest_sched_start();
     /* The code flow must not reach here */
     printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
     hyp_abort_infinite();

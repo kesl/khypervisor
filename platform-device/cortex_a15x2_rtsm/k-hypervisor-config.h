@@ -28,7 +28,8 @@
 #define CFG_MACHINE_NUMBER 2272
 
 #define USEC 1000000
-#define NUM_GUESTS_STATIC       2
+#define NUM_GUESTS_CPU0_STATIC       2
+#define NUM_GUESTS_CPU1_STATIC       1
 #define NUM_CPUS       2
 #define COUNT_PER_USEC (CFG_CNTFRQ/USEC)
 #define GUEST_SCHED_TICK 1000
@@ -77,6 +78,5 @@
 
 #define SZ_1G               0x40000000
 #define SZ_2G               0x80000000
-
 
 #endif  /* KHYPERVISOR_CONFIG_H */
