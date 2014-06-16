@@ -20,6 +20,7 @@ SECTIONS
  . = GUEST_START;
  guest_start = .;
  .guest : {GUEST_PATH}
+ .= ALIGN(4);
  guest_end = .;
  loader_end = .;
  . = LOADER_PHYS_START;
