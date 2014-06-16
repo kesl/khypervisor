@@ -72,12 +72,12 @@ struct guest_module {
 
 };
 
-extern uint32_t guest_bin_start;
-extern uint32_t guest_bin_end;
-extern uint32_t guest2_bin_start;
+extern uint32_t _guest0_bin_start;
+extern uint32_t _guest0_bin_end;
+extern uint32_t _guest1_bin_start;
 #ifdef _SMP_
-extern uint32_t guest_secondary_bin_start;
-extern uint32_t guest_secondary_bin_end;
+extern uint32_t _guest2_bin_start;
+extern uint32_t _guest2_bin_end;
 #endif
 extern struct guest_module _guest_module;
 extern struct guest_struct *_current_guest[NUM_CPUS];
@@ -107,9 +107,12 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
 
-#ifdef _SMP_
-void guest_secondary_sched_start(void);
-hvmm_status_t guest_secondary_init();
-#endif
+static inline unsigned long num_of_guest(int cpu)
+{
+    if (cpu == 0)
+        return NUM_GUESTS_CPU0_STATIC;
+    else
+        return NUM_GUESTS_CPU1_STATIC;
+}
 
 #endif

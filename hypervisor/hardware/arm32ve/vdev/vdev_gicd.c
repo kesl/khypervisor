@@ -91,7 +91,7 @@ static struct vdev_memory_map _vdev_gicd_info = {
     .base = CFG_GIC_BASE_PA | GIC_OFFSET_GICD,
     .size = 4096,
 };
-static struct gicd_regs _regs[NUM_GUESTS_STATIC];
+static struct gicd_regs _regs[NUM_GUESTS_CPU0_STATIC];
 
 static struct gicd_handler_entry _handler_map[0x10] = {
     /* 0x00 ~ 0x0F */
@@ -114,7 +114,7 @@ static struct gicd_handler_entry _handler_map[0x10] = {
 };
 
 /* old status */
-static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] = {
+static uint32_t old_vgicd_status[NUM_GUESTS_CPU0_STATIC][NUM_STATUS_WORDS] = {
     {0,},
 };
 
@@ -505,7 +505,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
 
     printh("vdev init:'%s'\n", __func__);
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
         /*
          * ITARGETS[0~ 7], CPU Targets are set to 0,
          * due to current single-core support design

@@ -16,8 +16,8 @@ static struct vdev_memory_map _vdev_timer_info = {
     .size = sizeof(struct vdev_vtimer_regs),
 };
 
-static struct vdev_vtimer_regs vtimer_regs[NUM_GUESTS_STATIC];
-static int _timer_status[NUM_GUESTS_STATIC] = {0, };
+static struct vdev_vtimer_regs vtimer_regs[NUM_GUESTS_CPU0_STATIC];
+static int _timer_status[NUM_GUESTS_CPU0_STATIC] = {0, };
 
 static void vtimer_changed_status(vmid_t vmid, uint32_t status)
 {
@@ -106,7 +106,7 @@ static hvmm_status_t vdev_vtimer_reset(void)
     int i;
     struct timer_val timer;
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++)
         _timer_status[i] = 1;
 
     timer.interval_us = GUEST_SCHED_TICK;

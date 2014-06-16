@@ -20,6 +20,7 @@ static struct memory_ops *_memory_ops;
  */
 void *memory_alloc(unsigned long size)
 {
+    /* memory_hw_alloc */
     if (_memory_ops->alloc)
         return _memory_ops->alloc(size);
 
@@ -36,6 +37,7 @@ void *memory_alloc(unsigned long size)
  */
 void memory_free(void *ap)
 {
+    /* memory_hw_free */
     if (_memory_ops->free)
         _memory_ops->free(ap);
 }

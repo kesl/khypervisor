@@ -39,7 +39,7 @@ static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
 };
 /*  label, ipa, pa, size, attr */
-static struct memmap_desc guest_device_md0[] = {
+static struct memmap_desc guest0_device_md[] = {
     { "sysreg", 0x1C010000, 0x1C010000, SZ_4K, MEMATTR_DM },
     { "sysctl", 0x1C020000, 0x1C020000, SZ_4K, MEMATTR_DM },
     { "aaci", 0x1C040000, 0x1C040000, SZ_4K, MEMATTR_DM },
@@ -63,7 +63,7 @@ static struct memmap_desc guest_device_md0[] = {
     { 0, 0, 0, 0, 0 }
 };
 
-static struct memmap_desc guest_device_md1[] = {
+static struct memmap_desc guest1_device_md[] = {
     { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
     { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
     { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
@@ -72,7 +72,7 @@ static struct memmap_desc guest_device_md1[] = {
 };
 
 #if _SMP_
-static struct memmap_desc guest_secondary_device_md0[] = {
+static struct memmap_desc guest2_device_md[] = {
     { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
     { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
     { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
@@ -84,7 +84,7 @@ static struct memmap_desc guest_secondary_device_md0[] = {
 /**
  * @brief Memory map for guest 0.
  */
-static struct memmap_desc guest_memory_md0[] = {
+static struct memmap_desc guest0_memory_md[] = {
     /* 756MB */
     {"start", 0x00000000, 0, 0x30000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
@@ -95,7 +95,7 @@ static struct memmap_desc guest_memory_md0[] = {
 /**
  * @brief Memory map for guest 1.
  */
-static struct memmap_desc guest_memory_md1[] = {
+static struct memmap_desc guest1_memory_md[] = {
     /* 256MB */
     {"start", 0x00000000, 0, 0x10000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
@@ -104,7 +104,7 @@ static struct memmap_desc guest_memory_md1[] = {
 };
 
 #if _SMP_
-static struct memmap_desc guest_secondary_memory_md0[] = {
+static struct memmap_desc guest2_memory_md[] = {
     /* 256MB */
     {"start", 0x00000000, 0, 0x10000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
@@ -114,28 +114,28 @@ static struct memmap_desc guest_secondary_memory_md0[] = {
 #endif
 
 /* Memory Map for Guest 0 */
-static struct memmap_desc *guest_mdlist0[] = {
-    guest_device_md0,   /* 0x0000_0000 */
+static struct memmap_desc *guest0_mdlist[] = {
+    guest0_device_md,   /* 0x0000_0000 */
     guest_md_empty,     /* 0x4000_0000 */
-    guest_memory_md0,
+    guest0_memory_md,
     guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
     0
 };
 
 /* Memory Map for Guest 1 */
-static struct memmap_desc *guest_mdlist1[] = {
-    guest_device_md1,
+static struct memmap_desc *guest1_mdlist[] = {
+    guest1_device_md,
     guest_md_empty,
-    guest_memory_md1,
+    guest1_memory_md,
     guest_md_empty,
     0
 };
 
 #if _SMP_
-static struct memmap_desc *guest_secondary_mdlist0[] = {
-    guest_secondary_device_md0,
+static struct memmap_desc *guest2_mdlist[] = {
+    guest2_device_md,
     guest_md_empty,
-    guest_secondary_memory_md0,
+    guest2_memory_md,
     guest_md_empty,
     0
 };
@@ -213,21 +213,10 @@ void setup_memory()
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
      * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
      */
-    guest_memory_md0[0].pa = (uint64_t)((uint32_t) &_guest_bin_start);
-    guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
+    guest0_memory_md[0].pa = (uint64_t)((uint32_t) &_guest0_bin_start);
+    guest1_memory_md[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
+    guest2_memory_md[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
 }
-
-#if _SMP_
-void setup_secondary_memory()
-{
-    /*
-     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
-     * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
-     * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
-     */
-    guest_secondary_memory_md0[0].pa = (uint64_t)((uint32_t) &_guest_secondary_bin_start);
-}
-#endif
 
 /** @brief Registers generic timer irqs such as hypervisor timer event
  *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
@@ -256,7 +245,7 @@ int main_cpu_init()
 
     /* Initialize Memory Management */
     setup_memory();
-    if (memory_init(guest_mdlist0, guest_mdlist1))
+    if (memory_init(guest0_mdlist, guest1_mdlist))
         printh("[start_guest] virtual memory initialization failed...\n");
 
     /* Initialize PIRQ to VIRQ mapping */
@@ -308,19 +297,18 @@ void secondary_cpu_init(uint32_t cpu)
     printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
 
     /* Initialize Memory Management */
-    setup_secondary_memory();
-    if (memory_init(guest_secondary_mdlist0, 0))
+    if (memory_init(guest2_mdlist, 0))
         printh("[start_guest] virtual memory initialization failed...\n");
 
     /* Initialize Guests */
-    if (guest_secondary_init())
+    if (guest_init())
         printh("[start_guest] guest initialization failed...\n");
 
     /* Print Banner */
     printH("%s", BANNER_STRING);
 
     /* Switch to the first guest */
-    guest_secondary_sched_start();
+    guest_sched_start();
     /* The code flow must not reach here */
     printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
     hyp_abort_infinite();
