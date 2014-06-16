@@ -157,12 +157,17 @@ static void setup_end_tag(void)
 void linuxloader_setup_atags(uint32_t src)
 {
     char *commandline =
-            "root=/dev/mmcblk0 rw ip=dhcp "
-            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
+/* mmc */
+//            "root=/dev/mmcblk0 rw ip=dhcp "
+//            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
+/* android */
+//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0";
+/* nfs */
 //            "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
-//            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
-//            "mem=256M rdinit=/sbin/init";
+/* ramdisk */
+            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
+            "mem=256M rdinit=/sbin/init";
     /* standard core tag 4k pagesize */
     setup_core_tag((uint32_t *)src+(TAG_POSITION), SIZE_4K);
     /* commandline setting root device */
