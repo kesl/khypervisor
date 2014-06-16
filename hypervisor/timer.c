@@ -58,6 +58,7 @@ static inline uint32_t timer_is_full()
  */
 static hvmm_status_t timer_start(void)
 {
+    /* timer_enable() */
     if (_ops->enable)
         return _ops->enable();
 
@@ -69,6 +70,7 @@ static hvmm_status_t timer_start(void)
  */
 static hvmm_status_t timer_stop(void)
 {
+    /* timer_disable() */
     if (_ops->disable)
         return _ops->disable();
 
@@ -105,6 +107,7 @@ static void timer_check_each_timers(void *pregs)
  */
 static hvmm_status_t timer_set_interval(uint32_t interval_us)
 {
+    /* timer_set_tval() */
     if (_ops->set_interval)
         return _ops->set_interval(timer_t2c(interval_us));
 
