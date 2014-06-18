@@ -5,6 +5,10 @@
 #include <log/uart_print.h>
 #include <interrupt.h>
 
+#ifdef _SMP_
+#include <smp.h>
+#endif
+
 #define VIRQ_MIN_VALID_PIRQ 16
 #define VIRQ_NUM_MAX_PIRQS  MAX_IRQS
 
@@ -190,11 +194,18 @@ hvmm_status_t interrupt_restore(vmid_t vmid)
 hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+#ifdef _SMP_
+	uint32_t cpu = smp_processor_id();
 
-    _host_ops = _interrupt_module.host_ops;
-    _guest_ops = _interrupt_module.guest_ops;
+    if(!cpu) {
+#endif
+        _host_ops = _interrupt_module.host_ops;
+        _guest_ops = _interrupt_module.guest_ops;
 
-    _guest_virqmap = virqmap;
+        _guest_virqmap = virqmap;
+#ifdef _SMP_
+    }
+#endif
 
     /* host_interrupt_init() */
     if (_host_ops->init) {
@@ -202,13 +213,19 @@ hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
         if (ret)
             printh("host initial failed:'%s'\n", _interrupt_module.name);
     }
-
-    /* guest_interrupt_init() */
-    if (_guest_ops->init) {
-        ret = _guest_ops->init();
-        if (ret)
-            printh("guest initial failed:'%s'\n", _interrupt_module.name);
+	
+#ifdef _SMP_
+	if (!cpu) {
+#endif
+        /* guest_interrupt_init() */
+        if (_guest_ops->init) {
+            ret = _guest_ops->init();
+            if (ret)
+                printh("guest initial failed:'%s'\n", _interrupt_module.name);
+	    }
+#ifdef _SMP_
     }
+#endif
 
     return ret;
 }

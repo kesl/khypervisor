@@ -91,8 +91,27 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
 
 #if _SMP_
     if (cpu) {
-        if (_current_guest_vmid[cpu] == VMID_INVALID)
+        if (_current_guest_vmid[cpu] == VMID_INVALID) {
+            /* below code is hard code, we will remove this in the futre */
+            _next_guest_vmid[cpu] = 2;
             result = perform_switch(0, 2);
+        /* DOES NOT COME BACK HERE */
+        } else if (_current_guest_vmid[cpu] == VMID_INVALID &&
+                _current_guest_vmid[cpu] != _next_guest_vmid[cpu]) {
+            printh("curr: %x\n", _current_guest_vmid[cpu]);
+            printh("next: %x\n",  _next_guest_vmid[cpu]);
+            /* Only if not from Hyp */
+            result = perform_switch(regs, _next_guest_vmid[cpu]);
+            //_next_guest_vmid[cpu] = VMID_INVALID;
+        } else {
+            /*
+             * Staying at the currently active guest.
+             * Flush out queued virqs since we didn't have a chance
+             * to switch the context, where virq flush takes place,
+             * this time
+             */
+            vgic_flush_virqs(_current_guest_vmid[cpu]);
+        }
         goto out;
     }
 
