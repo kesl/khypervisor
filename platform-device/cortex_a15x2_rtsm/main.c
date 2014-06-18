@@ -289,7 +289,15 @@ int main_cpu_init()
     hyp_abort_infinite();
 
 }
+
+
 #ifdef _SMP_
+
+void test_sched(void *pdata)
+{
+	printh("test test test!!!");
+}
+
 void secondary_cpu_init(uint32_t cpu)
 {
     if (cpu >= CFG_NUMBER_OF_CPUS)
@@ -301,6 +309,27 @@ void secondary_cpu_init(uint32_t cpu)
     /* Initialize Memory Management */
     if (memory_init(guest2_mdlist, 0))
         printh("[start_guest] virtual memory initialization failed...\n");
+
+    /* Initialize PIRQ to VIRQ mapping */
+//    setup_interrupt();
+    /* Initialize Interrupt Management */
+    if (interrupt_init(_guest_virqmap))
+        printh("[start_guest] interrupt initialization failed...\n");
+
+    /* Initialize Timer */
+    //setup_timer();
+    if (timer_init(_timer_irq))
+        printh("[start_guest] timer initialization failed...\n");
+
+    {
+        hvmm_status_t result = HVMM_STATUS_SUCCESS;
+        struct timer_val timer;
+        timer.interval_us = GUEST_SCHED_TICK;
+        timer.callback = &test_sched;
+        result = timer_set(&timer);
+        if (result != HVMM_STATUS_SUCCESS)
+            printh("[%s] timer startup failed...\n", __func__);
+    }
 
     /* Initialize Guests */
     if (guest_init())
@@ -316,21 +345,6 @@ void secondary_cpu_init(uint32_t cpu)
     hyp_abort_infinite();
 
 #if 0
-    /* Initialize PIRQ to VIRQ mapping */
-    setup_interrupt();
-    /* Initialize Interrupt Management */
-    if (interrupt_init(_guest_virqmap))
-        printh("[start_guest] interrupt initialization failed...\n");
-
-    /* Initialize Timer */
-    setup_timer();
-    if (timer_init(_timer_irq))
-        printh("[start_guest] timer initialization failed...\n");
-
-    /* Initialize Guests */
-    if (guest_init())
-        printh("[start_guest] guest initialization failed...\n");
-
     /* Initialize Virtual Devices */
     if (vdev_init())
         printh("[start_guest] virtual device initialization failed...\n");
