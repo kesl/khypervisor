@@ -85,7 +85,7 @@ static struct memmap_desc guest2_device_md[] = {
  * @brief Memory map for guest 0.
  */
 static struct memmap_desc guest0_memory_md[] = {
-    /* 756MB */
+    /* 768MB */
     {"start", 0x00000000, 0, 0x30000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
@@ -215,7 +215,9 @@ void setup_memory()
      */
     guest0_memory_md[0].pa = (uint64_t)((uint32_t) &_guest0_bin_start);
     guest1_memory_md[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
+#if _SMP_
     guest2_memory_md[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
+#endif
 }
 
 /** @brief Registers generic timer irqs such as hypervisor timer event

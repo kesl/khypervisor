@@ -153,7 +153,10 @@ static void setup_end_tag(void)
 #define SIZE_4K 4096
 #define TAG_POSITION (0x100/4)
 #define SIZE_256K 0x10000000
-
+#define SIZE_512M 0x20000000
+#define SIZE_2G 0x80000000
+#define SIZE_32M 0x2000000
+#define SIZE_768M 0x30000000
 void linuxloader_setup_atags(uint32_t src)
 {
     char *commandline =
@@ -161,7 +164,7 @@ void linuxloader_setup_atags(uint32_t src)
 //            "root=/dev/mmcblk0 rw ip=dhcp "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* android */
-//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0";
+//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=512M";
 /* nfs */
 //            "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
@@ -173,7 +176,7 @@ void linuxloader_setup_atags(uint32_t src)
     /* commandline setting root device */
     setup_cmdline_tag(commandline);
     setup_revision_tag();
-    setup_mem_tag(src, SIZE_256K);
+    setup_mem_tag(src, SIZE_768M);
     /* end of tags */
     setup_end_tag();
 }
