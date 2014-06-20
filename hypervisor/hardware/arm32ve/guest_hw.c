@@ -13,7 +13,7 @@
 #define CPSR_MODE_HYP   0x1A
 #define CPSR_MODE_UND   0x1B
 #define CPSR_MODE_SYS   0x1F
-
+extern struct guest_struct *_current_guest[NUM_CPUS];
 static void context_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
 {
@@ -179,7 +179,7 @@ static void context_restore_cops(struct regs_cop *regs_cop)
     write_sctlr(regs_cop->sctlr);
 }
 
-#ifdef DEBUG
+#ifndef DEBUG
 static char *_modename(uint8_t mode)
 {
     char *name = "Unknown";
@@ -229,7 +229,7 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     context_save_cops(&context->regs_cop);
     context_save_banked(&context->regs_banked);
     printh("context: saving vmid[%d] mode(%x):%s pc:0x%x\n",
-            _current_guest->vmid,
+            _current_guest[0]->vmid,
            regs->cpsr & 0x1F,
            _modename(regs->cpsr & 0x1F),
            regs->pc);
@@ -300,11 +300,11 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
     if (verbose & GUEST_VERBOSE_LEVEL_1) {
         uint32_t lr = 0;
         asm volatile("mov  %0, lr" : "=r"(lr) : : "memory", "cc");
-        printh("context: restoring vmid[%d] mode(%x):%s pc:0x%x lr:0x%x\n",
-                _current_guest->vmid,
-                _current_guest->regs.cpsr & 0x1F,
-                _modename(_current_guest->regs.cpsr & 0x1F),
-                _current_guest->regs.pc, lr);
+        printH("context: restoring vmid[%d] mode(%x):%s pc:0x%x lr:0x%x\n",
+                _current_guest[0]->vmid,
+                _current_guest[0]->regs.cpsr & 0x1F,
+                _modename(_current_guest[0]->regs.cpsr & 0x1F),
+                _current_guest[0]->regs.pc, lr);
 
     }
     if (verbose & GUEST_VERBOSE_LEVEL_2) {

@@ -18,6 +18,9 @@
 #define tag_size(type)  ((sizeof(struct atag_header) \
         + sizeof(struct type)) >> 2)
 
+extern uint32_t initrd_start;
+extern uint32_t initrd_end;
+
 /* structures for each atag */
 struct atag_header {
     uint32_t size; /* length of tag in words including this header */
@@ -144,10 +147,32 @@ static void setup_mem_tag(uint32_t start, uint32_t len)
     _params = tag_next(_params);             /* move pointer to next tag */
 }
 
+static void setup_initrd2_tag(uint32_t start, uint32_t size)
+{
+    _params->hdr.tag = ATAG_INITRD2;        /* Initrd2 tag */
+    _params->hdr.size = tag_size(atag_initrd2); /* size tag */
+    _params->u.initrd2.start = start;        /* physical start */
+    _params->u.initrd2.size = size;          /* compressed ramdisk size */
+    _params = tag_next(_params);              /* move pointer to next tag */
+}
+
 static void setup_end_tag(void)
 {
     _params->hdr.tag = ATAG_NONE;            /* Empty tag ends list */
     _params->hdr.size = 0;                   /* zero length */
+}
+
+static void
+setup_ramdisk_tag(uint32_t size)
+{
+    _params->hdr.tag = ATAG_RAMDISK;         /* Ramdisk tag */
+    _params->hdr.size = tag_size(atag_ramdisk);  /* size tag */
+
+    _params->u.ramdisk.flags = 0;            /* Load the ramdisk */
+    _params->u.ramdisk.size = size;          /* Decompressed ramdisk size */
+    _params->u.ramdisk.start = 0;            /* Unused */
+
+    _params = tag_next(_params);              /* move pointer to next tag */
 }
 
 #define SIZE_4K 4096
@@ -164,19 +189,31 @@ void linuxloader_setup_atags(uint32_t src)
 //            "root=/dev/mmcblk0 rw ip=dhcp "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* android */
-//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=512M";
+//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=256M";
+            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=1024M";
 /* nfs */
 //            "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* ramdisk */
-            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
-            "mem=256M rdinit=/sbin/init";
+//            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
+//            "mem=256M rdinit=/sbin/init";
     /* standard core tag 4k pagesize */
-    setup_core_tag((uint32_t *)src+(TAG_POSITION), SIZE_4K);
+    //setup_core_tag((uint32_t *)src+(TAG_POSITION), SIZE_4K);
+    setup_core_tag((uint32_t *)0x80000000, SIZE_4K);
     /* commandline setting root device */
-    setup_cmdline_tag(commandline);
     setup_revision_tag();
     setup_mem_tag(src, SIZE_768M);
+//    setup_mem_tag(src, 0x40000000);
+
+    #ifdef USE_ANDROID_INITRD
+    uart_print_hex32(&initrd_start);
+    uart_print("\n");
+    uart_print_hex32(&initrd_end);
+    uart_print("\n");
+    uart_print_hex32((&initrd_end - &initrd_start) * sizeof(uint32_t));
+    setup_initrd2_tag((uint32_t)&initrd_start, (uint32_t)(&initrd_end - &initrd_start) * sizeof(uint32_t));
+    #endif
+    setup_cmdline_tag(commandline);
     /* end of tags */
     setup_end_tag();
 }

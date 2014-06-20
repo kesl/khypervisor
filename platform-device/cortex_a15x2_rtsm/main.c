@@ -86,7 +86,8 @@ static struct memmap_desc guest2_device_md[] = {
  */
 static struct memmap_desc guest0_memory_md[] = {
     /* 768MB */
-    {"start", 0x00000000, 0, 0x30000000,
+//    {"start", 0x00000000, 0, 0x30000000,
+    {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -204,6 +205,14 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42); // mmci-pl18x
     DECLARE_VIRQMAP(_guest_virqmap, 0, 29, 29); // arch_timer
     DECLARE_VIRQMAP(_guest_virqmap, 0, 30, 30); // arch_timer
+/*
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 13, 13); // mmci-pl18x
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 14, 14); // mmci-pl18x
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 11, 11); // arch_timer
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 10, 10); // arch_timer
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69); // pmu??
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 128, 69); // pmu??
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69); // pmu??*/
 }
 
 void setup_memory()
