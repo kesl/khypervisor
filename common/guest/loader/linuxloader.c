@@ -18,8 +18,8 @@
 #define tag_size(type)  ((sizeof(struct atag_header) \
         + sizeof(struct type)) >> 2)
 
-extern uint32_t initrd_start;
-extern uint32_t initrd_end;
+extern unsigned initrd_start;
+extern unsigned initrd_end;
 
 /* structures for each atag */
 struct atag_header {
@@ -202,16 +202,28 @@ void linuxloader_setup_atags(uint32_t src)
     setup_core_tag((uint32_t *)0x80000000, SIZE_4K);
     /* commandline setting root device */
     setup_revision_tag();
-    setup_mem_tag(src, SIZE_768M);
-//    setup_mem_tag(src, 0x40000000);
+//    setup_mem_tag(src, SIZE_768M);
+    setup_mem_tag(src, 0x40000000);
 
     #ifdef USE_ANDROID_INITRD
     uart_print_hex32(&initrd_start);
     uart_print("\n");
+    uart_print_hex32(&initrd_start + (0x40/sizeof(uint32_t)));
+    uart_print("\n");
+    uart_print_hex32(&initrd_start + (0x40/sizeof(unsigned)));
+    uart_print("\n");
     uart_print_hex32(&initrd_end);
     uart_print("\n");
+    uart_print_hex32((&initrd_end - &initrd_start));
+    uart_print("\n");
     uart_print_hex32((&initrd_end - &initrd_start) * sizeof(uint32_t));
-    setup_initrd2_tag((uint32_t)&initrd_start, (uint32_t)(&initrd_end - &initrd_start) * sizeof(uint32_t));
+    uart_print("\n");
+    uart_print_hex32((&initrd_end - &initrd_start + sizeof(uint32_t)) * sizeof(uint32_t));
+    uart_print("\n");
+    uart_print_hex32((&initrd_end - &initrd_start - (0x40/sizeof(uint32_t))) * sizeof(uint32_t));
+
+    setup_initrd2_tag(0x80D00040,0x0003A0AE);
+  // setup_initrd2_tag((uint32_t)&initrd_start + (0x40/sizeof(uint32_t)), (uint32_t)(&initrd_end - &initrd_start - (0x40/sizeof(uint32_t))) * sizeof(uint32_t));
     #endif
     setup_cmdline_tag(commandline);
     /* end of tags */
