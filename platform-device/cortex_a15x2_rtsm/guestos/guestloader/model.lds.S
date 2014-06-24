@@ -34,7 +34,6 @@ SECTIONS
  . = 0x80D00000;
  initrd_start = .;
  .androidrfs : { INITRD_PATH }
- .= ALIGN(4);
  initrd_end = .;
  #endif
 
