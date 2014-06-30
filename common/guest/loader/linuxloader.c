@@ -189,8 +189,7 @@ void linuxloader_setup_atags(uint32_t src)
 //            "root=/dev/mmcblk0 rw ip=dhcp "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* android */
-//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=256M";
-            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=1024M";
+            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=768M";
 /* nfs */
 //            "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
@@ -198,17 +197,17 @@ void linuxloader_setup_atags(uint32_t src)
 //            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
 //            "mem=256M rdinit=/sbin/init";
     /* standard core tag 4k pagesize */
-    //setup_core_tag((uint32_t *)src+(TAG_POSITION), SIZE_4K);
-    setup_core_tag((uint32_t *)0x80000000, SIZE_4K);
+    setup_core_tag((uint32_t *)src, SIZE_4K);
     /* commandline setting root device */
     setup_revision_tag();
-//    setup_mem_tag(src, SIZE_768M);
-    setup_mem_tag(src, 0x40000000);
+    setup_mem_tag(src, SIZE_768M);
     #ifdef USE_ANDROID_INITRD
-    uint32_t start = &initrd_start;
-    uint32_t end = &initrd_end;
-    uint32_t size = end - start;
-    setup_initrd2_tag(start + 0x40, size - 0x40);
+    {
+        uint32_t start = &initrd_start;
+        uint32_t end = &initrd_end;
+        uint32_t size = end - start;
+        setup_initrd2_tag(start + 0x40, size - 0x40);
+    }
     #endif
     setup_cmdline_tag(commandline);
     /* end of tags */

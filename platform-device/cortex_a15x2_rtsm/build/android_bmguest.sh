@@ -18,12 +18,15 @@ export ZIMAGE_BIN="zImage"
 export BMGUEST_BIN="bmguest.bin"
 export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
-export GUEST0_BUILD_SCRIPT="cd ../linux && \
-cd ../../$GUEST0_DIR && \
+export GUEST0_BUILD_SCRIPT="cd ../android_boot/ && \
+./linaro_kernel_build_cmds.sh && \
+cd linaro-kernel && \
+cp out/arch/arm/boot/zImage ../../../guestimages/ && \
+cat ../../../patch/rtsm_ve-cortex_a15x1.dtb >> ../../../guestimages/zImage && \
+cd ../../../$GUEST0_DIR && \
 make clean && \
 make LINUX=y ANDROID=y"
 export GUEST0_CLEAN_SCRIPT="make clean"
-
 export GUEST1_DIR="guestos/guestloader"
 export GUEST1_BIN="guestloader.bin"
 export GUEST1_BUILD_SCRIPT="cd ../bmguest/ && \
