@@ -48,18 +48,10 @@ void loader_boot_guest(uint32_t guest_os_type)
     uint32_t pc;
 
     /* Copies loader to next to guest */
-//    #ifdef USE_ANDROID_INITRD
-//    copy_image_to_addr(LOADER, &initrd_end);
-//    #else
     copy_image_to_addr(LOADER, &guest_end);
-//    #endif
 
-//    #ifdef USE_ANDROID_INITRD
-//    offset = ((uint32_t)(&initrd_end - &loader_start) * sizeof(uint32_t));
-//    #else
     /* Jump pc to (pc + offset). */
     offset = ((uint32_t)(&guest_end - &loader_start) * sizeof(uint32_t));
-//    #endif
     ADD_PC_TO_OFFSET(offset);
     JUMP_TO_ADDRESS(offset);
 
