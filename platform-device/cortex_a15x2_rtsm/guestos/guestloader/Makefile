@@ -33,6 +33,9 @@ else
 GUESTBIN	= ../../guestimages/bmguest.bin
 endif
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN)
+ifeq ($(ANDROID), y)
+GUESTLOADERCONFIGS += -DINITRD_PATH=../android_boot/uInitrd -DUSE_ANDROID_INITRD
+endif
 all: $(GUESTLOADERBIN)
 clean distclean:
 	rm -f $(GUESTLOADERIMG) $(GUESTLOADERBIN) \

@@ -44,8 +44,8 @@ static struct memmap_desc guest0_device_md[] = {
     { "sysctl", 0x1C020000, 0x1C020000, SZ_4K, MEMATTR_DM },
     { "aaci", 0x1C040000, 0x1C040000, SZ_4K, MEMATTR_DM },
     { "mmci", 0x1C050000, 0x1C050000, SZ_4K, MEMATTR_DM },
-    { "kmi", 0x1C060000, 0x1C060000,  SZ_4K, MEMATTR_DM },
-    { "kmi2", 0x1C070000, 0x1C070000, SZ_4K, MEMATTR_DM },
+    { "kmi", 0x1C060000, 0x1C060000,  SZ_64K, MEMATTR_DM },
+    { "kmi2", 0x1C070000, 0x1C070000, SZ_64K, MEMATTR_DM },
     { "v2m_serial0", 0x1C090000, 0x1C0A0000, SZ_4K, MEMATTR_DM },
     { "v2m_serial1", 0x1C0A0000, 0x1C090000, SZ_4K, MEMATTR_DM },
     { "v2m_serial2", 0x1C0B0000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
@@ -60,6 +60,7 @@ static struct memmap_desc guest0_device_md[] = {
             CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K,
             MEMATTR_DM },
     { "SMSC91c111i", 0x1A000000, 0x1A000000, SZ_16M, MEMATTR_DM },
+    { "simplebus2", 0x18000000, 0x18000000, SZ_64M, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
 };
 
@@ -175,29 +176,31 @@ void setup_interrupt()
      *  vimm-0, pirq-44, virq-44 = KMI: shared driver
      *  vimm-0, pirq-45, virq-45 = KMI: shared driver
      *  vimm-0, pirq-47, virq-47 = SMSC 91C111, Ethernet - etc0
+     *  vimm-0, pirq-41, virq-41 = MCI - pl180
+     *  vimm-0, pirq-42, virq-42 = MCI - pl180
      */
     DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 31, 31);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 33, 33);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 17, 17);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 18, 18);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 19, 19);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 31, 31);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 32, 32);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 33, 33);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 34, 34);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 35, 35);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 36, 36);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 37, 38);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 38, 37);
     DECLARE_VIRQMAP(_guest_virqmap, 1, 39, 37);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 43, 43);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 44, 44);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 45, 45);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 46, 46);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 47, 47);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41); /* mmci-pl18x */
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42); /* mmci-pl18x */
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 29, 29); /* arch_timer */
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 30, 30); /* arch_timer */
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69);
 }
 
 void setup_memory()

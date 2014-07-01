@@ -18,6 +18,8 @@ enum guest_image_type {
     GUEST
 };
 
+extern uint32_t initrd_end;
+
 /**
 * @brief Copies a guest to address.
 * @param img_type Guest Image type you want to copy. LOADER or GUEST.
@@ -66,7 +68,7 @@ void loader_boot_guest(uint32_t guest_os_type)
     }
 
     /* Jump to start address of guest
-     * Linux (zImage) : 0xA000_8000
+     * Linux (zImage) : 0x8000_8000
      * RTOS           : 0x8000_0000
      * BMGUEST        : 0x8000_0000
      */

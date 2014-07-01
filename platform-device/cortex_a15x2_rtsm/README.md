@@ -28,6 +28,14 @@ $ git submodule update
 $ ./scripts/apply_patch.sh
 </pre>
 
+# How to test android + bmguest
+<pre>
+$ source platform-device/cortex_a15x2_rtsm/build/android_bmguest.sh
+$ ./script/build_android_vexpress_mmc.sh
+$ make
+$ ./script/run_mmc_rtsm.sh
+</pre>
+
 # How to test bmguest + bmguest
 
 ## Make a build in one step continuous integration
