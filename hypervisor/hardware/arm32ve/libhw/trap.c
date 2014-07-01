@@ -44,13 +44,6 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
     uint32_t irq;
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
-    if(cpu) {
-        printh("INterrupt!!!");
-    irq = gic_get_irq_number();
-    printh("%d", irq);
-        while (1)
-            ;
-    }
 #endif
 	
     irq = gic_get_irq_number();

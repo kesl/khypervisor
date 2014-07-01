@@ -164,12 +164,6 @@ void setup_interrupt()
     }
 
     /*
-     * NOTE(wonseok):
-     * referenced by
-     * https://github.com/kesl/khypervisor/wiki/Hardware-Resources
-     * -of-Guest-Linux-on-FastModels-RTSM_VE-Cortex-A15x1
-     * */
-    /*
      *  vimm-0, pirq-69, virq-69 = pwm timer driver
      *  vimm-0, pirq-32, virq-32 = WDT: shared driver
      *  vimm-0, pirq-34, virq-34 = SP804: shared driver
@@ -200,10 +194,10 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 44, 44);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 45, 45);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 47, 47);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41); // mmci-pl18x
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42); // mmci-pl18x
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 29, 29); // arch_timer
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 30, 30); // arch_timer
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41); /* mmci-pl18x */
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42); /* mmci-pl18x */
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 29, 29); /* arch_timer */
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 30, 30); /* arch_timer */
 }
 
 void setup_memory()
@@ -290,13 +284,7 @@ int main_cpu_init()
 
 }
 
-
 #ifdef _SMP_
-
-void test_sched(void *pdata)
-{
-	printh("test test test!!!");
-}
 
 void secondary_cpu_init(uint32_t cpu)
 {
@@ -310,53 +298,26 @@ void secondary_cpu_init(uint32_t cpu)
     if (memory_init(guest2_mdlist, 0))
         printh("[start_guest] virtual memory initialization failed...\n");
 
-    /* Initialize PIRQ to VIRQ mapping */
-//    setup_interrupt();
     /* Initialize Interrupt Management */
     if (interrupt_init(_guest_virqmap))
         printh("[start_guest] interrupt initialization failed...\n");
 
     /* Initialize Timer */
-    //setup_timer();
     if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
-
-    {
-        hvmm_status_t result = HVMM_STATUS_SUCCESS;
-        struct timer_val timer;
-        timer.interval_us = GUEST_SCHED_TICK;
-        timer.callback = &test_sched;
-        result = timer_set(&timer);
-        if (result != HVMM_STATUS_SUCCESS)
-            printh("[%s] timer startup failed...\n", __func__);
-    }
 
     /* Initialize Guests */
     if (guest_init())
         printh("[start_guest] guest initialization failed...\n");
 
-    /* Print Banner */
-    printH("%s", BANNER_STRING);
-
     /* Switch to the first guest */
     guest_sched_start();
-    /* The code flow must not reach here */
-    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
-    hyp_abort_infinite();
-
-#if 0
-    /* Initialize Virtual Devices */
-    if (vdev_init())
-        printh("[start_guest] virtual device initialization failed...\n");
-#endif
-    /* Begin running test code for newly implemented features */
-    if (basic_tests_run(PLATFORM_BASIC_TESTS))
-        printh("[start_guest] basic testing failed...\n");
 
     /* The code flow must not reach here */
     printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
     hyp_abort_infinite();
 }
+
 #endif
 
 int main(void)

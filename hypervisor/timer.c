@@ -11,14 +11,15 @@
 #include <timer.h>
 #include <interrupt.h>
 #include <log/print.h>
+#include <smp.h>
 
 struct timer {
     struct timer_val timer_info;
     int32_t count_per_irq;
 };
 
-static struct timer _timers[MAX_TIMER];
-uint32_t _timers_index;
+static struct timer _timers[NUM_CPUS][MAX_TIMER];
+uint32_t _timers_index[NUM_CPUS];
 static struct timer_ops *_ops;
 
 /*
@@ -50,7 +51,9 @@ static inline int32_t timer_count_per_irq(int32_t interval_us)
  */
 static inline uint32_t timer_is_full()
 {
-    return (_timers_index >= MAX_TIMER);
+    uint32_t cpu = smp_processor_id();
+
+    return (_timers_index[cpu] >= MAX_TIMER);
 }
 
 /*
@@ -83,20 +86,21 @@ static hvmm_status_t timer_stop(void)
 static void timer_check_each_timers(void *pregs)
 {
     uint32_t i;
+    uint32_t cpu = smp_processor_id();
 
-    for (i = 0; i < _timers_index && i < MAX_TIMER; i++) {
+    for (i = 0; i < _timers_index[cpu] && i < MAX_TIMER; i++) {
         /* if interval_us is negative value, skip it. */
-        if (_timers[i].timer_info.interval_us > 0) {
+        if (_timers[cpu][i].timer_info.interval_us > 0) {
             /* consumes count_per_irq value. */
-            _timers[i].count_per_irq--;
+            _timers[cpu][i].count_per_irq--;
 
-            if (_timers[i].count_per_irq < 0) {
+            if (_timers[cpu][i].count_per_irq < 0) {
                 /* calls callback with pregs */
-                _timers[i].timer_info.callback(pregs);
+                _timers[cpu][i].timer_info.callback(pregs);
 
                 /* re-calculates count_per_irq. */
-                _timers[i].count_per_irq = timer_count_per_irq(
-                        _timers[i].timer_info.interval_us);
+                _timers[cpu][i].count_per_irq = timer_count_per_irq(
+                        _timers[cpu][i].timer_info.interval_us);
             }
         }
     }
@@ -119,6 +123,8 @@ static hvmm_status_t timer_set_interval(uint32_t interval_us)
  */
 static void timer_handler(int irq, void *pregs, void *pdata)
 {
+    uint32_t cpu = smp_processor_id();
+
     timer_stop();
     timer_check_each_timers(pregs);
     timer_set_interval(COUNT_PER_USEC);
@@ -135,11 +141,13 @@ static hvmm_status_t timer_requset_irq(uint32_t irq)
 
 hvmm_status_t timer_set(struct timer_val *timer)
 {
+    struct timer stimer;
+    uint32_t cpu = smp_processor_id();
+
     /* checks it first. */
     if (timer_is_full())
         return HVMM_STATUS_UNSUPPORTED_FEATURE;
 
-    struct timer stimer;
     stimer.timer_info.callback = timer->callback;
     stimer.timer_info.interval_us = timer->interval_us;
     stimer.count_per_irq = timer_count_per_irq(timer->interval_us);
@@ -148,16 +156,18 @@ hvmm_status_t timer_set(struct timer_val *timer)
      * TODO: Storing time_val into array of timers needs a lock mechanism
      * for preventing concurrent access.
      */
-    _timers[_timers_index++] = stimer;
+    _timers[cpu][_timers_index[cpu]++] = stimer;
 
     return HVMM_STATUS_SUCCESS;
 }
 
 hvmm_status_t timer_init(uint32_t irq)
 {
+    uint32_t cpu = smp_processor_id();
+
     _ops = _timer_module.ops;
 
-    _timers_index = 0;
+    _timers_index[cpu] = 0;
 
     if (_ops->init)
         _ops->init();

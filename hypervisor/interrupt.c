@@ -4,10 +4,7 @@
 #include <hvmm_trace.h>
 #include <log/uart_print.h>
 #include <interrupt.h>
-
-#ifdef _SMP_
 #include <smp.h>
-#endif
 
 #define VIRQ_MIN_VALID_PIRQ 16
 #define VIRQ_NUM_MAX_PIRQS  MAX_IRQS
@@ -22,7 +19,8 @@ static struct interrupt_ops *_host_ops;
 static struct guest_virqmap *_guest_virqmap;
 
 /**< IRQ handler */
-static interrupt_handler_t _host_handlers[MAX_IRQS];
+static interrupt_handler_t _host_ppi_handlers[NUM_CPUS][MAX_PPI_IRQS];
+static interrupt_handler_t _host_spi_handlers[MAX_IRQS];
 
 const int32_t interrupt_check_guest_irq(uint32_t pirq)
 {
@@ -77,7 +75,13 @@ hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq,
 
 hvmm_status_t interrupt_request(uint32_t irq, interrupt_handler_t handler)
 {
-    _host_handlers[irq] = handler;
+    uint32_t cpu = smp_processor_id();
+
+    if (irq < MAX_PPI_IRQS) {
+        _host_ppi_handlers[cpu][irq] = handler;
+    } else {
+       _host_spi_handlers[irq] = handler;
+    }
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -108,6 +112,7 @@ hvmm_status_t interrupt_host_configure(uint32_t irq)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* host_interrupt_configure() */
     if (_host_ops->configure)
         ret = _host_ops->configure(irq);
 
@@ -150,6 +155,7 @@ static void interrupt_inject_enabled_guest(int num_of_guests, uint32_t irq)
 void interrupt_service_routine(int irq, void *current_regs, void *pdata)
 {
     struct arch_regs *regs = (struct arch_regs *)current_regs;
+    uint32_t cpu = smp_processor_id();
 
     if (irq < MAX_IRQS) {
         if (interrupt_check_guest_irq(irq) == GUEST_IRQ) {
@@ -160,8 +166,13 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
             interrupt_inject_enabled_guest(NUM_GUESTS_CPU0_STATIC, irq);
         } else {
             /* host irq */
-            if (_host_handlers[irq])
-                _host_handlers[irq](irq, regs, 0);
+            if (irq < MAX_PPI_IRQS) {
+                if (_host_ppi_handlers[cpu][irq])
+                    _host_ppi_handlers[cpu][irq](irq, regs, 0);
+            } else {
+                if (_host_spi_handlers[irq])
+                    _host_spi_handlers[irq](irq, regs, 0);
+            }
             /* host_interrupt_end() */
             _host_ops->end(irq);
         }
