@@ -34,7 +34,7 @@ export GUEST1_DIR="guestos/guestloader"
 export GUEST1_BIN="guestloader.bin"
 export GUEST1_BUILD_SCRIPT="cd ../bmguest/ && \
 make clean && \
-make && \
+make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
@@ -44,7 +44,7 @@ export GUEST1_CLEAN_SCRIPT="make clean"
 export GUEST2_DIR="guestos/bmguest"
 export GUEST2_BIN="bmguest.bin"
 export GUEST2_BUILD_SCRIPT="make clean && \
-make"
+make GUEST_NUMBER=2 "
 export GUEST2_CLEAN_SCRIPT="make clean"
 
 export GUEST_IMAGE_DIR="guestimages"

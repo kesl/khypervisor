@@ -18,6 +18,7 @@ INPUT(./guestimages/guest0.bin)
 INPUT(./guestimages/guest1.bin)
 #ifdef _SMP_
 INPUT(./guestimages/guest2.bin)
+INPUT(./guestimages/guest3.bin)
 #endif
 
 MON_STACK   = CFG_MEMMAP_MON_OFFSET + MON_SIZE;
@@ -28,6 +29,7 @@ GUEST0_STACK     = CFG_MEMMAP_GUEST0_OFFSET + GUEST_SIZE_MAX;
 GUEST1_STACK    = CFG_MEMMAP_GUEST1_OFFSET + GUEST_SIZE_MAX;
 #ifdef _SMP_
 GUEST2_STACK    = CFG_MEMMAP_GUEST2_OFFSET + GUEST_SIZE_MAX;
+GUEST3_STACK    = CFG_MEMMAP_GUEST3_OFFSET + GUEST_SIZE_MAX;
 #endif
 SECTIONS
 {
@@ -71,6 +73,17 @@ SECTIONS
  guest2_stacktop = .;
  . = GUEST2_STACK + 0x01000000;
  guest2_stacklimit = .;
+
+/* Guest 3 */
+ . = CFG_MEMMAP_GUEST3_OFFSET;
+  _guest3_bin_start = .;
+ .guest3 : { ./guestimages/guest3.bin }
+  _guest3_bin_end = .;
+
+ . = GUEST3_STACK;
+ guest3_stacktop = .;
+ . = GUEST3_STACK + 0x01000000;
+ guest3_stacklimit = .;
 #endif
  . = CFG_MEMMAP_MON_OFFSET;
  /* Put most of the actual boot loader code up in high memory

@@ -19,7 +19,7 @@ export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
 export GUEST0_BUILD_SCRIPT="cd ../bmguest/ && \
 make clean && \
-make && \
+make GUEST_NUMBER=0 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
 make clean && \
@@ -30,7 +30,7 @@ export GUEST1_DIR="guestos/guestloader"
 export GUEST1_BIN="guestloader.bin"
 export GUEST1_BUILD_SCRIPT="cd ../bmguest/ && \
 make clean && \
-make && \
+make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \

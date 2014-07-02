@@ -80,6 +80,14 @@ static struct memmap_desc guest2_device_md[] = {
        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
     {0, 0, 0, 0, 0}
 };
+
+static struct memmap_desc guest3_device_md[] = {
+    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
+    { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
+    { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
+    {0, 0, 0, 0, 0}
+};
 #endif
 
 /**
@@ -105,7 +113,21 @@ static struct memmap_desc guest1_memory_md[] = {
 };
 
 #if _SMP_
+/**
+ * @brief Memory map for guest 2.
+ */
 static struct memmap_desc guest2_memory_md[] = {
+    /* 256MB */
+    {"start", 0x00000000, 0, 0x10000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+/**
+ * @brief Memory map for guest 3.
+ */
+static struct memmap_desc guest3_memory_md[] = {
     /* 256MB */
     {"start", 0x00000000, 0, 0x10000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
@@ -133,10 +155,20 @@ static struct memmap_desc *guest1_mdlist[] = {
 };
 
 #if _SMP_
+/* Memory Map for Guest 2 */
 static struct memmap_desc *guest2_mdlist[] = {
     guest2_device_md,
     guest_md_empty,
     guest2_memory_md,
+    guest_md_empty,
+    0
+};
+
+/* Memory Map for Guest 3 */
+static struct memmap_desc *guest3_mdlist[] = {
+    guest3_device_md,
+    guest_md_empty,
+    guest3_memory_md,
     guest_md_empty,
     0
 };
@@ -214,6 +246,7 @@ void setup_memory()
     guest1_memory_md[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
 #if _SMP_
     guest2_memory_md[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
+    guest3_memory_md[0].pa = (uint64_t)((uint32_t) &_guest3_bin_start);
 #endif
 }
 
@@ -244,9 +277,9 @@ int main_cpu_init()
 
     /* Initialize Memory Management */
     setup_memory();
+
     if (memory_init(guest0_mdlist, guest1_mdlist))
         printh("[start_guest] virtual memory initialization failed...\n");
-
     /* Initialize PIRQ to VIRQ mapping */
     setup_interrupt();
     /* Initialize Interrupt Management */
@@ -278,13 +311,13 @@ int main_cpu_init()
     /* Print Banner */
     printH("%s", BANNER_STRING);
 
+
     /* Switch to the first guest */
     guest_sched_start();
 
     /* The code flow must not reach here */
     printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
     hyp_abort_infinite();
-
 }
 
 #ifdef _SMP_
@@ -298,7 +331,7 @@ void secondary_cpu_init(uint32_t cpu)
     printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
 
     /* Initialize Memory Management */
-    if (memory_init(guest2_mdlist, 0))
+    if (memory_init(guest2_mdlist, guest3_mdlist))
         printh("[start_guest] virtual memory initialization failed...\n");
 
     /* Initialize Interrupt Management */

@@ -2,7 +2,7 @@
 
 export TARGET_PRODUCT="cortex_a15x2_rtsm"
 
-export GUEST_COUNT=2
+export GUEST_COUNT=4
 
 export HYPERVISOR_BIN="hvc-man-switch.axf"
 export HYPERVISOR_BUILD_SCRIPT="make clean && \
@@ -41,5 +41,18 @@ make clean && \
 make"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
+export GUEST2_DIR="guestos/bmguest"
+export GUEST2_BIN="bmguest.bin"
+export GUEST2_BUILD_SCRIPT="make clean && \
+make GUEST_NUMBER=2"
+export GUEST2_CLEAN_SCRIPT="make clean"
+
+export GUEST3_DIR="guestos/bmguest"
+export GUEST3_BIN="bmguest.bin"
+export GUEST3_BUILD_SCRIPT="make clean && \
+make GUEST_NUMBER=3"
+export GUEST3_CLEAN_SCRIPT="make clean"
+
 export GUEST_IMAGE_DIR="guestimages"
 export CI_BUILD_DIR="bmguest_linux"
+

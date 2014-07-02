@@ -41,7 +41,7 @@
 #endif
 
 #ifndef GUEST_LABEL
-#define GUEST_LABEL "[guest0] "
+#define GUEST_LABEL "[guest] :"
 #endif
 
 #ifndef NUM_ITERATIONS
@@ -63,14 +63,20 @@ void nrm_loop(void)
 #endif
     uart_init();
     uart_print(GUEST_LABEL);
+    uart_print_hex32(GUEST_NUMBER);
 
 #if _SMP_
     while (1) {
         nrm_delay();
-        if (!cpu)
-            uart_print("=== Starting commom start up CPU 0\n\r");
-        else
-            uart_print("=== Starting commom start up CPU 1\n\r");
+        if (!cpu) {
+            uart_print("=== Starting commom start up CPU 0 guest number :");
+            uart_print_hex32(GUEST_NUMBER);
+            uart_print("\n\r");
+        } else {
+            uart_print("=== Starting commom start up CPU 1 guest number :");
+            uart_print_hex32(GUEST_NUMBER);
+            uart_print("\n\r");
+        }
     }
 #else
     uart_print("=== Starting commom start up\n\r");

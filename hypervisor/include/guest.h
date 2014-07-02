@@ -78,6 +78,8 @@ extern uint32_t _guest1_bin_start;
 #ifdef _SMP_
 extern uint32_t _guest2_bin_start;
 extern uint32_t _guest2_bin_end;
+extern uint32_t _guest3_bin_start;
+extern uint32_t _guest3_bin_end;
 #endif
 extern struct guest_module _guest_module;
 extern struct guest_struct *_current_guest[NUM_CPUS];

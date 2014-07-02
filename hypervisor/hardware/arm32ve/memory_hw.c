@@ -6,6 +6,7 @@
 #include <memory.h>
 #include <log/print.h>
 #include <log/uart_print.h>
+#include <guest.h>
 
 #ifdef _SMP_
 #include <smp.h>
@@ -271,7 +272,11 @@
  */
 
 static union lpaed *_vmid_ttbl[NUM_GUESTS_STATIC];
-static union lpaed
+/*
+ * TODO: if you change the static variable, you will meet the system fault.
+ * We don't konw about this issue, so we will checking this later time.
+ */
+union lpaed
 _ttbl_guest[NUM_GUESTS_STATIC][VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 
 /**
@@ -301,6 +306,7 @@ static union lpaed _hmm_pgtable_l2[HMM_L2_PTE_NUM] \
 static union lpaed _hmm_pgtable_l3[HMM_L2_PTE_NUM][HMM_L3_PTE_NUM] \
                 __attribute((__aligned__(4096)));
 
+
 /* used malloc, free, sbrk */
 union header {
     struct {
@@ -312,9 +318,9 @@ union header {
 };
 /* free list block header */
 
-uint32_t mm_break; /* break point for sbrk()  */
-uint32_t mm_prev_break; /* old break point for sbrk() */
-uint32_t last_valid_address; /* last mapping address */
+static uint32_t mm_break; /* break point for sbrk()  */
+static uint32_t mm_prev_break; /* old break point for sbrk() */
+static uint32_t last_valid_address; /* last mapping address */
 static union header freep_base; /* empty list to get started */
 static union header *freep; /* start of free list */
 
@@ -1204,17 +1210,21 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
 #endif
 
     HVMM_TRACE_ENTER();
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
-        _vmid_ttbl[i] = &_ttbl_guest[i][0];
 
 #ifdef _SMP_
     if (!cpu) {
+        for (i = 0; i < NUM_GUESTS_STATIC; i++)
+            _vmid_ttbl[i] = &_ttbl_guest[i][0];
         guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
         guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
     } else {
+
         guest_memory_init_ttbl(&_ttbl_guest[2][0], guest0_map);
+        guest_memory_init_ttbl(&_ttbl_guest[3][0], guest1_map);
     }
 #else
+    for (i = 0; i < NUM_GUESTS_STATIC; i++)
+        _vmid_ttbl[i] = &_ttbl_guest[i][0];
     guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
     guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
 #endif
@@ -1268,11 +1278,17 @@ static int memory_hw_init(struct memmap_desc **guest0,
        host_memory_init();
 
     memory_enable();
-#ifdef _SMP_
-    if (!cpu)
-#endif
-        host_memory_heap_init();
+
     uart_print("[memory] memory_init: exit\n\r");
+#ifdef _SMP_
+    if (!cpu) {
+        uart_print("[memory] host_memory_heap_init \n\r");
+        host_memory_heap_init();
+    }
+#else
+    host_memory_heap_init();
+#endif
+
 
     return HVMM_STATUS_SUCCESS;
 }

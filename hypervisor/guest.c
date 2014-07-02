@@ -120,7 +120,10 @@ void guest_sched_start(void)
     printh("[hyp] switch_to_initial_guest:\n");
     /* Select the first guest context to switch to. */
     _current_guest_vmid[cpu] = VMID_INVALID;
-    guest = &guests[num_of_guest(cpu) + 0];
+    if (cpu)
+        guest = &guests[num_of_guest(cpu - 1) + 0];
+    else
+        guest = &guests[0];
     /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
@@ -137,14 +140,24 @@ void guest_sched_start(void)
 
 vmid_t guest_first_vmid(void)
 {
+    uint32_t cpu = smp_processor_id();
+
     /* FIXME:Hardcoded for now */
-    return 0;
+    if (cpu)
+        return 2;
+    else
+        return 0;
 }
 
 vmid_t guest_last_vmid(void)
 {
+    uint32_t cpu = smp_processor_id();
+
     /* FIXME:Hardcoded for now */
-    return 1;
+    if (cpu)
+        return 3;
+    else
+        return 1;
 }
 
 vmid_t guest_next_vmid(vmid_t ofvmid)
@@ -153,9 +166,6 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
     uint32_t cpu = smp_processor_id();
 
     /* FIXME:Hardcoded */
-    if (cpu)
-        return 2;
-
     if (ofvmid == VMID_INVALID)
         next = guest_first_vmid();
     else if (ofvmid < guest_last_vmid()) {
@@ -205,14 +215,11 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
 vmid_t sched_policy_determ_next(void)
 {
     vmid_t next = guest_next_vmid(guest_current_vmid());
-    uint32_t cpu = smp_processor_id();
 
     /* FIXME:Hardcoded */
-    if (cpu)
-        return 2;
-
     if (next == VMID_INVALID)
         next = guest_first_vmid();
+
     return next;
 }
 
