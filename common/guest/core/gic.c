@@ -3,6 +3,9 @@
 #include <log/uart_print.h>
 #include <hvmm_trace.h>
 #include <armv7_p15.h>
+//#ifdef _SMP_
+#include <smp.h>
+//#endif
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
 
@@ -210,11 +213,29 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t iar;
     uint32_t irq;
     struct arch_regs *regs = pregs;
-    /* ACK */
+// #if _SMP_
+    uint32_t cpu = smp_processor_id();
+//#endif
+   /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
     if (irq < _gic.lines) {
-        uart_print(".");
+//checking code
+        switch(GUEST_NUMBER)
+        {
+            case 0:
+                uart_print("0");
+                break;
+            case 1:
+                uart_print("1");
+                break;
+            case 2:
+                uart_print("2");
+                break;
+            case 3:
+                uart_print("3");
+                break;
+        }
         if (irq == 0) {
             uart_print("ba_gicd:");
             uart_print_hex32((uint32_t) _gic.ba_gicd);

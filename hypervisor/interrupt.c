@@ -27,7 +27,7 @@ const int32_t interrupt_check_guest_irq(uint32_t pirq)
     int i;
     struct virqmap_entry *map;
 
-    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
         map = _guest_virqmap[i].map;
         if (map[pirq].virq != VIRQ_INVALID)
             return GUEST_IRQ;
@@ -163,7 +163,7 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
             /* priority drop only for hanlding irq in guest */
             /* guest_interrupt_end() */
             _guest_ops->end(irq);
-            interrupt_inject_enabled_guest(NUM_GUESTS_CPU0_STATIC, irq);
+            interrupt_inject_enabled_guest(NUM_GUESTS_STATIC, irq);
         } else {
             /* host irq */
             if (irq < MAX_PPI_IRQS) {
@@ -224,19 +224,13 @@ hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
         if (ret)
             printh("host initial failed:'%s'\n", _interrupt_module.name);
     }
-	
-#ifdef _SMP_
-	if (!cpu) {
-#endif
-        /* guest_interrupt_init() */
-        if (_guest_ops->init) {
-            ret = _guest_ops->init();
-            if (ret)
-                printh("guest initial failed:'%s'\n", _interrupt_module.name);
-	    }
-#ifdef _SMP_
+
+    /* guest_interrupt_init() */
+    if (_guest_ops->init) {
+        ret = _guest_ops->init();
+        if (ret)
+            printh("guest initial failed:'%s'\n", _interrupt_module.name);
     }
-#endif
 
     return ret;
 }

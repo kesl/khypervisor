@@ -123,8 +123,6 @@ static hvmm_status_t timer_set_interval(uint32_t interval_us)
  */
 static void timer_handler(int irq, void *pregs, void *pdata)
 {
-    uint32_t cpu = smp_processor_id();
-
     timer_stop();
     timer_check_each_timers(pregs);
     timer_set_interval(COUNT_PER_USEC);

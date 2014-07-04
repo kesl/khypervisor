@@ -16,8 +16,8 @@ static struct vdev_memory_map _vdev_timer_info = {
     .size = sizeof(struct vdev_vtimer_regs),
 };
 
-static struct vdev_vtimer_regs vtimer_regs[NUM_GUESTS_CPU0_STATIC];
-static int _timer_status[NUM_GUESTS_CPU0_STATIC] = {0, };
+static struct vdev_vtimer_regs vtimer_regs[NUM_GUESTS_STATIC];
+static int _timer_status[NUM_GUESTS_STATIC] = {0, };
 
 static void vtimer_changed_status(vmid_t vmid, uint32_t status)
 {
@@ -97,8 +97,18 @@ void callback_timer(void *pdata)
 {
     vmid_t vmid = guest_current_vmid();
 
-    if (_timer_status[vmid] == 0)
+/*    printH("call_timer 0, %d\n", _timer_status[0]);
+    printH("call_timer 1, %d\n", _timer_status[1]);
+    printH("call_timer 2, %d\n", _timer_status[2]);
+    printH("call_timer 3, %d\n", _timer_status[3]);*/
+    if (_timer_status[vmid] == 0) {
         interrupt_guest_inject(vmid, VTIMER_IRQ, 0, INJECT_SW);
+#ifdef _SMP_
+    //for test
+    interrupt_guest_inject(3, VTIMER_IRQ, 1, INJECT_SW);
+    interrupt_guest_inject(2, VTIMER_IRQ, 1, INJECT_SW);
+    }
+#endif
 }
 
 static hvmm_status_t vdev_vtimer_reset(void)
@@ -106,7 +116,7 @@ static hvmm_status_t vdev_vtimer_reset(void)
     int i;
     struct timer_val timer;
 
-    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++)
+    for (i = 0; i < NUM_GUESTS_STATIC; i++)
         _timer_status[i] = 1;
 
     timer.interval_us = GUEST_SCHED_TICK;

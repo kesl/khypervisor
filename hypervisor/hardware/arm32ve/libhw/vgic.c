@@ -91,15 +91,15 @@ struct virq_entry {
 
 static struct vgic _vgic;
 
-static uint32_t _guest_pirqatslot[NUM_GUESTS_CPU0_STATIC][VGIC_NUM_MAX_SLOTS];
-static uint32_t _guest_virqatslot[NUM_GUESTS_CPU0_STATIC][VGIC_NUM_MAX_SLOTS];
+static uint32_t _guest_pirqatslot[NUM_GUESTS_STATIC][VGIC_NUM_MAX_SLOTS];
+static uint32_t _guest_virqatslot[NUM_GUESTS_STATIC][VGIC_NUM_MAX_SLOTS];
 
-static struct virq_entry _guest_virqs[NUM_GUESTS_CPU0_STATIC][VIRQ_MAX_ENTRIES + 1];
+static struct virq_entry _guest_virqs[NUM_GUESTS_STATIC][VIRQ_MAX_ENTRIES + 1];
 
 void vgic_slotpirq_init(void)
 {
     int i, j;
-    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
         for (j = 0; j < VGIC_NUM_MAX_SLOTS; j++) {
             _guest_pirqatslot[i][j] = PIRQ_INVALID;
             _guest_virqatslot[i][j] = VIRQ_INVALID;
@@ -109,7 +109,7 @@ void vgic_slotpirq_init(void)
 
 void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq)
 {
-    if (vmid < NUM_GUESTS_CPU0_STATIC) {
+    if (vmid < NUM_GUESTS_STATIC) {
         printh("vgic: setting vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq);
         _guest_pirqatslot[vmid][slot] = pirq;
     }
@@ -118,7 +118,7 @@ void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq)
 uint32_t vgic_slotpirq_get(vmid_t vmid, uint32_t slot)
 {
     uint32_t pirq = PIRQ_INVALID;
-    if (vmid < NUM_GUESTS_CPU0_STATIC) {
+    if (vmid < NUM_GUESTS_STATIC) {
         pirq = _guest_pirqatslot[vmid][slot];
         printh("vgic: reading vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq);
     }
@@ -132,7 +132,7 @@ void vgic_slotpirq_clear(vmid_t vmid, uint32_t slot)
 
 void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq)
 {
-    if (vmid < NUM_GUESTS_CPU0_STATIC) {
+    if (vmid < NUM_GUESTS_STATIC) {
         printh("vgic: setting vmid:%d slot:%d virq:%d\n", vmid, slot, virq);
         _guest_virqatslot[vmid][slot] = virq;
     } else {
@@ -145,7 +145,7 @@ uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq)
 {
     uint32_t slot = SLOT_INVALID;
     int i;
-    if (vmid < NUM_GUESTS_CPU0_STATIC) {
+    if (vmid < NUM_GUESTS_STATIC) {
         for (i = 0; i < VGIC_NUM_MAX_SLOTS; i++) {
             if (_guest_virqatslot[vmid][i] == virq) {
                 slot = i;
@@ -538,7 +538,11 @@ uint32_t vgic_inject_virq_hw(uint32_t virq, enum virq_state state,
     HVMM_TRACE_HEX32("slot:", slot);
     if (slot != VGIC_SLOT_NOTFOUND) {
 #ifdef VGIC_SIMULATE_HWVIRQ
+#ifdef _SMP_
+        slot = vgic_inject_virq(virq, slot, state, priority, 0, smp_processor_id(), 1);
+#else
         slot = vgic_inject_virq(virq, slot, state, priority, 0, 0, 1);
+#endif
 #else
         slot = vgic_inject_virq(virq, slot, state, priority, 1, pirq, 0);
 #endif
@@ -598,7 +602,7 @@ static uint64_t _vgic_valid_lr_mask(uint32_t num_lr)
 hvmm_status_t virq_init(void)
 {
     int i, j;
-    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++)
+    for (i = 0; i < NUM_GUESTS_STATIC; i++)
         for (j = 0; j < (VIRQ_MAX_ENTRIES + 1); j++)
             _guest_virqs[i][j].valid = 0;
 
@@ -608,16 +612,31 @@ hvmm_status_t virq_init(void)
 hvmm_status_t vgic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
+#endif
     HVMM_TRACE_ENTER();
-    _vgic.base = gic_vgic_baseaddr();
-    _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
-    _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
-    _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
+#ifdef _SMP_
+    if(!cpu) {
+#endif
+        _vgic.base = gic_vgic_baseaddr();
+        _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
+        _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
+        _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
+#ifdef _SMP_
+    }
+#endif
     _vgic_maintenance_irq_enable(1);
-    vgic_slotpirq_init();
+#ifdef _SMP
+    if(!cpu) {
+#endif
+        vgic_slotpirq_init();
+        _vgic_dump_status();
+        _vgic_dump_regs();
+#ifdef _smp_
+    }
+#endif
     result = HVMM_STATUS_SUCCESS;
-    _vgic_dump_status();
-    _vgic_dump_regs();
     HVMM_TRACE_EXIT();
 
     return result;

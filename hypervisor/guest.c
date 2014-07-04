@@ -52,8 +52,8 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 
     guest_save(&guests[_current_guest_vmid[cpu]], regs);
     memory_save();
-    if (!cpu) {
-        interrupt_save(_current_guest_vmid[cpu]);
+    interrupt_save(_current_guest_vmid[cpu]);
+    if(!cpu) {
         vdev_save(_current_guest_vmid[cpu]);
     }
 
@@ -68,8 +68,8 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 
     if (!cpu) {
         vdev_restore(_current_guest_vmid[cpu]);
-        interrupt_restore(_current_guest_vmid[cpu]);
     }
+    interrupt_restore(_current_guest_vmid[cpu]);
     memory_restore(_current_guest_vmid[cpu]);
     guest_restore(guest, regs);
 
@@ -103,8 +103,7 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
          * to switch the context, where virq flush takes place,
          * this time
          */
-        if (!cpu)
-            vgic_flush_virqs(_current_guest_vmid[cpu]);
+        vgic_flush_virqs(_current_guest_vmid[cpu]);
     }
 
     _switch_locked[cpu] = 0;

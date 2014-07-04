@@ -65,22 +65,8 @@ void nrm_loop(void)
     uart_print(GUEST_LABEL);
     uart_print_hex32(GUEST_NUMBER);
 
-#if _SMP_
-    while (1) {
-        nrm_delay();
-        if (!cpu) {
-            uart_print("=== Starting commom start up CPU 0 guest number :");
-            uart_print_hex32(GUEST_NUMBER);
-            uart_print("\n\r");
-        } else {
-            uart_print("=== Starting commom start up CPU 1 guest number :");
-            uart_print_hex32(GUEST_NUMBER);
-            uart_print("\n\r");
-        }
-    }
-#else
     uart_print("=== Starting commom start up\n\r");
-#endif
+
     gic_init();
     /* Enables receiving virtual timer interrupt */
     vtimer_mask(0);

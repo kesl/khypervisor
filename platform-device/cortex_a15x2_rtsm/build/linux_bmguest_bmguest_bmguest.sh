@@ -27,7 +27,7 @@ cat host-a15.dtb >> arch/arm/boot/zImage && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
 make clean && \
-make LINUX=y"
+make LINUX=y GUEST_NUMBER=0"
 export GUEST0_CLEAN_SCRIPT="make clean"
 
 export GUEST1_DIR="guestos/guestloader"
@@ -38,7 +38,7 @@ make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
-make"
+make GUEST_NUMBER=1"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
 export GUEST2_DIR="guestos/bmguest"

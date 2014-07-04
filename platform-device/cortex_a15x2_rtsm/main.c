@@ -204,6 +204,8 @@ void setup_interrupt()
      *  vimm-0, pirq-36, virq-36 = RTC: shared driver
      *  vimm-0, pirq-38, virq-37 = UART: dedicated driver IRQ 37 for guest 0
      *  vimm-1, pirq-39, virq-37 = UART: dedicated driver IRQ 37 for guest 1
+     *  vimm-2, pirq,40, virq-37 = UART: dedicated driver IRQ 37 for guest 2
+     *  vimm-3, pirq,48, virq-37 = UART: dedicated driver IRQ 38 for guest 3 -ch
      *  vimm-0, pirq-43, virq-43 = ACCI: shared driver
      *  vimm-0, pirq-44, virq-44 = KMI: shared driver
      *  vimm-0, pirq-45, virq-45 = KMI: shared driver
@@ -225,6 +227,8 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 37, 38);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 38, 37);
     DECLARE_VIRQMAP(_guest_virqmap, 1, 39, 37);
+    DECLARE_VIRQMAP(_guest_virqmap, 2, 40, 37);
+    DECLARE_VIRQMAP(_guest_virqmap, 3, 48, 37);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 43, 43);
@@ -345,6 +349,10 @@ void secondary_cpu_init(uint32_t cpu)
     /* Initialize Guests */
     if (guest_init())
         printh("[start_guest] guest initialization failed...\n");
+
+    /* Initialize Virtual Devices */
+    /*if (vdev_init())
+        printh("[start_guest] virtual device initialization failed...\n");*/
 
     /* Switch to the first guest */
     guest_sched_start();
