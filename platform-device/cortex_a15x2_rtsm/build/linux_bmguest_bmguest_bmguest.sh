@@ -41,15 +41,25 @@ make clean && \
 make GUEST_NUMBER=1"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
-export GUEST2_DIR="guestos/bmguest"
-export GUEST2_BIN="bmguest.bin"
-export GUEST2_BUILD_SCRIPT="make clean && \
+export GUEST2_DIR="guestos/guestloader"
+export GUEST2_BIN="guestloader.bin"
+export GUEST2_BUILD_SCRIPT="cd ../bmguest/ && \
+make clean && \
+make GUEST_NUMBER=2
+cp $BMGUEST_BIN ../../guestimages/ && \
+cd ../../$GUEST2_DIR && \
+make clean && \
 make GUEST_NUMBER=2"
 export GUEST2_CLEAN_SCRIPT="make clean"
 
-export GUEST3_DIR="guestos/bmguest"
-export GUEST3_BIN="bmguest.bin"
-export GUEST3_BUILD_SCRIPT="make clean && \
+export GUEST3_DIR="guestos/guestloader"
+export GUEST3_BIN="guestloader.bin"
+export GUEST3_BUILD_SCRIPT="cd ../bmguest/ && \
+make clean && \
+make GUEST_NUMBER=3
+cp $BMGUEST_BIN ../../guestimages/ && \
+cd ../../$GUEST3_DIR && \
+make clean && \
 make GUEST_NUMBER=3"
 export GUEST3_CLEAN_SCRIPT="make clean"
 
