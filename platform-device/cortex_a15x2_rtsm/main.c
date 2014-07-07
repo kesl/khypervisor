@@ -351,8 +351,8 @@ void secondary_cpu_init(uint32_t cpu)
         printh("[start_guest] guest initialization failed...\n");
 
     /* Initialize Virtual Devices */
-    /*if (vdev_init())
-        printh("[start_guest] virtual device initialization failed...\n");*/
+    if (vdev_init())
+        printh("[start_guest] virtual device initialization failed...\n");
 
     /* Switch to the first guest */
     guest_sched_start();

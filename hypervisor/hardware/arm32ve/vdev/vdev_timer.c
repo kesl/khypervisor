@@ -3,6 +3,9 @@
 #include <log/print.h>
 #include <timer.h>
 #include <interrupt.h>
+#ifdef _SMP_
+#include <smp.h>
+#endif
 
 #define VTIMER_BASE_ADDR 0x3FFFE000
 #define VTIMER_IRQ 30
@@ -101,24 +104,24 @@ void callback_timer(void *pdata)
     printH("call_timer 1, %d\n", _timer_status[1]);
     printH("call_timer 2, %d\n", _timer_status[2]);
     printH("call_timer 3, %d\n", _timer_status[3]);*/
-    if (_timer_status[vmid] == 0) {
+    if (_timer_status[vmid] == 0)
         interrupt_guest_inject(vmid, VTIMER_IRQ, 0, INJECT_SW);
-#ifdef _SMP_
-    //for test
-    interrupt_guest_inject(3, VTIMER_IRQ, 1, INJECT_SW);
-    interrupt_guest_inject(2, VTIMER_IRQ, 1, INJECT_SW);
-    }
-#endif
 }
 
 static hvmm_status_t vdev_vtimer_reset(void)
 {
     int i;
     struct timer_val timer;
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
 
+    if(!cpu) {
+#endif
     for (i = 0; i < NUM_GUESTS_STATIC; i++)
         _timer_status[i] = 1;
-
+#ifdef _SMP_
+    }
+#endif
     timer.interval_us = GUEST_SCHED_TICK;
     timer.callback = &callback_timer;
 

@@ -15,7 +15,7 @@ static struct vdev_memory_map _vdev_sample_info = {
    .size = sizeof(struct vdev_sample_regs),
 };
 
-static struct vdev_sample_regs sample_regs[NUM_GUESTS_CPU0_STATIC];
+static struct vdev_sample_regs sample_regs[NUM_GUESTS_STATIC];
 
 static hvmm_status_t vdev_sample_access_handler(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
