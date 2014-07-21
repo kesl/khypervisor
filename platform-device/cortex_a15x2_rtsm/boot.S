@@ -140,8 +140,35 @@ start:
     @
     bl mon_init
     bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
+#else
+    @ Check CPU nr again
+    mrc p15, 0, r0, c0, c0, 5       @ MPIDR (ARMv7 only)
+    @ CPU number, taking multicluster into account
+    bfc r0, #24, #8
+    cmp r0, #0              @ primary CPU?
+    beq 2f
+    wfi
 #endif
 
+#ifdef _SMP_
+    .globl enter_smp_pen
+enter_smp_pen:
+    ldr  r0, =secondary_smp_pen
+    ldr r1, [r0]
+    cmp r1, #0 @ pending
+    beq enter_smp_pen
+
+    /*
+     * Make instruction copy coherent
+     */
+    mcr p15, 0, r2, c7, c11, 1 /* Clean the data cache by MVA*/
+    mov r10, #0
+    mcr p15, 0, r10, c7, c5, 0 /* Invalidate the I-cache */
+    isb /* Make sure the invalidate ops are complete */
+    dsb
+
+    b init_secondary
+#endif
 
 2:
     @
@@ -189,12 +216,26 @@ start:
 1:
     b 1b
 
+#ifdef _SMP_
+    .globl  init_secondary
+init_secondary:
+    /* Ensure that we are in hypervisor mode */
+    mrs r0, cpsr_all
+    /* Place the right Hyp exception vector for the first time */
+    ldr r0, = hyp_init_vectors
+    mcr p15, 4, r0, c12, c0, 0
+    bl main
+    @ never come back
+    1:
+    b 1b
+#endif
+
 /*
  * Initialize vector and stack pointers for modes:
  * Secure SVC, Non-secure SVC, and Hyp mode
  */
 .global mon_init
-    mon_init:
+mon_init:
     push {r0 - r2, lr}
     @ Setup Exception Vector
     ldr r1, = monitor_secure_vectors
@@ -204,12 +245,26 @@ start:
 .type mon_init, % function
 
 .global mon_to_hyp
-    mon_to_hyp:
+mon_to_hyp:
     smc #0  @ -> trap_smc
     hvc #0  @ -> trap_hyp_entry
     /* Place the right Hyp exception vector for the first time */
     ldr r0, = hyp_init_vectors
     mcr p15, 4, r0, c12, c0, 0
+
+#ifdef _SMP_
+    @ Check CPU nr again
+    mrc	p15, 0, r0, c0, c0, 5		@ MPIDR (ARMv7 only)
+    @ CPU number, taking multicluster into account
+    bfc	r0, #24, #8
+    cmp	r0, #0				@ primary CPU?
+    beq	2f
+    @
+    @ Secondary CPUs
+    @
+    b enter_smp_pen
+2:
+#endif
     bl main
     @ never come back
     1:

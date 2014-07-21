@@ -4,4 +4,5 @@
 #define getl(a)      (*(volatile unsigned int *)(a))
 #define writel(v, a) ({ uint32_t vl = v; putl(vl, a); })
 #define readl(a)     ({ uint32_t vl = getl(a); vl; })
+
 #endif
