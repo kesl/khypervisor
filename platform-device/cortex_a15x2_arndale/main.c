@@ -7,7 +7,7 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
-
+#include <drivers/mct/mct_priv.h>
 
 #define PLATFORM_BASIC_TESTS 0
 
@@ -25,9 +25,11 @@ static struct memmap_desc guest_md_empty[] = {
 
 /*  label, ipa, pa, size, attr */
 static struct memmap_desc guest0_device_md[] = {
+    { "tmu", 0x10060000, 0x10060000, SZ_4K, MEMATTR_DM },
     { "pl330.0", 0x11C10000, 0x11C10000, SZ_64K, MEMATTR_DM },
     { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, MEMATTR_DM },
     { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, MEMATTR_DM },
+    { "usb", 0x12000000, 0x12000000, SZ_64K, MEMATTR_DM },
     { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, MEMATTR_DM },
     { "uart.1", 0x12C10000, 0x12C10000, SZ_64K, MEMATTR_DM },
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
@@ -38,6 +40,15 @@ static struct memmap_desc guest0_device_md[] = {
     { "wdt", 0x101D0000, 0x101D0000, SZ_4K, MEMATTR_DM },
     { "sromc", 0x12250000, 0x12250000, SZ_4K, MEMATTR_DM },
     { "hsphy", 0x12130000, 0x12130000, SZ_4K, MEMATTR_DM },
+    { "sataphy", 0x12170000, 0x12170000, SZ_4K, MEMATTR_DM},
+    { "i2c", 0x121d0000, 0x121d0000, SZ_4K, MEMATTR_DM},
+    { "dwmmc0", 0x12200000, 0x12200000, SZ_64K, MEMATTR_DM},
+    { "dwmmc1", 0x12210000, 0x12210000, SZ_64K, MEMATTR_DM},
+    { "dwmmc2", 0x12220000, 0x12220000, SZ_64K, MEMATTR_DM},
+    { "dwmmc3", 0x12230000, 0x12230000, SZ_64K, MEMATTR_DM},
+    { "i2c2", 0x12260000, 0x12260000, SZ_4K, MEMATTR_DM},
+    { "i2c3", 0x12280000, 0x12280000, SZ_4K, MEMATTR_DM},
+    { "i2c4", 0x122e0000, 0x122e0000, SZ_4K, MEMATTR_DM},
     { "systimer", 0x101C0000, 0x101C0000, SZ_4K, MEMATTR_DM },
     { "sysram", 0x02020000, 0x02020000, SZ_4K, MEMATTR_DM },
     { "cmu", 0x10010000, 0x10010000, 144 * SZ_1K, MEMATTR_DM },
@@ -48,7 +59,6 @@ static struct memmap_desc guest0_device_md[] = {
     { "gpio3", 0x10D10000, 0x10D10000, SZ_256, MEMATTR_DM },
     { "gpio4", 0x03860000, 0x03860000, SZ_256, MEMATTR_DM },
     { "audss", 0x03810000, 0x03810000, SZ_4K, MEMATTR_DM },
-    { "hsphy", 0x12130000, 0x12130000, SZ_4K, MEMATTR_DM },
     { "ss_phy", 0x12100000, 0x12100000, SZ_4K, MEMATTR_DM },
     { "sysram_ns", 0x0204F000, 0x0204F000, SZ_4K, MEMATTR_DM },
     { "ppmu_cpu", 0x10C60000, 0x10C60000, SZ_8K, MEMATTR_DM },
@@ -61,6 +71,15 @@ static struct memmap_desc guest0_device_md[] = {
     { "fimc_lite2", 0x13C90000, 0x13C90000, SZ_4K, MEMATTR_DM },
     { "mipi_csis0", 0x13C20000, 0x13C20000, SZ_4K, MEMATTR_DM },
     { "mipi_csis1", 0x13C30000, 0x13C30000, SZ_4K, MEMATTR_DM },
+    { "fimd", 0x14400000, 0x14400000, SZ_256K, MEMATTR_DM },
+    { "i2c5", 0x12C70000, 0x12C70000, SZ_64K, MEMATTR_DM },
+    { "i2c6", 0x121D0000, 0x121D0000, SZ_64K, MEMATTR_DM },
+    { "MTCADC_ISP", 0x13150000, 0x13150000, SZ_64K, MEMATTR_DM },
+    { "i2c0", 0x12C60000, 0x12C60000, SZ_64K, MEMATTR_DM },
+    { "usb_ehci", 0x12110000, 0x12110000, SZ_64K, MEMATTR_DM },
+    { "usb_ohci", 0x12120000, 0x12120000, SZ_64K, MEMATTR_DM },
+    { "usb_ctrl", 0x12130000, 0x12130000, SZ_64K, MEMATTR_DM },
+    { "usb_devicelink", 0x12140000, 0x12140000, SZ_64K, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
@@ -93,8 +112,8 @@ static struct memmap_desc guest3_device_md[] = {
 #endif
 
 static struct memmap_desc guest0_memory_md[] = {
-    /* 756MB */
-    {"start", 0x00000000, 0, 0x30000000,
+    /* 1024MB */
+    {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -135,8 +154,8 @@ static struct memmap_desc guest3_memory_md[] = {
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest0_mdlist[] = {
     guest0_device_md,   /* 0x0000_0000 */
-    guest_md_empty,     /* 0x4000_0000 */
-    guest0_memory_md,
+    guest0_memory_md,   /* 0x4000_0000 */
+    guest_md_empty,
     guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
     0
 };
@@ -144,8 +163,8 @@ static struct memmap_desc *guest0_mdlist[] = {
 /* Memory Map for Guest 1 */
 static struct memmap_desc *guest1_mdlist[] = {
     guest1_device_md,
-    guest_md_empty,
     guest1_memory_md,
+    guest_md_empty,
     guest_md_empty,
     0
 };
@@ -154,8 +173,8 @@ static struct memmap_desc *guest1_mdlist[] = {
 /* Memory Map for Guest 2 */
 static struct memmap_desc *guest2_mdlist[] = {
     guest2_device_md,
-    guest_md_empty,
     guest2_memory_md,
+    guest_md_empty,
     guest_md_empty,
     0
 };
@@ -163,8 +182,8 @@ static struct memmap_desc *guest2_mdlist[] = {
 /* Memory Map for Guest 3 */
 static struct memmap_desc *guest3_mdlist[] = {
     guest3_device_md,
-    guest_md_empty,
     guest3_memory_md,
+    guest_md_empty,
     guest_md_empty,
     0
 };
@@ -181,7 +200,7 @@ void setup_interrupt()
     int i, j;
     struct virqmap_entry *map;
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
         map = _guest_virqmap[i].map;
         for (j = 0; j < MAX_IRQS; j++) {
             map[j].enabled = GUEST_IRQ_DISABLE;
@@ -189,6 +208,20 @@ void setup_interrupt()
             map[j].pirq = PIRQ_INVALID;
         }
     }
+
+    {
+       int i;
+       for (i =0; i < 1000; i++){
+            if(i==25 || i==26)
+                continue;
+            else
+                DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+       }
+
+    }
+#if 0
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 20, 20);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 32, 32);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 33, 33);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 34, 34);
@@ -257,6 +290,21 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 97, 97);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 98, 98);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 99, 99);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 103, 103);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 104, 104);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 107, 107);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 109, 109);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 126, 126);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 147, 147);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 152, 152);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 153, 153);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 156, 156);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 309, 309);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 347, 347);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 447, 447);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 106, 106);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 138, 138);
+#endif
 }
 
 void setup_memory()
@@ -291,6 +339,7 @@ void setup_memory()
 void setup_timer()
 {
     _timer_irq = 26; /* GENERIC_TIMER_HYP */
+    mct_init();
 }
 
 int main_cpu_init()

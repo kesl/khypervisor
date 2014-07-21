@@ -20,7 +20,7 @@ GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
 			 -I$(COMMON_LOADER_DIR) -I$(COMMON_SOURCE_DIR)/guest \
-			 -I$(COMMON_SOURCE_DIR)/guest/core
+			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
