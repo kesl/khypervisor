@@ -22,5 +22,3 @@ git reset --hard
 git clean -xdf
 git branch -D exynos-jb
 git checkout origin/exynos-jb -b exynos-jb
-git apply ../../patch/linux-arndale-config-add-minimal-linux-config.patch
-git apply ../../patch/arndale-change-kernel-sdram-address-uart-port-2-1.patch
