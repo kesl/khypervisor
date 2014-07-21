@@ -1,3 +1,4 @@
+#include <k-hypervisor-config.h>
 #include "linuxloader.h"
 #include <log/string.h>
 #include <guestloader.h>
@@ -175,13 +176,6 @@ setup_ramdisk_tag(uint32_t size)
     _params = tag_next(_params);              /* move pointer to next tag */
 }
 
-#define SIZE_4K 4096
-#define TAG_POSITION (0x100/4)
-#define SIZE_256K 0x10000000
-#define SIZE_512M 0x20000000
-#define SIZE_2G 0x80000000
-#define SIZE_32M 0x2000000
-#define SIZE_768M 0x30000000
 void linuxloader_setup_atags(uint32_t src)
 {
     char *commandline =
@@ -189,18 +183,25 @@ void linuxloader_setup_atags(uint32_t src)
 //            "root=/dev/mmcblk0 rw ip=dhcp "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* android */
-            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=768M";
+//            "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=768M";
 /* nfs */
 //            "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* ramdisk */
-//            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
+            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
+            "mem=512M rdinit=/sbin/init";
+/* Arndale board with mmc */
+ //   "root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M console=ttySAC1,115200 init= mem=256M"
+//            "root=/dev/ram rw earlyprintk console=ttySAC0 "
 //            "mem=256M rdinit=/sbin/init";
+//    "root=/dev/mmcblk1p1 rw rootwait earlyprintk mem=768M console=ttySAC2,115200n8 "
+//    "--no-log";
+//    "root=/dev/mmcblk1p1   rw ip=dhcp earlyprintk rootwait console=ttySAC2,115200n8 mem=256M init --no-log";
     /* standard core tag 4k pagesize */
-    setup_core_tag((uint32_t *)src, SIZE_4K);
+    setup_core_tag((uint32_t *)src, SZ_4K);
     /* commandline setting root device */
     setup_revision_tag();
-    setup_mem_tag(src, SIZE_768M);
+    setup_mem_tag(src, SZ_512M);
     #ifdef USE_ANDROID_INITRD
     {
         uint32_t start = &initrd_start;

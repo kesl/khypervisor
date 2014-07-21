@@ -1138,7 +1138,7 @@ static void host_memory_init(void)
     uart_print("lpaed:");
     uart_print_hex64(_hmm_pgtable[0].bits);
     uart_print("\n\r");
-    _hmm_pgtable[1] = lpaed_host_l1_block(pa, ATTR_IDX_UNCACHED);
+    _hmm_pgtable[1] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
     pa += 0x40000000;
     uart_print("&_hmm_pgtable[1]:");
     uart_print_hex32((uint32_t) &_hmm_pgtable[1]);

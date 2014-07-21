@@ -18,10 +18,12 @@ LOADER_PHYS_START = LDS_LOADER_PHYS_START;
 SECTIONS
 {
  . = GUEST_START;
+ loader_end = .;
  guest_start = .;
  .guest : {GUEST_PATH}
+ .= ALIGN(4);
  guest_end = .;
- loader_end = .;
+
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {
