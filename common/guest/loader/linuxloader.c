@@ -196,7 +196,7 @@ void linuxloader_setup_atags(uint32_t src)
 //            "mem=256M rdinit=/sbin/init";
 //    "root=/dev/mmcblk1p1 rw rootwait earlyprintk mem=768M console=ttySAC2,115200n8 "
 //    "--no-log";
-//    "root=/dev/mmcblk1p1   rw ip=dhcp earlyprintk rootwait console=ttySAC2,115200n8 mem=256M init --no-log";
+//    "root=/dev/mmcblk1p1   rw ip=dhcp earlyprintk rootwait console=ttySAC2,115200n8 mem=512M init --no-log";
     /* standard core tag 4k pagesize */
     setup_core_tag((uint32_t *)src, SZ_4K);
     /* commandline setting root device */

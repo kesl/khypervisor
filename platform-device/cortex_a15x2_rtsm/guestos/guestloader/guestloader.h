@@ -3,7 +3,7 @@
 #include "memmap.cfg"
 #define MACHINE_TYPE        2272
 #define GUEST_START_ADDR    LDS_LOADER_PHYS_START
-#define ZIMAGE_START_OFFSET 0x8040
+#define ZIMAGE_PHYS_ADDR    LDS_GUEST_START
 /** @brief Flag for autoboot
  *  @param flag If flag is '0', it is auto boot, otherwise CLI boot
  */

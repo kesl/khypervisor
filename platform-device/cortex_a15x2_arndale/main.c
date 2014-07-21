@@ -87,6 +87,7 @@ static struct memmap_desc guest0_device_md[] = {
 
 static struct memmap_desc guest1_device_md[] = {
     { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
+    { "uart2", 0x12C20000, 0x12C20000, 0x1000, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },
@@ -112,7 +113,6 @@ static struct memmap_desc guest3_device_md[] = {
 #endif
 
 static struct memmap_desc guest0_memory_md[] = {
-    /* 1024MB */
     {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },

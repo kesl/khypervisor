@@ -3,5 +3,5 @@
 #include "memmap.cfg"
 #define MACHINE_TYPE        4274
 #define GUEST_START_ADDR    LDS_LOADER_PHYS_START
-#define ZIMAGE_START_OFFSET 0x8000
+#define ZIMAGE_PHYS_ADDR    LDS_GUEST_START
 #endif
