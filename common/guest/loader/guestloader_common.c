@@ -47,17 +47,6 @@ void loader_boot_guest(uint32_t guest_os_type)
     uint32_t offset;
     uint32_t pc;
 
-    /* Copies loader to next to guest */
-    copy_image_to_addr(LOADER, &guest_end);
-
-    /* Jump pc to (pc + offset). */
-    offset = ((uint32_t)(&guest_end - &loader_start) * sizeof(uint32_t));
-    ADD_PC_TO_OFFSET(offset);
-    JUMP_TO_ADDRESS(offset);
-
-    /* Copies guest to start address */
-    copy_image_to_addr(GUEST, (uint32_t *)START_ADDR);
-
     if (guest_os_type == GUEST_TYPE_LINUX) {
         linuxloader_setup_atags(START_ADDR_LINUX);
         /* r1 : machine type
@@ -66,12 +55,18 @@ void loader_boot_guest(uint32_t guest_os_type)
         SET_MACHINE_TYPE_TO_R1();
         SET_ATAGS_TO_R2();
     }
+    else{
+        /* Copies loader to next to guest */
+        copy_image_to_addr(LOADER, &guest_end);
+        /* Jump pc to (pc + offset). */
+        offset = ((uint32_t)(&guest_end - &loader_start) * sizeof(uint32_t));
+        ADD_PC_TO_OFFSET(offset);
+        JUMP_TO_ADDRESS(offset);
+        /* Copies guest to start address */
+        copy_image_to_addr(GUEST, (uint32_t *)START_ADDR);
+    }
 
-    /* Jump to start address of guest
-     * Linux (zImage) : 0x8000_8000
-     * RTOS           : 0x8000_0000
-     * BMGUEST        : 0x8000_0000
-     */
+    /* Jump to start address of guest */
     JUMP_TO_ADDRESS(START_ADDR);
 
     /* The code must not reach here */

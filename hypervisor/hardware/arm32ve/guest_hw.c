@@ -265,7 +265,7 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
 {
     struct arch_context *context = &guest->context;
 
-    regs->pc = 0x80000000;
+    regs->pc = CFG_GUEST_START_ADDRESS;
     /* supervisor mode */
     regs->cpsr = 0x1d3;
     /* regs->gpr[] = whatever */
