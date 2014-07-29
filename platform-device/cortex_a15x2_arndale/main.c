@@ -7,6 +7,7 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
+#include <asm_io.h>
 
 
 #define PLATFORM_BASIC_TESTS 0
@@ -293,6 +294,10 @@ void setup_timer()
     _timer_irq = 26; /* GENERIC_TIMER_HYP */
 }
 
+#ifdef _SMP_
+void init_secondary();
+#endif
+
 int main_cpu_init()
 {
     init_print();
@@ -305,7 +310,7 @@ int main_cpu_init()
      */
     dsb_sev();
 #endif
-    printH("[%s : %d]asfasfsdf Starting...Main CPU\n", __func__, __LINE__);
+    printH("[%s : %d]Starting...Main CPU\n", __func__, __LINE__);
     setup_memory();
     /* Initialize Memory Management */
     if (memory_init(guest0_mdlist, guest1_mdlist))
@@ -319,7 +324,7 @@ int main_cpu_init()
 
 #ifdef _SMP_
     printH("wake up...other CPUs\n");
-    writel((unsigned int)init_secondary, S5P_PA_SYSRAM);
+    writel((unsigned int)init_secondary, 0x02020000);
 #endif
 
     /* Initialize Timer */
@@ -361,12 +366,12 @@ void secondary_cpu_init(uint32_t cpu)
     printH("[%s : %d] Starting...Secondary CPU\n", __func__, __LINE__);
 
     /* Initialize Memory Management */
-    setup_memory();
     if (memory_init(guest2_mdlist, guest3_mdlist))
         printh("[start_guest] virtual memory initialization failed...\n");
 
-    wfi();
+    printH("[%s : %d] Interrupt Init... for CPU\n", __func__, __LINE__);
 
+    wfi();
     /* Initialize Interrupt Management */
     if (interrupt_init(_guest_virqmap))
         printh("[start_guest] interrupt initialization failed...\n");
