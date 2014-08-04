@@ -157,18 +157,18 @@ start:
 #ifdef _SMP_
     .globl  init_secondary
 init_secondary:
-    /* Ensure that we are in hypervisor mode */
-    mrs r0, cpsr_all
+
+    cpsid aif                    /* Disable all interrupts */
     @ Check CPU nr again
     mrc p15, 0, r0, c0, c0, 5       @ MPIDR (ARMv7 only)
     @ CPU number, taking multicluster into account
     bfc r0, #24, #8
     cmp r0, #0              @ primary CPU?
     beq 1f
-    ldr     sp, =sec_stacklimit
+    ldr     sp, =mon_stacklimit
     mrc     p15, 0, r0, c0, c0, 5
     ands    r0, r0, #0xFF
-    mov r1, #SEC_STACK_SIZE
+    mov r1, #MON_CORE_STACK_SIZE
     mul r1, r1, r0
     sub sp, sp, r1
     /* Place the right Hyp exception vector for the first time */

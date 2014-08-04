@@ -32,7 +32,7 @@ SECTIONS {
     fs_start = .;
     fs_end = .;
 
-    /* Guest 1 */
+    /* Guest 0 */
     . = CFG_MEMMAP_GUEST0_OFFSET;
     _guest0_bin_start = .;
     _guest0_bin_end = .;
@@ -42,7 +42,7 @@ SECTIONS {
     . = GUEST0_STACK + 0x01000000;
     guest0_stacklimit = .;
 
-    /* Guest 2 */
+    /* Guest 1 */
     . = CFG_MEMMAP_GUEST1_OFFSET;
     _guest1_bin_start = .;
     _guest1_bin_end = .;
@@ -53,25 +53,25 @@ SECTIONS {
     guest1_stacklimit = .;
 
 #ifdef _SMP_
-/* Guest 2 */
- . = CFG_MEMMAP_GUEST2_OFFSET;
-  _guest2_bin_start = .;
-  _guest2_bin_end = .;
+    /* Guest 2 */
+    . = CFG_MEMMAP_GUEST2_OFFSET;
+    _guest2_bin_start = .;
+    _guest2_bin_end = .;
 
- . = GUEST2_STACK;
- guest2_stacktop = .;
- . = GUEST2_STACK + 0x01000000;
- guest2_stacklimit = .;
+    . = GUEST2_STACK;
+     guest2_stacktop = .;
+    . = GUEST2_STACK + 0x01000000;
+     guest2_stacklimit = .;
 
-/* Guest 3 */
- . = CFG_MEMMAP_GUEST3_OFFSET;
-  _guest3_bin_start = .;
-  _guest3_bin_end = .;
+    /* Guest 3 */
+    . = CFG_MEMMAP_GUEST3_OFFSET;
+    _guest3_bin_start = .;
+    _guest3_bin_end = .;
 
- . = GUEST3_STACK;
- guest3_stacktop = .;
- . = GUEST3_STACK + 0x01000000;
- guest3_stacklimit = .;
+    . = GUEST3_STACK;
+     guest3_stacktop = .;
+    . = GUEST3_STACK + 0x01000000;
+     guest3_stacklimit = .;
 #endif
     . = CFG_MEMMAP_MON_OFFSET;
     /* Put most of the actual boot loader code up in high memory
