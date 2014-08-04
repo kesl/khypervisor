@@ -145,7 +145,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     struct arch_vdev_trigger_info info;
     int level = VDEV_LEVEL_LOW;
 
-    printh("[hvc] _hyp_hvc_service: enter\n\r");
+    printH("[hvc] _hyp_hvc_service: enter\n\r");
     fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
     fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
     fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
@@ -155,7 +155,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     info.sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
     srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
     info.value = &(regs->gpr[srt]);
-
+    printH("[hyp] fipa= %x\n", fipa);
     switch (ec) {
     case TRAP_EC_ZERO_UNKNOWN:
     case TRAP_EC_ZERO_WFI_WFE:
@@ -181,16 +181,16 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
         level = VDEV_LEVEL_LOW;
         break;
     default:
-        printh("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
-        printh("[hyp] hsr.ec= %x\n", ec);
-        printh("[hyp] hsr= %x\n", hsr);
+        printH("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
+        printH("[hyp] hsr.ec= %x\n", ec);
+        printH("[hyp] hsr= %x\n", hsr);
         guest_dump_regs(regs);
         goto trap_error;
     }
 
     vdev_num = vdev_find(level, &info, regs);
     if (vdev_num < 0) {
-        printh("[hvc] cann't search vdev number\n\r");
+        printH("[hvc] cann't search vdev number\n\r");
         goto trap_error;
     }
 
@@ -203,7 +203,7 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     }
     vdev_post(level, vdev_num, &info, regs);
 
-    printh("[hyp] _hyp_hvc_service: done\n\r");
+    printH("[hyp] _hyp_hvc_service: done\n\r");
 
     guest_perform_switch(regs);
 

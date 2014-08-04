@@ -37,16 +37,20 @@ static hvmm_status_t guest_restore(struct guest_struct *guest,
     if (_guest_module.ops->restore)
         return  _guest_module.ops->restore(guest, regs);
 
+
+
      return HVMM_STATUS_UNKNOWN_ERROR;
 }
+
 
 static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 {
     /* _curreng_guest_vmid -> next_vmid */
+
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     struct guest_struct *guest = 0;
 	uint32_t cpu = smp_processor_id();
-
+//    printH("perform_switch\n");
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
@@ -171,7 +175,12 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
         /* FIXME:Hardcoded */
         next = ofvmid + 1;
     }
-    return next;
+//    return next;
+
+   // uart_print_hex32(regs->pc)
+//    printH("guest_next_vmid\n");
+      return 0;
+
 }
 
 vmid_t guest_current_vmid(void)
@@ -194,6 +203,7 @@ void guest_dump_regs(struct arch_regs *regs)
 
 hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
 {
+//	  printH("guest_switchto\n");
     hvmm_status_t result = HVMM_STATUS_IGNORED;
     uint32_t cpu = smp_processor_id();
 
@@ -213,6 +223,7 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
 
 vmid_t sched_policy_determ_next(void)
 {
+//	 printH("sched_policy_determ_next\n");
     vmid_t next = guest_next_vmid(guest_current_vmid());
 
     /* FIXME:Hardcoded */
@@ -224,6 +235,7 @@ vmid_t sched_policy_determ_next(void)
 
 void guest_schedule(void *pdata)
 {
+//	 printH("guest_schedule\n");
     struct arch_regs *regs = pdata;
     uint32_t cpu = smp_processor_id();
 
@@ -238,6 +250,7 @@ void guest_schedule(void *pdata)
 
     /* Switch request, actually performed at trap exit */
     guest_switchto(sched_policy_determ_next(), 0);
+
 }
 
 hvmm_status_t guest_init()
@@ -254,6 +267,8 @@ hvmm_status_t guest_init()
     printh("[hyp] init_guests: enter\n");
     /* Initializes 2 guests */
     guest_count = num_of_guest(cpu);
+
+
     if (cpu)
         start_vmid = num_of_guest(cpu - 1);
     else

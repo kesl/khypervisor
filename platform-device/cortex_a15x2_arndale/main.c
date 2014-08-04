@@ -35,13 +35,13 @@ static struct memmap_desc guest0_device_md[] = {
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
     { "chipid", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
-    { "syscon", 0x10050000, 0x10050000, SZ_64K, MEMATTR_DM },
+//    { "syscon", 0x10050000, 0x10050000, SZ_64K, MEMATTR_DM },
     { "timer", 0x12DD0000, 0x12DD0000, SZ_16K, MEMATTR_DM },
     { "wdt", 0x101D0000, 0x101D0000, SZ_4K, MEMATTR_DM },
     { "sromc", 0x12250000, 0x12250000, SZ_4K, MEMATTR_DM },
     { "hsphy", 0x12130000, 0x12130000, SZ_4K, MEMATTR_DM },
     { "sataphy", 0x12170000, 0x12170000, SZ_4K, MEMATTR_DM},
-    { "i2c", 0x121d0000, 0x121d0000, SZ_4K, MEMATTR_DM},
+   // { "i2c", 0x121d0000, 0x121d0000, SZ_4K, MEMATTR_DM},
     { "dwmmc0", 0x12200000, 0x12200000, SZ_64K, MEMATTR_DM},
     { "dwmmc1", 0x12210000, 0x12210000, SZ_64K, MEMATTR_DM},
     { "dwmmc2", 0x12220000, 0x12220000, SZ_64K, MEMATTR_DM},
@@ -52,7 +52,7 @@ static struct memmap_desc guest0_device_md[] = {
     { "systimer", 0x101C0000, 0x101C0000, SZ_4K, MEMATTR_DM },
     { "sysram", 0x02020000, 0x02020000, SZ_4K, MEMATTR_DM },
     { "cmu", 0x10010000, 0x10010000, 144 * SZ_1K, MEMATTR_DM },
-    { "pmu", 0x10040000, 0x10040000, SZ_64K, MEMATTR_DM },
+//    { "pmu", 0x10040000, 0x10040000, SZ_64K, MEMATTR_DM },
     { "combiner", 0x10440000, 0x10440000, SZ_4K, MEMATTR_DM },
     { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
     { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
@@ -75,15 +75,39 @@ static struct memmap_desc guest0_device_md[] = {
     { "i2c5", 0x12C70000, 0x12C70000, SZ_64K, MEMATTR_DM },
     { "i2c6", 0x121D0000, 0x121D0000, SZ_64K, MEMATTR_DM },
     { "MTCADC_ISP", 0x13150000, 0x13150000, SZ_64K, MEMATTR_DM },
-    { "i2c0", 0x12C60000, 0x12C60000, SZ_64K, MEMATTR_DM },
+ //   { "i2c0", 0x12C60000, 0x12C60000, SZ_64K, MEMATTR_DM },
     { "usb_ehci", 0x12110000, 0x12110000, SZ_64K, MEMATTR_DM },
     { "usb_ohci", 0x12120000, 0x12120000, SZ_64K, MEMATTR_DM },
     { "usb_ctrl", 0x12130000, 0x12130000, SZ_64K, MEMATTR_DM },
     { "usb_devicelink", 0x12140000, 0x12140000, SZ_64K, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
-        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },
+        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x10000, MEMATTR_DM },
+//    { "GIC", 0x10481000, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000 , MEMATTR_DM },
+//    { "GIC", 0x10482000, 0x10482000, 0x2000 , MEMATTR_DM },
+//    { "GIC", 0x10484000, 0x10484000, 0x2000 , MEMATTR_DM },
+//    { "GIC", 0x10486000, 0x10486000, 0x2000 , MEMATTR_DM },
+//    { "Combiner", 0x10440000, 0x10440000, SZ_256K , MEMATTR_DM },
+    { "s3c2440", 0x12c60000, 0x12c60000, SZ_64K , MEMATTR_DM },
+    { "sata", 0x122F0000, 0x122F0000, SZ_64K , MEMATTR_DM },
+    { "i2c5_", 0x12C80000, 0x12C80000, SZ_64K, MEMATTR_DM },
+    { "i2c6_", 0x12C90000, 0x12C90000, SZ_64K, MEMATTR_DM },
+    { "i2c7_", 0x12CA0000, 0x12CA0000, SZ_64K, MEMATTR_DM },
+    { "i2c6_", 0x12CB0000, 0x12CB0000, SZ_64K, MEMATTR_DM },
+    { "i2c8_", 0x12CC0000, 0x12CC0000, SZ_64K, MEMATTR_DM },
+    { "i2c9_", 0x12CD0000, 0x12CD0000, SZ_64K, MEMATTR_DM },
+    { "i2c10_", 0x12CE0000, 0x12CE0000, SZ_64K, MEMATTR_DM },
+    { "i2c11_", 0x12CF0000, 0x12CF0000, SZ_64K, MEMATTR_DM },
+    { "usbphy-sys", 0x10040000, 0x10040000, SZ_64K, MEMATTR_DM },
+    { "usbphy-sys", 0x10050000, 0x10050000, SZ_64K, MEMATTR_DM },
+    { "s5p-ehci", 0x14450000, 0x14450000, SZ_64K, MEMATTR_DM },
+
+    { "HDMI-0", 0x14530000, 0x14530000, SZ_64K, MEMATTR_DM },
+    { "HDMI-1", 0x14540000, 0x14540000, SZ_64K, MEMATTR_DM },
+    { "HDMI-5", 0x14580000, 0x14580000, SZ_64K, MEMATTR_DM },
+    // Referenced User's Manual
     { 0, 0, 0, 0, 0 }
 };
+
 
 static struct memmap_desc guest1_device_md[] = {
     { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
@@ -211,12 +235,13 @@ void setup_interrupt()
 
     {
        int i;
-       for (i =0; i < 1000; i++){
+       for (i =0; i < MAX_IRQS; i++){
             if(i==25 || i==26)
                 continue;
             else
                 DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
        }
+
 
     }
 #if 0
