@@ -1,0 +1,61 @@
+*****************************************
+mijong kim 
+e-mail : mijong3000@gmail.com
+kookmin.univ
+*****************************************
+
+How to start linaro-android & bmguest
+also you can check this url (https://github.com/kesl/khypervisor/tree/v1/platform-device/cortex_a15x2_arndale)
+how to build others(linux + bmguest , bmguest +bmguest ...)
+this shell script and file is based on that url.
+
+0. get linaro-kernel
+- clone linaro-kernel source 
+
+$ sh get_linaro_kernel.sh
+
+1. only build linaro kernel 
+- if you want to build only linaro kernel zImage
+just start shellscript 
+
+$ sh build-linaro-kernel.sh 
+
+
+2. build all ( linaro kernel + bmguest + hypervisor )
+- if you want to build all file. do this process 
+
+a) in this directory "~/khypervisor/platform-device/cortex_a15x2_arndale/build"
+
+$ sh linaro_bmguest.sh
+
+b) in this directory "~/khypervisor"
+
+$ make 
+
+
+3. upload sdcard all builded file (linaro kernel + bmguest +hypervisor + android) 
+- if you build all file then upload sdcard 
+
+a) we will use linaro tool so install linaro tool 
+(url : https://releases.linaro.org/13.05/android/arndale)
+
+$ sudo add-apt-repository ppa:linaro-maintainers/tools
+$ sudo apt-get update
+$ sudo apt-get install linaro-image-tools
+
+
+b) get android file (boot.tar.bz2, system.tar.bz2, userdata.tar.bz2)
+
+start shell script "get-android.sh"
+
+$ sh get-android.sh
+
+
+c) you install linaro tool then start "upload-sdcard.sh"
+
+$ sh upload-sdcard.sh
+
+
+
+
+
