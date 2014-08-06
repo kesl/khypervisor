@@ -55,6 +55,13 @@ c) you install linaro tool then start "upload-sdcard.sh"
 
 $ sh upload-sdcard.sh
 
+d) in boot 
+- input 
+ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1f4a;mmc read 0x80000000 23ff 14;mmc read 0x46400000 2413 1bbc;mmc read 80100000 3fcf A; go 0xb000004c
+
+
+
+
 
 
 

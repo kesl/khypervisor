@@ -4,7 +4,7 @@ rm -rf ../linaro
 set -e
 
 EXACT=1
-DIR=../linaro
+DIR=linaro
 
 CPUS=`grep -c processor /proc/cpuinfo`
 
@@ -39,6 +39,8 @@ fi
 
 cd $DIR
 git checkout  5a93c058f6bd377fc5edad3e07b1f4d9f18f0c32
+
+mv linaro ../
 
 
 # download the kernel config
