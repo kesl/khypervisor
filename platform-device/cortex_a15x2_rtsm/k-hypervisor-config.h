@@ -26,7 +26,7 @@
 #define CFG_GIC_BASE_PA   0x2c000000
 
 #define CFG_MACHINE_NUMBER 2272
-k-hypervisor-config.h
+
 #define USEC 1000000
 #ifdef _SMP_
 #define NUM_GUESTS_STATIC       4
