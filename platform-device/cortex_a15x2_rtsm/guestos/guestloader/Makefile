@@ -14,7 +14,8 @@ OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
 	$(COMMON_SOURCE_DIR)/guest/test/test_vtimer.o \
 	$(COMMON_LOADER_DIR)/linuxloader.o \
 	$(COMMON_LOADER_DIR)/guestloader_common.o \
-	$(COMMON_LOADER_DIR)/cli.o
+	$(COMMON_LOADER_DIR)/cli.o \
+	$(COMMON_LOADER_DIR)/monitoring_loader.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S

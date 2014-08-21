@@ -220,7 +220,6 @@ void gic_interrupt(int fiq, void *pregs)
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
     if (irq < _gic.lines) {
-        uart_print(".");
         if (irq == 0) {
             uart_print("ba_gicd:");
             uart_print_hex32((uint32_t) _gic.ba_gicd);
@@ -237,8 +236,9 @@ void gic_interrupt(int fiq, void *pregs)
         _gic.ba_gicc[GICC_EOIR] = irq;
         _gic.ba_gicc[GICC_DIR] = irq;
     } else {
-        uart_print("end of irq(no pending):");
-        uart_print_hex32(irq);
-        uart_print("\n\r");
+    /*TODO  Need to know why this part occurred*/
+//        uart_print("end of irq(no pending):");
+//        uart_print_hex32(irq);
+//        uart_print("\n\r");
     }
 }
