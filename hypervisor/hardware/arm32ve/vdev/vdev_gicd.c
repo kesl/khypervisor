@@ -40,33 +40,7 @@
  -----------------------
  - [ ]
  */
-//struct gicd_regs {
-//	uint32_t CTLR; /*0x000 RW*/
-//	uint32_t TYPER; /*      RO*/
-//	uint32_t IIDR; /*      RO*/
-//
-//	uint32_t IGROUPR[VGICD_NUM_IGROUPR]; /* 0x080 */
-//	uint32_t ISCENABLER[VGICD_NUM_ICSENABLER]; /* 0x100, ISENABLER/ICENABLER */
-//
-////    uint32_t ISENABLER[VGICE_NUM_ISENABLER];    /* 0x100, ISENABLER */
-////    uint32_t ICENABLER[VGICE_NUM_ICENABLER];    /* 0x100, ICENABLER */
-////    uint32_t ISCENABLER[10];
-//	uint32_t ISPENDR[32]; /* 0x200, ISPENDR/ICPENDR */
-//	uint32_t ISACTIVER[32]; /* 0x300, ISACTIVER/ICACTIVER */
-//	uint32_t IPRIORITYR[128]; /* 0x400 */
-//	uint32_t ITARGETSR[128]; /* 0x800 [0]: RO, Otherwise, RW */
-//	uint32_t ICFGR[64]; /* 0xC00 */
-//
-//	/* Cortex-A15 */
-//	/* 0xD00 GICD_PPISR RO */
-//	/* 0xD04 ~ 0xD1C GICD_SPISRn RO */
-//
-//	uint32_t NSACR[64]; /* 0xE00 */
-//	uint32_t SGIR; /* 0xF00 WO */
-//	uint32_t CPENDSGIR[4]; /* 0xF10 CPENDSGIR 0xF20 SPENDGIR */
-//
-///* 0xFD0 ~ 0xFFC RO Cortex-A15 PIDRn, CIDRn */
-//};
+
 #define VGICE_NUM_ISPENDR 5
 #define VGICE_NUM_ICPENDR 5
 #define VGICE_NUM_ISENABLER 5
@@ -85,29 +59,16 @@ struct gicd_regs
     uint32_t CTLR; /*0x000 RW*/
     uint32_t TYPER; /*      RO*/
     uint32_t IIDR; /*      RO*/
-
     uint32_t IGROUPR[VGICD_NUM_IGROUPR]; /* 0x080 */
-//	uint32_t ISCENABLER[VGICD_NUM_ICSENABLER]; /* 0x100, ISENABLER/ICENABLER */
-
     uint32_t ISENABLER[VGICE_NUM_ISENABLER]; /* 0x100, ISENABLER */
     uint32_t ICENABLER[VGICE_NUM_ICENABLER]; /* 0x180, ICENABLER */
-//    uint32_t ISCENABLER[5];
-//	uint32_t ISPENDR[32]; /* 0x200, ISPENDR/ICPENDR */
-
     uint32_t ISPENDR[VGICE_NUM_ISPENDR];
     uint32_t ICPENDR[VGICE_NUM_ICPENDR];
-
-//    uint32_t ISACTIVER[32]; /* 0x300, ISACTIVER/ICACTIVER */
-
     uint32_t ISACTIVER[VGICE_NUM_ISACTIVER];
     uint32_t ICACTIVER[VGICE_NUM_ICACTIVER];
-
     uint32_t IPRIORITYR[VGICE_NUM_IPRIORITYR]; /* 0x400 */
-
     uint32_t ITARGETSR[VGICE_NUM_ITARGETSR]; /* 0x800 [0]: RO, Otherwise, RW */
-
     uint32_t ICFGR[VGICE_NUM_ICFGR]; /* 0xC00 */
-
     /* Cortex-A15 */
     /* 0xD00 GICD_PPISR RO */
     /* 0xD04 ~ 0xD1C GICD_SPISRn RO */
@@ -116,11 +77,6 @@ struct gicd_regs
     uint32_t SGIR; /* 0xF00 WO */
     uint32_t CPENDSGIR[VGICE_NUM_CPENDSGIR]; /* 0x0F10 */
     uint32_t SPENDSGIR[VGICE_NUM_SPENDSGIR]; /* 0x0F20 */
-
-//uint32_t NSACR[64]; /* 0xE00 */
-
-//uint32_t CPENDSGIR[4]; /* 0xF10 CPENDSGIR 0xF20 SPENDGIR */
-
 /* 0xFD0 ~ 0xFFC RO Cortex-A15 PIDRn, CIDRn */
 };
 
@@ -215,8 +171,6 @@ handler_000 (uint32_t write, uint32_t offset, uint32_t *pvalue,
         case GICD_TYPER: /* RO */
             if (write == 0)
                 {
-//            *pvalue = VGICD_TYPER_DEFAULT;
-//        	*pvalue = 0x0000FC24; //gicd_typer
                     *pvalue = regs->TYPER;
                     result = HVMM_STATUS_SUCCESS;
                 }
@@ -224,8 +178,6 @@ handler_000 (uint32_t write, uint32_t offset, uint32_t *pvalue,
         case GICD_IIDR: /* RO */
             if (write == 0)
                 {
-//            *pvalue = VGICD_IIDR_DEFAULT;
-//            *pvalue = 0x0200043B;
                     *pvalue = regs->IIDR;
                     result = HVMM_STATUS_SUCCESS;
                 }
@@ -305,96 +257,14 @@ handler_ISCENABLER (uint32_t write, uint32_t offset, uint32_t *pvalue,
     struct gicd_regs *regs = &_regs[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
-//	uint32_t *preg;
-//	int regIndex;
     if (write && *pvalue == 0)
         {
             /* Writes 0 -> Has no effect. */
             result = HVMM_STATUS_SUCCESS;
             return result;
         }
-    //#define GICD_ISENABLER    (0x100/0x4)  = 25(16)
-    //#define GICD_ICENABLER    (0x180/4)  = 45(16)
-//	printH("%d\n", (offset ^ 0x100) / 4);
     preg_s = &(regs->ISENABLER[(offset >> 2) - GICD_ISENABLER]);
     preg_c = &(regs->ICENABLER[(offset >> 2) - GICD_ICENABLER]);
-//	preg = &(regs->ISCENABLER[(offset ^ 0x100) / 4]);
-//	regIndex = (offset ^ 0x100) / 4;
-//	if (access_size == VDEV_ACCESS_WORD) {
-//		if (regIndex < VGICD_NUM_ICSENABLER / 2) {  // ISENABLER
-//			if (write) {
-//				*preg |= *pvalue;
-//				vgicd_changed_istatus(vmid, *preg,
-//						(offset >> 2) - GICD_ISENABLER);
-//			} else
-//				// ICENABLER
-//				*pvalue = *preg;
-//		} else {
-//			if (write) {
-//				*preg &= ~(*pvalue);
-//				vgicd_changed_istatus(vmid, *preg,
-//						(offset >> 2) - GICD_ICENABLER + VGICD_NUM_IENABLER);
-//			} else
-//				*pvalue = *preg;
-//
-//		}
-//		result = HVMM_STATUS_SUCCESS;
-//
-//	} else if (access_size == VDEV_ACCESS_HWORD) {
-//		if (regIndex < VGICD_NUM_ICSENABLER / 2) {
-//			uint16_t *preg_s16 = (uint16_t *) preg;
-//			preg_s16 += (offset & 0x3) >> 1;
-//			if (write) {
-//				*preg_s16 |= (uint16_t) (*pvalue & 0xFFFF);
-//				vgicd_changed_istatus(vmid, *preg,
-//						(offset >> 2) - GICD_ISENABLER);
-//			} else
-//				*pvalue = (uint32_t) *preg_s16;
-//
-//			result = HVMM_STATUS_SUCCESS;
-//		} else {
-//			uint16_t *preg_c16 = (uint16_t *) preg;
-//			preg_c16 += (offset & 0x3) >> 1;
-//			if (write) {
-//				*preg_c16 &= ~((uint16_t) (*pvalue & 0xFFFF));
-//				vgicd_changed_istatus(vmid, *preg,
-//						(offset >> 2) - GICD_ICENABLER);
-//			} else
-//				*pvalue = (uint32_t) *preg_c16;
-//
-//			result = HVMM_STATUS_SUCCESS;
-//		}
-//	} else if (access_size == VDEV_ACCESS_BYTE) {
-//		if (regIndex < VGICD_NUM_ICSENABLER / 2) {
-//			uint8_t *preg_s8 = (uint8_t *) preg;
-//			preg_s8 += (offset & 0x3);
-//			if (write) {
-//				*preg_s8 |= (uint8_t) (*pvalue & 0xFF);
-//				vgicd_changed_istatus(vmid, *preg,
-//						(offset >> 2) - GICD_ISENABLER);
-//			} else
-//				*pvalue = (uint32_t) *preg_s8;
-//
-//			result = HVMM_STATUS_SUCCESS;
-//		} else {
-//			uint8_t *preg_c8 = (uint8_t *) preg;
-//			preg_c8 += (offset & 0x3);
-//			if (write) {
-//				*preg_c8 &= ~((uint8_t) (*pvalue & 0xFF));
-//				vgicd_changed_istatus(vmid, *preg,
-//						(offset >> 2) - GICD_ICENABLER);
-//			} else
-//				*pvalue = (uint32_t) *preg_c8;
-//
-//			result = HVMM_STATUS_SUCCESS;
-//		}
-//	} else {
-//		printH("Error other size in handler_ISCENABLER() \n");
-//	}
-// Written by in-gyu
-//#define GICD_ISENABLER    (0x100/0x4)  = 25(16)
-//#define GICD_ICENABLER    (0x180/4)  = 45(16)
-//#define VGICD_NUM_IENABLER 4
     if (access_size == VDEV_ACCESS_WORD)
         {
             if ((offset >> 2) <= (GICD_ISENABLER + VGICD_NUM_IENABLER))
@@ -748,28 +618,25 @@ vdev_gicd_reset_values (void)
              */
             int j = 0;
             uint32_t inc_address = 0x00000000;
-//		for (j = 0; j < 40; j++)
-//			_regs[i].ITARGETSR[j] = 0;
 
             _regs[i].CTLR =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                            + GIC_OFFSET_GICD))); // 0x10481000
+                            + GIC_OFFSET_GICD)));
             _regs[i].TYPER =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                            + GIC_OFFSET_GICD + 0x4))); // 0x10481004
+                            + GIC_OFFSET_GICD + 0x4)));
             _regs[i].IIDR =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                            + GIC_OFFSET_GICD + 0x8))); // 0x10481008
+                            + GIC_OFFSET_GICD + 0x8)));
             printH ("vdev init:'%s' vmid:%d, gicd TYPER:%x\n", __func__, i,
                     _regs[i].TYPER);
             printH ("vdev init:'%s' vmid:%d, gicd IIDR:%x\n", __func__, i,
                     _regs[i].IIDR);
-            // init
             for (j = 0; j < VGICD_NUM_IGROUPR; j++)
                 {
                     _regs[i].IGROUPR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + inc_address))); // 0x10481000
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -777,8 +644,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ISENABLER; j++)
                 {
                     _regs[i].ISENABLER[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x100 + inc_address))); //0x10481100
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x100 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -786,8 +653,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ICENABLER; j++)
                 {
                     _regs[i].ICENABLER[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x180 + inc_address))); // 0x10481180
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x180 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -795,8 +662,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ISPENDR; j++)
                 {
                     _regs[i].ISPENDR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x200 + inc_address))); // 0x10481200
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x200 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -804,8 +671,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ICPENDR; j++)
                 {
                     _regs[i].ICPENDR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x280 + inc_address))); // 0x10481280
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x280 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -813,8 +680,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ISACTIVER; j++)
                 {
                     _regs[i].ISACTIVER[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x300 + inc_address))); // 0x10481300
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x300 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -822,8 +689,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ICACTIVER; j++)
                 {
                     _regs[i].ICACTIVER[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x380 + inc_address))); // 0x10481380
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x380 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -831,8 +698,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_IPRIORITYR; j++)
                 {
                     _regs[i].IPRIORITYR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x400 + inc_address))); // 0x10481400
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x400 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -840,8 +707,8 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ITARGETSR; j++)
                 {
                     _regs[i].ITARGETSR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0x800 + inc_address))); // 0x10481800
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0x800 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -849,34 +716,34 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_ICFGR; j++)
                 {
                     _regs[i].ICFGR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0xC00 + inc_address))); // 0x10481C00
+                         (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0xC00 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
             _regs[i].PPISR =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                            + GIC_OFFSET_GICD + 0xD00)));  // 0x10481D00
+                            + GIC_OFFSET_GICD + 0xD00)));
 
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_SPISR; j++)
                 {
                     _regs[i].SPISR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0xD04 + inc_address))); // 0x10481D04
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0xD04 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
             _regs[i].SGIR =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                            + GIC_OFFSET_GICD + 0xF00)));  // 0x10481F00
+                            + GIC_OFFSET_GICD + 0xF00)));
 
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_CPENDSGIR; j++)
                 {
                     _regs[i].CPENDSGIR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0xF10 + inc_address))); // 0x10481F10
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0xF10 + inc_address)));
                     inc_address += 0x00000004;
                 }
 
@@ -884,37 +751,10 @@ vdev_gicd_reset_values (void)
             for (j = 0; j < VGICE_NUM_SPENDSGIR; j++)
                 {
                     _regs[i].SPENDSGIR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
-                                    + GIC_OFFSET_GICD + 0xF20 + inc_address))); // 0x10481F20
+                        (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + 0xF20 + inc_address)));
                     inc_address += 0x00000004;
                 }
-            /*
-             _regs[i].ITARGETSR[0] = 0x01010101;
-             _regs[i].ITARGETSR[1] = 0x01010101;
-             _regs[i].ITARGETSR[2] = 0x01010101;
-             _regs[i].ITARGETSR[3] = 0x01010101;
-
-             _regs[i].ITARGETSR[6] = 0x01010101;
-             _regs[i].ITARGETSR[7] = 0x01010101;
-
-
-
-             _regs[i].ISCENABLER[0] = 0x0000FFFF;
-             //GICD_ICENABLER0
-
-             //_regs[i].ISCENABLER[5] = 0x0000FFFF;
-
-             _regs[i].ICFGR[0] = 0xAAAAAAAA;
-             _regs[i].ICFGR[1] = 0x55540000;
-             _regs[i].ICFGR[2] = 0x55555555;
-             _regs[i].ICFGR[3] = 0x55555555;
-             _regs[i].ICFGR[4] = 0x55555555;
-             _regs[i].ICFGR[5] = 0x55555555;
-             _regs[i].ICFGR[6] = 0x55555555;
-             _regs[i].ICFGR[7] = 0x55555555;
-             _regs[i].ICFGR[8] = 0x55555555;
-             _regs[i].ICFGR[9] = 0x55555555;
-             */
         }
     return result;
 }

@@ -175,12 +175,7 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
         /* FIXME:Hardcoded */
         next = ofvmid + 1;
     }
-//    return next;
-
-   // uart_print_hex32(regs->pc)
-//    printH("guest_next_vmid\n");
-      return 0;
-
+    return next;
 }
 
 vmid_t guest_current_vmid(void)

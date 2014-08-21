@@ -36,13 +36,11 @@ static struct memmap_desc guest0_device_md[] = {
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
     { "chipid", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
-//    { "syscon", 0x10050000, 0x10050000, SZ_64K, MEMATTR_DM },
     { "timer", 0x12DD0000, 0x12DD0000, SZ_16K, MEMATTR_DM },
     { "wdt", 0x101D0000, 0x101D0000, SZ_4K, MEMATTR_DM },
     { "sromc", 0x12250000, 0x12250000, SZ_4K, MEMATTR_DM },
     { "hsphy", 0x12130000, 0x12130000, SZ_4K, MEMATTR_DM },
     { "sataphy", 0x12170000, 0x12170000, SZ_4K, MEMATTR_DM},
-   // { "i2c", 0x121d0000, 0x121d0000, SZ_4K, MEMATTR_DM},
     { "dwmmc0", 0x12200000, 0x12200000, SZ_64K, MEMATTR_DM},
     { "dwmmc1", 0x12210000, 0x12210000, SZ_64K, MEMATTR_DM},
     { "dwmmc2", 0x12220000, 0x12220000, SZ_64K, MEMATTR_DM},
@@ -53,7 +51,6 @@ static struct memmap_desc guest0_device_md[] = {
     { "systimer", 0x101C0000, 0x101C0000, SZ_4K, MEMATTR_DM },
     { "sysram", 0x02020000, 0x02020000, SZ_4K, MEMATTR_DM },
     { "cmu", 0x10010000, 0x10010000, 144 * SZ_1K, MEMATTR_DM },
-//    { "pmu", 0x10040000, 0x10040000, SZ_64K, MEMATTR_DM },
     { "combiner", 0x10440000, 0x10440000, SZ_4K, MEMATTR_DM },
     { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
     { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
@@ -76,18 +73,12 @@ static struct memmap_desc guest0_device_md[] = {
     { "i2c5", 0x12C70000, 0x12C70000, SZ_64K, MEMATTR_DM },
     { "i2c6", 0x121D0000, 0x121D0000, SZ_64K, MEMATTR_DM },
     { "MTCADC_ISP", 0x13150000, 0x13150000, SZ_64K, MEMATTR_DM },
- //   { "i2c0", 0x12C60000, 0x12C60000, SZ_64K, MEMATTR_DM },
     { "usb_ehci", 0x12110000, 0x12110000, SZ_64K, MEMATTR_DM },
     { "usb_ohci", 0x12120000, 0x12120000, SZ_64K, MEMATTR_DM },
     { "usb_ctrl", 0x12130000, 0x12130000, SZ_64K, MEMATTR_DM },
     { "usb_devicelink", 0x12140000, 0x12140000, SZ_64K, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x10000, MEMATTR_DM },
-//    { "GIC", 0x10481000, CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000 , MEMATTR_DM },
-//    { "GIC", 0x10482000, 0x10482000, 0x2000 , MEMATTR_DM },
-//    { "GIC", 0x10484000, 0x10484000, 0x2000 , MEMATTR_DM },
-//    { "GIC", 0x10486000, 0x10486000, 0x2000 , MEMATTR_DM },
-//    { "Combiner", 0x10440000, 0x10440000, SZ_256K , MEMATTR_DM },
     { "s3c2440", 0x12c60000, 0x12c60000, SZ_64K , MEMATTR_DM },
     { "sata", 0x122F0000, 0x122F0000, SZ_64K , MEMATTR_DM },
     { "i2c5_", 0x12C80000, 0x12C80000, SZ_64K, MEMATTR_DM },
@@ -101,11 +92,9 @@ static struct memmap_desc guest0_device_md[] = {
     { "usbphy-sys", 0x10040000, 0x10040000, SZ_64K, MEMATTR_DM },
     { "usbphy-sys", 0x10050000, 0x10050000, SZ_64K, MEMATTR_DM },
     { "s5p-ehci", 0x14450000, 0x14450000, SZ_64K, MEMATTR_DM },
-
     { "HDMI-0", 0x14530000, 0x14530000, SZ_64K, MEMATTR_DM },
     { "HDMI-1", 0x14540000, 0x14540000, SZ_64K, MEMATTR_DM },
     { "HDMI-5", 0x14580000, 0x14580000, SZ_64K, MEMATTR_DM },
-    // Referenced User's Manual
     { 0, 0, 0, 0, 0 }
 };
 
@@ -234,103 +223,25 @@ void setup_interrupt()
         }
     }
 
-    {
-       int i;
-       for (i =0; i < MAX_IRQS; i++){
-            if(i==25 || i==26)
-                continue;
-            else
-                DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
-       }
-
-
-    }
-#if 0
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 20, 20);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 32, 32);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 33, 33);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 34, 34);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 35, 35);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 36, 36);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 37, 37);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 38, 38);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 39, 39);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 40, 40);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 41, 41);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 42, 42);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 43, 43);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 44, 44);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 45, 45);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 46, 46);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 47, 47);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 48, 48);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 49, 49);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 50, 50);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 51, 51);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 52, 52);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 53, 53);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 54, 54);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 55, 55);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 56, 56);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 57, 57);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 58, 58);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 59, 59);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 60, 60);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 61, 61);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 62, 62);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 63, 63);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 64, 64);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 65, 65);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 66, 66);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 67, 67);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 68, 68);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 70, 70);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 71, 71);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 72, 72);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 73, 73);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 74, 74);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 75, 75);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 76, 76);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 77, 77);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 78, 78);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 79, 79);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 80, 80);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 81, 81);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 82, 82);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 83, 83);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 84, 84);
+    for (i = 0; i < 16; i++)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 27, 27);
+    for (i = 32; i < 73; i++)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 85, 85);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 86, 86);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 87, 87);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 88, 88);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 89, 89);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 90, 90);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 91, 91);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 92, 92);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 93, 93);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 94, 94);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 95, 95);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 96, 96);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 97, 97);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 98, 98);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 99, 99);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 103, 103);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 104, 104);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 107, 107);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 109, 109);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 126, 126);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 147, 147);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 152, 152);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 153, 153);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 156, 156);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 309, 309);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 347, 347);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 447, 447);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 106, 106);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 138, 138);
-#endif
 }
 
 void setup_memory()
