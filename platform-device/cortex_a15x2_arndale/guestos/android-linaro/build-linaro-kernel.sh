@@ -17,4 +17,4 @@ cd ..
 #cat board.dtb >> ../linaro/arch/arm/boot/zImage
 cat board.dtb >> ./linaro/arch/arm/boot/zImage
 
-
+mv linaro ../

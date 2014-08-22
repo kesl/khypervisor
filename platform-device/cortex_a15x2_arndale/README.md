@@ -338,6 +338,32 @@ $ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ make
 </pre>
 
+## Build guest loader
+1. Copy guest image to guestimages directory
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ cp ./guestos/linaro/arch/arm/boot/zImage ./guestimages/zImage
+$ cp ./guestos/bmguest/bmguest.bin ./guestimages/bmguest.bin
+</pre>
+2. Build guestloader for linux guest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make LINUX=y
+$ cp guestloader.bin ../../guestimages/guest0.bin
+</pre>
+3. Build guestloader for bmguest
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
+$ make
+$ cp guestloader.bin ../../guestimages/guest1.bin
+</pre>
+
+## Build k-hypervisor
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale
+$ make
+</pre>
+
 ## How to Flash a K-hypervisor to arndale board (linaro android + bmguest)
 
 1. Get linaro tool to flash native android (kitkat)
