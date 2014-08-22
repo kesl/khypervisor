@@ -197,7 +197,6 @@ void guest_dump_regs(struct arch_regs *regs)
 
 hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
 {
-//	  printH("guest_switchto\n");
     hvmm_status_t result = HVMM_STATUS_IGNORED;
     uint32_t cpu = smp_processor_id();
 
@@ -242,7 +241,6 @@ vmid_t sched_policy_determ_next(void)
 
 void guest_schedule(void *pdata)
 {
-//	 printH("guest_schedule\n");
     struct arch_regs *regs = pdata;
     uint32_t cpu = smp_processor_id();
     /* guest_hw_dump */

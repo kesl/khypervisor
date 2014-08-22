@@ -11,7 +11,7 @@ export HYPERVISOR_CLEAN_SCRIPT="make clean"
 
 export UBOOT_DIR="u-boot-native"
 export UBOOT="u-boot.bin"
-export UBOOT_BUILD_SCRIPT="make arndale5250 CROSS_COMPILE=/home/kim6515516/Downloads/arm-2013.05/bin/arm-none-eabi-"
+export UBOOT_BUILD_SCRIPT="make arndale5250 CROSS_COMPILE=arm-none-eabi-"
 export UBOOT_CLEAN_SCRIPT="make clean"
 
 export ZIMAGE_BIN="zImage"
@@ -20,7 +20,7 @@ export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
 export GUEST0_BUILD_SCRIPT="cd ../linux && \
 make ARCH=arm arndale_android_defconfig && \
-make CROSS_COMPILE=/home/kim6515516/Downloads/arm-2011.03/bin/arm-none-linux-gnueabi- ARCH=arm -j8 && \
+make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm -j8 && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
 make clean && \
