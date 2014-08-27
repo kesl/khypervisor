@@ -167,7 +167,7 @@ vmid_t guest_last_vmid(void)
 vmid_t guest_next_vmid(vmid_t ofvmid)
 {
     vmid_t next = VMID_INVALID;
-#if _SMP_
+#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
     if (cpu)
