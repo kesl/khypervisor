@@ -125,7 +125,7 @@ static hvmm_status_t vdev_vtimer_reset(void)
     timer.interval_us = GUEST_SCHED_TICK;
     timer.callback = &callback_timer;
 
-    timer_set(&timer);
+    timer_set(&timer, GUEST_TIMER);
 
     return HVMM_STATUS_SUCCESS;
 }

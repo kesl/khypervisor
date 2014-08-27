@@ -87,6 +87,7 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
          * first guest. It occur in initial time.
          */
         printh("context: launching the first guest\n");
+
         result = perform_switch(0, _next_guest_vmid[cpu]);
         /* DOES NOT COME BACK HERE */
     } else if (_next_guest_vmid[cpu] != VMID_INVALID &&
@@ -130,6 +131,7 @@ void guest_sched_start(void)
 
     if (cpu) {
         guest_switchto(2, 0);
+
         guest_perform_switch(&guest->regs);
     } else {
         guest_switchto(0, 0);
@@ -162,7 +164,14 @@ vmid_t guest_last_vmid(void)
 vmid_t guest_next_vmid(vmid_t ofvmid)
 {
     vmid_t next = VMID_INVALID;
+#if _SMP_
     uint32_t cpu = smp_processor_id();
+
+    if (cpu)
+        return 2;
+    else
+        return 0;
+#endif
 
     /* FIXME:Hardcoded */
     if (ofvmid == VMID_INVALID)
@@ -276,8 +285,11 @@ hvmm_status_t guest_init()
     /* 100Mhz -> 1 count == 10ns at RTSM_VE_CA15, fast model*/
     timer.interval_us = GUEST_SCHED_TICK;
     timer.callback = &guest_schedule;
-    result = timer_set(&timer);
+
+    result = timer_set(&timer, HOST_TIMER);
+
     if (result != HVMM_STATUS_SUCCESS)
         printh("[%s] timer startup failed...\n", __func__);
+
     return result;
 }

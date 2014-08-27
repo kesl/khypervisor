@@ -201,7 +201,7 @@ void setup_interrupt()
     int i, j;
     struct virqmap_entry *map;
 
-    for (i = 0; i < NUM_GUESTS_CPU0_STATIC; i++) {
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
         map = _guest_virqmap[i].map;
         for (j = 0; j < MAX_IRQS; j++) {
             map[j].enabled = GUEST_IRQ_DISABLE;
@@ -420,7 +420,6 @@ void secondary_cpu_init(uint32_t cpu)
 
     printH("[%s : %d] Interrupt Init... for CPU\n", __func__, __LINE__);
 
-    wfi();
     /* Initialize Interrupt Management */
     if (interrupt_init(_guest_virqmap))
         printh("[start_guest] interrupt initialization failed...\n");

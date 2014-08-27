@@ -157,8 +157,24 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
     struct arch_regs *regs = (struct arch_regs *)current_regs;
     uint32_t cpu = smp_processor_id();
 
+
     if (irq < MAX_IRQS) {
         if (interrupt_check_guest_irq(irq) == GUEST_IRQ) {
+
+#ifdef _SMP_
+            /*
+             * workaround for arndale port
+             * We will identify the interrupt number 0, which is
+             * an unknown number.
+             */
+            if (cpu) {
+                if (irq == 0) {
+                    /* ignore injecting the guest */
+                    _guest_ops->end(irq);
+                    return;
+                }
+            }
+#endif
             /* IRQ INJECTION */
             /* priority drop only for hanlding irq in guest */
             /* guest_interrupt_end() */

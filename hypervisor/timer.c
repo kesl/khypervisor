@@ -13,13 +13,9 @@
 #include <log/print.h>
 #include <smp.h>
 
-struct timer {
-    struct timer_val timer_info;
-    int32_t count_per_irq;
-};
+static timer_callback_t _host_callback[2];
+static timer_callback_t _guest_callback[2];
 
-static struct timer _timers[NUM_CPUS][MAX_TIMER];
-uint32_t _timers_index[NUM_CPUS];
 static struct timer_ops *_ops;
 
 /*
@@ -28,32 +24,6 @@ static struct timer_ops *_ops;
 static inline uint64_t timer_t2c(uint64_t time_us)
 {
     return time_us * COUNT_PER_USEC;
-}
-
-/*
- * Calculates count per IRQ using interval value.
- */
-static inline int32_t timer_count_per_irq(int32_t interval_us)
-{
-    int32_t count;
-
-    if (interval_us <= 0)
-        return -1;
-
-    count = interval_us / COUNT_PER_USEC;
-
-    /* needs to compensate count value. Because zero count value is invalid. */
-    return count == 0 ? 1 : count;
-}
-
-/*
- * Checks array of timers.
- */
-static inline uint32_t timer_is_full()
-{
-    uint32_t cpu = smp_processor_id();
-
-    return (_timers_index[cpu] >= MAX_TIMER);
 }
 
 /*
@@ -81,32 +51,6 @@ static hvmm_status_t timer_stop(void)
 }
 
 /*
- * Checks each timers and calls its callback when interval was expired.
- */
-static void timer_check_each_timers(void *pregs)
-{
-    uint32_t i;
-    uint32_t cpu = smp_processor_id();
-
-    for (i = 0; i < _timers_index[cpu] && i < MAX_TIMER; i++) {
-        /* if interval_us is negative value, skip it. */
-        if (_timers[cpu][i].timer_info.interval_us > 0) {
-            /* consumes count_per_irq value. */
-            _timers[cpu][i].count_per_irq--;
-
-            if (_timers[cpu][i].count_per_irq < 0) {
-                /* calls callback with pregs */
-                _timers[cpu][i].timer_info.callback(pregs);
-
-                /* re-calculates count_per_irq. */
-                _timers[cpu][i].count_per_irq = timer_count_per_irq(
-                        _timers[cpu][i].timer_info.interval_us);
-            }
-        }
-    }
-}
-
-/*
  * Sets the timer interval(microsecond).
  */
 static hvmm_status_t timer_set_interval(uint32_t interval_us)
@@ -123,9 +67,14 @@ static hvmm_status_t timer_set_interval(uint32_t interval_us)
  */
 static void timer_handler(int irq, void *pregs, void *pdata)
 {
+    uint32_t cpu = smp_processor_id();
+
     timer_stop();
-    timer_check_each_timers(pregs);
-    timer_set_interval(COUNT_PER_USEC);
+    if (_host_callback[cpu])
+        _host_callback[cpu](pregs);
+    if (_guest_callback[cpu])
+        _guest_callback[cpu](pregs);
+    timer_set_interval(GUEST_SCHED_TICK);
     timer_start();
 }
 
@@ -137,24 +86,33 @@ static hvmm_status_t timer_requset_irq(uint32_t irq)
     return interrupt_host_configure(irq);
 }
 
-hvmm_status_t timer_set(struct timer_val *timer)
+static hvmm_status_t timer_host_set_callback(timer_callback_t func)
 {
-    struct timer stimer;
     uint32_t cpu = smp_processor_id();
 
-    /* checks it first. */
-    if (timer_is_full())
-        return HVMM_STATUS_UNSUPPORTED_FEATURE;
+    _host_callback[cpu] = func;
 
-    stimer.timer_info.callback = timer->callback;
-    stimer.timer_info.interval_us = timer->interval_us;
-    stimer.count_per_irq = timer_count_per_irq(timer->interval_us);
+    return HVMM_STATUS_SUCCESS;
+}
 
-    /*
-     * TODO: Storing time_val into array of timers needs a lock mechanism
-     * for preventing concurrent access.
-     */
-    _timers[cpu][_timers_index[cpu]++] = stimer;
+static hvmm_status_t timer_guest_set_callback(timer_callback_t func)
+{
+    uint32_t cpu = smp_processor_id();
+
+    _guest_callback[cpu] = func;
+
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t timer_set(struct timer_val *timer, uint32_t host)
+{
+    if (host) {
+        timer_stop();
+        timer_host_set_callback(timer->callback);
+        timer_set_interval(timer->interval_us);
+        timer_start();
+    } else
+        timer_guest_set_callback(timer->callback);
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -165,14 +123,10 @@ hvmm_status_t timer_init(uint32_t irq)
 
     _ops = _timer_module.ops;
 
-    _timers_index[cpu] = 0;
-
     if (_ops->init)
         _ops->init();
 
     timer_requset_irq(irq);
-
-    timer_start();
 
     return HVMM_STATUS_SUCCESS;
 }

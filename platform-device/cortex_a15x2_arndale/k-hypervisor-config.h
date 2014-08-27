@@ -15,7 +15,7 @@
 
 #define MON_SIZE            0x0F000000
 #define MON_STACK_SIZE      0x00C00000 /* core0 stack pointer */
-#define MON_CORE_STACK_SIZE      0x00100000 /* coreX * num_of_core stack pointer */
+#define MON_CORE_STACK_SIZE      0x00200000 /* coreX * num_of_core stack pointer */
 
 #define SEC_STACK_SIZE      0x00400000
 #define GUEST_SIZE_MAX      0x0F000000
@@ -37,7 +37,7 @@
 #define NUM_GUESTS_CPU1_STATIC       2
 #define NUM_CPUS       2
 #define COUNT_PER_USEC (CFG_CNTFRQ/USEC)
-#define GUEST_SCHED_TICK 100000
+#define GUEST_SCHED_TICK 1000
 #define MAX_IRQS 1024
 #define MAX_PPI_IRQS 32
 #define MAX_SPI_IRQS (MAX_IRQS - 1024)
