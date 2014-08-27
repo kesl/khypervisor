@@ -19,8 +19,8 @@ export BMGUEST_BIN="bmguest.bin"
 export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
 export GUEST0_BUILD_SCRIPT="cd ../linux && \
-make ARCH=arm arndale_minimal_linux_defconfig && \
-make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 && \
+make ARCH=arm arndale_android_defconfig && \
+make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm -j8 && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
 make clean && \

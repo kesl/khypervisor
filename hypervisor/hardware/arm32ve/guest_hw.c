@@ -228,7 +228,7 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     context_copy_regs(regs, current_regs);
     context_save_cops(&context->regs_cop);
     context_save_banked(&context->regs_banked);
-    printh("context: saving vmid[%d] mode(%x):%s pc:0x%x\n",
+    printh("guest_hw_save  context: saving vmid[%d] mode(%x):%s pc:0x%x\n",
             _current_guest[0]->vmid,
            regs->cpsr & 0x1F,
            _modename(regs->cpsr & 0x1F),
@@ -241,6 +241,7 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
                 struct arch_regs *current_regs)
 {
     struct arch_context *context = &guest->context;
+
 
     if (!current_regs) {
         /* init -> hyp mode -> guest */

@@ -20,6 +20,7 @@ INPUT(./guestimages/guest1.bin)
 INPUT(./guestimages/guest2.bin)
 INPUT(./guestimages/guest3.bin)
 #endif
+INPUT(./guestimages/System.map)
 
 MON_STACK   = CFG_MEMMAP_MON_OFFSET + MON_SIZE;
 SEC_STACKTOP = MON_STACK + MON_STACK_SIZE;
@@ -85,6 +86,13 @@ SECTIONS
  . = GUEST3_STACK + 0x01000000;
  guest3_stacklimit = .;
 #endif
+
+ . = 0xFFC00000;
+ system_map_start = .;
+ .systemmap : {./guestimages/System.map}
+ .= ALIGN(4);
+ system_map_end = .;
+
  . = CFG_MEMMAP_MON_OFFSET;
  /* Put most of the actual boot loader code up in high memory
   * where it won't get overwritten by kernel, initrd or atags.

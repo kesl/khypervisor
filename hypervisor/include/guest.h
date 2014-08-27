@@ -108,6 +108,9 @@ vmid_t guest_waiting_vmid(void);
 hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
+struct guest_struct get_guest(uint32_t guest_num);
+void set_manually_select_vmid(vmid_t vmid);
+void clean_manually_select_vmid(void);
 
 static inline unsigned long num_of_guest(int cpu)
 {

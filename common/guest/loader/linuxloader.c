@@ -178,8 +178,10 @@ setup_ramdisk_tag(uint32_t size)
 
 void linuxloader_setup_atags(uint32_t src)
 {
-    char *commandline =
-/* mmc */
+    //char *commandline = "root=/dev/mmcblk1p1 rw ip=dhcp earlyprintk rootwait console=ttySAC2,115200n8 mem=512M init --no-log";
+
+     char *commandline = "root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M console=ttySAC1,115200 init= mem=256M";
+	/* mmc */
 //            "root=/dev/mmcblk0 rw ip=dhcp "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* android */
@@ -188,8 +190,8 @@ void linuxloader_setup_atags(uint32_t src)
 //            "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
 //            "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
 /* ramdisk */
-            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
-            "mem=512M rdinit=/sbin/init";
+//            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
+//            "mem=512M rdinit=/sbin/init";
 /* Arndale board with mmc */
  //   "root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M console=ttySAC1,115200 init= mem=256M"
 //            "root=/dev/ram rw earlyprintk console=ttySAC0 "

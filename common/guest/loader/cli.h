@@ -6,4 +6,5 @@
  * @param cmd Input command.
  */
 void cli_exec_cmd(char *cmd);
+
 #endif
