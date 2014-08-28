@@ -15,6 +15,7 @@
 
 #include "ucos_ii.h"
 #include "asm-arm/os_cpu.h"
+#include "asm-arm/io-exynos.h"
 #include "os_cfg.h"
 
 #endif /* INCLUDES_H_ */

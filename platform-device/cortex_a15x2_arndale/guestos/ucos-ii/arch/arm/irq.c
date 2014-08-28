@@ -110,8 +110,7 @@ static int gic_init_baseaddr(unsigned int *va_base)
     return result;
 }
 
-#define VDEV_TIMER_BASE    0x3FFFE000
-volatile uint32_t *base = (uint32_t *) VDEV_TIMER_BASE;
+
 
 int gic_init(void)
 {
@@ -135,7 +134,6 @@ int gic_init(void)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
     }
 
-    *base = 0;    
 
     return result;
 }

@@ -102,6 +102,10 @@ static struct memmap_desc guest0_device_md[] = {
 static struct memmap_desc guest1_device_md[] = {
     { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
     { "uart2", 0x12C20000, 0x12C20000, 0x1000, MEMATTR_DM },
+    { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
+    { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
+    { "gpio3", 0x10D10000, 0x10D10000, SZ_256, MEMATTR_DM },
+    { "gpio4", 0x03860000, 0x03860000, SZ_256, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },
@@ -112,6 +116,10 @@ static struct memmap_desc guest1_device_md[] = {
 static struct memmap_desc guest2_device_md[] = {
     { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
+    { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
+    { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
+    { "gpio3", 0x10D10000, 0x10D10000, SZ_256, MEMATTR_DM },
+    { "gpio4", 0x03860000, 0x03860000, SZ_256, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
@@ -120,6 +128,10 @@ static struct memmap_desc guest2_device_md[] = {
 static struct memmap_desc guest3_device_md[] = {
     { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
+    { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
+    { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
+    { "gpio3", 0x10D10000, 0x10D10000, SZ_256, MEMATTR_DM },
+    { "gpio4", 0x03860000, 0x03860000, SZ_256, MEMATTR_DM },
     { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
         CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, 0x2000, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
@@ -283,8 +295,11 @@ void setup_timer()
 void init_secondary();
 #endif
 
+#include <io-exynos.h>
+
 int main_cpu_init()
 {
+
     init_print();
 
 #ifdef _SMP_
