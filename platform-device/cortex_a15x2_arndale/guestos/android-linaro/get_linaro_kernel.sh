@@ -1,10 +1,11 @@
 #!/bin/bash
+rm -rf linaro
 rm -rf ../linaro
 
 set -e
 
 EXACT=1
-DIR=linaro
+DIR=../linaro
 
 CPUS=`grep -c processor /proc/cpuinfo`
 

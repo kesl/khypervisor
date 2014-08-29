@@ -293,6 +293,13 @@ $ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 bb8;mmc 
 
 
 # How to test linaro-android(kitkat) + bmguest
+
+## Download linaro-kernel
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
+$ ./get_linaro_kernel.sh
+</pre>
+
 ## Make a build in one step continuous integration
 Cross compiler : arm-none-linux-gnueabi- (version 4.5.2) (build linaro kernel)
 
@@ -301,19 +308,23 @@ this section, if you done this process first.
 
 <pre>
 $ cd khypervisor
-$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh get_linaro_kernel.sh
-$ sh get-android.sh
-$ cd ../../../../
 $ source platform-device/cortex_a15x2_arndale/build/linaro_bmguest.sh
 $ make
 </pre>
 
 
 ## Build bootloader
+- build bootloader or get builded bootfile
+
+1.build bootloader
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
 $ make arndale5250 CROSS_COMPILE=arm-none-eabi- -j8
+</pre>
+
+2.get builded bootfile<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
+$ ./get-builded-bootfile.sh
 </pre>
 
 
@@ -327,8 +338,8 @@ $ make
 ## Build linaro guest
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh get_linaro_kernel.sh
-$ sh build-linaro-kernel.sh
+$ ./get_linaro_kernel.sh
+$ ./build-linaro-kernel.sh
 </pre>
 
 
@@ -373,28 +384,34 @@ $ sudo apt-get update
 $ sudo apt-get install linaro-image-tools
 </pre>
 
-2. Get android source (kitkat)
+2. get builded bootfile
 <pre>
-$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh get-android.sh
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
+$ ./get-builded-bootfile.sh
 </pre>
 
-3. Flash sdcard
+3. Get android source (kitkat)
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh upload-sdcard.sh
+$ ./get-android.sh
+</pre>
+
+4. Flash sdcard
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
+$ ./upload-sdcard.sh
 "Then in shell input you're sdcard name then enter you're sdcard name (sda,sdc ....)"
  input you're sdcard name
 $ sdX
  you're sdcard is sdX
 </pre>
 
-4. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
+5. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
 <pre>
 $ ZIMAGE: ARNDALE #
 </pre>
 
-5. Enter the following command
+6. Enter the following command
 <pre>
 $ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1f4a;mmc read 0x80000000 23ff 14;mmc read 0x46400000 2413 1bbc;mmc read 80100000 3fcf A; go 0xb000004c
 </pre>
