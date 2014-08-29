@@ -100,10 +100,6 @@ void callback_timer(void *pdata)
 {
     vmid_t vmid = guest_current_vmid();
 
-/*    printH("call_timer 0, %d\n", _timer_status[0]);
-    printH("call_timer 1, %d\n", _timer_status[1]);
-    printH("call_timer 2, %d\n", _timer_status[2]);
-    printH("call_timer 3, %d\n", _timer_status[3]);*/
     if (_timer_status[vmid] == 0)
         interrupt_guest_inject(vmid, VTIMER_IRQ, 0, INJECT_SW);
 }

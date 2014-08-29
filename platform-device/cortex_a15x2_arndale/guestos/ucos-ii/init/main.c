@@ -15,6 +15,7 @@ char TaskData[N_TASKS];
 void TaskStart(void *data);
 void Task(void *data);
 
+OS_EVENT *Tick1MsSem;
 OS_EVENT *Tick2MsSem;
 OS_EVENT *Tick4MsSem;
 OS_EVENT *Tick8MsSem;
@@ -39,19 +40,16 @@ void Task1Ms(void *data)
 	char task = *(char *)data;
     OS_TCB MYTaskData;
     INT8U err;
-    int tick = 0;
+    struct exynos5_gpio_part2 *gpio2;
+
+    gpio2 = (struct exynos5_gpio_part2 *) EXYNOS5_GPIO_PART2_BASE;
 
     for (;;) {
+        s5p_gpio_set_value(&gpio2->h1, 1, 1);
         OSTimeDly(1);
-        tick++;
-        if (tick % 2 == 0)
-            OSSemPost(Tick2MsSem);
-
-        if (tick % 4 == 0)
-            OSSemPost(Tick4MsSem);
-
-        if (tick % 8 == 0)
-            OSSemPost(Tick8MsSem);
+        OSSemPost(Tick2MsSem);
+        s5p_gpio_set_value(&gpio2->h1, 1, 0);
+        OSSemPend(Tick1MsSem, 0, &err);
     }
 }
 
@@ -60,21 +58,18 @@ void Task2Ms(void *data)
     char task = *(char *)data;
     OS_TCB MYTaskData;
     INT8U err;
-    struct exynos5_gpio_part2 *gpio2;
     int count = 0;
     int tick = 0;
+    struct exynos5_gpio_part2 *gpio2;
 
     gpio2 = (struct exynos5_gpio_part2 *) EXYNOS5_GPIO_PART2_BASE;
-    s5p_gpio_direction_output(&gpio2->h1, 1, 1);
 
     for (;;) {
         OSSemPend(Tick2MsSem, 0, &err);
-
-        if (tick++ % 2 == 0)
-            s5p_gpio_set_value(&gpio2->h1, 1, 1);
-        else
-            s5p_gpio_set_value(&gpio2->h1, 1, 0);
-
+        s5p_gpio_set_value(&gpio2->h1, 2, 1);
+        OSTimeDly(2);
+        OSSemPost(Tick4MsSem);
+        s5p_gpio_set_value(&gpio2->h1, 2, 0);
     }
 }
 
@@ -83,9 +78,15 @@ void Task4Ms(void *data)
     char task = *(char *)data;
     OS_TCB MYTaskData;
     INT8U err;
+    struct exynos5_gpio_part2 *gpio2;
+    gpio2 = (struct exynos5_gpio_part2 *) EXYNOS5_GPIO_PART2_BASE;
 
     for (;;) {
         OSSemPend(Tick4MsSem, 0, &err);
+        s5p_gpio_set_value(&gpio2->h1, 3, 1);
+        OSTimeDly(4);
+        OSSemPost(Tick8MsSem);
+        s5p_gpio_set_value(&gpio2->h1, 3, 0);
     }
 }
 
@@ -94,8 +95,16 @@ void Task8Ms(void *data)
     char task = *(char *)data;
     INT8U err;
 
+    struct exynos5_gpio_part1 *gpio1;
+    gpio1 = (struct exynos5_gpio_part1 *) EXYNOS5_GPIO_PART1_BASE;
+
+
     for (;;) {
         OSSemPend(Tick8MsSem, 0, &err);
+        s5p_gpio_set_value(&gpio1->d1, 5, 1);
+        OSTimeDly(8);
+        OSSemPost(Tick1MsSem);
+        s5p_gpio_set_value(&gpio1->d1, 5, 0);
     }
 }
 
@@ -105,10 +114,21 @@ void TaskStart(void *data)
     printf("TaskStart\n");
     init_time();
     EnableTimer();
+    struct exynos5_gpio_part2 *gpio2;
+    struct exynos5_gpio_part1 *gpio1;
 
-    Tick2MsSem = OSSemCreate(1);
-    Tick4MsSem = OSSemCreate(1);
-    Tick8MsSem = OSSemCreate(1);
+    gpio2 = (struct exynos5_gpio_part2 *) EXYNOS5_GPIO_PART2_BASE;
+    gpio1 = (struct exynos5_gpio_part1 *) EXYNOS5_GPIO_PART1_BASE;
+
+
+    Tick1MsSem = OSSemCreate(0);
+    Tick2MsSem = OSSemCreate(0);
+    Tick4MsSem = OSSemCreate(0);
+    Tick8MsSem = OSSemCreate(0);
+    s5p_gpio_direction_output(&gpio2->h1, 1, 0);
+    s5p_gpio_direction_output(&gpio2->h1, 2, 0);
+    s5p_gpio_direction_output(&gpio2->h1, 3, 0);
+    s5p_gpio_direction_output(&gpio1->d1, 5, 0);
 
     OSStatInit(); /* Initialize uC/OS-II's statistics */
 
@@ -127,17 +147,15 @@ void TaskStart(void *data)
 
     printf("OSStatInit\n");
 
-    //int i, j;
     while (1) {
         OSCtxSwCtr = 0;
-        OSTimeDlyHMSM(0, 0, 4, 0);
-
+#if 0
         for(i = 0; i <N_TASKS; i++){
             OSTaskQuery(11+i, &(MYTaskData[i]));
         }
 
         printf("---------------------------------\n");
-        printf("   # Task \tstatus \tPrio \n"); 
+        printf("   # 1Task \tstatus \tPrio \n");
         printf("---------------------------------\n");
         for(i = 0; i < N_TASKS; i++){
             printf("   Task%d() : \t%s \t%d\n", i, "READY", MYTaskData[i].OSTCBPrio);
@@ -146,10 +164,10 @@ void TaskStart(void *data)
         printf("#Tasks :%5d\tCPU Usage :%3d%\n", OSTaskCtr, OSCPUUsage);
         printf("#Task switch/sec :%5d\n", OSCtxSwCtr);
         printf("\n");
-
+#endif
+        OSTimeDlyHMSM(0, 0, 5, 0);
     }
 }
-
 
 int main(void)
 {
