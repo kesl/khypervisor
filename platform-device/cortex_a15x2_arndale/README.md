@@ -302,8 +302,8 @@ this section, if you done this process first.
 <pre>
 $ cd khypervisor
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh get_linaro_kernel.sh
-$ sh get-android.sh
+$ ./get-builded-bootfile.sh
+$ ./get_linaro_kernel.sh
 $ cd ../../../../
 $ source platform-device/cortex_a15x2_arndale/build/linaro_bmguest.sh
 $ make
@@ -311,9 +311,16 @@ $ make
 
 
 ## Build bootloader
-<pre>
+- build bootloader or get builded bootfile
+
+1.build bootloader <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
 $ make arndale5250 CROSS_COMPILE=arm-none-eabi- -j8
+</pre>
+
+2.get builded bootfile<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
+$ ./get-builded-bootfile.sh
 </pre>
 
 
@@ -327,8 +334,8 @@ $ make
 ## Build linaro guest
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh get_linaro_kernel.sh
-$ sh build-linaro-kernel.sh
+$ ./get_linaro_kernel.sh
+$ ./build-linaro-kernel.sh
 </pre>
 
 
@@ -376,13 +383,13 @@ $ sudo apt-get install linaro-image-tools
 2. Get android source (kitkat)
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh get-android.sh
+$ ./get-android.sh
 </pre>
 
 3. Flash sdcard
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
-$ sh upload-sdcard.sh
+$ ./upload-sdcard.sh
 "Then in shell input you're sdcard name then enter you're sdcard name (sda,sdc ....)"
  input you're sdcard name
 $ sdX
