@@ -1,5 +1,6 @@
 #include <log/uart_print.h>
 #include "exynos-uart.h"
+#include <include/asm_io.h>
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
 #define UART0           0x12C20000
 
@@ -9,8 +10,6 @@
 #define UART_BASE   (UART0 + UTXH)
 
 #define TX_FIFO_FULL_MASK       (1 << 24)
-#define readl(a)         (*(volatile unsigned int *)(a))
-#define writeb(v, a)         (*(volatile unsigned char *)(a) = (v))
 
 static int serial_err_check(int op)
 {

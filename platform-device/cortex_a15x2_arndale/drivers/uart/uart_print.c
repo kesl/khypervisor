@@ -1,6 +1,6 @@
 #include "arch_types.h"
 #include "exynos-uart.h"
-
+#include <include/asm_io.h>
 #include <k-hypervisor-config.h>
 
 #ifdef CFG_EXYNOS5250
@@ -16,8 +16,6 @@
 #define UART_BASE     (UART0 + UTXH)
 
 #define TX_FIFO_FULL_MASK       (1 << 24)
-#define    readl(a)         (*(volatile unsigned int *)(a))
-#define    writeb(v, a)         (*(volatile unsigned char *)(a) = (v))
 
 static int serial_err_check(int op)
 {
@@ -68,4 +66,5 @@ void uart_print_hex64(uint64_t v)
     uart_print_hex32(v >> 32);
     uart_print_hex32((uint32_t)(v & 0xFFFFFFFF));
 }
+
 #endif
