@@ -293,10 +293,6 @@ void setup_timer()
     mct_init();
 }
 
-#ifdef _SMP_
-void init_secondary();
-#endif
-
 #include <io-exynos.h>
 
 int main_cpu_init()

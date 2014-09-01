@@ -43,7 +43,6 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 #endif
-	
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
@@ -145,7 +144,6 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     struct arch_vdev_trigger_info info;
     int level = VDEV_LEVEL_LOW;
 
-    printH("[hvc] _hyp_hvc_service: enter\n\r");
     fipa = (read_hpfar() & HPFAR_FIPA_MASK) >> HPFAR_FIPA_SHIFT;
     fipa = fipa << HPFAR_FIPA_PAGE_SHIFT;
     fipa = fipa | (far & HPFAR_FIPA_PAGE_MASK);
@@ -155,7 +153,6 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     info.sas = (iss & ISS_SAS_MASK) >> ISS_SAS_SHIFT;
     srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
     info.value = &(regs->gpr[srt]);
-    printH("[hyp] fipa= %x\n", fipa);
     switch (ec) {
     case TRAP_EC_ZERO_UNKNOWN:
     case TRAP_EC_ZERO_WFI_WFE:
@@ -203,12 +200,11 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     }
     vdev_post(level, vdev_num, &info, regs);
 
-    printH("[hyp] _hyp_hvc_service: done\n\r");
-
     guest_perform_switch(regs);
 
     return HYP_RESULT_ERET;
 trap_error:
     _trap_dump_bregs();
+    printH("fipa is %x guest pc is %x\n", fipa, regs->pc);
     hyp_abort_infinite();
 }

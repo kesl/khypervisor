@@ -6,7 +6,7 @@
 #include <arch_types.h>
 
 #define NUM_BREAK_POINT 50
-#define NUM_DI NUM_BREAK_POINT * 2
+#define NUM_DI (NUM_BREAK_POINT * 2)
 uint32_t inst[NUM_DI][3];
 /*
 * EMPTY =  0b000
@@ -14,7 +14,6 @@ uint32_t inst[NUM_DI][3];
 * RETRAP = 0b010
 * BREAK =  0b100
 */
-// 
 enum breakpoint_type {
     EMPTY =      0b000,
     TRAP =       0b001,

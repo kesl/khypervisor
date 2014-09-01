@@ -3,9 +3,9 @@
 #include <log/uart_print.h>
 #include <hvmm_trace.h>
 #include <armv7_p15.h>
-//#ifdef _SMP_
+/* #ifdef _SMP_ */
 #include <smp.h>
-//#endif
+/* #endif */
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
 
@@ -213,9 +213,9 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t iar;
     uint32_t irq;
     struct arch_regs *regs = pregs;
-// #if _SMP_
+/* #if _SMP_ */
     uint32_t cpu = smp_processor_id();
-//#endif
+/* #endif */
    /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
@@ -237,8 +237,10 @@ void gic_interrupt(int fiq, void *pregs)
         _gic.ba_gicc[GICC_DIR] = irq;
     } else {
     /*TODO  Need to know why this part occurred*/
-//        uart_print("end of irq(no pending):");
-//        uart_print_hex32(irq);
-//        uart_print("\n\r");
+    /*
+       uart_print("end of irq(no pending):");
+       uart_print_hex32(irq);
+       uart_print("\n\r");
+       */
     }
 }
