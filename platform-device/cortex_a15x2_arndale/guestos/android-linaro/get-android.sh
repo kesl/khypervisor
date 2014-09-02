@@ -1,8 +1,8 @@
 #!/bin/bash
 
-wget https://releases.linaro.org/13.05/android/arndale/boot.tar.bz2
-wget https://releases.linaro.org/13.05/android/arndale/system.tar.bz2
-wget https://releases.linaro.org/13.05/android/arndale/userdata.tar.bz2
+wget https://releases.linaro.org/13.12/android/arndale/boot.tar.bz2
+wget https://releases.linaro.org/13.12/android/arndale/system.tar.bz2
+wget https://releases.linaro.org/13.12/android/arndale/userdata.tar.bz2
 
 wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=0B8VxwJmrTtCBWE9Del9nOEdCOEk' -O AngryBirds_1.3.2_rio.apk
 
