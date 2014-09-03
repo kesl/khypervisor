@@ -111,7 +111,8 @@ handler_F00 (uint32_t write, uint32_t offset, uint32_t *pvalue,
 
 static struct vdev_memory_map _vdev_gicd_info =
     { .base = CFG_GIC_BASE_PA | GIC_OFFSET_GICD, .size = 4096, };
-static struct gicd_regs _regs[NUM_GUESTS_STATIC];
+//static struct gicd_regs _regs[NUM_GUESTS_STATIC]; //1 guest, 2vcpu test, must fix [vmid]
+static struct gicd_regs _regs[1];   // 1 guest, 2 vcpu
 
 static struct gicd_handler_entry _handler_map[0x10] =
     {
@@ -135,7 +136,7 @@ static struct gicd_handler_entry _handler_map[0x10] =
     };
 
 /* old status */
-static uint32_t old_vgicd_status[NUM_GUESTS_STATIC][NUM_STATUS_WORDS] =
+static uint32_t old_vgicd_status[1/*NUM_GUESTS_STATIC*/][NUM_STATUS_WORDS] =
     {
         { 0, }, };
 
@@ -149,7 +150,7 @@ handler_000 (uint32_t write, uint32_t offset, uint32_t *pvalue,
     /* IGROUPR[32];       0x080 ~ 0x0FF */
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = guest_current_vmid ();
-    struct gicd_regs *regs = &_regs[vmid];
+    struct gicd_regs *regs = &_regs[0];//[vmid];
     uint32_t woffset = offset / 4;
     switch (woffset)
         {
@@ -204,7 +205,7 @@ vgicd_changed_istatus (vmid_t vmid, uint32_t istatus, uint8_t word_offset)
     /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
     minirq = word_offset * 32;
     /* find changed bits */
-    cstatus = old_vgicd_status[vmid][word_offset] ^ istatus;
+    cstatus = old_vgicd_status[0/*vmid*/][word_offset] ^ istatus;
     while (cstatus)
         {
             uint32_t virq;
@@ -237,7 +238,7 @@ vgicd_changed_istatus (vmid_t vmid, uint32_t istatus, uint8_t word_offset)
                 }
             cstatus &= ~(1 << bit);
         }
-    old_vgicd_status[vmid][word_offset] = istatus;
+    old_vgicd_status[0/*vmid*/][word_offset] = istatus;
 }
 
 static hvmm_status_t
@@ -246,7 +247,7 @@ handler_ISCENABLER (uint32_t write, uint32_t offset, uint32_t *pvalue,
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = guest_current_vmid ();
-    struct gicd_regs *regs = &_regs[vmid];
+    struct gicd_regs *regs = &_regs[0];//vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
     if (write && *pvalue == 0)
@@ -372,7 +373,7 @@ handler_ISCPENDR (uint32_t write, uint32_t offset, uint32_t *pvalue,
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = guest_current_vmid ();
-    struct gicd_regs *regs = &_regs[vmid];
+    struct gicd_regs *regs = &_regs[0];//vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
     preg_s = &(regs->ISCPENDR[(offset >> 2) - GICD_ISPENDR]);
@@ -422,7 +423,7 @@ handler_IPRIORITYR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     struct gicd_regs *regs;
     uint32_t *preg;
     vmid = guest_current_vmid ();
-    regs = &_regs[vmid];
+    regs = &_regs[0];//vmid];
     /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
     preg = &(regs->ICFGR[offset - GICD_IPRIORITYR]);
@@ -444,7 +445,7 @@ handler_ITARGETSR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     struct gicd_regs *regs;
     uint32_t *preg;
     vmid = guest_current_vmid ();
-    regs = &_regs[vmid];
+    regs = &_regs[0];//vmid];
     preg = &(regs->ITARGETSR[(offset >> 2) - GICD_ITARGETSR]);
     if (access_size == VDEV_ACCESS_WORD)
         {
@@ -499,7 +500,7 @@ handler_ICFGR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     struct gicd_regs *regs;
     uint32_t *preg;
     vmid = guest_current_vmid ();
-    regs = &_regs[vmid];
+    regs = &_regs[0];//vmid];
     /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
     preg = &(regs->ICFGR[offset - GICD_ICFGR]);
@@ -534,7 +535,59 @@ handler_F00 (uint32_t write, uint32_t offset, uint32_t *pvalue,
              enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    printh("vgicd:%s: not implemented\n", __func__);
+    vmid_t vmid;
+    struct gicd_regs *regs;
+    uint32_t target = 0;
+    uint32_t sgi_id = *pvalue & GICD_SGIR_SGI_INT_ID_MASK;
+    uint32_t i;
+
+    vmid = guest_current_vmid();
+    regs = &_regs[0];//[vmid];
+
+    if(offset == GICD_SGIR) {
+        // Filter Mask
+        switch(*pvalue & GICD_SGIR_TARGET_LIST_FILTER_MASK)
+        {
+            case GICD_SGIR_TARGET_LIST:
+                target = ((*pvalue & GICD_SGIR_CPU_TARGET_LIST_MASK) >> 16);
+                break;
+            case GICD_SGIR_TARGET_OTHER:
+                target = ~(0x1<<vmid);
+                break;
+            case GICD_SGIR_TARGET_SELF:
+                target = (0x1<<vmid);
+                break;
+            default:
+                printh();
+                return result;
+        }
+        // after chagne architecture, NUM_VCPU_STATIC
+        // will be now guest's vcpu number
+
+        //temporary solution
+        if(!vmid){
+            switch(sgi_id) {
+                case 0:
+                    target = 0xFE;
+                    break;
+                case 1:
+                    target = ~(0x1<<vmid);
+                    break;
+                case 2:
+                    target = (0x1<<vmid);
+                    break;
+            }
+        }
+            
+        for (i=0; i<NUM_VCPU_STATIC;i++) {
+            uint8_t _target = target & 0x1;
+            if (_target)
+                result = virq_inject(i, sgi_id, sgi_id, 0);
+            target = target>>1;
+        }
+    } else { //not implemented
+        printh("vgicd:%s: not implemented\n", __func__);
+    }
     return result;
 }
 
@@ -600,7 +653,7 @@ vdev_gicd_reset_values (void)
 
     printh("vdev init:'%s'\n", __func__);
 
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
+    for (i = 0; i < 1/*NUM_GUESTS_STATIC*/; i++)
         {
             /*
              * ITARGETS[0~ 7], CPU Targets are set to 0,

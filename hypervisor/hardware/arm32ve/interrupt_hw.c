@@ -4,7 +4,7 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-static struct vgic_status _vgic_status[NUM_GUESTS_STATIC];
+static struct vgic_status _vgic_status[NUM_VCPU_STATIC];
 
 static hvmm_status_t host_interrupt_init(void)
 {

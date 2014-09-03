@@ -225,6 +225,8 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     if (!current_regs)
         return HVMM_STATUS_SUCCESS;
 
+    guest->vmpidr = read_vmpidr();
+
     context_copy_regs(regs, current_regs);
     context_save_cops(&context->regs_cop);
     context_save_banked(&context->regs_banked);
@@ -242,6 +244,7 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
 {
     struct arch_context *context = &guest->context;
 
+    write_vmpidr(guest->vmpidr);
 
     if (!current_regs) {
         /* init -> hyp mode -> guest */
@@ -265,6 +268,12 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
                 struct arch_regs *regs)
 {
     struct arch_context *context = &guest->context;
+    uint32_t vmpidr;
+
+    vmpidr = read_vmpidr();
+    vmpidr &= 0xFFFFFFFC;
+    vmpidr |=guest->vmid;   //vmid will changed to vcpu number
+    guest->vmpidr = vmpidr;
 
     regs->pc = CFG_GUEST_START_ADDRESS;
     /* supervisor mode */

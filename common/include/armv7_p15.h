@@ -147,6 +147,14 @@
                                 " mrc     p15, 0, %0, c0, c0, 5\n\t" \
                                 : "=r" (rval) : : "memory", "cc"); rval; })
 
+#define read_vmpidr()              ({ uint32_t rval; asm volatile(\
+                                " mrc     p15, 4, %0, c0, c0, 5\n\t" \
+                                : "=r" (rval) : : "memory", "cc"); rval; })
+
+#define write_vmpidr(val)             asm volatile(\
+                                " mcr     p15, 4, %0, c0, c0, 5\n\t" \
+                                : : "r" ((val)) : "memory", "cc")
+
 /* Generic Timer */
 
 #define read_cntfrq()           ({ uint32_t rval; asm volatile(\

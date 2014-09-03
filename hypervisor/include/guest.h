@@ -7,6 +7,7 @@
 #include <hvmm_types.h>
 #include <vgic.h>
 #include <guest_hw.h>
+#include <vcpu.h>
 
 enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
@@ -23,9 +24,12 @@ enum hyp_hvc_result {
 #define GUEST_VERBOSE_LEVEL_6   0x40
 #define GUEST_VERBOSE_LEVEL_7   0x80
 
+//guest_struct's features will be vcpu's and change guest_struct
+//this time, guest_struct is vcpu.
 struct guest_struct {
     struct arch_regs regs;
     struct arch_context context;
+    uint32_t vmpidr;
     vmid_t vmid;
 };
 

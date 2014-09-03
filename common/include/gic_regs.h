@@ -20,6 +20,7 @@
 #define GICD_IPRIORITYR    (0x400/4)
 #define GICD_ITARGETSR    (0x800/4)
 #define GICD_ICFGR    (0xC00/4)
+#define GICD_SGIR   0xF00
 
 /* CPU Interface */
 #define GICC_CTLR    (0x0000/4)
@@ -46,6 +47,14 @@
 #define GICD_TYPE_LINES_MASK    0x01f
 #define GICD_TYPE_CPUS_MASK    0x0e0
 #define GICD_TYPE_CPUS_SHIFT    5
+
+/* Software Generated Interrupt Fields */
+#define GICD_SGIR_TARGET_LIST_FILTER_MASK   (0x3<<24)
+#define GICD_SGIR_TARGET_LIST   (0x0<<24)
+#define GICD_SGIR_TARGET_OTHER  (0x1<<24)
+#define GICD_SGIR_TARGET_SELF  (0x2<<24)
+#define GICD_SGIR_CPU_TARGET_LIST_MASK  (0xFF<<16)
+#define GICD_SGIR_SGI_INT_ID_MASK   0xF
 
 /* CPU Interface Register Fields */
 #define GICC_CTL_ENABLE     0x1

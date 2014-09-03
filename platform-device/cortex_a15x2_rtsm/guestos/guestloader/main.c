@@ -51,11 +51,11 @@ static void guestloader_cliboot(void)
 
 void main(void)
 {
-#if _SMP_
+/*#if _SMP_
     uart_print("guest bootloader\n");
     while (1)
         ;
-#endif
+#endif*/
     /* Initializes guestloder */
     guestloader_init();
     /* Show Hypervisor Banner */
