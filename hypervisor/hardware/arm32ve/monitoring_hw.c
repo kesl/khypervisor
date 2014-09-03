@@ -88,14 +88,14 @@ uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
 
 void show_symbole(uint32_t va)
 {
+#ifdef _MON_
+/*    Not Implementate yet */
     unsigned char *base = &system_map_start;
     int i;
     printH("%s\n", base);
-    /*
-     * Not Implementate yet
-    for(i = 0; i < 100; i++)
+    for (i = 0; i < 100; i++)
         printH("%c", *base++);
-     */
+#endif
 }
 
 uint32_t va_getter_from_symbol(char *symbol)

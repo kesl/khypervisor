@@ -34,31 +34,32 @@ static int32_t vdev_hvc_ditrap_write(struct arch_vdev_trigger_info *info,
     ori_va = regs->pc - 4;
     ori_pa = (uint32_t)va_to_pa(ori_va, TTBR0);
 
-    printH("pa is %x\n", ori_pa);
-    printH("va is %x\n", ori_va);
+    printH("pa is %x, va is %x, inst_type : %x\n", ori_pa, ori_va,
+            inst_type(ori_va));
 
     switch (inst_type(ori_va)) {
     case BREAK_TRAP:
-        /* Both */
+        /* Break Trap */
         restore_inst = load_inst(ori_va);
         writel(restore_inst, ori_pa);
         printH("BREAK Traped inst. Restore inst is %x\n",
                 *(uint32_t *)(ori_pa));
-         /* Set next trap for retrap */
+        /* Set next trap for retrap */
         /* TODO Needs status of Branch instruction. */
-        store_inst(regs->pc, (RETRAP));
+        store_inst(regs->pc, RETRAP);
         writel(HVC_TRAP, (uint32_t)va_to_pa(regs->pc, TTBR0));
         /* Restore pc */
         regs->pc -= 4;
-         set_manually_select_vmid(1);
-        /* guest_switchto(1, 0); */
+        /* Run other guest for stop this guest */
+        set_manually_select_vmid(1);
+        guest_switchto(1, 0);
         break;
     case TRAP:
         /* Target address */
         restore_inst = load_inst(ori_va);
         writel(restore_inst, ori_pa);
         printH("Traped inst. Restore inst is %x\n", *(uint32_t *)(ori_pa));
-         /* Set next trap for retrap */
+        /* Set next trap for retrap */
         /* TODO Needs status of Branch instruction. */
         store_inst(regs->pc, RETRAP);
         writel(HVC_TRAP, (uint32_t)va_to_pa(regs->pc, TTBR0));
