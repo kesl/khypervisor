@@ -83,9 +83,6 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
     hvmm_status_t result = HVMM_STATUS_IGNORED;
     uint32_t cpu = smp_processor_id();
 
-        printh("next_guest %x, current_guest %x\n",  _next_guest_vmid[cpu],
-                _current_guest_vmid[cpu]);
-
     if (_current_guest_vmid[cpu] == VMID_INVALID) {
         /*
          * If the scheduler is not already running, launch default
