@@ -47,6 +47,12 @@
 #define VGICD_NUM_IGROUPR (TILinesNumber + 1)
 #define VGICD_NUM_IENABLER (TILinesNumber + 1)
 
+/* Banked Registers Size */
+
+#define VGICD_BANKED_NUM_IPRIORITYR  8
+#define VGICD_BANKED_NUM_ITARGETSR  8
+#define VGICD_BANKED_NUM_CPENDSGIR  VGICE_NUM_CPENDSGIR
+#define VGICD_BANKED_NUM_SPENDSGIR  VGICD_NUM_SPENDSGIR
 struct gicd_regs
 {
     uint32_t CTLR; /*0x000 RW*/
@@ -67,9 +73,21 @@ struct gicd_regs
 
     uint32_t NSACR[64]; /* 0xE00 */
     uint32_t SGIR; /* 0xF00 WO */
-    uint32_t CPENDSGIR[VGICE_NUM_CPENDSGIR]; /* 0xF10 CPENDSGIR 0xF20 SPENDGIR */
+    //uint32_t CPENDSGIR[VGICE_NUM_CPENDSGIR]; /* 0xF10 CPENDSGIR 0xF20 SPENDGIR */
 
 /* 0xFD0 ~ 0xFFC RO Cortex-A15 PIDRn, CIDRn */
+};
+
+struct gicd_regs_banked
+{
+    uint32_t IGROUPR;    //0
+    uint32_t ISCENABLER;    //0
+    uint32_t ISCPENDR;  //0
+    uint32_t ISCACTIVER;    //0
+    uint32_t IPRIORITYR[VGICD_BANKED_NUM_IPRIORITYR];   //0~7
+    uint32_t ITARGETSR[VGICD_BANKED_NUM_ITARGETSR]; //0~7
+    uint32_t ICFGR; //1
+    uint32_t CPENDSGIR[VGICD_BANKED_NUM_CPENDSGIR]; //n
 };
 
 struct gicd_handler_entry
@@ -112,7 +130,8 @@ handler_F00 (uint32_t write, uint32_t offset, uint32_t *pvalue,
 static struct vdev_memory_map _vdev_gicd_info =
     { .base = CFG_GIC_BASE_PA | GIC_OFFSET_GICD, .size = 4096, };
 //static struct gicd_regs _regs[NUM_GUESTS_STATIC]; //1 guest, 2vcpu test, must fix [vmid]
-static struct gicd_regs _regs[1];   // 1 guest, 2 vcpu
+static struct gicd_regs _regs[1];   // 1 guest, 2 vcpu it will NUM_GUESTS_STATIC
+static struct gicd_regs_banked _regs_banked[NUM_VCPU_STATIC];    //it will NUM_VCPU_STATIC' sum
 
 static struct gicd_handler_entry _handler_map[0x10] =
     {
@@ -151,6 +170,7 @@ handler_000 (uint32_t write, uint32_t offset, uint32_t *pvalue,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = guest_current_vmid ();
     struct gicd_regs *regs = &_regs[0];//[vmid];
+    struct gicd_regs_banked *regs_banked = &_regs_banked[vmid];
     uint32_t woffset = offset / 4;
     switch (woffset)
         {
@@ -171,14 +191,22 @@ handler_000 (uint32_t write, uint32_t offset, uint32_t *pvalue,
         case GICD_IIDR: /* RO */
             if (write == 0)
                 {
-                    *pvalue = regs->IIDR;
-                    result = HVMM_STATUS_SUCCESS;
+                    *pvalue = regs->IIDR; result = HVMM_STATUS_SUCCESS;
                 }
             break;
         default:
             { /* RW GICD_IGROUPR */
                 int igroup = woffset - GICD_IGROUPR;
-                if (igroup >= 0 && igroup < VGICD_NUM_IGROUPR)
+                if (igroup == 0 && igroup < VGICD_NUM_IGROUPR)
+                {
+                    if (write)
+                        regs_banked->IGROUPR = *pvalue;
+                    else
+                        *pvalue = regs_banked->IGROUPR;
+
+                    result = HVMM_STATUS_SUCCESS;
+                }
+                else if (igroup > 0 && igroup < VGICD_NUM_IGROUPR)
                     {
                         if (write)
                             regs->IGROUPR[igroup] = *pvalue;
@@ -248,6 +276,7 @@ handler_ISCENABLER (uint32_t write, uint32_t offset, uint32_t *pvalue,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = guest_current_vmid ();
     struct gicd_regs *regs = &_regs[0];//vmid];
+    struct gicd_regs_banked *regs_banked = &_regs_banked[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
     if (write && *pvalue == 0)
@@ -256,8 +285,18 @@ handler_ISCENABLER (uint32_t write, uint32_t offset, uint32_t *pvalue,
             result = HVMM_STATUS_SUCCESS;
             return result;
         }
-    preg_s = &(regs->ISCENABLER[(offset >> 2) - GICD_ISENABLER]);
-    preg_c = &(regs->ISCENABLER[(offset >> 2) - GICD_ICENABLER]);
+
+    if(((offset >> 2) - GICD_ISENABLER) == 0 ||
+       ((offset >> 2) - GICD_ICENABLER) == 0)
+    {
+        preg_s = &(regs_banked->ISCENABLER);
+        preg_c = &(regs_banked->ISCENABLER);
+    }
+    else
+    {
+        preg_s = &(regs->ISCENABLER[(offset >> 2) - GICD_ISENABLER]);
+        preg_c = &(regs->ISCENABLER[(offset >> 2) - GICD_ICENABLER]);
+    }
     if (access_size == VDEV_ACCESS_WORD)
         {
             if ((offset >> 2) < (GICD_ISENABLER + VGICD_NUM_IENABLER))
@@ -374,10 +413,20 @@ handler_ISCPENDR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid = guest_current_vmid ();
     struct gicd_regs *regs = &_regs[0];//vmid];
+    struct gicd_regs_banked *regs_banked = &_regs_banked[vmid];
     uint32_t *preg_s;
     uint32_t *preg_c;
-    preg_s = &(regs->ISCPENDR[(offset >> 2) - GICD_ISPENDR]);
-    preg_c = &(regs->ISCPENDR[(offset >> 2) - GICD_ICPENDR]);
+    if(((offset >> 2) - GICD_ISPENDR) == 0 ||
+       ((offset >> 2) - GICD_ICPENDR) == 0)
+    {
+        preg_s = &(regs_banked->ISCPENDR);
+        preg_c = &(regs_banked->ISCPENDR);
+    }
+    else
+    {
+        preg_s = &(regs->ISCPENDR[(offset >> 2) - GICD_ISPENDR]);
+        preg_c = &(regs->ISCPENDR[(offset >> 2) - GICD_ICPENDR]);
+    }
     offset >>= 2;
     if (access_size == VDEV_ACCESS_WORD)
         {
@@ -421,12 +470,18 @@ handler_IPRIORITYR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid;
     struct gicd_regs *regs;
+    struct gicd_regs_banked *regs_banked;
     uint32_t *preg;
     vmid = guest_current_vmid ();
     regs = &_regs[0];//vmid];
+    regs_banked = &_regs_banked[vmid];
     /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
-    preg = &(regs->ICFGR[offset - GICD_IPRIORITYR]);
+    if((offset - GICD_IPRIORITYR) < VGICD_BANKED_NUM_IPRIORITYR)
+        preg = &(regs_banked->ICFGR);
+    else
+        preg = &(regs->IPRIORITYR[offset - GICD_IPRIORITYR]);//??
+
     if (write)
         *preg = *pvalue;
     else
@@ -443,10 +498,17 @@ handler_ITARGETSR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid;
     struct gicd_regs *regs;
+    struct gicd_regs_banked *regs_banked;
     uint32_t *preg;
     vmid = guest_current_vmid ();
     regs = &_regs[0];//vmid];
-    preg = &(regs->ITARGETSR[(offset >> 2) - GICD_ITARGETSR]);
+    regs_banked = &_regs_banked[vmid];
+
+    if( ((offset >> 2) - GICD_ITARGETSR)< VGICD_BANKED_NUM_ITARGETSR)
+        preg = &(regs_banked->ITARGETSR[(offset >> 2) - GICD_ITARGETSR]);
+    else
+        preg = &(regs->ITARGETSR[(offset >> 2) - GICD_ITARGETSR]);
+
     if (access_size == VDEV_ACCESS_WORD)
         {
             offset >>= 2;
@@ -498,12 +560,19 @@ handler_ICFGR (uint32_t write, uint32_t offset, uint32_t *pvalue,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid;
     struct gicd_regs *regs;
+    struct gicd_regs_banked *regs_banked;
     uint32_t *preg;
     vmid = guest_current_vmid ();
     regs = &_regs[0];//vmid];
+    regs_banked = &_regs_banked[vmid];
+
     /* FIXME: Support 8/16/32bit access */
     offset >>= 2;
-    preg = &(regs->ICFGR[offset - GICD_ICFGR]);
+    if ((offset - GICD_ICFGR) == 1)
+        preg = &(regs_banked->ICFGR);
+    else
+        preg = &(regs->ICFGR[offset - GICD_ICFGR]);
+
     if (write)
         *preg = *pvalue;
     else
@@ -536,13 +605,13 @@ handler_F00 (uint32_t write, uint32_t offset, uint32_t *pvalue,
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid;
-    struct gicd_regs *regs;
+    //struct gicd_regs_banked *regs_banked;
     uint32_t target = 0;
     uint32_t sgi_id = *pvalue & GICD_SGIR_SGI_INT_ID_MASK;
     uint32_t i;
 
     vmid = guest_current_vmid();
-    regs = &_regs[0];//[vmid];
+    //regs_banked = &_regs_banked[vmid];
 
     if(offset == GICD_SGIR) {
         // Filter Mask
@@ -563,22 +632,8 @@ handler_F00 (uint32_t write, uint32_t offset, uint32_t *pvalue,
         }
         // after chagne architecture, NUM_VCPU_STATIC
         // will be now guest's vcpu number
+        dsb();
 
-        //temporary solution
-        if(!vmid){
-            switch(sgi_id) {
-                case 0:
-                    target = 0xFE;
-                    break;
-                case 1:
-                    target = ~(0x1<<vmid);
-                    break;
-                case 2:
-                    target = (0x1<<vmid);
-                    break;
-            }
-        }
-            
         for (i=0; i<NUM_VCPU_STATIC;i++) {
             uint8_t _target = target & 0x1;
             if (_target)
@@ -595,7 +650,8 @@ static hvmm_status_t
 vdev_gicd_access_handler (uint32_t write, uint32_t offset, uint32_t *pvalue,
                           enum vdev_access_size access_size)
 {
-    printH ("%s: %s offset:%x value:%x access_size : %d\n", __func__,
+    uint32_t smp = smp_processor_id();
+    printH ("[%d]%s: %s offset:%x value:%x access_size : %d\n", smp, __func__,
             write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue, access_size);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
@@ -649,16 +705,15 @@ static hvmm_status_t
 vdev_gicd_reset_values (void)
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
+    //FIXME : mpidr must be changed to vcpu number
+    uint32_t mpidr = read_mpidr();
+    vmid_t vmid = mpidr & 0x0f;
     int i;
 
     printh("vdev init:'%s'\n", __func__);
 
     for (i = 0; i < 1/*NUM_GUESTS_STATIC*/; i++)
         {
-            /*
-             * ITARGETS[0~ 7], CPU Targets are set to 0,
-             * due to current single-core support design
-             */
             int j = 0;
             uint32_t inc_address = 0x00000000;
 
@@ -677,9 +732,18 @@ vdev_gicd_reset_values (void)
                     _regs[i].IIDR);
             for (j = 0; j < VGICD_NUM_IGROUPR; j++)
                 {
-                    _regs[i].IGROUPR[j] =
-                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                    if(!j)
+                    {
+                        _regs_banked[vmid].IGROUPR =
+                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + inc_address)));
+                    }
+                    else
+                    {
+                       _regs[i].IGROUPR[j] =
+                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + inc_address)));
+                    }
                     inc_address += 0x00000004;
 
                 }
@@ -687,9 +751,18 @@ vdev_gicd_reset_values (void)
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_ISCENABLER; j++)
                 {
-                    _regs[i].ISCENABLER[j] =
+                    if(!j)
+                    {
+                        _regs_banked[vmid].ISCENABLER =
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0x180 + inc_address)));
+                    }
+                    else
+                    {
+                        _regs[i].ISCENABLER[j] =
+                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + 0x180 + inc_address)));
+                    }
                     old_vgicd_status[i][(inc_address) >> 2] =
                             _regs[i].ISCENABLER[j];
                     inc_address += 0x00000004;
@@ -697,17 +770,35 @@ vdev_gicd_reset_values (void)
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_ISCPENDR; j++)
                 {
-                    _regs[i].ISCPENDR[j] =
+                    if(!j)
+                    {
+                        _regs_banked[vmid].ISCPENDR =
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0x280 + inc_address)));
+                    }
+                    else
+                    {
+                      _regs[i].ISCPENDR[j] =
+                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + 0x280 + inc_address)));
+                    }
                     inc_address += 0x00000004;
                 }
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_ISCACTIVER; j++)
                 {
-                    _regs[i].ISCACTIVER[j] =
+                    if(!j)
+                    {
+                        _regs_banked[vmid].ISCACTIVER = 
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0x300 + inc_address)));
+                    }
+                    else
+                    {
+                        _regs[i].ISCACTIVER[j] =
+                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + 0x300 + inc_address)));
+                    }
 
                     inc_address += 0x00000004;
                 }
@@ -716,9 +807,18 @@ vdev_gicd_reset_values (void)
 
             for (j = 0; j < VGICE_NUM_IPRIORITYR; j++)
                 {
-                    _regs[i].IPRIORITYR[j] =
+                    if(j < VGICD_BANKED_NUM_IPRIORITYR)
+                    {
+                        _regs_banked[vmid].IPRIORITYR[j] = 
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0x400 + inc_address)));
+                    }
+                    else
+                    {
+                        _regs[i].IPRIORITYR[j] =
+                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + 0x400 + inc_address)));
+                    }
 
                     inc_address += 0x00000004;
                 }
@@ -726,18 +826,36 @@ vdev_gicd_reset_values (void)
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_ITARGETSR; j++)
                 {
-                    _regs[i].ITARGETSR[j] =
+                    if(j < VGICD_BANKED_NUM_ITARGETSR)
+                    {
+                        _regs_banked[vmid].ITARGETSR[j] = 
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0x800 + inc_address)));
+                    }
+                    else
+                    {
+                        _regs[i].ITARGETSR[j] =
+                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + 0x800 + inc_address)));
+                    }
                     inc_address += 0x00000004;
                 }
 
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_ICFGR; j++)
                 {
-                    _regs[i].ICFGR[j] =
+                    if(j == 1)
+                    {
+                        _regs_banked[vmid].ICFGR =
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0xC00 + inc_address)));
+                    }
+                    else
+                    {
+                        _regs[i].ICFGR[j] =
+                            (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                                    + GIC_OFFSET_GICD + 0xC00 + inc_address)));
+                    }
                     inc_address += 0x00000004;
                 }
 
@@ -748,7 +866,7 @@ vdev_gicd_reset_values (void)
             inc_address = 0x00000000;
             for (j = 0; j < VGICE_NUM_CPENDSGIR; j++)
                 {
-                    _regs[i].CPENDSGIR[j] =
+                    _regs_banked[vmid].CPENDSGIR[j] =
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0xF10 + inc_address)));
                     inc_address += 0x00000004;
