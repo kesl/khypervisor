@@ -241,7 +241,9 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 27, 27);
     for (i = 32; i < 73; i++)
         DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 84, 84);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 85, 85);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 86, 86);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 88, 88);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 90, 90);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 96, 96);
@@ -320,10 +322,6 @@ void setup_timer()
     _timer_irq = 26; /* GENERIC_TIMER_HYP */
     mct_init();
 }
-
-#ifdef _SMP_
-void init_secondary();
-#endif
 
 #include <io-exynos.h>
 

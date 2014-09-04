@@ -18,8 +18,6 @@ enum guest_image_type {
     GUEST
 };
 
-extern uint32_t initrd_end;
-
 /**
 * @brief Copies a guest to address.
 * @param img_type Guest Image type you want to copy. LOADER or GUEST.
@@ -54,8 +52,7 @@ void loader_boot_guest(uint32_t guest_os_type)
          */
         SET_MACHINE_TYPE_TO_R1();
         SET_ATAGS_TO_R2();
-    }
-    else{
+    } else {
         /* Copies loader to next to guest */
         copy_image_to_addr(LOADER, &guest_end);
         /* Jump pc to (pc + offset). */

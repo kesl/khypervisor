@@ -5,32 +5,14 @@
  */
 #include "arch_types.h"
 #include "asm-arm_inline.h"
+#include "asm_io.h"
+
 #define __raw_write32(a, v) (*(volatile uint32_t *)(a) = (v))
 #define __raw_read32(a)     (*(volatile uint32_t *)(a))
 #define __iowmb()   dsb()
 #define __iormb()   dsb()
 #define arch_out_le32(a, v) {__iowmb(); __raw_write32(a, v); }
 #define arch_in_le32(a)     ({uint32_t v = __raw_read32(a); __iormb(); v; })
-
-
-
-#define __arch_getb(a)          (*(volatile unsigned char *)(a))
-#define __arch_getw(a)          (*(volatile unsigned short *)(a))
-#define __arch_getl(a)          (*(volatile unsigned int *)(a))
-
-#define __arch_putb(v,a)        (*(volatile unsigned char *)(a) = (v))
-#define __arch_putw(v,a)        (*(volatile unsigned short *)(a) = (v))
-#define __arch_putl(v,a)        (*(volatile unsigned int *)(a) = (v))
-
-
-#define writeb(v,c) ({ uint8_t  __v = v; __iowmb(); __arch_putb(__v,c); __v; })
-#define writew(v,c) ({ uint16_t __v = v; __iowmb(); __arch_putw(__v,c); __v; })
-#define writel(v,c) ({ uint32_t __v = v; __iowmb(); __arch_putl(__v,c); __v; })
-
-#define readb(c)    ({ uint8_t  __v = __arch_getb(c); __iormb(); __v; })
-#define readw(c)    ({ uint16_t __v = __arch_getw(c); __iormb(); __v; })
-#define readl(c)    ({ uint32_t __v = __arch_getl(c); __iormb(); __v; })
-
 
 static inline uint32_t vmm_readl(volatile void *addr)
 {

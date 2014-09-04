@@ -7,7 +7,7 @@ start_ram:
 	b 	guest_entry
 .type start_ram, %function
 guest_entry:
-	cpsid	if
+	cpsid	i
 /* Initialize bss section */
     ldr  r2, =begin_bss
     ldr  r3, =end_bss

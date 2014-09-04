@@ -67,7 +67,7 @@ static enum cmd_type get_cmd_type(char *input_cmd)
 
 void cli_exec_cmd(char *cmd)
 {
-    switch (get_cmd_type(cmd)){
+    switch (get_cmd_type(cmd)) {
     case HELP:
         print_cli_usage();
         break;

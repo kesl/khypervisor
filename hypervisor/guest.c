@@ -49,16 +49,15 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
 
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     struct guest_struct *guest = 0;
-	uint32_t cpu = smp_processor_id();
+    uint32_t cpu = smp_processor_id();
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
     guest_save(&guests[_current_guest_vmid[cpu]], regs);
     memory_save();
     interrupt_save(_current_guest_vmid[cpu]);
-    if(!cpu) {
+    if (!cpu)
         vdev_save(_current_guest_vmid[cpu]);
-    }
 
     /* The context of the next guest */
     guest = &guests[next_vmid];
@@ -69,9 +68,9 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
-    if (!cpu) {
+    if (!cpu)
         vdev_restore(_current_guest_vmid[cpu]);
-    }
+
     interrupt_restore(_current_guest_vmid[cpu]);
     memory_restore(_current_guest_vmid[cpu]);
     guest_restore(guest, regs);
@@ -100,14 +99,6 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
         /* Only if not from Hyp */
         result = perform_switch(regs, _next_guest_vmid[cpu]);
         _next_guest_vmid[cpu] = VMID_INVALID;
-    } else {
-        /*
-         * Staying at the currently active guest.
-         * Flush out queued virqs since we didn't have a chance
-         * to switch the context, where virq flush takes place,
-         * this time
-         */
-        vgic_flush_virqs(_current_guest_vmid[cpu]);
     }
 
     _switch_locked[cpu] = 0;
@@ -118,7 +109,7 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
 void guest_sched_start(void)
 {
     struct guest_struct *guest = 0;
-	uint32_t cpu = smp_processor_id();
+    uint32_t cpu = smp_processor_id();
 
     printh("[hyp] switch_to_initial_guest:\n");
     /* Select the first guest context to switch to. */
@@ -188,13 +179,13 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
 
 vmid_t guest_current_vmid(void)
 {
-	uint32_t cpu = smp_processor_id();
+    uint32_t cpu = smp_processor_id();
     return _current_guest_vmid[cpu];
 }
 
 vmid_t guest_waiting_vmid(void)
 {
-	uint32_t cpu = smp_processor_id();
+    uint32_t cpu = smp_processor_id();
     return _next_guest_vmid[cpu];
 }
 
@@ -223,8 +214,8 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
     return result;
 }
 
-static int manually_next_vmid = 0;
-vmid_t selected_manually_next_vmid = 0;
+static int manually_next_vmid;
+vmid_t selected_manually_next_vmid;
 void set_manually_select_vmid(vmid_t vmid)
 {
     manually_next_vmid = 1;
@@ -236,9 +227,9 @@ void clean_manually_select_vmid(void){
 
 vmid_t sched_policy_determ_next(void)
 {
-    if (manually_next_vmid) {
+    if (manually_next_vmid)
         return selected_manually_next_vmid;
-    }
+
     vmid_t next = guest_next_vmid(guest_current_vmid());
 
     /* FIXME:Hardcoded */
