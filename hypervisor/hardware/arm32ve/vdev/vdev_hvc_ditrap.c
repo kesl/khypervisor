@@ -10,12 +10,15 @@
 #include <asm_io.h>
 #include <guest.h>
 #define HVC_TRAP 0xe14fff7c
-
+/* 80315514 */
 static int32_t vdev_hvc_ditrap_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
     uint32_t ori_pa, ori_va, restore_inst;
+    char *call_symbol;
+    char *callee_symbol;
 /*
+    uint32_t sp, lr, spsr;
     printH("[hyp] : Dump K-Hypervisor's registers\n\r");
     printH(" - banked regs\n");
     asm volatile(" mrs     %0, sp_usr\n\t" : "=r"(sp) : : "memory", "cc");
@@ -33,6 +36,8 @@ static int32_t vdev_hvc_ditrap_write(struct arch_vdev_trigger_info *info,
 */
     ori_va = regs->pc - 4;
     ori_pa = (uint32_t)va_to_pa(ori_va, TTBR0);
+
+    printH("pc %x lr %x\n", regs->pc, regs->lr);
 
     printH("pa is %x, va is %x, inst_type : %x\n", ori_pa, ori_va,
             inst_type(ori_va));
@@ -58,7 +63,14 @@ static int32_t vdev_hvc_ditrap_write(struct arch_vdev_trigger_info *info,
         /* Target address */
         restore_inst = load_inst(ori_va);
         writel(restore_inst, ori_pa);
+        /* TODO remove this line */
         printH("Traped inst. Restore inst is %x\n", *(uint32_t *)(ori_pa));
+
+        symbol_getter_from_va(ori_va, &call_symbol);
+        /* symbol_getter_from_va_lr(regs->lr, &callee_symbol); */
+        printH("TASK-PID CPU TIMESTAMP %s\n", call_symbol);
+        /* <- %s\n", call_symbol, callee_symbol); */
+
         /* Set next trap for retrap */
         /* TODO Needs status of Branch instruction. */
         store_inst(regs->pc, RETRAP);
@@ -71,7 +83,10 @@ static int32_t vdev_hvc_ditrap_write(struct arch_vdev_trigger_info *info,
         /* Set retrap at previous pc */
         restore_inst = load_inst(ori_va);
         writel(restore_inst, ori_pa);
+
+        /* TODO remove this line */
         printH("For retrap. Restore inst is %x\n", *(uint32_t *)(ori_pa));
+
         /* Clean break point at retrap point. It do not need keep break point */
         clean_inst(ori_va, RETRAP);
         /* Set previous pc to trap */

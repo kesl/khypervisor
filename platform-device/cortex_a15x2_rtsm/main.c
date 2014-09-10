@@ -7,13 +7,14 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
+#include <monitoring.h>
 
 #define DEBUG
 #include "hvmm_trace.h"
 #include <log/uart_print.h>
 
 
-#define PLATFORM_BASIC_TESTS 0
+#define PLATFORM_BASIC_TESTS 4
 
 #define DECLARE_VIRQMAP(name, id, _pirq, _virq) \
     do {                                        \
@@ -315,6 +316,9 @@ int main_cpu_init()
     /* Print Banner */
     printH("%s", BANNER_STRING);
 
+#ifdef _MON_
+    monitor_init();
+#endif
 
     /* Switch to the first guest */
     guest_sched_start();

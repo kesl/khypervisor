@@ -65,22 +65,6 @@ uint32_t clean_inst(uint32_t va, enum breakpoint_type type)
                 return 1;
             }
         break;
-/*
-            if(type == BOTH){
-                inst[i][INST] = EMPTY;
-                inst[i][INST_VA] = EMPTY;
-                inst[i][INST_TYPE] = EMPTY;
-                break;
-            } else if(inst[i][INST_TYPE] == type){
-                inst[i][INST] = EMPTY;
-                inst[i][INST_VA] = EMPTY;
-                inst[i][INST_TYPE] = EMPTY;
-                break;
-            } else if(inst[i][INST_TYPE] == BOTH){
-                inst[i][INST_TYPE] = (type == TRAP ? RETRAP : TRAP);
-                break;
-            }
-*/
         }
     }
     return 0;
@@ -103,10 +87,12 @@ uint32_t load_inst(uint32_t va)
 static void print_monitoring_list(void)
 {
     int i;
+    char *symbol;
     for (i = 0; i < NUM_DI; i++) {
         if (inst[i][INST] != EMPTY) {
-            printH("Monitoring va is %x, instruction is %x\n",
-                    inst[i][INST_VA], inst[i][INST]);
+            symbol_getter_from_va(inst[i][INST], &symbol);
+            printH("Monitoring symbol is %s, va is %x, instruction is %x\n",
+                    symbol, inst[i][INST_VA], inst[i][INST]);
         }
     }
 }
@@ -128,7 +114,6 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         switch (offset) {
         case 0x8:
             /* print monitoring list */
-            /* show_symbole(0);  <- test */
             print_monitoring_list();
             /* *pvalue = 0; */
             result = HVMM_STATUS_SUCCESS;
@@ -160,11 +145,6 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
             inst = load_inst((*pvalue) + 4);
             if (clean_inst((*pvalue) + 4 , RETRAP))
                 writel(inst, (uint32_t)va_to_pa((*pvalue) + 4 , TTBR0));
-           /*
-            if(inst_type(*pvalue) == TRAP || inst_type(*pvalue) == BOTH)
-                writel(load_inst(*pvalue), (uint32_t)va_to_pa(*pvalue , TTBR0));
-            clean_inst(*pvalue, TRAP);
-            */
             result = HVMM_STATUS_SUCCESS;
             break;
         case 0x8:

@@ -7,6 +7,7 @@
 
 #define NUM_BREAK_POINT 50
 #define NUM_DI (NUM_BREAK_POINT * 2)
+
 uint32_t inst[NUM_DI][3];
 /*
 * EMPTY =  0b000
@@ -31,6 +32,13 @@ enum inst_index {
     INST_TYPE
 };
 
+struct system_map {
+    uint32_t address;
+    uint8_t type;
+    uint8_t symbol[50];
+};
+
+
 /*
  * DI, inject hvc at VA(PA)
  */
@@ -50,5 +58,10 @@ uint32_t clean_inst(uint32_t va, uint32_t type);
 void show_symbole(uint32_t va);
 extern uint32_t system_map_start;
 extern uint32_t system_map_end;
+void monitor_init(void);
+uint32_t get_num_symbol(void);
+int symbol_getter_from_va(uint32_t va, char **symbol);
+int symbol_getter_from_va_lr(uint32_t va, char **symbol);
+struct system_map *get_symbols(void);
 
 #endif
