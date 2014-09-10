@@ -235,6 +235,7 @@ void setup_interrupt()
         }
     }
 
+#if 0  /* for fastmodel */
     for (i = 0; i < 16; i++)
         DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 27, 27);
@@ -256,6 +257,35 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 309, 309);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 347, 347);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 447, 447);
+
+      for (i = 0; i < MAX_IRQS; i++)
+          if(i != 25 && i != 26)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+#endif
+
+/* for android */
+      for (i = 32; i < 64; i++)
+          DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+
+      for (i = 68; i < 73; i++)
+          DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 27, 27);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 64, 64);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 66, 66);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 67, 67);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 85, 85);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 88, 88);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 90, 96);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 103, 103);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 104, 104);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 107, 107);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 109, 109);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 126, 126);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 147, 147);
+      DECLARE_VIRQMAP(_guest_virqmap, 0, 156, 156);
+
+
 }
 
 void setup_memory()
