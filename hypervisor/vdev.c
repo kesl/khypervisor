@@ -218,7 +218,7 @@ hvmm_status_t vdev_init(void)
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
-    if(!cpu) {
+if (!cpu) {
 #endif
     for (fn = __vdev_module_high_start; fn < __vdev_module_high_end; fn++) {
         if (vdev_module_initcall(*fn)) {

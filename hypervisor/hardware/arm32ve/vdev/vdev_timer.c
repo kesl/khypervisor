@@ -111,10 +111,10 @@ static hvmm_status_t vdev_vtimer_reset(void)
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
-    if(!cpu) {
+    if (!cpu) {
 #endif
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
-        _timer_status[i] = 1;
+        for (i = 0; i < NUM_GUESTS_STATIC; i++)
+            _timer_status[i] = 1;
 #ifdef _SMP_
     }
 #endif

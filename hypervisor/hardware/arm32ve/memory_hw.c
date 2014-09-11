@@ -1275,14 +1275,14 @@ static int memory_hw_init(struct memmap_desc **guest0,
 #ifdef _SMP_
     if (!cpu)
 #endif
-       host_memory_init();
+        host_memory_init();
 
     memory_enable();
 
     uart_print("[memory] memory_init: exit\n\r");
 #ifdef _SMP_
     if (!cpu) {
-        uart_print("[memory] host_memory_heap_init \n\r");
+        uart_print("[memory] host_memory_heap_init\n\r");
         host_memory_heap_init();
     }
 #else
