@@ -26,3 +26,4 @@ git branch -D temp
 git checkout origin/exynos-jb -b temp
 git branch -D exynos-jb
 git checkout origin/exynos-jb -b exynos-jb
+git apply ../../patch/linux-arndale-config-add-minimal-linux-config.patch
