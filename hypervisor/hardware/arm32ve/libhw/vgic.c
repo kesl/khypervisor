@@ -610,30 +610,23 @@ hvmm_status_t virq_init(void)
 hvmm_status_t vgic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
-#endif
+
     HVMM_TRACE_ENTER();
-#ifdef _SMP_
     if (!cpu) {
-#endif
         _vgic.base = gic_vgic_baseaddr();
         _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
         _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
         _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
-#ifdef _SMP_
     }
-#endif
+
     _vgic_maintenance_irq_enable(1);
-#ifdef _SMP
     if (!cpu) {
-#endif
         vgic_slotpirq_init();
         _vgic_dump_status();
         _vgic_dump_regs();
-#ifdef _smp_
     }
-#endif
+
     result = HVMM_STATUS_SUCCESS;
     HVMM_TRACE_EXIT();
 
