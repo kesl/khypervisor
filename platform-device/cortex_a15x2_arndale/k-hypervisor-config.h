@@ -15,7 +15,7 @@
 
 #define MON_SIZE            0x0F000000
 #define MON_STACK_SIZE      0x00C00000 /* core0 stack pointer */
-#define MON_CORE_STACK_SIZE      0x00200000 /* coreX * num_of_core stack pointer */
+#define MON_CORE_STACK_SIZE 0x00200000 /* coreX * num_of_core stack pointer */
 
 #define SEC_STACK_SIZE      0x00400000
 #define GUEST_SIZE_MAX      0x0F000000
