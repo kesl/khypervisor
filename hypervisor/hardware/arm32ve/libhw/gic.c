@@ -308,21 +308,17 @@ hvmm_status_t gic_init(void)
     }
 #endif
     /*
-     * 
-     */
-
-    /*
      * Initialize and Enable GIC CPU Interface for this CPU
      * For test it
      */
 #ifdef _SMP_
-	if(cpu)
+    if (cpu)
         result = HVMM_STATUS_SUCCESS;
 #endif
     if (result == HVMM_STATUS_SUCCESS)
         result = gic_init_cpui();
 #ifdef _SMP_
-	if(!cpu) {
+    if (!cpu) {
 #endif
         if (result == HVMM_STATUS_SUCCESS)
             _gic.initialized = GIC_SIGNATURE_INITIALIZED;

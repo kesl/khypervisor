@@ -160,7 +160,8 @@ static inline uint64_t generic_timer_reg_read64(int reg)
  *
  *  "CNTHP_TVAL" characteristics
  *  -Holds the timer values for the Hyp mode physical timer.
- *  -Only accessible from Hyp mode, or from Monitor mode when SCR.NS is  set to 1.
+ *  -Only accessible from Hyp mode, or from
+ *   Monitor mode when SCR.NS is  set to 1.
  */
 static hvmm_status_t generic_timer_set_tval(enum generic_timer_type timer_type,
         uint32_t tval)

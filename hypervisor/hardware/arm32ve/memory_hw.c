@@ -277,7 +277,8 @@ static union lpaed *_vmid_ttbl[NUM_GUESTS_STATIC];
  * We don't konw about this issue, so we will checking this later time.
  */
 union lpaed
-_ttbl_guest[NUM_GUESTS_STATIC][VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
+_ttbl_guest[NUM_GUESTS_STATIC][VMM_PTE_NUM_TOTAL] \
+                __attribute((__aligned__(4096)));
 
 /**
  * @brief Obtains TTBL_L3 entry.
