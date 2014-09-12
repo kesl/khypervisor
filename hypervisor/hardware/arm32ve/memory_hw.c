@@ -7,10 +7,7 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 #include <guest.h>
-
-#ifdef _SMP_
 #include <smp.h>
-#endif
 
 /**
  * \defgroup Memory_Attribute_Indirection_Register
@@ -1206,29 +1203,19 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
      * Initializes Translation Table for Stage2 Translation (IPA -> PA)
      */
     int i;
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
-#endif
 
     HVMM_TRACE_ENTER();
 
-#ifdef _SMP_
     if (!cpu) {
         for (i = 0; i < NUM_GUESTS_STATIC; i++)
             _vmid_ttbl[i] = &_ttbl_guest[i][0];
         guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
         guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
     } else {
-
         guest_memory_init_ttbl(&_ttbl_guest[2][0], guest0_map);
         guest_memory_init_ttbl(&_ttbl_guest[3][0], guest1_map);
     }
-#else
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
-        _vmid_ttbl[i] = &_ttbl_guest[i][0];
-    guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
-    guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
-#endif
 
     HVMM_TRACE_EXIT();
 }
@@ -1264,32 +1251,23 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
 static int memory_hw_init(struct memmap_desc **guest0,
             struct memmap_desc **guest1)
 {
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
-#endif
     uart_print("[memory] memory_init: enter\n\r");
 
     guest_memory_init(guest0, guest1);
 
     guest_memory_init_mmu();
 
-#ifdef _SMP_
     if (!cpu)
-#endif
         host_memory_init();
 
     memory_enable();
 
     uart_print("[memory] memory_init: exit\n\r");
-#ifdef _SMP_
     if (!cpu) {
         uart_print("[memory] host_memory_heap_init\n\r");
         host_memory_heap_init();
     }
-#else
-    host_memory_heap_init();
-#endif
-
 
     return HVMM_STATUS_SUCCESS;
 }

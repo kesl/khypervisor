@@ -221,18 +221,14 @@ hvmm_status_t interrupt_restore(vmid_t vmid)
 hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
     if (!cpu) {
-#endif
         _host_ops = _interrupt_module.host_ops;
         _guest_ops = _interrupt_module.guest_ops;
 
         _guest_virqmap = virqmap;
-#ifdef _SMP_
     }
-#endif
 
     /* host_interrupt_init() */
     if (_host_ops->init) {
