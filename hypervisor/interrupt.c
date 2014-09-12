@@ -4,6 +4,7 @@
 #include <hvmm_trace.h>
 #include <log/uart_print.h>
 #include <interrupt.h>
+#include <smp.h>
 
 #define VIRQ_MIN_VALID_PIRQ 16
 #define VIRQ_NUM_MAX_PIRQS  MAX_IRQS
@@ -18,7 +19,8 @@ static struct interrupt_ops *_host_ops;
 static struct guest_virqmap *_guest_virqmap;
 
 /**< IRQ handler */
-static interrupt_handler_t _host_handlers[MAX_IRQS];
+static interrupt_handler_t _host_ppi_handlers[NUM_CPUS][MAX_PPI_IRQS];
+static interrupt_handler_t _host_spi_handlers[MAX_IRQS];
 
 const int32_t interrupt_check_guest_irq(uint32_t pirq)
 {
@@ -64,6 +66,7 @@ hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq,
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* guest_interrupt_inject() */
     if (_guest_ops->inject)
         ret = _guest_ops->inject(vmid, virq, pirq, hw);
 
@@ -72,7 +75,13 @@ hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq,
 
 hvmm_status_t interrupt_request(uint32_t irq, interrupt_handler_t handler)
 {
-    _host_handlers[irq] = handler;
+    uint32_t cpu = smp_processor_id();
+
+    if (irq < MAX_PPI_IRQS)
+        _host_ppi_handlers[cpu][irq] = handler;
+
+    else
+        _host_spi_handlers[irq] = handler;
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -81,6 +90,7 @@ hvmm_status_t interrupt_host_enable(uint32_t irq)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* host_interrupt_enable() */
     if (_host_ops->enable)
         ret = _host_ops->enable(irq);
 
@@ -91,6 +101,7 @@ hvmm_status_t interrupt_host_disable(uint32_t irq)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* host_interrupt_disable() */
     if (_host_ops->disable)
         ret = _host_ops->disable(irq);
 
@@ -101,6 +112,7 @@ hvmm_status_t interrupt_host_configure(uint32_t irq)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* host_interrupt_configure() */
     if (_host_ops->configure)
         ret = _host_ops->configure(irq);
 
@@ -143,17 +155,41 @@ static void interrupt_inject_enabled_guest(int num_of_guests, uint32_t irq)
 void interrupt_service_routine(int irq, void *current_regs, void *pdata)
 {
     struct arch_regs *regs = (struct arch_regs *)current_regs;
+    uint32_t cpu = smp_processor_id();
+
 
     if (irq < MAX_IRQS) {
         if (interrupt_check_guest_irq(irq) == GUEST_IRQ) {
+
+#ifdef _SMP_
+            /*
+             * workaround for arndale port
+             * We will identify the interrupt number 0, which is
+             * an unknown number.
+             */
+            if (cpu) {
+                if (irq == 0) {
+                    /* ignore injecting the guest */
+                    _guest_ops->end(irq);
+                    return;
+                }
+            }
+#endif
             /* IRQ INJECTION */
             /* priority drop only for hanlding irq in guest */
+            /* guest_interrupt_end() */
             _guest_ops->end(irq);
             interrupt_inject_enabled_guest(NUM_GUESTS_STATIC, irq);
         } else {
             /* host irq */
-            if (_host_handlers[irq])
-                _host_handlers[irq](irq, regs, 0);
+            if (irq < MAX_PPI_IRQS) {
+                if (_host_ppi_handlers[cpu][irq])
+                    _host_ppi_handlers[cpu][irq](irq, regs, 0);
+            } else {
+                if (_host_spi_handlers[irq])
+                    _host_spi_handlers[irq](irq, regs, 0);
+            }
+            /* host_interrupt_end() */
             _host_ops->end(irq);
         }
     } else
@@ -164,6 +200,7 @@ hvmm_status_t interrupt_save(vmid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* guest_interrupt_save() */
     if (_guest_ops->save)
         ret = _guest_ops->save(vmid);
 
@@ -174,6 +211,7 @@ hvmm_status_t interrupt_restore(vmid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* guest_interrupt_restore() */
     if (_guest_ops->restore)
         ret = _guest_ops->restore(vmid);
 
@@ -183,18 +221,27 @@ hvmm_status_t interrupt_restore(vmid_t vmid)
 hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
 
-    _host_ops = _interrupt_module.host_ops;
-    _guest_ops = _interrupt_module.guest_ops;
+    if (!cpu) {
+#endif
+        _host_ops = _interrupt_module.host_ops;
+        _guest_ops = _interrupt_module.guest_ops;
 
-    _guest_virqmap = virqmap;
+        _guest_virqmap = virqmap;
+#ifdef _SMP_
+    }
+#endif
 
+    /* host_interrupt_init() */
     if (_host_ops->init) {
         ret = _host_ops->init();
         if (ret)
             printh("host initial failed:'%s'\n", _interrupt_module.name);
     }
 
+    /* guest_interrupt_init() */
     if (_guest_ops->init) {
         ret = _guest_ops->init();
         if (ret)

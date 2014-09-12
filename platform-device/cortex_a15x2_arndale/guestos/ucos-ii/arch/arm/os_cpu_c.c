@@ -244,8 +244,11 @@ void  OSTCBInitHook (OS_TCB *ptcb)
 */
 
 
+extern void MsTickHanlder();
+
 #if OS_CPU_HOOKS_EN > 0 
 void  OSTimeTickHook (void)
 {
+    MsTickHanlder();
 }
 #endif

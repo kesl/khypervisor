@@ -135,3 +135,24 @@ char *(strcpy)(char *dest, const char *src)
     dest[i] = '\0';
     return dest;
 }
+
+unsigned int arm_hexstr2uint(char *src)
+{
+    unsigned int val = 0x0;
+    int pos = 0;
+
+    if ((src[0] == '0') && (src[1] == 'x'))
+        pos = 2;
+
+    while (src[pos]) {
+        if (('0' <= src[pos]) && (src[pos] <= '9'))
+            val = val * 16 + (src[pos] - '0');
+        else if (('A' <= src[pos]) && (src[pos] <= 'F'))
+            val = val * 16 + (src[pos] - 'A' + 10);
+        else if (('a' <= src[pos]) && (src[pos] <= 'f'))
+            val = val * 16 + (src[pos] - 'a' + 10);
+        pos++;
+    }
+
+    return val;
+}

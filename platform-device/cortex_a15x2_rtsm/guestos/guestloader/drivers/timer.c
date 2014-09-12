@@ -4,8 +4,9 @@
 #include <gic.h>
 #include "timer.h"
 
-#define BOOT_COUNT  3
-#define BOOT_COUNT_RATIO  BOOT_COUNT
+#define BOOT_COUNT  5
+#define SHED_TICK 1000
+#define BOOT_COUNT_RATIO  (SHED_TICK/BOOT_COUNT)
 #define VTIMER_IRQ 30
 
 int bootcount = BOOT_COUNT * BOOT_COUNT_RATIO;

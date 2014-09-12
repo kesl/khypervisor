@@ -1,3 +1,4 @@
+#include <k-hypervisor-config.h>
 #include "linuxloader.h"
 #include <log/string.h>
 #include <guestloader.h>
@@ -144,27 +145,84 @@ static void setup_mem_tag(uint32_t start, uint32_t len)
     _params = tag_next(_params);             /* move pointer to next tag */
 }
 
+static void setup_initrd2_tag(uint32_t start, uint32_t size)
+{
+    _params->hdr.tag = ATAG_INITRD2;        /* Initrd2 tag */
+    _params->hdr.size = tag_size(atag_initrd2); /* size tag */
+    _params->u.initrd2.start = start;        /* physical start */
+    _params->u.initrd2.size = size;          /* compressed ramdisk size */
+    _params = tag_next(_params);              /* move pointer to next tag */
+}
+
 static void setup_end_tag(void)
 {
     _params->hdr.tag = ATAG_NONE;            /* Empty tag ends list */
     _params->hdr.size = 0;                   /* zero length */
 }
 
-#define SIZE_4K 4096
-#define TAG_POSITION (0x100/4)
-#define SIZE_256K 0x10000000
+static void
+setup_ramdisk_tag(uint32_t size)
+{
+    _params->hdr.tag = ATAG_RAMDISK;         /* Ramdisk tag */
+    _params->hdr.size = tag_size(atag_ramdisk);  /* size tag */
+
+    _params->u.ramdisk.flags = 0;            /* Load the ramdisk */
+    _params->u.ramdisk.size = size;          /* Decompressed ramdisk size */
+    _params->u.ramdisk.start = 0;            /* Unused */
+
+    _params = tag_next(_params);              /* move pointer to next tag */
+}
 
 void linuxloader_setup_atags(uint32_t src)
 {
     char *commandline =
-            "root=/dev/ram rw earlyprintk console=ttyAMA0 "
-            "mem=256M rdinit=/sbin/init";
+/* mmc-rtsm */
+    /*
+     * "root=/dev/mmcblk0 rw ip=dhcp "
+     * "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
+     */
+/* android-rtsm */
+    /*
+     * "console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init "
+     * "androidboot.console=ttyAMA0 mem=768M";
+     */
+/* nfs-rtsm */
+    /*
+     * "root=/dev/nfs nfsroot=192.168.0.4:/srv/nfs_simpleroot/ "
+     * "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
+     */
+/* ramdisk-rtsm */
+     "root=/dev/ram rw earlyprintk console=ttyAMA0 "
+     "mem=512M rdinit=/sbin/init";
+/* android-arndale board */
+    /*
+     * "root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M "
+     * console=ttySAC1,115200 init= mem=256M"
+     */
+/* Arndale board ramdisk */
+    /*
+     * "root=/dev/ram rw earlyprintk console=ttySAC0 "
+     * "mem=256M rdinit=/sbin/init";
+     */
+/* Arndale board with mmc */
+    /*
+     * "root=/dev/mmcblk1p1   rw ip=dhcp earlyprintk rootwait "
+     * console=ttySAC2,115200n8 mem=512M init --no-log";
+     */
     /* standard core tag 4k pagesize */
-    setup_core_tag((uint32_t *)src+(TAG_POSITION), SIZE_4K);
+    setup_core_tag((uint32_t *)src, SZ_4K);
     /* commandline setting root device */
-    setup_cmdline_tag(commandline);
     setup_revision_tag();
-    setup_mem_tag(src, SIZE_256K);
+    setup_mem_tag(src, SZ_512M);
+    #ifdef USE_ANDROID_INITRD
+    {
+        uint32_t start = &initrd_start;
+        uint32_t end = &initrd_end;
+        uint32_t size = end - start;
+        setup_initrd2_tag(start + 0x40, size - 0x40);
+    }
+    #endif
+    setup_cmdline_tag(commandline);
     /* end of tags */
     setup_end_tag();
 }

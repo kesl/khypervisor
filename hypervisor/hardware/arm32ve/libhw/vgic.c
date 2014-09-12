@@ -11,7 +11,10 @@
 
 /* for test, surpress traces */
 #define __VGIC_DISABLE_TRACE__
+
+#ifndef _SMP_
 #define VGIC_SIMULATE_HWVIRQ
+#endif
 
 #ifdef __VGIC_DISABLE_TRACE__
 #ifdef HVMM_TRACE_ENTER
@@ -169,25 +172,49 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
     hvmm_status_t result = HVMM_STATUS_BUSY;
     int i;
     struct virq_entry *q = &_guest_virqs[vmid][0];
-    int slot = vgic_slotvirq_getslot(vmid, virq);
-    if (slot == SLOT_INVALID) {
-        /* Inject only the same virq is not present in a slot */
-        for (i = 0; i < VIRQ_MAX_ENTRIES; i++) {
-            if (q[i].valid == 0) {
-                q[i].pirq = pirq;
-                q[i].virq = virq;
-                q[i].hw = hw;
-                q[i].valid = 1;
-                result = HVMM_STATUS_SUCCESS;
-                break;
-            }
+
+    /* Interrupt occurs to the same virtual machine running guest;Then,
+     * we directly inject into guest. If it's not running guest's interrupt,
+     * we save interrupt in _guest_virqs due to preventing loss of the interrupt.
+     */
+    if (vmid == guest_current_vmid()) {
+        uint32_t slot;
+        if (hw) {
+            slot = vgic_inject_virq_hw(virq,
+                    VIRQ_STATE_PENDING, GIC_INT_PRIORITY_DEFAULT,
+                    pirq);
+            if (slot != VGIC_SLOT_NOTFOUND)
+                vgic_slotpirq_set(vmid, slot, pirq);
+        } else {
+            slot = vgic_inject_virq_sw(virq,
+                    VIRQ_STATE_PENDING, 0,
+                    smp_processor_id(), 1);
         }
-        printh("virq: queueing virq %d pirq %d to vmid %d %s\n",
-                virq, pirq, vmid,
-                result == HVMM_STATUS_SUCCESS ? "done" : "failed");
+        if (slot == VGIC_SLOT_NOTFOUND)
+            return result;
+
+        vgic_slotvirq_set(vmid, slot, virq);
     } else {
-        printh("virq: rejected queueing duplicated virq %d pirq %d to "
-                "vmid %d %s\n", virq, pirq, vmid);
+        int slot = vgic_slotvirq_getslot(vmid, virq);
+        if (slot == SLOT_INVALID) {
+            /* Inject only the same virq is not present in a slot */
+            for (i = 0; i < VIRQ_MAX_ENTRIES; i++) {
+                if (q[i].valid == 0) {
+                    q[i].pirq = pirq;
+                    q[i].virq = virq;
+                    q[i].hw = hw;
+                    q[i].valid = 1;
+                    result = HVMM_STATUS_SUCCESS;
+                    break;
+                }
+            }
+            printh("virq: queueing virq %d pirq %d to vmid %d %s\n",
+                    virq, pirq, vmid,
+                    result == HVMM_STATUS_SUCCESS ? "done" : "failed");
+        } else {
+            printh("virq: rejected queueing duplicated virq %d pirq %d to "
+                    "vmid %d %s\n", virq, pirq, vmid);
+        }
     }
     return result;
 }
@@ -373,6 +400,8 @@ static void _vgic_dump_regs(void)
 #endif
 }
 
+
+
 static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
 {
     HVMM_TRACE_ENTER();
@@ -414,37 +443,9 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
             }
             vgic_slotvirq_clear(vmid, slot);
         }
+
     }
-    if (_vgic.base[GICH_MISR] & GICH_MISR_NP) {
-        /* No pending virqs, no need to keep vgic enabled */
-        _vgic.base[GICH_HCR] &= ~(GICH_HCR_NPIE);
-        printh("vgic: no pending virqs, disabling no pending interrupt\n");
-        {
-            int i;
-            printh("vgic: active virqs...\n");
-            for (i = 0; i < _vgic.num_lr; i++) {
-                if (_vgic.base[GICH_LR + i] & 0x20000000)
-                    printh("- lr[%d]: %x\n", i, _vgic.base[GICH_LR + i]);
-            }
-        }
-    }
-    {
-        uint64_t elsr;
-        elsr = _vgic.base[GICH_ELSR1];
-        elsr <<= 32;
-        elsr |= _vgic.base[GICH_ELSR0];
-        if (((~elsr) & _vgic.valid_lr_mask) == 0) {
-            /* No valid interrupt */
-            vgic_enable(0);
-            vgic_injection_enable(0);
-            printh("vgic: no valid virqs, disabling vgic\n");
-        } else {
-            printh("vgic:MISR:%x ELSR0:%x ELSR1:%x\n",
-                   _vgic.base[GICH_MISR],
-                   _vgic.base[GICH_ELSR0],
-                   _vgic.base[GICH_ELSR1]);
-        }
-    }
+
     HVMM_TRACE_EXIT();
 }
 
@@ -454,10 +455,10 @@ hvmm_status_t vgic_enable(uint8_t enable)
     if (VGIC_READY()) {
         if (enable) {
             uint32_t hcr = _vgic.base[GICH_HCR];
-            hcr |= GICH_HCR_EN | GICH_HCR_NPIE;
+            hcr |= GICH_HCR_EN;
             _vgic.base[GICH_HCR] = hcr;
         } else {
-            _vgic.base[GICH_HCR] &= ~(GICH_HCR_EN | GICH_HCR_NPIE);
+            _vgic.base[GICH_HCR] &= ~(GICH_HCR_EN);
         }
         result = HVMM_STATUS_SUCCESS;
     }
@@ -518,8 +519,6 @@ uint32_t vgic_inject_virq(
     HVMM_TRACE_HEX32("free slot:", slot);
     if (slot != VGIC_SLOT_NOTFOUND) {
         _vgic.base[GICH_LR + slot] = lr_desc;
-        vgic_injection_enable(1);
-        vgic_enable(1);
     }
     _vgic_dump_regs();
     HVMM_TRACE_EXIT();
@@ -538,7 +537,7 @@ uint32_t vgic_inject_virq_hw(uint32_t virq, enum virq_state state,
     HVMM_TRACE_HEX32("slot:", slot);
     if (slot != VGIC_SLOT_NOTFOUND) {
 #ifdef VGIC_SIMULATE_HWVIRQ
-        slot = vgic_inject_virq(virq, slot, state, priority, 0, 0, 1);
+        slot = vgic_inject_virq(virq, slot, state, priority, 0, smp_processor_id(), 1);
 #else
         slot = vgic_inject_virq(virq, slot, state, priority, 1, pirq, 0);
 #endif
@@ -558,6 +557,7 @@ uint32_t vgic_inject_virq_sw(uint32_t virq, enum virq_state state,
         slot = vgic_inject_virq(virq, slot, state,
                 priority, 0, cpuid, maintenance);
     }
+
     HVMM_TRACE_EXIT();
     return slot;
 }
@@ -608,16 +608,31 @@ hvmm_status_t virq_init(void)
 hvmm_status_t vgic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+#ifdef _SMP_
+    uint32_t cpu = smp_processor_id();
+#endif
     HVMM_TRACE_ENTER();
-    _vgic.base = gic_vgic_baseaddr();
-    _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
-    _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
-    _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
+#ifdef _SMP_
+    if(!cpu) {
+#endif
+        _vgic.base = gic_vgic_baseaddr();
+        _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
+        _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
+        _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
+#ifdef _SMP_
+    }
+#endif
     _vgic_maintenance_irq_enable(1);
-    vgic_slotpirq_init();
+#ifdef _SMP
+    if(!cpu) {
+#endif
+        vgic_slotpirq_init();
+        _vgic_dump_status();
+        _vgic_dump_regs();
+#ifdef _smp_
+    }
+#endif
     result = HVMM_STATUS_SUCCESS;
-    _vgic_dump_status();
-    _vgic_dump_regs();
     HVMM_TRACE_EXIT();
 
     return result;
@@ -660,7 +675,14 @@ hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
     _vgic.base[GICH_VMCR] = status->vmcr;
     _vgic.base[GICH_HCR] = status->hcr;
     /* Inject queued virqs to the next guest */
+    /*
+     * Staying at the currently active guest.
+     * Flush out queued virqs since we didn't have a chance
+     * to switch the context, where virq flush takes place,
+     * this time
+     */
     vgic_flush_virqs(vmid);
+    vgic_enable(1);
     _vgic_dump_regs();
     result = HVMM_STATUS_SUCCESS;
     return result;

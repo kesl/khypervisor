@@ -127,7 +127,7 @@ hvmm_status_t hvmm_tests_vgic(void)
      */
     timer.interval_us = GUEST_SCHED_TICK;
     timer.callback = &callback_test_timer;
-    timer_set(&timer);
+    timer_set(&timer, HOST_TIMER);
 
     return HVMM_STATUS_SUCCESS;
 }

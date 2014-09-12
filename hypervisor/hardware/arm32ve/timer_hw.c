@@ -194,6 +194,7 @@ static hvmm_status_t generic_timer_enable(enum generic_timer_type timer_type)
         ctrl = generic_timer_reg_read(GENERIC_TIMER_REG_HYP_CTRL);
         ctrl |= GENERIC_TIMER_CTRL_ENABLE;
         ctrl &= ~GENERIC_TIMER_CTRL_IMASK;
+
         generic_timer_reg_write(GENERIC_TIMER_REG_HYP_CTRL, ctrl);
         result = HVMM_STATUS_SUCCESS;
     } else if (timer_type == GENERIC_TIMER_VIR) {

@@ -4,7 +4,9 @@
 #include "hvmm_types.h"
 #include "arch_types.h"
 
-#define MAX_TIMER 8
+
+#define GUEST_TIMER 0
+#define HOST_TIMER 1
 
 typedef void(*timer_callback_t)(void *pdata);
 
@@ -66,6 +68,6 @@ extern struct timer_module _timer_module;
  * prior to calls to other functions of Timer module.
  */
 hvmm_status_t timer_init(uint32_t irq);
-hvmm_status_t timer_set(struct timer_val *timer);
+hvmm_status_t timer_set(struct timer_val *timer, uint32_t host);
 
 #endif

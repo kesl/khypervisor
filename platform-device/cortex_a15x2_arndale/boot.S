@@ -130,26 +130,6 @@ start:
     cmp	r0, #0				@ primary CPU?
     beq	2f
 
-#ifdef _SMP_
-    @ Check CPU nr again
-    mrc p15, 0, r0, c0, c0, 5       @ MPIDR (ARMv7 only)
-    @ CPU number, taking multicluster into account
-    bfc r0, #24, #8
-    cmp r0, #0              @ primary CPU?
-    beq 2f
-    ldr     sp, =sec_stacklimit
-    mrc     p15, 0, r0, c0, c0, 5
-    ands    r0, r0, #0xFF
-    mov r1, #SEC_STACK_SIZE
-    mul r1, r1, r0
-    sub sp, sp, r1
-    @
-    @ Secondary CPUs
-    @
-    bl mon_init
-    bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
-#endif
-
 2:
     @
     @ UART initialisation (38400 8N1)
@@ -174,12 +154,56 @@ start:
 1:
     b 1b
 
+#ifdef _SMP_
+    .globl  init_secondary
+init_secondary:
+
+    cpsid aif                    /* Disable all interrupts */
+    @ Check CPU nr again
+    mrc p15, 0, r0, c0, c0, 5       @ MPIDR (ARMv7 only)
+    @ CPU number, taking multicluster into account
+    bfc r0, #24, #8
+    cmp r0, #0              @ primary CPU?
+    beq 1f
+    ldr     sp, =mon_stacklimit
+    mrc     p15, 0, r0, c0, c0, 5
+    ands    r0, r0, #0xFF
+    mov r1, #MON_CORE_STACK_SIZE
+    mul r1, r1, r0
+    sub sp, sp, r1
+    /* Place the right Hyp exception vector for the first time */
+    ldr r0, = hyp_init_vectors
+    mcr p15, 4, r0, c12, c0, 0
+    bl main
+    @ never come back
+    1:
+    b 1b
+
+.globl reset_for_debugging
+reset_for_debugging:
+   @ Check CPU nr again
+    mrc p15, 0, r0, c0, c0, 5
+    @ CPU number, taking multicluster into account
+    bfc r0, #24, #8
+    cmp r0, #0              @ primary CPU?
+    beq 1f
+    /* Base address of system controller */
+#define EXYNOS5_PA_PMU              0x10040000
+#define EXYNOS5_SWRESET             0x0400      /* Relative to PA_PMU */
+
+    ldr r0, =EXYNOS5_PA_PMU
+    mov r1, #0x01
+    str r1, [r0, #EXYNOS5_SWRESET]
+    mov pc, lr
+.type reset_for_debugging, % function
+#endif
+
 /*
  * Initialize vector and stack pointers for modes:
  * Secure SVC, Non-secure SVC, and Hyp mode
  */
 .global mon_init
-    mon_init:
+mon_init:
     push {r0 - r2, lr}
     @ Setup Exception Vector
     ldr r1, = monitor_secure_vectors
@@ -189,7 +213,7 @@ start:
 .type mon_init, % function
 
 .global mon_to_hyp
-    mon_to_hyp:
+mon_to_hyp:
     smc #0  @ -> trap_smc
     hvc #0  @ -> trap_hyp_entry
     /* Place the right Hyp exception vector for the first time */

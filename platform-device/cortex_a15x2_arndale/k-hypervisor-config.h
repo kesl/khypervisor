@@ -14,7 +14,9 @@
 #define CFG_NUMBER_OF_CPUS  2
 
 #define MON_SIZE            0x0F000000
-#define MON_STACK_SIZE      0x00C00000
+#define MON_STACK_SIZE      0x00C00000 /* core0 stack pointer */
+#define MON_CORE_STACK_SIZE      0x00200000 /* coreX * num_of_core stack pointer */
+
 #define SEC_STACK_SIZE      0x00400000
 #define GUEST_SIZE_MAX      0x0F000000
 
@@ -26,17 +28,29 @@
 #define CFG_MACHINE_NUMBER 4274
 
 #define USEC 1000000
+#ifdef _SMP_
+#define NUM_GUESTS_STATIC       4
+#else
 #define NUM_GUESTS_STATIC       2
+#endif
+#define NUM_GUESTS_CPU0_STATIC       2
+#define NUM_GUESTS_CPU1_STATIC       2
+#define NUM_CPUS       2
 #define COUNT_PER_USEC (CFG_CNTFRQ/USEC)
-#define GUEST_SCHED_TICK 100000
+#define GUEST_SCHED_TICK 1000
 #define MAX_IRQS 1024
+#define MAX_PPI_IRQS 32
+#define MAX_SPI_IRQS (MAX_IRQS - 1024)
 
 #define CFG_MEMMAP_PHYS_START      0x40000000
 #define CFG_MEMMAP_PHYS_SIZE       0x7FFFFFFF
 #define CFG_MEMMAP_PHYS_END        (CFG_MEMMAP_PHYS_START+CFG_MEMMAP_PHYS_SIZE)
-#define CFG_MEMMAP_MON_OFFSET      0xA0000000
-#define CFG_MEMMAP_GUEST_OFFSET    0x60000000
+#define CFG_MEMMAP_MON_OFFSET      0xB0000000
+#define CFG_MEMMAP_GUEST0_OFFSET   0x40000000
+#define CFG_MEMMAP_GUEST1_OFFSET   0x80000000
 #define CFG_MEMMAP_GUEST2_OFFSET   0x90000000
+#define CFG_MEMMAP_GUEST3_OFFSET   0xA0000000
+#define CFG_GUEST_START_ADDRESS    0x40000000
 
 #define SZ_1                0x00000001
 #define SZ_2                0x00000002

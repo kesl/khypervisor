@@ -1,4 +1,4 @@
-OBJECTS	= serial.o
+OBJECTS	= serial.o gpio.o
 MAKEFILE= Makefile
 INCLUDES=../include
 
@@ -11,6 +11,9 @@ drivers.o : $(OBJECTS)
 serial.o : serial.c
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c serial.c
 	
+gpio.o : gpio.c
+	$(CC) $(CFLAGS) -I$(INCLUDES) -c gpio.c
+
 clean:
 	rm -f *.o
 

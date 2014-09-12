@@ -34,20 +34,21 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/timer_hw.o					\
 	$(HYPERVISOR_HW_DIR)/interrupt_hw.o				\
 	$(HYPERVISOR_HW_DIR)/memory_hw.o				\
+	$(HYPERVISOR_HW_DIR)/monitoring_hw.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_cp.o				\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_gicd.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ping.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_stay.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_status.o \
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ditrap.o \
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor.o \
 	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o			\
 	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
-	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o				\
-	$(HYPERVISOR_HW_DIR)/traps/trapped_mcr_mrc_handler.o  \
-	$(HYPERVISOR_HW_DIR)/traps/trapped_wfi_wfe_handler.o
+	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o
 
 OBJS 		+=	$(COMMON_SOURCE_DIR)/test/tests.o	\
 	$(COMMON_SOURCE_DIR)/test/tests_gic_timer.o		\
@@ -70,7 +71,6 @@ INCLUDES    +=  -I ./include
 
 GUEST0BIN	= ./guestimages/guest0.bin
 GUEST1BIN	= ./guestimages/guest1.bin
-
 SEMIIMG 	= hvc-man-switch.axf
 MONITORMAP	= monitor.map
 

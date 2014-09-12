@@ -20,6 +20,7 @@ static struct memory_ops *_memory_ops;
  */
 void *memory_alloc(unsigned long size)
 {
+    /* memory_hw_alloc */
     if (_memory_ops->alloc)
         return _memory_ops->alloc(size);
 
@@ -36,6 +37,7 @@ void *memory_alloc(unsigned long size)
  */
 void memory_free(void *ap)
 {
+    /* memory_hw_free */
     if (_memory_ops->free)
         _memory_ops->free(ap);
 }
@@ -44,6 +46,7 @@ hvmm_status_t memory_save(void)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* memory_hw_save */
     if (_memory_ops->save)
         ret =  _memory_ops->save();
 
@@ -54,6 +57,7 @@ hvmm_status_t memory_restore(vmid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
+    /* memory_hw_restore */
     if (_memory_ops->restore)
         ret = _memory_ops->restore(vmid);
 
@@ -66,6 +70,7 @@ hvmm_status_t memory_init(struct memmap_desc **guest0,
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
     _memory_ops = _memory_module.ops;
 
+    /* memory_hw_init */
     if (_memory_ops->init) {
         ret = _memory_ops->init(guest0, guest1);
         if (ret)

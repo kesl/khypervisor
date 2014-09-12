@@ -27,6 +27,9 @@
 #include <gic.h>
 #include <test/tests.h>
 #include <test/test_vtimer.h>
+#ifdef _SMP_
+#include <smp.h>
+#endif
 
 /* #define TESTS_ENABLE_VDEV_SAMPLE */
 
@@ -38,7 +41,7 @@
 #endif
 
 #ifndef GUEST_LABEL
-#define GUEST_LABEL "[guest0] "
+#define GUEST_LABEL "[guest] :"
 #endif
 
 #ifndef NUM_ITERATIONS
@@ -55,9 +58,15 @@ inline void nrm_delay(void)
 void nrm_loop(void)
 {
     int i = 0;
+#if _SMP_
+    uint32_t cpu = smp_processor_id();
+#endif
     uart_init();
     uart_print(GUEST_LABEL);
+    uart_print_hex32(GUEST_NUMBER);
+
     uart_print("=== Starting commom start up\n\r");
+
     gic_init();
     /* Enables receiving virtual timer interrupt */
     vtimer_mask(0);

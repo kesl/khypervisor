@@ -1,18 +1,17 @@
 #include <cli.h>
 #include <guestloader_common.h>
 #include <version.h>
+#include <monitoring_loader.h>
 
-#define hvc_dump_status()     asm("hvc #0xFFFC")
+#define NUM_CMD 3
 
 /* Guest Loader's command line interface command type. */
 enum cmd_type {
     HELP,
     BOOT,
-    STATUS,
+    MONITOR,
     NOINPUT
 };
-
-#define NUM_CMD 3
 
 /* For converting a string to command type. */
 struct cmd {
@@ -24,7 +23,7 @@ struct cmd {
 static struct cmd cmd_type_map_tbl[NUM_CMD] = {
     {"help", HELP},
     {"boot", BOOT},
-    {"status", STATUS}
+    {"monitor", MONITOR}
 };
 
 /** @brief Converts input command to a command type.
@@ -48,27 +47,11 @@ static void print_cli_usage(void)
 {
     uart_print("help         - List commands and their usage\n"
                "boot         - Boot guestos\n"
-               "status       - Print the K-Hypervisor status\n");
+               "monitor      - Set Monitoring mode\n"
+               "debug        - Set Debug mode\n");
 }
 
-/** @brief Prints K-hypervisor's status.
- *
- *  Prints K-hypervisor's banked registers (sp, lr, spsr), and vmid.
- */
-static void dump_hyp_status(void)
-{
-    uart_print("Dump K-Hypervisor's registers\n");
-    hvc_dump_status();
-}
-
-#define MAX_ARG_SIZE    32
-#define NULL '\0'
 #define SPACE ' '
-/** @brief Gets command type from input command.
- *
- *  @param input_cmd Input command.
- *  @return Command type.
- */
 static enum cmd_type get_cmd_type(char *input_cmd)
 {
     int pos = 0;
@@ -91,8 +74,8 @@ void cli_exec_cmd(char *cmd)
     case BOOT:
         loader_boot_guest(GUEST_TYPE);
         break;
-    case STATUS:
-        dump_hyp_status();
+    case MONITOR:
+        monitoring_cmd();
         break;
     }
 }

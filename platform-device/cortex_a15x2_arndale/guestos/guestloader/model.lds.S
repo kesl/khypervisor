@@ -17,11 +17,22 @@ GUEST_START = LDS_GUEST_START;
 LOADER_PHYS_START = LDS_LOADER_PHYS_START;
 SECTIONS
 {
+/*
  . = GUEST_START;
  guest_start = .;
  .guest : {GUEST_PATH}
+ .= ALIGN(4);
  guest_end = .;
- loader_end = .;
+*/
+#ifdef LINUX_GUEST
+ . = GUEST_START;
+ guest_start = .;
+ guest_end = . + 0x500000;
+#else
+ . = GUEST_START;
+ guest_start = .;
+ guest_end = . + 0x200000;
+#endif
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {
@@ -41,6 +52,8 @@ SECTIONS
     *(.bss)
  }
  end_bss = .;
+
+ loader_end = .;
 
 . = PHYS_STACK;
 guestloader_stacktop_svc = .;

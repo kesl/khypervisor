@@ -2,6 +2,9 @@
 #define __LINUXLOADER_H__
 #include "arch_types.h"
 
+extern unsigned initrd_start;
+extern unsigned initrd_end;
+
 /**
 * @brief Sets tags that linux uses for booting.
 * @param *src Base address of tags.

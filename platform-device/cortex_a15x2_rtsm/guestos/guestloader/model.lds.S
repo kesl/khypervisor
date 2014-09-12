@@ -12,16 +12,31 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 #include "memmap.cfg"
 INPUT(GUEST_PATH)
+
+#ifdef USE_ANDROID_INITRD
+INPUT(INITRD_PATH)
+#endif
+
 PHYS_STACK  = LDS_STACK;
 GUEST_START = LDS_GUEST_START;
 LOADER_PHYS_START = LDS_LOADER_PHYS_START;
+
 SECTIONS
 {
  . = GUEST_START;
+ loader_end = .;
  guest_start = .;
  .guest : {GUEST_PATH}
+ .= ALIGN(4);
  guest_end = .;
- loader_end = .;
+
+ #ifdef USE_ANDROID_INITRD
+ . = 0x80D00000;
+ initrd_start = .;
+ .androidrfs : { INITRD_PATH }
+ initrd_end = .;
+ #endif
+
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {

@@ -23,6 +23,7 @@ make ARCH=arm vexpress_minhw_defconfig && \
 cp -a ../../patch/fs.cpio . && \
 cp -a ../../patch/host-a15.dtb . && \
 make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 && \
+cp System.map ../../guestimages/ && \
 cat host-a15.dtb >> arch/arm/boot/zImage && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
@@ -34,7 +35,7 @@ export GUEST1_DIR="guestos/guestloader"
 export GUEST1_BIN="guestloader.bin"
 export GUEST1_BUILD_SCRIPT="cd ../bmguest/ && \
 make clean && \
-make && \
+make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \

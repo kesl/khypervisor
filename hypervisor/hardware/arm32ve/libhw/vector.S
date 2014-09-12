@@ -49,7 +49,7 @@ vector_hyp_entry:
     ldr     sp, =mon_stacklimit
     mrc     p15, 0, r0, c0, c0, 5
     ands    r0, r0, #0xFF
-    mov r1, #MON_STACK_SIZE
+    mov r1, #MON_CORE_STACK_SIZE
     mul r1, r1, r0
     sub sp, sp, r1
 #endif
