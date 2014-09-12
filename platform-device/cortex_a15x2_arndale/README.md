@@ -303,6 +303,9 @@ $ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 C8;mmc re
 # How to test linaro-android(kitkat) + bmguest
 
 ## Download linaro-kernel
+before next step (Make a build in one step continuous integration)
+you must download linaro-kernel!!
+
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
 $ ./get_linaro_kernel.sh
