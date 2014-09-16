@@ -111,8 +111,13 @@ int symbol_binary_search(struct system_map map[], int key, int imin, int imax)
         return imid;
 }
 
+/*
+ * cnt : The number of type T symbol
+ * return : The number of total symbol
+ */
 uint32_t number_symbol(uint32_t *cnt)
 {
+#ifdef _MON_
     /* hard coding */
     unsigned char *base = 0;
     uint32_t n_symbol = 0;
@@ -145,6 +150,7 @@ uint32_t number_symbol(uint32_t *cnt)
             break;
     }
     return n_symbol;
+#endif
 }
 
 void monitor_init(void)
@@ -162,7 +168,6 @@ void monitor_init(void)
     int cnt_code = 0;
     int i;
     char address[9];
-    char last[MAX_LENGTH_SYMBOL];
     while (1) {
         i = 0;
         while (*base != ' ') {
@@ -210,8 +215,6 @@ void monitor_init(void)
 void show_symbol(uint32_t va)
 {
     int i = 0;
-    char symbol[MAX_LENGTH_SYMBOL];
-
     for (i = 0; i < num_symbols_code; i++)
         printH("%x %c %s\n", system_maps_code[i].address,
                 system_maps_code[i].type, system_maps_code[i].symbol);
@@ -238,7 +241,157 @@ int symbol_getter_from_va(uint32_t va, char *symbol)
     return 0;
 }
 
-uint32_t va_getter_from_symbol(char *symbol)
+uint32_t store_inst(uint32_t va, enum breakpoint_type type)
 {
+    int i;
+    uint32_t pa;
+    for (i = 0; i < NUM_DI; i++) {
+        if (inst[i][INST_VA] == va) {
+            inst[i][INST_TYPE] |= type;
+            printH("Already set breakpoint\n");
+            return 0;
+        }
+    }
+    for (i = 0; i < NUM_DI; i++) {
+        if (inst[i][INST] == EMPTY) {
+            pa = va_to_pa(va, TTBR0);
+            inst[i][INST] = (*(uint32_t *)pa);
+            inst[i][INST_VA] = va;
+            inst[i][INST_TYPE] = type;
+            return 0;
+        }
+    }
     return 0;
+}
+
+enum breakpoint_type inst_type(uint32_t va)
+{
+    int i;
+    for (i = 0; i < NUM_DI; i++)
+        if (inst[i][INST_VA] == va)
+            return inst[i][INST_TYPE];
+    return 0;
+}
+
+uint32_t clean_inst(uint32_t va, enum breakpoint_type type)
+{
+    int i;
+    for (i = 0; i < NUM_DI; i++) {
+        if (inst[i][INST_VA] == va) {
+            inst[i][INST_TYPE] &= ~(type);
+            if (inst[i][INST_TYPE] == EMPTY) {
+                inst[i][INST] = EMPTY;
+                inst[i][INST_VA] = EMPTY;
+                return 1;
+            }
+        break;
+        }
+    }
+    return 0;
+}
+
+uint32_t load_inst(uint32_t va)
+{
+    int i, ori_inst;
+    for (i = 0; i < NUM_DI; i++) {
+        if (inst[i][INST_VA] == va) {
+            ori_inst = inst[i][INST];
+            return ori_inst;
+        }
+    }
+    printh("[%s : %d] corresponded instruction not found\n",
+            __func__, __LINE__);
+    return 0;
+}
+
+void print_monitoring_list(void)
+{
+    int i;
+    char symbol[MAX_LENGTH_SYMBOL];
+    for (i = 0; i < NUM_DI; i++) {
+        if (inst[i][INST] != EMPTY) {
+            symbol_getter_from_va(inst[i][INST_VA], symbol);
+            printH("Monitoring symbol is %s, va is %x, instruction is %x\n",
+                    symbol, inst[i][INST_VA], inst[i][INST]);
+        }
+    }
+}
+
+hvmm_status_t kmo_run(void)
+{
+    clean_manually_select_vmid();
+    guest_switchto(0, 0);
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t kmo_break(uint32_t va, uint32_t type)
+{
+    store_inst(va, type);
+    writel(HVC_TRAP, (uint32_t)va_to_pa(va, TTBR0));
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t kmo_clean(uint32_t va, uint32_t type)
+{
+    uint32_t inst;
+    inst = load_inst(va);
+    if (clean_inst(va, type))
+        writel(inst, (uint32_t)va_to_pa(va , TTBR0));
+
+    /* Clean point's retrap point */
+    inst = load_inst((va) + 4);
+    if (clean_inst((va) + 4 , RETRAP))
+        writel(inst, (uint32_t)va_to_pa((va) + 4 , TTBR0));
+    return HVMM_STATUS_SUCCESS;
+}
+
+void kmo_break_handler(struct arch_regs **regs, uint32_t type)
+{
+    char call_symbol[MAX_LENGTH_SYMBOL];
+    char callee_symbol[MAX_LENGTH_SYMBOL];
+    uint32_t restore_inst, ori_va, ori_pa, lr;
+
+    asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
+    ori_va = (*regs)->pc - 4;
+    ori_pa = (uint32_t)va_to_pa(ori_va, TTBR0);
+    printH("pc %x lr %x\n", (*regs)->pc, (*regs)->lr);
+    printH("pa is %x, va is %x, inst_type : %x\n", ori_pa, ori_va,
+            inst_type(ori_va));
+
+    restore_inst = load_inst(ori_va);
+    writel(restore_inst, ori_pa);
+
+    printH("Traped inst. Restore inst is %x\n",
+            *(uint32_t *)(ori_pa));
+
+    if (type != RETRAP) {
+        symbol_getter_from_va(ori_va, call_symbol);
+        symbol_getter_from_va(lr, callee_symbol);
+        printH("CPU 0 %s <- %s\n", call_symbol, callee_symbol);
+    }
+
+    switch (type) {
+    case TRAP:
+    case BREAK_TRAP:
+        /* Set next trap for retrap */
+        /* TODO Needs status of Branch instruction. */
+        store_inst((*regs)->pc, RETRAP);
+        writel(HVC_TRAP, (uint32_t)va_to_pa((*regs)->pc, TTBR0));
+        break;
+    case RETRAP:
+        /* Clean break point at retrap point. It do not need keep break point */
+        clean_inst(ori_va, RETRAP);
+        /* Set previous pc to trap */
+        writel(HVC_TRAP, (uint32_t)va_to_pa((*regs)->pc-8, TTBR0));
+        break;
+    }
+
+    /* Restore pc */
+    (*regs)->pc -= 4;
+
+    if (type == BREAK_TRAP) {
+        /* Run other guest for stop this guest */
+        set_manually_select_vmid(1);
+        guest_switchto(1, 0);
+    }
 }

@@ -4,9 +4,11 @@
 #include <log/uart_print.h>
 #include <hvmm_types.h>
 #include <arch_types.h>
+#include <guest.h>
 
 #define NUM_BREAK_POINT 50
 #define NUM_DI (NUM_BREAK_POINT * 2)
+#define HVC_TRAP 0xe14fff7c
 
 uint32_t inst[NUM_DI][3];
 /*
@@ -35,18 +37,8 @@ enum inst_index {
 struct system_map {
     uint32_t address;
     uint8_t type;
-    uint8_t symbol[MAX_LENGTH_SYMBOL];
+    char symbol[MAX_LENGTH_SYMBOL];
 };
-
-
-/*
- * DI, inject hvc at VA(PA)
- */
-hvmm_status_t set_monitor_point(uint32_t va);
-
-/*
- * DI, inject ori inst at VA(PA)
- */
 
 uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num);
 
@@ -59,5 +51,9 @@ extern uint32_t system_map_start;
 extern uint32_t system_map_end;
 void monitor_init(void);
 int symbol_getter_from_va(uint32_t va, char *symbol);
-
+void print_monitoring_list(void);
+hvmm_status_t kmo_run(void);
+hvmm_status_t kmo_break(uint32_t va, uint32_t type);
+hvmm_status_t kmo_clean(uint32_t va, uint32_t type);
+void kmo_break_handler(struct arch_regs **regs, uint32_t type);
 #endif
