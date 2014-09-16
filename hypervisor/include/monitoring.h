@@ -51,7 +51,7 @@ extern uint32_t system_map_start;
 extern uint32_t system_map_end;
 void monitor_init(void);
 int symbol_getter_from_va(uint32_t va, char *symbol);
-void print_monitoring_list(void);
+hvmm_status_t kmo_list(void);
 hvmm_status_t kmo_run(void);
 hvmm_status_t kmo_break(uint32_t va, uint32_t type);
 hvmm_status_t kmo_clean(uint32_t va, uint32_t type);

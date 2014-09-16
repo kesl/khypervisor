@@ -35,8 +35,7 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         switch (offset) {
         case 0x8:
             /* print monitoring list */
-            print_monitoring_list();
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_list();
             break;
         case 0x10:
             /* go */

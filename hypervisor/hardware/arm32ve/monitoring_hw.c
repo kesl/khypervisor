@@ -304,7 +304,7 @@ uint32_t load_inst(uint32_t va)
     return 0;
 }
 
-void print_monitoring_list(void)
+hvmm_status_t kmo_list(void)
 {
     int i;
     char symbol[MAX_LENGTH_SYMBOL];
@@ -315,6 +315,7 @@ void print_monitoring_list(void)
                     symbol, inst[i][INST_VA], inst[i][INST]);
         }
     }
+    return HVMM_STATUS_SUCCESS;
 }
 
 hvmm_status_t kmo_run(void)
