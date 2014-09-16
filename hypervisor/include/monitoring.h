@@ -31,11 +31,11 @@ enum inst_index {
     INST_VA,
     INST_TYPE
 };
-
+#define MAX_LENGTH_SYMBOL 50
 struct system_map {
     uint32_t address;
     uint8_t type;
-    uint8_t symbol[50];
+    uint8_t symbol[MAX_LENGTH_SYMBOL];
 };
 
 
@@ -47,7 +47,6 @@ hvmm_status_t set_monitor_point(uint32_t va);
 /*
  * DI, inject ori inst at VA(PA)
  */
-hvmm_status_t clean_monitor_point(uint32_t va);
 
 uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num);
 
@@ -55,13 +54,10 @@ uint32_t load_inst(uint32_t va);
 uint32_t inst_type(uint32_t va);
 uint32_t store_inst(uint32_t va, uint32_t type);
 uint32_t clean_inst(uint32_t va, uint32_t type);
-void show_symbole(uint32_t va);
+void show_symbol(uint32_t va);
 extern uint32_t system_map_start;
 extern uint32_t system_map_end;
 void monitor_init(void);
-uint32_t get_num_symbol(void);
-int symbol_getter_from_va(uint32_t va, char **symbol);
-int symbol_getter_from_va_lr(uint32_t va, char **symbol);
-struct system_map *get_symbols(void);
+int symbol_getter_from_va(uint32_t va, char *symbol);
 
 #endif

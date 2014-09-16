@@ -87,10 +87,10 @@ uint32_t load_inst(uint32_t va)
 static void print_monitoring_list(void)
 {
     int i;
-    char *symbol;
+    char symbol[MAX_LENGTH_SYMBOL];
     for (i = 0; i < NUM_DI; i++) {
         if (inst[i][INST] != EMPTY) {
-            symbol_getter_from_va(inst[i][INST], &symbol);
+            symbol_getter_from_va(inst[i][INST_VA], &symbol);
             printH("Monitoring symbol is %s, va is %x, instruction is %x\n",
                     symbol, inst[i][INST_VA], inst[i][INST]);
         }

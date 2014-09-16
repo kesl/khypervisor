@@ -88,67 +88,53 @@ uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
     return 0;
 }
 
-struct system_map system_maps[32323];
-uint32_t num_symbols;
+struct system_map system_maps[33000];
+struct system_map system_maps_code[18000];
+uint32_t num_symbols_code;
 
 #define KEY_NOT_FOUND -1
-int symbol_binary_search(struct system_map M[], int key, int imin, int imax)
+int symbol_binary_search(struct system_map map[], int key, int imin, int imax)
 {
     int imid;
     while (imax >= imin) {
         imid = (imin + imax) / 2;
-        if (M[imid].address == key)
+        if (map[imid].address == key)
             return imid;
-        else if (M[imid].address < key)
+        else if (map[imid].address < key)
             imin = imid + 1;
         else
             imax = imid - 1;
     }
-    return imid;
+    if (map[imid].address > key)
+        return imid - 1;
+    else
+        return imid;
 }
 
-int symbol_near_search(struct system_map M[], int key, int imin, int imax)
-{
-    int imid;
-    printH("ket is %x\n", key);
-    while (imax >= imin) {
-        imid = (imin + imax) / 2;
-        if (M[imid].address == key)
-            return imid;
-        else if (M[imid].address < key) {
-            if (imax - imin == 1)
-                return imin;
-            imin = imid;
-        } else
-            imax = imid;
-    }
-    return imid;
-}
-
-uint32_t number_symbol(void)
+uint32_t number_symbol(uint32_t *cnt)
 {
     /* hard coding */
     unsigned char *base = 0;
-#ifdef _MON_
-    *base = (unsigned char *)&system_map_start;
-#endif
     uint32_t n_symbol = 0;
-    char last[50];
+    char last[MAX_LENGTH_SYMBOL];
     int i;
+    base = (unsigned char *)&system_map_start;
     while (1) {
         while (*base != ' ') {
             /* address */
             base++;
         }
         /* space */
+        base++;
         /* type */
+        if (*base == 't' || *base == 'T' || *base == 'w' || *base == 'W')
+            (*cnt)++;
+        base++;
         /* space */
-        base = base + 3;
-        for (i = 0; i < 50; i++)
-            last[0] = '\0';
+        base++;
         i = 0;
         while (*base != '\r' &&  *base != '\n') {
-            /* symbole */
+            /* symbol */
             last[i++] = *base++;
         }
         last[i] = '\0';
@@ -161,33 +147,22 @@ uint32_t number_symbol(void)
     return n_symbol;
 }
 
-uint32_t get_num_symbol(void)
-{
-    return num_symbols;
-}
-
-struct system_map *get_symbols(void)
-{
-    return system_maps;
-}
-
 void monitor_init(void)
 {
+#ifdef _MON_
     /* hard coding */
-    num_symbols = number_symbol();
+    number_symbol(&num_symbols_code);
     /* memory alloc needed to modify TODO : inkyu */
     /*
     struct system_map* system_maps =
         (struct system_map *)memory_alloc(n_symbol * sizeof(struct system_map));
         */
-    uint8_t *base = 0;
-#ifdef _MON_
-    *base = (uint8_t *)&system_map_start;
-#endif
-    char last[50];
+    uint8_t *base = (uint8_t *)&system_map_start;
     int cnt = 0;
+    int cnt_code = 0;
     int i;
     char address[9];
+    char last[MAX_LENGTH_SYMBOL];
     while (1) {
         i = 0;
         while (*base != ' ') {
@@ -195,64 +170,71 @@ void monitor_init(void)
             address[i++] = *base;
             base++;
         }
-       address[i] = '\0';
-       system_maps[cnt].address = (uint32_t)arm_hexstr2uint((char *)address);
+        address[i] = '\0';
+        system_maps[cnt].address = (uint32_t)arm_hexstr2uint((char *)address);
+        system_maps_code[cnt_code].address =
+            (uint32_t)arm_hexstr2uint((char *)address);
         /* space */
         base++;
         /* type */
         system_maps[cnt].type = *base;
+        system_maps_code[cnt_code].type = *base;
         base++;
         /* space */
         base++;
 
-        for (i = 0; i < 50; i++)
-            last[0] = '\0';
         i = 0;
         while (*base != '\r' &&  *base != '\n') {
             /* symbol */
-            system_maps[cnt].symbol[i] = last[i] = *base;
+            system_maps[cnt].symbol[i] = *base;
+            system_maps_code[cnt_code].symbol[i] = *base;
             base++;
             i++;
         }
         system_maps[cnt].symbol[i] = '\0';
-        last[i] = '\0';
+        system_maps_code[cnt_code].symbol[i] = '\0';
         /* carriage return */
         base++;
-        if (strcmp(last, "_end") == 0)
+        if (strcmp(system_maps[cnt].symbol, "_end") == 0)
             break;
         cnt++;
+        if (system_maps_code[cnt_code].type == 't' ||
+                system_maps_code[cnt_code].type == 'T' ||
+                system_maps_code[cnt_code].type == 'w' ||
+                system_maps_code[cnt_code].type == 'W')
+            cnt_code++;
     }
+#endif
 }
 
-void show_symbole(uint32_t va)
+void show_symbol(uint32_t va)
 {
     int i = 0;
-    for (i = 0; i < num_symbols; i++)
-        printH("%x %c %s\n", system_maps[i].address, system_maps[i].type,
-                system_maps[i].symbol);
+    char symbol[MAX_LENGTH_SYMBOL];
+
+    for (i = 0; i < num_symbols_code; i++)
+        printH("%x %c %s\n", system_maps_code[i].address,
+                system_maps_code[i].type, system_maps_code[i].symbol);
 }
 
-int symbol_getter_from_va(uint32_t va, char **symbol)
+int symbol_getter_from_va(uint32_t va, char *symbol)
 {
     int i;
-    i = symbol_binary_search(system_maps, va, 0, num_symbols-1);
+    i = symbol_binary_search(system_maps_code, va, 0, num_symbols_code - 1);
     if (i == KEY_NOT_FOUND) {
         printH("KEY NOT FOUND\n");
         return KEY_NOT_FOUND;
     }
-    *symbol = (char *)system_maps[i].symbol;
-    return 0;
-}
 
-int symbol_getter_from_va_lr(uint32_t va, char **symbol)
-{
-    int i;
-    i = symbol_near_search(system_maps, va, 0, num_symbols-1);
-    if (i == KEY_NOT_FOUND) {
-        printH("KEY NOT FOUND\n");
-        return KEY_NOT_FOUND;
+    strcpy(symbol, (char *)system_maps_code[i].symbol);
+
+    if (system_maps_code[i].address != va) {
+        char add[10];
+        char op[6] = " + 0x";
+        arm_uint2hexstr(add, va - system_maps_code[i].address);
+        strcat(symbol, op);
+        strcat(symbol, add);
     }
-    *symbol = (char *)system_maps[i].symbol;
     return 0;
 }
 

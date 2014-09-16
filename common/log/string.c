@@ -156,3 +156,38 @@ unsigned int arm_hexstr2uint(char *src)
 
     return val;
 }
+
+void arm_uint2hexstr(char *dst, unsigned int src)
+{
+    int ite, pos = 0;
+    static const char hexchars[] = "0123456789ABCDEF";
+
+    for (ite = 0; ite < 8; ite++) {
+        if ((pos == 0) && !((src >> (4 * (8 - ite - 1))) &
+                    0xF)) {
+            continue;
+        }
+        dst[pos] = hexchars[(src >> (4 * (8 - ite -
+                        1))) & 0xF];
+        pos++;
+    }
+    if (pos == 0) {
+        dst[pos] = '0';
+        pos++;
+    }
+    dst[pos] = '\0';
+}
+
+char *strcat(char *dest, const char *src)
+{
+    while (*dest)
+        dest++;
+
+    while (*src) {
+        *dest = *src;
+        src++;
+        dest++;
+    }
+    *dest = '\0';
+    return dest;
+}
