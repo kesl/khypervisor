@@ -188,7 +188,7 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
         } else {
             slot = vgic_inject_virq_sw(virq,
                     VIRQ_STATE_PENDING, 0,
-                    smp_processor_id(), 1);
+                    vmid/*(smp_processor_id()*/, 1);
         }
         if (slot == VGIC_SLOT_NOTFOUND)
             return result;
@@ -216,6 +216,12 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
             printh("virq: rejected queueing duplicated virq %d pirq %d to "
                     "vmid %d %s\n", virq, pirq, vmid);
         }
+#ifdef _SMP_
+        if( (result == HVMM_STATUS_SUCCESS) &&
+                (virq < 16) ) {
+            gic_set_sgi(1<<vmid, GIC_SGI_SLOT_CHECK);
+        }
+#endif
     }
     return result;
 }
@@ -689,3 +695,25 @@ hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
     return result;
 }
 
+#ifdef _SMP_
+hvmm_status_t vgic_sgi(uint32_t cpu, enum gic_sgi sgi)
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid;
+    vmid = guest_current_vmid();
+
+    if(cpu != vmid)
+        return result;
+
+    switch(sgi) {
+        case GIC_SGI_SLOT_CHECK:
+            result = vgic_flush_virqs(vmid);
+            break;
+        default:
+            printh("sgi: wrong sgi %d\n", sgi);
+            break;
+    }
+
+    return result;
+}
+#endif

@@ -72,7 +72,7 @@ void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq);
 uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq);
 void vgic_slotvirq_clear(vmid_t vmid, uint32_t slot);
 /**
- * @breif       Returns pirq mapped to virq for vm.
+ * @brief       Returns pirq mapped to virq for vm.
  * @param vmid  Guest vm id
  * @param virq  Virtual interrupt number.
  * @return      physical interrupt number.
@@ -86,4 +86,12 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
  * @return  Always returns "success".
  */
 hvmm_status_t virq_init(void);
+
+/**
+ * @brief   Send SGI to target core.
+ * @param target Target core id
+ * @param sgi    SGI number
+ * @return if sgi < 16, return "bad access", else return success.
+ */
+hvmm_status_t gic_set_sgi(const uint32_t target, uint32_t sgi);
 #endif

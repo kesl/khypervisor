@@ -104,6 +104,13 @@ static hvmm_status_t guest_interrupt_dump(void)
     return HVMM_STATUS_SUCCESS;
 }
 
+#ifdef _SMP_
+static hvmm_status_t host_sgi(uint32_t cpu, uint32_t sgi)
+{
+    return vgic_sgi(cpu, sgi);
+}
+#endif
+
 struct interrupt_ops _host_interrupt_ops = {
     .init = host_interrupt_init,
     .enable = host_interrupt_enable,
@@ -111,6 +118,9 @@ struct interrupt_ops _host_interrupt_ops = {
     .configure = host_interrupt_configure,
     .end = host_interrupt_end,
     .dump = host_interrupt_dump,
+#ifdef _SMP_
+    .sgi = host_sgi,
+#endif
 };
 
 struct interrupt_ops _guest_interrupt_ops = {
