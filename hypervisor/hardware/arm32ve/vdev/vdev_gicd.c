@@ -692,7 +692,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
                             + inc_address)));
             }
             if (!j) { // per core irq (0~31)
-                old_vgicd_status_percpu[vmid] =
+                old_vgicd_status_pervcpu[vmid] =
                     _regs_banked[vmid].ISCENABLER;
             } else { // per guest irq (32~IRQ_MAX), shared irq
                 old_vgicd_status_perguest[i][((inc_address) >> 2)-1] =
@@ -740,7 +740,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
                             + GIC_OFFSET_GICD + GICD_OFFSET_IPRIORITYR
                             + inc_address)));
             } else {
-                _regs[i].IPRIORITY[J] =
+                _regs[i].IPRIORITYR[j] =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                             + GIC_OFFSET_GICD + GICD_OFFSET_IPRIORITYR
                             + inc_address)));
@@ -791,7 +791,6 @@ static hvmm_status_t vdev_gicd_reset_values(void)
                             + GIC_OFFSET_GICD + GICD_OFFSET_CPENDGIR
                             + inc_address)));
             inc_address += 0x00000004;
->>>>>>> v1-dev
         }
 
         inc_address = 0x00000000;
