@@ -284,18 +284,15 @@ volatile uint32_t *gic_vgic_baseaddr(void)
 
 hvmm_status_t gic_init(void)
 {
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
-#endif
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
+
     HVMM_TRACE_ENTER();
     /*
      * Determining VA of GIC base adddress has not been defined yet.
      * Let is use the PA for the time being
      */
-#ifdef _SMP_
     if (!cpu) {
-#endif
         result = gic_init_baseaddr((void *)CFG_GIC_BASE_PA);
         if (result == HVMM_STATUS_SUCCESS)
             gic_dump_registers();
@@ -304,31 +301,20 @@ hvmm_status_t gic_init(void)
          */
         if (result == HVMM_STATUS_SUCCESS)
             result = gic_init_dist();
-#ifdef _SMP_
     }
-#endif
-    /*
-     * 
-     */
-
     /*
      * Initialize and Enable GIC CPU Interface for this CPU
      * For test it
      */
-#ifdef _SMP_
-	if(cpu)
+    if (cpu)
         result = HVMM_STATUS_SUCCESS;
-#endif
+
     if (result == HVMM_STATUS_SUCCESS)
         result = gic_init_cpui();
-#ifdef _SMP_
-	if(!cpu) {
-#endif
-        if (result == HVMM_STATUS_SUCCESS)
-            _gic.initialized = GIC_SIGNATURE_INITIALIZED;
-#ifdef _SMP_
-    }
-#endif
+
+    if (result == HVMM_STATUS_SUCCESS)
+        _gic.initialized = GIC_SIGNATURE_INITIALIZED;
+
     HVMM_TRACE_EXIT();
     return result;
 }

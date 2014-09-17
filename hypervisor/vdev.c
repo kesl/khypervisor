@@ -2,9 +2,7 @@
 #include <hvmm_trace.h>
 #define DEBUG
 #include <log/print.h>
-#ifdef _SMP_
 #include <smp.h>
-#endif
 
 #define MAX_VDEV    256
 
@@ -215,37 +213,33 @@ hvmm_status_t vdev_init(void)
     initcall_t *fn;
     struct vdev_module *vdev;
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
-    if(!cpu) {
-#endif
-    for (fn = __vdev_module_high_start; fn < __vdev_module_high_end; fn++) {
-        if (vdev_module_initcall(*fn)) {
-            printh("vdev : high initial call error\n");
-            return HVMM_STATUS_UNKNOWN_ERROR;
+    if (!cpu) {
+        for (fn = __vdev_module_high_start; fn < __vdev_module_high_end; fn++) {
+            if (vdev_module_initcall(*fn)) {
+                printh("vdev : high initial call error\n");
+                return HVMM_STATUS_UNKNOWN_ERROR;
+            }
+            _vdev_size[VDEV_LEVEL_HIGH]++;
         }
-        _vdev_size[VDEV_LEVEL_HIGH]++;
-    }
 
-    for (fn = __vdev_module_high_end; fn < __vdev_module_middle_end; fn++) {
-        if (vdev_module_initcall(*fn)) {
-            printh("vdev : middle initial call error\n");
-            return HVMM_STATUS_UNKNOWN_ERROR;
+        for (fn = __vdev_module_high_end; fn < __vdev_module_middle_end; fn++) {
+            if (vdev_module_initcall(*fn)) {
+                printh("vdev : middle initial call error\n");
+                return HVMM_STATUS_UNKNOWN_ERROR;
+            }
+            _vdev_size[VDEV_LEVEL_MIDDLE]++;
         }
-        _vdev_size[VDEV_LEVEL_MIDDLE]++;
-    }
 
-    for (fn = __vdev_module_middle_end; fn < __vdev_module_low_end; fn++) {
-        if (vdev_module_initcall(*fn)) {
-            printh("vdev : low initial call error\n");
-            return HVMM_STATUS_UNKNOWN_ERROR;
+        for (fn = __vdev_module_middle_end; fn < __vdev_module_low_end; fn++) {
+            if (vdev_module_initcall(*fn)) {
+                printh("vdev : low initial call error\n");
+                return HVMM_STATUS_UNKNOWN_ERROR;
+            }
+            _vdev_size[VDEV_LEVEL_LOW]++;
         }
-        _vdev_size[VDEV_LEVEL_LOW]++;
     }
-#ifdef _SMP_
-    }
-#endif
 
     for (i = 0; i < VDEV_LEVEL_MAX; i++) {
         for (j = 0; j < _vdev_size[i]; j++) {

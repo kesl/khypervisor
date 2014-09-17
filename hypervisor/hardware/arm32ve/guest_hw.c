@@ -13,7 +13,7 @@
 #define CPSR_MODE_HYP   0x1A
 #define CPSR_MODE_UND   0x1B
 #define CPSR_MODE_SYS   0x1F
-extern struct guest_struct *_current_guest[NUM_CPUS];
+
 static void context_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
 {

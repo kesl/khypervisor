@@ -3,9 +3,7 @@
 #include <log/print.h>
 #include <timer.h>
 #include <interrupt.h>
-#ifdef _SMP_
 #include <smp.h>
-#endif
 
 #define VTIMER_BASE_ADDR 0x3FFFE000
 #define VTIMER_IRQ 30
@@ -108,16 +106,13 @@ static hvmm_status_t vdev_vtimer_reset(void)
 {
     int i;
     struct timer_val timer;
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
-    if(!cpu) {
-#endif
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
-        _timer_status[i] = 1;
-#ifdef _SMP_
+    if (!cpu) {
+        for (i = 0; i < NUM_GUESTS_STATIC; i++)
+            _timer_status[i] = 1;
     }
-#endif
+
     timer.interval_us = GUEST_SCHED_TICK;
     timer.callback = &callback_timer;
 

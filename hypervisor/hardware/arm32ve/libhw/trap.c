@@ -4,10 +4,7 @@
 #include <trap.h>
 #include <guest.h>
 #include <vdev.h>
-
-#ifdef _SMP_
 #include <smp.h>
-#endif
 
 #define DEBUG
 #include <log/print.h>
@@ -40,9 +37,7 @@ hvmm_status_t _hyp_dabort(struct arch_regs *regs)
 hvmm_status_t _hyp_irq(struct arch_regs *regs)
 {
     uint32_t irq;
-#ifdef _SMP_
-    uint32_t cpu = smp_processor_id();
-#endif
+
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);

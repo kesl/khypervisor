@@ -23,6 +23,7 @@ make ARCH=arm vexpress_minhw_defconfig && \
 cp -a ../../patch/fs.cpio . && \
 cp -a ../../patch/host-a15.dtb . && \
 make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 && \
+cp System.map ../../guestimages/ && \
 cat host-a15.dtb >> arch/arm/boot/zImage && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \

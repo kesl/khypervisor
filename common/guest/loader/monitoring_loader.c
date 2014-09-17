@@ -69,6 +69,10 @@ static void monitoring_clean(char **argv, int argc)
     }
     uart_print(argv[1]);
     va = arm_hexstr2uint(argv[1]);
+    if (va > 0xFFFFFFFF) {
+        monitoring_help();
+        return;
+    }
     uart_print("clean monitoring point\n");
     uart_print_hex32(va);
     uart_print("\n");
@@ -83,6 +87,10 @@ static void monitoring_set(char **argv, int argc)
         return;
     }
     va = arm_hexstr2uint(argv[1]);
+    if (va > 0xFFFFFFFF) {
+        monitoring_help();
+        return;
+    }
     uart_print("set_monitoring_point\n");
     uart_print_hex32(va);
     uart_print("\n");
@@ -97,6 +105,10 @@ static void monitoring_break(char **argv, int argc)
         return;
     }
     va = arm_hexstr2uint(argv[1]);
+    if (va > 0xFFFFFFFF) {
+        monitoring_help();
+        return;
+    }
     uart_print("set_monitoring_point and break mode\n");
     uart_print_hex32(va);
     uart_print("\n");
@@ -112,6 +124,10 @@ static void monitoring_break_clean(char **argv, int argc)
     }
     uart_print(argv[1]);
     va = arm_hexstr2uint(argv[1]);
+    if (va > 0xFFFFFFFF) {
+        monitoring_help();
+        return;
+    }
     uart_print("clean breaking point\n");
     uart_print_hex32(va);
     uart_print("\n");

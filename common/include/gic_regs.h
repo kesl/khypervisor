@@ -25,6 +25,22 @@
 #define GICD_SGIR   (0xF00/4)
 #endif
 
+/* Distributor offset */
+#define GICD_OFFSET_CTLR   0x000
+#define GICD_OFFSET_TYPER  0x004
+#define GICD_OFFSET_IIDR   0x008
+#define GICD_OFFSET_IGROUPR    0x080
+#define GICD_OFFSET_ISENABLER    0x100
+#define GICD_OFFSET_ICENABLER    0x180
+#define GICD_OFFSET_ISPENDR    0x200
+#define GICD_OFFSET_ICPENDR    0x280
+#define GICD_OFFSET_ISCACTIVER    0x300
+#define GICD_OFFSET_IPRIORITYR    0x400
+#define GICD_OFFSET_ITARGETSR    0x800
+#define GICD_OFFSET_ICFGR    0xC00
+#define GICD_OFFSET_CPENDGIR    0xF10
+#define GICD_OFFSET_SGIR    0xF00
+
 /* CPU Interface */
 #define GICC_CTLR    (0x0000/4)
 #define GICC_PMR    (0x0004/4)

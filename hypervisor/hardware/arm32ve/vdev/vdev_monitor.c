@@ -9,7 +9,6 @@
 #include <asm_io.h>
 #include <guest.h>
 #define MONITOR_BASE_ADDR 0x3FFFD000
-#define HVC_TRAP 0xe14fff7c
 
 struct vdev_monitor_regs {
     uint32_t set_point;
@@ -21,96 +20,6 @@ static struct vdev_memory_map _vdev_monitor_info = {
    .size = 0x1000
 };
 
-uint32_t store_inst(uint32_t va, enum breakpoint_type type)
-{
-    int i;
-    uint32_t pa;
-    for (i = 0; i < NUM_DI; i++) {
-        if (inst[i][INST_VA] == va) {
-            inst[i][INST_TYPE] |= type;
-            printH("Already set breakpoint\n");
-            return 0;
-        }
-    }
-    for (i = 0; i < NUM_DI; i++) {
-        if (inst[i][INST] == EMPTY) {
-            pa = va_to_pa(va, TTBR0);
-            inst[i][INST] = (*(uint32_t *)pa);
-            inst[i][INST_VA] = va;
-            inst[i][INST_TYPE] = type;
-            return 0;
-        }
-    }
-    return 0;
-}
-
-enum breakpoint_type inst_type(uint32_t va)
-{
-    int i;
-    for (i = 0; i < NUM_DI; i++)
-        if (inst[i][INST_VA] == va)
-            return inst[i][INST_TYPE];
-    return 0;
-}
-
-uint32_t clean_inst(uint32_t va, enum breakpoint_type type)
-{
-    int i;
-    for (i = 0; i < NUM_DI; i++) {
-        if (inst[i][INST_VA] == va) {
-            inst[i][INST_TYPE] &= ~(type);
-            if (inst[i][INST_TYPE] == 0) {
-                inst[i][INST] = EMPTY;
-                inst[i][INST_VA] = EMPTY;
-                return 1;
-            }
-        break;
-/*
-            if(type == BOTH){
-                inst[i][INST] = EMPTY;
-                inst[i][INST_VA] = EMPTY;
-                inst[i][INST_TYPE] = EMPTY;
-                break;
-            } else if(inst[i][INST_TYPE] == type){
-                inst[i][INST] = EMPTY;
-                inst[i][INST_VA] = EMPTY;
-                inst[i][INST_TYPE] = EMPTY;
-                break;
-            } else if(inst[i][INST_TYPE] == BOTH){
-                inst[i][INST_TYPE] = (type == TRAP ? RETRAP : TRAP);
-                break;
-            }
-*/
-        }
-    }
-    return 0;
-}
-
-uint32_t load_inst(uint32_t va)
-{
-    int i, ori_inst;
-    for (i = 0; i < NUM_DI; i++) {
-        if (inst[i][1] == va) {
-            ori_inst = inst[i][INST];
-            return ori_inst;
-        }
-    }
-    printh("[%s : %d] corresponded instruction not found\n",
-            __func__, __LINE__);
-    return 0;
-}
-
-static void print_monitoring_list(void)
-{
-    int i;
-    for (i = 0; i < NUM_DI; i++) {
-        if (inst[i][INST] != EMPTY) {
-            printH("Monitoring va is %x, instruction is %x\n",
-                    inst[i][INST_VA], inst[i][INST]);
-        }
-    }
-}
-
 /* static struct vdev_monitor_regs monitor_regs[NUM_GUESTS_STATIC]; */
 
 static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
@@ -120,25 +29,17 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
             write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    uint32_t inst;
-    /* unsigned int vmid = guest_current_vmid(); */
     if (!write) {
         /* READ */
         /* TODO Read debugging resources */
         switch (offset) {
         case 0x8:
             /* print monitoring list */
-            /* show_symbole(0); */
-            print_monitoring_list();
-            /* *pvalue = 0; */
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_list();
             break;
         case 0x10:
             /* go */
-            printH("go!\n");
-            clean_manually_select_vmid();
-            /* guest_switchto(0, 0); */
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_run();
             break;
         }
     } else {
@@ -146,21 +47,11 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         switch (offset) {
         case 0x0:
             /* Set monitoring point */
-            store_inst(*pvalue, TRAP);
-            writel(HVC_TRAP, (uint32_t)va_to_pa(*pvalue, TTBR0));
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_break(*pvalue, TRAP);
             break;
         case 0x4:
             /* Clean monitoring point */
-            inst = load_inst(*pvalue);
-            if (clean_inst(*pvalue, TRAP))
-                writel(inst, (uint32_t)va_to_pa(*pvalue , TTBR0));
-           /*
-            if(inst_type(*pvalue) == TRAP || inst_type(*pvalue) == BOTH)
-                writel(load_inst(*pvalue), (uint32_t)va_to_pa(*pvalue , TTBR0));
-            clean_inst(*pvalue, TRAP);
-            */
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_clean(*pvalue, TRAP);
             break;
         case 0x8:
             /* read-only register, ignored, but no error */
@@ -168,17 +59,11 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
             break;
         case 0xC:
             /* break */
-            printH("break!\n");
-            store_inst(*pvalue, BREAK_TRAP);
-            writel(HVC_TRAP, (uint32_t)va_to_pa(*pvalue, TTBR0));
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_break(*pvalue, BREAK_TRAP);
             break;
         case 0x14:
             /* Clean breaking point */
-            inst = load_inst(*pvalue);
-            if (clean_inst(*pvalue, BREAK_TRAP))
-                writel(inst, (uint32_t)va_to_pa(*pvalue , TTBR0));
-            result = HVMM_STATUS_SUCCESS;
+            result = kmo_clean(*pvalue, BREAK_TRAP);
             break;
         }
     }

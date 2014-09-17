@@ -77,11 +77,11 @@ hvmm_status_t interrupt_request(uint32_t irq, interrupt_handler_t handler)
 {
     uint32_t cpu = smp_processor_id();
 
-    if (irq < MAX_PPI_IRQS) {
+    if (irq < MAX_PPI_IRQS)
         _host_ppi_handlers[cpu][irq] = handler;
-    } else {
-       _host_spi_handlers[irq] = handler;
-    }
+
+    else
+        _host_spi_handlers[irq] = handler;
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -230,18 +230,14 @@ hvmm_status_t interrupt_restore(vmid_t vmid)
 hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
-#ifdef _SMP_
-	uint32_t cpu = smp_processor_id();
+    uint32_t cpu = smp_processor_id();
 
-    if(!cpu) {
-#endif
+    if (!cpu) {
         _host_ops = _interrupt_module.host_ops;
         _guest_ops = _interrupt_module.guest_ops;
 
         _guest_virqmap = virqmap;
-#ifdef _SMP_
     }
-#endif
 
     /* host_interrupt_init() */
     if (_host_ops->init) {

@@ -175,7 +175,8 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
 
     /* Interrupt occurs to the same virtual machine running guest;Then,
      * we directly inject into guest. If it's not running guest's interrupt,
-     * we save interrupt in _guest_virqs due to preventing loss of the interrupt.
+     * we save interrupt in _guest_virqs due to preventing loss of
+     * the interrupt.
      */
     if (vmid == guest_current_vmid()) {
         uint32_t slot;
@@ -524,9 +525,9 @@ uint32_t vgic_inject_virq(
     slot = vgic_is_free_slot(slot);
     HVMM_TRACE_HEX32("lr_desc:", lr_desc);
     HVMM_TRACE_HEX32("free slot:", slot);
-    if (slot != VGIC_SLOT_NOTFOUND) {
+    if (slot != VGIC_SLOT_NOTFOUND)
         _vgic.base[GICH_LR + slot] = lr_desc;
-    }
+
     _vgic_dump_regs();
     HVMM_TRACE_EXIT();
     return slot;
@@ -544,7 +545,8 @@ uint32_t vgic_inject_virq_hw(uint32_t virq, enum virq_state state,
     HVMM_TRACE_HEX32("slot:", slot);
     if (slot != VGIC_SLOT_NOTFOUND) {
 #ifdef VGIC_SIMULATE_HWVIRQ
-        slot = vgic_inject_virq(virq, slot, state, priority, 0, smp_processor_id(), 1);
+        slot = vgic_inject_virq(virq, slot, state, priority, 0,
+                                    smp_processor_id(), 1);
 #else
         slot = vgic_inject_virq(virq, slot, state, priority, 1, pirq, 0);
 #endif
@@ -615,30 +617,23 @@ hvmm_status_t virq_init(void)
 hvmm_status_t vgic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-#ifdef _SMP_
     uint32_t cpu = smp_processor_id();
-#endif
+
     HVMM_TRACE_ENTER();
-#ifdef _SMP_
-    if(!cpu) {
-#endif
+    if (!cpu) {
         _vgic.base = gic_vgic_baseaddr();
         _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
         _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
         _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
-#ifdef _SMP_
     }
-#endif
+
     _vgic_maintenance_irq_enable(1);
-#ifdef _SMP
-    if(!cpu) {
-#endif
+    if (!cpu) {
         vgic_slotpirq_init();
         _vgic_dump_status();
         _vgic_dump_regs();
-#ifdef _smp_
     }
-#endif
+
     result = HVMM_STATUS_SUCCESS;
     HVMM_TRACE_EXIT();
 

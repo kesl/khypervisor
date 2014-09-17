@@ -98,8 +98,10 @@ $ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
-$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=11153
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=1205
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=9205
+$ sudo dd if=guestimages/zImage of=/dev/sdX bs=512 seek=9405
+$ sudo dd if=guestimages/rtos.bin of=/dev/sdX bs=512 seek=17405
 </pre>
 
 2. Setting serial port and run minicom, open 2 minicoms
@@ -117,7 +119,7 @@ $ ZIMAGE: ARNDALE #
 
 4. Enter the following command
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 1F40;mmc read 0x90000000 2b91 bb8;go 0xa000004c
+$ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1F40;mmc read 0x80000000 23F5 C8;mmc read 0x46400000 24BD 1F40;mmc read 80100000 43FD C8;mmc read 90000000 43FD C8;mmc read a0000000 43FD C8;  go 0xb000004c
 </pre>
 
 # How to test bmguest + linux guest
@@ -156,6 +158,7 @@ $ make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8
 $ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ cp ./guestos/linux/arch/arm/boot/zImage ./guestimages/zImage
 $ cp ./guestos/bmguest/bmguest.bin ./guestimages/bmguest.bin
+
 </pre>
 2. Build guestloader for linux guest
 <pre>
@@ -189,8 +192,11 @@ $ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
-$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=11153
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=1205
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=9205
+$ sudo dd if=guestimages/zImage of=/dev/sdX bs=512 seek=9405
+$ sudo dd if=guestimages/bmguest.bin of=/dev/sdX bs=512 seek=17405
+
 </pre>
 
 2. Setting serial port and run minicom, open 2 minicoms
@@ -208,7 +214,7 @@ $ ZIMAGE: ARNDALE #
 
 4. Enter the following command
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 1F40;mmc read 0x90000000 2b91 bb8;go 0xa000004c
+$ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1F40;mmc read 0x80000000 23F5 C8;mmc read 0x46400000 24BD 1F40;mmc read 80100000 43FD C8;mmc read 90000000 43FD C8;mmc read a0000000 43FD C8;  go 0xb000004c
 </pre>
 
 
@@ -267,8 +273,10 @@ $ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
 $ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
-$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=3153
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=6153
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=1205
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=9205
+$ sudo dd if=guestimages/bmguest.bin of=/dev/sdX bs=512 seek=9405
+
 </pre>
 
 2. Setting serial port and run minicom, open 2 minicoms
@@ -286,7 +294,7 @@ $ ZIMAGE: ARNDALE #
 
 4. Enter the following command
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 bb8;mmc read 0x90000000 1809 bb8;go 0xa000004c
+$ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 C8;mmc read 0x80000000 23F5 C8;mmc read 0x40100000 24BD C8;mmc read 80100000 24BD C8;mmc read 90000000 24BD C8;mmc read a0000000 24BD C8;  go 0xb000004c
 </pre>
 
 
@@ -295,6 +303,9 @@ $ ZIMAGE: ARNDALE # mmc read 0xa0000000 451 800;mmc read 0x60000000 c51 bb8;mmc 
 # How to test linaro-android(kitkat) + bmguest
 
 ## Download linaro-kernel
+before next step (Make a build in one step continuous integration)
+you must download linaro-kernel!!
+
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
 $ ./get_linaro_kernel.sh
