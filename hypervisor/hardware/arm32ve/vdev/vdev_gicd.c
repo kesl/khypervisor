@@ -155,9 +155,10 @@ static struct gicd_handler_entry _handler_map[0x10] =
     };
 
 /* old status */
-static uint32_t old_vgicd_status[1/*NUM_GUESTS_STATIC*/][NUM_STATUS_WORDS] =
+static uint32_t old_vgicd_status_pervcpu[NUM_VCPU_STATIC] = {0, };
+static uint32_t old_vgicd_status_perguest[NUM_GUESTS_STATIC][NUM_STATUS_WORDS-1] =
     {
-        { 0, }, };
+        {0, }, };
 
 static hvmm_status_t
 handler_000 (uint32_t write, uint32_t offset, uint32_t *pvalue,
@@ -233,7 +234,10 @@ vgicd_changed_istatus (vmid_t vmid, uint32_t istatus, uint8_t word_offset)
     /* irq range: 0~31 + word_offset * size_of_istatus_in_bits */
     minirq = word_offset * 32;
     /* find changed bits */
-    cstatus = old_vgicd_status[0/*vmid*/][word_offset] ^ istatus;
+    if (!word_offset) // per core irq (0~31)
+        cstatus = old_vgicd_status_pervcpu[vmid] ^ istatus;
+    else // per guest irq (32 ~ IRQ_MAX), shared irq
+        cstatus = old_vgicd_status_perguest[0/*guest's number*/][word_offset-1] ^ istatus;
     while (cstatus)
         {
             uint32_t virq;
@@ -266,7 +270,10 @@ vgicd_changed_istatus (vmid_t vmid, uint32_t istatus, uint8_t word_offset)
                 }
             cstatus &= ~(1 << bit);
         }
-    old_vgicd_status[0/*vmid*/][word_offset] = istatus;
+    if(!word_offset) // per core irq (0~31)
+        old_vgicd_status_pervcpu[vmid] = istatus;
+    else // per guest irq (32 ~ IRQ_MAX), shared irq
+        old_vgicd_status_perguest[0/*guest's number*/][word_offset-1] = istatus;
 }
 
 static hvmm_status_t
@@ -612,13 +619,16 @@ handler_F00 (uint32_t write, uint32_t offset, uint32_t *pvalue,
 
     vmid = guest_current_vmid();
     //regs_banked = &_regs_banked[vmid];
+    offset >>= 2;
 
     if(offset == GICD_SGIR) {
         // Filter Mask
         switch(*pvalue & GICD_SGIR_TARGET_LIST_FILTER_MASK)
         {
             case GICD_SGIR_TARGET_LIST:
-                target = ((*pvalue & GICD_SGIR_CPU_TARGET_LIST_MASK) >> 16);
+                target = ((*pvalue & GICD_SGIR_CPU_TARGET_LIST_MASK)
+                        >>
+                        GICD_SGIR_CPU_TARGET_LIST_OFFSET);
                 break;
             case GICD_SGIR_TARGET_OTHER:
                 target = ~(0x1<<vmid);
@@ -763,8 +773,14 @@ vdev_gicd_reset_values (void)
                             (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                                     + GIC_OFFSET_GICD + 0x180 + inc_address)));
                     }
-                    old_vgicd_status[i][(inc_address) >> 2] =
-                            _regs[i].ISCENABLER[j];
+                    if (!j) { // per core irq (0~31)
+                        old_vgicd_status_pervcpu[vmid] =
+                             _regs[i].ISCENABLER[j];
+                    }
+                    else { // per guest irq (32 ~ IRQ_MAX), shared irq
+                        old_vgicd_status_perguest[i][((inc_address) >> 2) - 1] =
+                             _regs[i].ISCENABLER[j];
+                    }
                     inc_address += 0x00000004;
                 }
             inc_address = 0x00000000;
