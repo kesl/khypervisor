@@ -10,7 +10,6 @@
 #define NUM_DI (NUM_BREAK_POINT * 2)
 #define HVC_TRAP 0xe14fff7c
 
-uint32_t inst[NUM_DI][3];
 /*
 * EMPTY =  0b000
 * TRAP =   0b001
@@ -29,19 +28,15 @@ enum ttbr_type {
 };
 
 enum inst_index {
-    INST,
+    INST = 0,
     INST_VA,
-    INST_TYPE
+    INST_TYPE,
+    NUM_INST
 };
-#define MAX_LENGTH_SYMBOL 50
-struct system_map {
-    uint32_t address;
-    uint8_t type;
-    char symbol[MAX_LENGTH_SYMBOL];
-};
+
+uint32_t inst[NUM_DI][NUM_INST];
 
 uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num);
-
 uint32_t load_inst(uint32_t va);
 uint32_t inst_type(uint32_t va);
 uint32_t store_inst(uint32_t va, uint32_t type);

@@ -24,6 +24,9 @@
         readl(l2_descriptor_address(page_table_base_address, l2_table_index))
 
 #define SHARED_ADDRESS (CFG_MEMMAP_GUEST1_OFFSET + 0xEC00000)
+/*
+ * Guest's VA to PA Monitoring
+ */
 uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
 {
     uint32_t linux_guest_ttbr, l1_des, l2_des;
@@ -89,6 +92,9 @@ uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
     return 0;
 }
 
+/*
+ * Monitoring point Manager : store_inst, load_inst, clean_inst
+ */
 uint32_t store_inst(uint32_t va, enum breakpoint_type type)
 {
     int i;
