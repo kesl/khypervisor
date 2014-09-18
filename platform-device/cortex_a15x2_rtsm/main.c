@@ -7,7 +7,6 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
-#include <monitoring.h>
 
 #define DEBUG
 #include "hvmm_trace.h"
@@ -315,10 +314,6 @@ int main_cpu_init()
 
     /* Print Banner */
     printH("%s", BANNER_STRING);
-
-#ifdef _MON_
-    monitor_init();
-#endif
 
     /* Switch to the first guest */
     guest_sched_start();

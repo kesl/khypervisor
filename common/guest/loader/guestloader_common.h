@@ -33,7 +33,8 @@ extern uint32_t guest_start;
 extern uint32_t guest_end;
 extern uint32_t loader_start;
 extern uint32_t loader_end;
-
+extern uint32_t shared_memory_start;
+extern uint32_t shared_memory_end;
 /**
 * @brief Loads a guest os.
 * @param guest_os_type Guest os type.

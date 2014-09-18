@@ -46,14 +46,10 @@ uint32_t load_inst(uint32_t va);
 uint32_t inst_type(uint32_t va);
 uint32_t store_inst(uint32_t va, uint32_t type);
 uint32_t clean_inst(uint32_t va, uint32_t type);
-void show_symbol(uint32_t va);
-extern uint32_t system_map_start;
-extern uint32_t system_map_end;
-void monitor_init(void);
-int symbol_getter_from_va(uint32_t va, char *symbol);
 hvmm_status_t kmo_list(void);
 hvmm_status_t kmo_run(void);
 hvmm_status_t kmo_break(uint32_t va, uint32_t type);
 hvmm_status_t kmo_clean(uint32_t va, uint32_t type);
+hvmm_status_t kmo_all_clean();
 void kmo_break_handler(struct arch_regs **regs, uint32_t type);
 #endif

@@ -41,6 +41,10 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
             /* go */
             result = kmo_run();
             break;
+        case 0x18:
+            /* all clean */
+            result = kmo_all_clean();
+            break;
         }
     } else {
         /* WRITE */

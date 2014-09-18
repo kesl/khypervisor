@@ -16,6 +16,9 @@ INPUT(GUEST_PATH)
 #ifdef USE_ANDROID_INITRD
 INPUT(INITRD_PATH)
 #endif
+#ifdef _MON_
+INPUT(../../guestimages/System.map)
+#endif
 
 PHYS_STACK  = LDS_STACK;
 GUEST_START = LDS_GUEST_START;
@@ -37,6 +40,13 @@ SECTIONS
  initrd_end = .;
  #endif
 
+ #ifdef _MON_
+ system_map_start = 0x80D00000;
+ . = system_map_start;
+ .systemmap : {../../guestimages/System.map}
+ system_map_end = .;
+ #endif
+
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {
@@ -56,6 +66,16 @@ SECTIONS
     *(.bss)
  }
  end_bss = .;
+
+/*
+ #ifdef _MON_
+ . = 0x8EA00000;
+ system_map_address = .;
+ .systemmap : {../../guestimages/System.map}
+ #endif
+*/
+ shared_memory_start = 0x8EC00000;
+ shared_memory_end = . + 0x400000;
 
  . = PHYS_STACK;
  guestloader_stacktop_svc = .;

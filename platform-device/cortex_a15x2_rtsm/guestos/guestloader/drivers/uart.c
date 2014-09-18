@@ -1,6 +1,7 @@
 #include "arch_types.h"
 #include <log/uart_print.h>
 #include "pl011.h"
+#include <log/print.h>
 
 #define UART_BASE  PL011_BASE
 #define UART_INCLK 24000000
@@ -103,4 +104,5 @@ void uart_gets(char *str, int max_column)
 void uart_init(void)
 {
     pl011_init(UART_BASE, UART_BAUD, UART_INCLK);
+    init_print();
 }

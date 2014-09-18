@@ -23,6 +23,7 @@
 #define l2_descriptor(page_table_base_address, l2_table_index) \
         readl(l2_descriptor_address(page_table_base_address, l2_table_index))
 
+#define SHARED_ADDRESS (CFG_MEMMAP_GUEST1_OFFSET + 0xEC00000)
 uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
 {
     uint32_t linux_guest_ttbr, l1_des, l2_des;
@@ -84,159 +85,6 @@ uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
     default:
         printH("[%s : %d] ERROR\n", __func__, __LINE__);
         return 0;
-    }
-    return 0;
-}
-
-struct system_map system_maps[33000];
-struct system_map system_maps_code[18000];
-uint32_t num_symbols_code;
-
-#define KEY_NOT_FOUND -1
-int symbol_binary_search(struct system_map map[], int key, int imin, int imax)
-{
-    int imid;
-    while (imax >= imin) {
-        imid = (imin + imax) / 2;
-        if (map[imid].address == key)
-            return imid;
-        else if (map[imid].address < key)
-            imin = imid + 1;
-        else
-            imax = imid - 1;
-    }
-    if (map[imid].address > key)
-        return imid - 1;
-    else
-        return imid;
-}
-
-/*
- * cnt : The number of type T symbol
- * return : The number of total symbol
- */
-uint32_t number_symbol(uint32_t *cnt)
-{
-#ifdef _MON_
-    /* hard coding */
-    unsigned char *base = 0;
-    uint32_t n_symbol = 0;
-    char last[MAX_LENGTH_SYMBOL];
-    int i;
-    base = (unsigned char *)&system_map_start;
-    while (1) {
-        while (*base != ' ') {
-            /* address */
-            base++;
-        }
-        /* space */
-        base++;
-        /* type */
-        if (*base == 't' || *base == 'T' || *base == 'w' || *base == 'W')
-            (*cnt)++;
-        base++;
-        /* space */
-        base++;
-        i = 0;
-        while (*base != '\r' &&  *base != '\n') {
-            /* symbol */
-            last[i++] = *base++;
-        }
-        last[i] = '\0';
-        /* carriage return */
-        base++;
-        n_symbol++;
-        if (strcmp(last, "_end") == 0)
-            break;
-    }
-    return n_symbol;
-#endif
-}
-
-void monitor_init(void)
-{
-#ifdef _MON_
-    /* hard coding */
-    number_symbol(&num_symbols_code);
-    /* memory alloc needed to modify TODO : inkyu */
-    /*
-    struct system_map* system_maps =
-        (struct system_map *)memory_alloc(n_symbol * sizeof(struct system_map));
-        */
-    uint8_t *base = (uint8_t *)&system_map_start;
-    int cnt = 0;
-    int cnt_code = 0;
-    int i;
-    char address[9];
-    while (1) {
-        i = 0;
-        while (*base != ' ') {
-            /* address */
-            address[i++] = *base;
-            base++;
-        }
-        address[i] = '\0';
-        system_maps[cnt].address = (uint32_t)arm_hexstr2uint((char *)address);
-        system_maps_code[cnt_code].address =
-            (uint32_t)arm_hexstr2uint((char *)address);
-        /* space */
-        base++;
-        /* type */
-        system_maps[cnt].type = *base;
-        system_maps_code[cnt_code].type = *base;
-        base++;
-        /* space */
-        base++;
-
-        i = 0;
-        while (*base != '\r' &&  *base != '\n') {
-            /* symbol */
-            system_maps[cnt].symbol[i] = *base;
-            system_maps_code[cnt_code].symbol[i] = *base;
-            base++;
-            i++;
-        }
-        system_maps[cnt].symbol[i] = '\0';
-        system_maps_code[cnt_code].symbol[i] = '\0';
-        /* carriage return */
-        base++;
-        if (strcmp(system_maps[cnt].symbol, "_end") == 0)
-            break;
-        cnt++;
-        if (system_maps_code[cnt_code].type == 't' ||
-                system_maps_code[cnt_code].type == 'T' ||
-                system_maps_code[cnt_code].type == 'w' ||
-                system_maps_code[cnt_code].type == 'W')
-            cnt_code++;
-    }
-#endif
-}
-
-void show_symbol(uint32_t va)
-{
-    int i = 0;
-    for (i = 0; i < num_symbols_code; i++)
-        printH("%x %c %s\n", system_maps_code[i].address,
-                system_maps_code[i].type, system_maps_code[i].symbol);
-}
-
-int symbol_getter_from_va(uint32_t va, char *symbol)
-{
-    int i;
-    i = symbol_binary_search(system_maps_code, va, 0, num_symbols_code - 1);
-    if (i == KEY_NOT_FOUND) {
-        printH("KEY NOT FOUND\n");
-        return KEY_NOT_FOUND;
-    }
-
-    strcpy(symbol, (char *)system_maps_code[i].symbol);
-
-    if (system_maps_code[i].address != va) {
-        char add[10];
-        char op[6] = " + 0x";
-        arm_uint2hexstr(add, va - system_maps_code[i].address);
-        strcat(symbol, op);
-        strcat(symbol, add);
     }
     return 0;
 }
@@ -304,15 +152,28 @@ uint32_t load_inst(uint32_t va)
     return 0;
 }
 
+#define MO_GUEST 1
+#define MO_VIRQ 20
+#include <k-hypervisor-config.h>
+
+struct monitoring_data {
+    uint32_t caller_va;
+    uint32_t callee_va;
+    uint32_t inst;
+    struct arch_regs regs;
+};
+
 hvmm_status_t kmo_list(void)
 {
     int i;
-    char symbol[MAX_LENGTH_SYMBOL];
+    struct monitoring_data *data;
     for (i = 0; i < NUM_DI; i++) {
         if (inst[i][INST] != EMPTY) {
-            symbol_getter_from_va(inst[i][INST_VA], symbol);
-            printH("Monitoring symbol is %s, va is %x, instruction is %x\n",
-                    symbol, inst[i][INST_VA], inst[i][INST]);
+            data = (struct monitoring_data *)(SHARED_ADDRESS);
+            data->caller_va = inst[i][INST_VA];
+            data->callee_va = 0;
+            data->inst = inst[i][INST];
+            interrupt_guest_inject(MO_GUEST, MO_VIRQ, 0, INJECT_SW);
         }
     }
     return HVMM_STATUS_SUCCESS;
@@ -346,29 +207,40 @@ hvmm_status_t kmo_clean(uint32_t va, uint32_t type)
     return HVMM_STATUS_SUCCESS;
 }
 
+hvmm_status_t kmo_all_clean()
+{
+    int i;
+    for (i = 0; i < NUM_DI; i++) {
+        if (inst[i][INST] != EMPTY)
+            kmo_clean(inst[i][INST_VA], TRAP | RETRAP | BREAK_TRAP);
+    }
+    return HVMM_STATUS_SUCCESS;
+}
+
 void kmo_break_handler(struct arch_regs **regs, uint32_t type)
 {
-    char call_symbol[MAX_LENGTH_SYMBOL];
-    char callee_symbol[MAX_LENGTH_SYMBOL];
     uint32_t restore_inst, ori_va, ori_pa, lr;
 
     asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
     ori_va = (*regs)->pc - 4;
     ori_pa = (uint32_t)va_to_pa(ori_va, TTBR0);
-    printH("pc %x lr %x\n", (*regs)->pc, (*regs)->lr);
-    printH("pa is %x, va is %x, inst_type : %x\n", ori_pa, ori_va,
-            inst_type(ori_va));
 
     restore_inst = load_inst(ori_va);
     writel(restore_inst, ori_pa);
 
-    printH("Traped inst. Restore inst is %x\n",
-            *(uint32_t *)(ori_pa));
-
     if (type != RETRAP) {
-        symbol_getter_from_va(ori_va, call_symbol);
-        symbol_getter_from_va(lr, callee_symbol);
-        printH("CPU 0 %s <- %s\n", call_symbol, callee_symbol);
+        struct monitoring_data *data =
+            (struct monitoring_data *)(SHARED_ADDRESS);
+        data->caller_va = ori_va;
+        data->callee_va = lr;
+        data->inst = restore_inst;
+        data->regs.cpsr = (*regs)->cpsr;
+        data->regs.pc = (*regs)->pc;
+        data->regs.lr = (*regs)->lr;
+        int i;
+        for (i = 0; i < 13; i++)
+            data->regs.gpr[i] = (*regs)->gpr[i];
+        interrupt_guest_inject(MO_GUEST, MO_VIRQ, 0, INJECT_SW);
     }
 
     switch (type) {

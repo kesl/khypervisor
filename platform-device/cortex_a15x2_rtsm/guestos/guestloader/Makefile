@@ -8,6 +8,8 @@ include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
 COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
 OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
+	$(COMMON_SOURCE_DIR)/log/print.o \
+	$(COMMON_SOURCE_DIR)/log/format.o \
 	$(COMMON_SOURCE_DIR)/log/string.o \
 	$(COMMON_SOURCE_DIR)/guest/core/exception.o \
 	$(COMMON_SOURCE_DIR)/guest/core/gic.o \
@@ -15,13 +17,15 @@ OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
 	$(COMMON_LOADER_DIR)/linuxloader.o \
 	$(COMMON_LOADER_DIR)/guestloader_common.o \
 	$(COMMON_LOADER_DIR)/cli.o \
-	$(COMMON_LOADER_DIR)/monitoring_loader.o
+	$(COMMON_LOADER_DIR)/monitoring_cli.o \
+	$(COMMON_LOADER_DIR)/monitoring.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
 			 -I$(COMMON_LOADER_DIR) -I$(COMMON_SOURCE_DIR)/guest \
 			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../
+
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
@@ -32,6 +36,7 @@ GUESTLOADERCONFIGS = -DLINUX_GUEST
 GUESTBIN	= ../../guestimages/zImage
 else
 GUESTBIN	= ../../guestimages/bmguest.bin
+GUESTLOADERCONFIGS += -D_MON_
 endif
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN)
 ifeq ($(ANDROID), y)

@@ -62,7 +62,6 @@ void loader_boot_guest(uint32_t guest_os_type)
         /* Copies guest to start address */
         copy_image_to_addr(GUEST, (uint32_t *)START_ADDR);
     }
-
     /* Jump to start address of guest */
     JUMP_TO_ADDRESS(START_ADDR);
 

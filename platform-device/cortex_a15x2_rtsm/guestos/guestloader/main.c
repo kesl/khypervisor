@@ -4,6 +4,7 @@
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include "drivers/timer.h"
+#include <monitoring.h>
 
 #define MAX_CMD_STR_SIZE    256
 #define PROMPT  "kboot# "
@@ -23,6 +24,9 @@ static void guestloader_init(void)
     timer_init();
     /* Initializes autoboot flag */
     autoboot = 0;
+#ifdef _MON_
+    monitoring_init();
+#endif
 }
 
 void guestloader_flag_autoboot(int flag)

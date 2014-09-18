@@ -1,5 +1,10 @@
-#include <monitoring_loader.h>
+#include <monitoring_cli.h>
+#include <monitoring.h>
 #include <arch_types.h>
+#include <gic.h>
+#define DEBUG
+#include <log/print.h>
+#include <log/uart_print.h>
 
 #define VDEV_MONITORING_BASE 0x3FFFD000
 
@@ -10,9 +15,11 @@ volatile uint32_t *base_break = (uint32_t *) (VDEV_MONITORING_BASE + 0xC);
 volatile uint32_t *base_go =    (uint32_t *) (VDEV_MONITORING_BASE + 0x10);
 volatile uint32_t *base_break_clean =
                                 (uint32_t *) (VDEV_MONITORING_BASE + 0x14);
+volatile uint32_t *base_all_clean =
+                                (uint32_t *) (VDEV_MONITORING_BASE + 0x18);
 
 #define monitoring_list()  (*base_list)
-#define NUM_MONITORING_CMD 8
+#define NUM_MONITORING_CMD MONITORING_NOINPUT
 
 #define MAX_INPUT_SIZE    256
 #define MAX_CMD_SIZE    32
@@ -20,7 +27,7 @@ volatile uint32_t *base_break_clean =
 #define SPACE ' '
 
 enum monitoring_cmd_type {
-    MONITORING_SET,
+    MONITORING_SET = 0,
     MONITORING_CLEAN,
     MONITORING_LIST,
     MONITORING_BREAK,
@@ -28,7 +35,13 @@ enum monitoring_cmd_type {
     MONITORING_HELP,
     MONITORING_EXIT,
     MONITORING_BREAK_CLEAN,
+    MONITORING_ALL_CLEAN,
     MONITORING_NOINPUT
+};
+
+enum cmd_status {
+    CMD_STATUS_SUCCESS = 0,
+    CMD_STATUS_ERROR = -1
 };
 
 struct monitoring_cmd {
@@ -36,110 +49,92 @@ struct monitoring_cmd {
     enum monitoring_cmd_type cmd_type;
 };
 
+
 static struct monitoring_cmd monitoring_cmd_type_map_tbl[NUM_MONITORING_CMD] = {
-    {"set", MONITORING_SET},
-    {"clean", MONITORING_CLEAN},
-    {"list", MONITORING_LIST},
-    {"break", MONITORING_BREAK},
+    {"mp", MONITORING_SET},
+    {"mc", MONITORING_CLEAN},
+    {"ls", MONITORING_LIST},
+    {"bp", MONITORING_BREAK},
     {"go", MONITORING_GO},
-    {"help", MONITORING_HELP},
-    {"break_clean", MONITORING_BREAK_CLEAN},
+    {"h", MONITORING_HELP},
+    {"bc", MONITORING_BREAK_CLEAN},
+    {"clear", MONITORING_ALL_CLEAN},
     {"exit", MONITORING_EXIT}
 };
 
 static void monitoring_help(void)
 {
-    uart_print("help            - Display this information\n"
-               "set <address>   - Set monitoring point\n"
-               "break <address> - Set monitoring point and break point\n"
-               "list            - Display setted pointres\n"
-               "go              - unlock break\n"
-               "clean <address> - Clean monitoring point\n"
-               "break_clean <address> - Clean breaking point\n"
-               "exit            - exit monitoring mode\n");
+    uart_print("h                - Display list of commands\n"
+               "mp <address>     - Set monitoring point\n"
+               "bp <address>     - Set break point\n"
+               "ls               - Display setted pointres\n"
+               "go               - unlock break\n"
+               "mc <address>     - Clean monitoring point\n"
+               "bc <address>     - Clean breaking point\n"
+               "clear            - Clean all monitoring point\n"
+               "exit             - exit monitoring mode\n");
+}
+
+static enum cmd_status check_vaild_va(char **argv, int argc, uint32_t *va)
+{
+    if ((argc != 2) || !((argv[1][0] == '0') && (argv[1][1] == 'x'))) {
+        monitoring_help();
+        return CMD_STATUS_ERROR;
+    }
+    *va = arm_hexstr2uint(argv[1]);
+    if (*va > 0xFFFFFFFF) {
+        monitoring_help();
+        return CMD_STATUS_ERROR;
+    }
+    return CMD_STATUS_SUCCESS;
 }
 
 static void monitoring_clean(char **argv, int argc)
 {
     uint32_t va;
-
-    if ((argc != 2) || !((argv[1][0] == '0') && (argv[1][1] == 'x'))) {
-        monitoring_help();
-        return;
+    if (check_vaild_va(argv, argc, &va) == CMD_STATUS_SUCCESS) {
+        printh("clean monitoring point %x\n", va);
+        *base_clean = va;
     }
-    uart_print(argv[1]);
-    va = arm_hexstr2uint(argv[1]);
-    if (va > 0xFFFFFFFF) {
-        monitoring_help();
-        return;
-    }
-    uart_print("clean monitoring point\n");
-    uart_print_hex32(va);
-    uart_print("\n");
-    *base_clean = va;
 }
 
 static void monitoring_set(char **argv, int argc)
 {
     uint32_t va;
-    if ((argc != 2) || !((argv[1][0] == '0') && (argv[1][1] == 'x'))) {
-        monitoring_help();
-        return;
+    if (check_vaild_va(argv, argc, &va) == CMD_STATUS_SUCCESS) {
+        printh("set monitoring point %x\n", va);
+        *base_set = va;
     }
-    va = arm_hexstr2uint(argv[1]);
-    if (va > 0xFFFFFFFF) {
-        monitoring_help();
-        return;
-    }
-    uart_print("set_monitoring_point\n");
-    uart_print_hex32(va);
-    uart_print("\n");
-    *base_set = va;
 }
 
 static void monitoring_break(char **argv, int argc)
 {
     uint32_t va;
-    if ((argc != 2) || !((argv[1][0] == '0') && (argv[1][1] == 'x'))) {
-        monitoring_help();
-        return;
+    if (check_vaild_va(argv, argc, &va) == CMD_STATUS_SUCCESS) {
+        printh("set monitoring porint and break mode %x\n", va);
+        *base_break = va;
     }
-    va = arm_hexstr2uint(argv[1]);
-    if (va > 0xFFFFFFFF) {
-        monitoring_help();
-        return;
-    }
-    uart_print("set_monitoring_point and break mode\n");
-    uart_print_hex32(va);
-    uart_print("\n");
-    *base_break = va;
 }
 static void monitoring_break_clean(char **argv, int argc)
 {
     uint32_t va;
-
-    if ((argc != 2) || !((argv[1][0] == '0') && (argv[1][1] == 'x'))) {
-        monitoring_help();
-        return;
+    if (check_vaild_va(argv, argc, &va) == CMD_STATUS_SUCCESS) {
+        printh("clean breaking point %x\n", va);
+        *base_break_clean = va;
     }
-    uart_print(argv[1]);
-    va = arm_hexstr2uint(argv[1]);
-    if (va > 0xFFFFFFFF) {
-        monitoring_help();
-        return;
-    }
-    uart_print("clean breaking point\n");
-    uart_print_hex32(va);
-    uart_print("\n");
-    *base_break_clean = va;
 }
 
-static void monitoring_go()
+static void monitoring_go(void)
 {
-    uart_print("Go!\n");
+    printh("Go!\n");
     *base_go;
 }
 
+static void monitoring_all_clean(void)
+{
+    printh("Clean all monitoring point!\n");
+    *base_all_clean;
+}
 
 static enum monitoring_cmd_type convert_to_monitoring_cmd_type(char *input_cmd)
 {
@@ -211,13 +206,12 @@ int monitoring_cmd(void)
         case MONITORING_BREAK_CLEAN:
             monitoring_break_clean(argv, argc);
             break;
+        case MONITORING_ALL_CLEAN:
+            monitoring_all_clean();
+            break;
         case MONITORING_EXIT:
+            monitoring_all_clean();
             return 0;
-        }
-        {
-        int i;
-            for (i = 0; i < 32; i++)
-                argv[i] = NULL;
         }
     }
     return 0;
