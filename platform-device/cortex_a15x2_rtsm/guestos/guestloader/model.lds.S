@@ -67,13 +67,6 @@ SECTIONS
  }
  end_bss = .;
 
-/*
- #ifdef _MON_
- . = 0x8EA00000;
- system_map_address = .;
- .systemmap : {../../guestimages/System.map}
- #endif
-*/
  shared_memory_start = 0x8EC00000;
  shared_memory_end = . + 0x400000;
 
