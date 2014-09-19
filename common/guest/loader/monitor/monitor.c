@@ -1,5 +1,5 @@
-#include <monitoring.h>
-#include <monitoring_cli.h>
+#include <monitor.h>
+#include <monitor_cli.h>
 #include <log/string.h>
 #define DEBUG
 #include <log/print.h>
@@ -183,7 +183,8 @@ struct monitoring_data {
 
 void send_monitoring_data(uint32_t range, uint32_t src)
 {
-    struct monitoring_data *shared_start = (struct monitoring_data *)0x8EC00000;
+    struct monitoring_data *shared_start =
+        (struct monitoring_data*)(&shared_memory_start);
     shared_start->memory_range = range;
     shared_start->start_memory = src;
 }
@@ -193,7 +194,8 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
     char call_symbol[MAX_LENGTH_SYMBOL];
     char callee_symbol[MAX_LENGTH_SYMBOL];
 
-    struct monitoring_data *shared_start = (struct monitoring_data *)0x8EC00000;
+    struct monitoring_data *shared_start = (struct monitoring_data
+            *)(&shared_memory_start);
     symbol_getter_from_va(shared_start->caller_va, call_symbol);
     if (shared_start->type == MONITORING) {
         symbol_getter_from_va(shared_start->callee_va, callee_symbol);
@@ -205,7 +207,7 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
     } else if (shared_start->type == MEMORY) {
         /* dump memory */
         int i, j;
-        uint32_t *dump_base = (uint32_t *)0x8EC00100;
+        uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
         uint32_t base_memory = shared_start->start_memory;
         for (i = 0; i < shared_start->memory_range; i++) {
             if ((uint32_t)dump_base > &shared_memory_end) {
@@ -231,5 +233,6 @@ void monitoring_init(void)
 {
     gic_set_irq_handler(MONITORING_IRQ, monitoring_handler, 0);
     symbol_parser_init();
+    printh("%x %x\n", shared_memory_start, &shared_memory_start);
 }
 

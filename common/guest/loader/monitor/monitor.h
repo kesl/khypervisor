@@ -1,5 +1,5 @@
-#ifndef __MONITORING_H__
-#define __MONITORING_H__
+#ifndef __MONITOR_H__
+#define __MONITOR_H__
 
 #include <arch_types.h>
 #define MAX_LENGTH_SYMBOL 50

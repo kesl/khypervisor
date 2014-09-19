@@ -4,7 +4,7 @@
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include "drivers/timer.h"
-#include <monitoring.h>
+#include <monitor.h>
 
 #define MAX_CMD_STR_SIZE    256
 #define PROMPT  "kboot# "

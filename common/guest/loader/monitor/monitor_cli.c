@@ -1,5 +1,5 @@
-#include <monitoring_cli.h>
-#include <monitoring.h>
+#include <monitor_cli.h>
+#include <monitor.h>
 #include <arch_types.h>
 #include <gic.h>
 #define DEBUG

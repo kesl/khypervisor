@@ -17,14 +17,15 @@ OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
 	$(COMMON_LOADER_DIR)/linuxloader.o \
 	$(COMMON_LOADER_DIR)/guestloader_common.o \
 	$(COMMON_LOADER_DIR)/cli.o \
-	$(COMMON_LOADER_DIR)/monitoring_cli.o \
-	$(COMMON_LOADER_DIR)/monitoring.o
+	$(COMMON_LOADER_DIR)/monitor/monitor_cli.o \
+	$(COMMON_LOADER_DIR)/monitor/monitor.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
 			 -I$(COMMON_LOADER_DIR) -I$(COMMON_SOURCE_DIR)/guest \
-			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../
+			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../ \
+			 -I$(COMMON_LOADER_DIR)/monitor
 
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
