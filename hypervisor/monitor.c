@@ -190,8 +190,7 @@ hvmm_status_t monitor_dump_guest_memory(void)
         base_memory += 4;
     }
     data->type = MEMORY;
-    interrupt_guest_inject(MO_GUEST, MO_VIRQ, 0, INJECT_SW);
-    //monitor_notify_guest(MO_GUEST);
+    monitor_notify_guest(MO_GUEST);
 
     return HVMM_STATUS_SUCCESS;
 }
