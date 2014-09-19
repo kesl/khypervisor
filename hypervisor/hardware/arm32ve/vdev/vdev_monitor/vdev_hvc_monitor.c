@@ -6,7 +6,7 @@
 #include <vdev.h>
 #include <log/print.h>
 #include <asm-arm_inline.h>
-#include <monitoring.h>
+#include <monitor.h>
 #include <asm_io.h>
 #include <guest.h>
 #define HVC_TRAP 0xe14fff7c

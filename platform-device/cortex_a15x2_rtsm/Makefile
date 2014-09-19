@@ -41,7 +41,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_hvc_ditrap.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_hvc_monitor.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor_utils.o		\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\

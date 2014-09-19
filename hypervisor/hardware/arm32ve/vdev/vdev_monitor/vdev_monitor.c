@@ -5,7 +5,7 @@
 #include <vdev.h>
 #define DEBUG
 #include <log/print.h>
-#include <monitoring.h>
+#include <monitor.h>
 #include <asm_io.h>
 #include <guest.h>
 #define MONITOR_BASE_ADDR 0x3FFFD000
