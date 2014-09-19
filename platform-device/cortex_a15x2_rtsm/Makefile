@@ -34,7 +34,6 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/timer_hw.o					\
 	$(HYPERVISOR_HW_DIR)/interrupt_hw.o				\
 	$(HYPERVISOR_HW_DIR)/memory_hw.o				\
-	$(HYPERVISOR_HW_DIR)/monitoring_hw.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_cp.o				\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_gicd.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ping.o		\
@@ -42,9 +41,10 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_ditrap.o \
-	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor.o \
-	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_hvc_monitor.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor_utils.o		\
+	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
