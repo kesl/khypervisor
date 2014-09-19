@@ -9,8 +9,6 @@
 #define NUM_BREAK_POINT 50
 #define NUM_DI (NUM_BREAK_POINT * 2)
 #define HVC_TRAP 0xe14fff7c
-#define MO_GUEST 1
-#define MO_VIRQ 20
 
 #define LIST 0
 #define MONITORING 1
@@ -62,26 +60,34 @@ struct monitoring_data {
     uint32_t start_memory;
 };
 
-uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num);
-uint32_t monitor_load_inst(uint32_t va);
-uint32_t monitor_inst_type(uint32_t va);
-uint32_t monitor_store_inst(uint32_t va, uint32_t type);
-uint32_t monitor_clean_inst(uint32_t va, uint32_t type);
+struct monitor_vmid {
+    vmid_t vmid_monitor;
+    vmid_t vmid_target;
+};
 
-hvmm_status_t monitor_run_guest(void);
-hvmm_status_t monitor_break_guest(void);
-hvmm_status_t monitor_insert_break_to_guest(uint32_t va);
-hvmm_status_t monitor_insert_trace_to_guest(uint32_t va);
-hvmm_status_t monitor_clean_guest(uint32_t va, uint32_t type);
-hvmm_status_t monitor_clean_break_guest(uint32_t va);
-hvmm_status_t monitor_clean_trace_guest(uint32_t va);
-hvmm_status_t monitor_clean_all_guest();
-hvmm_status_t monitor_dump_guest_memory(void);
-hvmm_status_t monitor_detect_fault();
-hvmm_status_t monitor_recovery_guest();
-hvmm_status_t monitor_request(int irq, vmid_t vmid, int address);
+uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num);
+uint32_t monitor_load_inst(vmid_t vmid, uint32_t va);
+uint32_t monitor_inst_type(vmid_t vmid, uint32_t va);
+uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, uint32_t type);
+uint32_t monitor_clean_inst(vmid_t vmid, uint32_t va, uint32_t type);
+
+hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_break_guest(vmid_t vmid);
+hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
+                                                uint32_t va);
+hvmm_status_t monitor_insert_trace_to_guest(struct monitor_vmid *mvmid,
+                                                uint32_t va);
+hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
+                                                uint32_t type);
+hvmm_status_t monitor_clean_break_guest(struct monitor_vmid *mvmid, uint32_t va);
+hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid, uint32_t va);
+hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_recovery_guest(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_request(int irq, struct monitor_vmid *mvmid, int address);
 hvmm_status_t monitor_notify_guest(vmid_t vmid);
-hvmm_status_t monitor_list(void);
+hvmm_status_t monitor_list(struct monitor_vmid *mvmid);
 hvmm_status_t monitor_init();
 
 #endif

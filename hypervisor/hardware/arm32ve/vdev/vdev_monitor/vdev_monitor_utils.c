@@ -26,7 +26,7 @@
 /*
  * Guest's VA to PA Monitoring
  */
-uint64_t va_to_pa(uint32_t va, uint32_t ttbr_num)
+uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num)
 {
     uint32_t linux_guest_ttbr, l1_des, l2_des;
     if (ttbr_num) {

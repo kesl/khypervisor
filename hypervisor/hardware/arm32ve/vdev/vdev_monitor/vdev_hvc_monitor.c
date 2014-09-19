@@ -12,25 +12,26 @@
 #define HVC_TRAP 0xe14fff7c
 /* 80315514 */
 
-void monitor_hvc_pre_handler(struct arch_regs **regs)
+void monitor_hvc_pre_handler(vmid_t vmid, struct arch_regs **regs)
 {
     uint32_t restore_inst, ori_va, ori_pa;
 
     ori_va = (*regs)->pc - 4;
-    ori_pa = (uint32_t)va_to_pa(ori_va, TTBR0);
+    ori_pa = (uint32_t)va_to_pa(vmid, ori_va, TTBR0);
 
-    restore_inst = monitor_load_inst(ori_va);
+    restore_inst = monitor_load_inst(vmid, ori_va);
     writel(restore_inst, ori_pa);
 }
 
-void monitor_hvc_post_handler(struct arch_regs **regs, uint32_t type)
+void monitor_hvc_post_handler(vmid_t vmid, struct arch_regs **regs,
+                                uint32_t type)
 {
     /* Restore pc */
     if (type != BREAK_TRAP)
         (*regs)->pc -= 4;
 }
 
-void monitor_hvc_break_handler(struct arch_regs **regs)
+void monitor_hvc_break_handler(vmid_t vmid, struct arch_regs **regs)
 {
     int i;
     uint32_t ori_va, lr, sp;
@@ -54,20 +55,20 @@ void monitor_hvc_break_handler(struct arch_regs **regs)
     for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
         data->regs.gpr[i] = (*regs)->gpr[i];
 
-    monitor_notify_guest(MO_GUEST);
+    monitor_notify_guest(MONITOR_GUEST_VMID);
 
     /* Set next trap for retrap */
     /* TODO Needs status of Branch instruction. */
-    monitor_store_inst((*regs)->pc, RETRAP);
-    writel(HVC_TRAP, (uint32_t)va_to_pa((*regs)->pc, TTBR0));
+    monitor_store_inst(vmid, (*regs)->pc, RETRAP);
+    writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc, TTBR0));
 
     /* Restore pc */
      (*regs)->pc -= 4;
 
-    monitor_break_guest();
+    monitor_break_guest(vmid);
 }
 
-void monitor_hvc_trace_handler(struct arch_regs **regs)
+void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 {
     int i;
     uint32_t ori_va, lr, sp;
@@ -91,29 +92,30 @@ void monitor_hvc_trace_handler(struct arch_regs **regs)
     for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
         data->regs.gpr[i] = (*regs)->gpr[i];
 
-    monitor_notify_guest(MO_GUEST);
+    monitor_notify_guest(MONITOR_GUEST_VMID);
 
     /* Set next trap for retrap */
     /* TODO Needs status of Branch instruction. */
-    monitor_store_inst((*regs)->pc, RETRAP);
-    writel(HVC_TRAP, (uint32_t)va_to_pa((*regs)->pc, TTBR0));
+    monitor_store_inst(vmid, (*regs)->pc, RETRAP);
+    writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc, TTBR0));
 }
 
-void monitor_hvc_retrap_handler(struct arch_regs **regs)
+void monitor_hvc_retrap_handler(vmid_t vmid, struct arch_regs **regs)
 {
     uint32_t ori_va;
 
     ori_va = (*regs)->pc - 4;
 
     /* Clean break point at retrap point. It do not need keep break point */
-    monitor_clean_inst(ori_va, RETRAP);
+    monitor_clean_inst(vmid, ori_va, RETRAP);
     /* Set previous pc to trap */
-    writel(HVC_TRAP, (uint32_t)va_to_pa((*regs)->pc-8, TTBR0));
+    writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc-8, TTBR0));
 }
 
 static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
+    vmid_t vmid = guest_current_vmid();
 /*
     uint32_t sp, lr, spsr;
     printH("[hyp] : Dump K-Hypervisor's registers\n\r");
@@ -131,21 +133,21 @@ static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
     printH(" - irq: spsr:%x sp:%x lr:%x\n", spsr, sp, lr);
     printH(" - Current guest's vmid is %d\n", guest_current_vmid());
 */
-    switch (monitor_inst_type(regs->pc - 4)) {
+    switch (monitor_inst_type(vmid, regs->pc - 4)) {
     case BREAK_TRAP:
-        monitor_hvc_pre_handler(&regs);
-        monitor_hvc_break_handler(&regs);
-        monitor_hvc_post_handler(&regs, BREAK_TRAP);
+        monitor_hvc_pre_handler(vmid, &regs);
+        monitor_hvc_break_handler(vmid, &regs);
+        monitor_hvc_post_handler(vmid, &regs, BREAK_TRAP);
         break;
     case TRAP:
-        monitor_hvc_pre_handler(&regs);
-        monitor_hvc_trace_handler(&regs);
-        monitor_hvc_post_handler(&regs, TRAP);
+        monitor_hvc_pre_handler(vmid, &regs);
+        monitor_hvc_trace_handler(vmid, &regs);
+        monitor_hvc_post_handler(vmid, &regs, TRAP);
         break;
     case RETRAP:
-        monitor_hvc_pre_handler(&regs);
-        monitor_hvc_retrap_handler(&regs);
-        monitor_hvc_post_handler(&regs, RETRAP);
+        monitor_hvc_pre_handler(vmid, &regs);
+        monitor_hvc_retrap_handler(vmid, &regs);
+        monitor_hvc_post_handler(vmid, &regs, RETRAP);
         break;
     }
     return 0;

@@ -26,29 +26,32 @@ static struct vdev_memory_map _vdev_monitor_info = {
 static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    struct monitor_vmid *mvmid = (struct monitor_vmid *)(SHARED_VMID);
+
     printh("%s: %s offset:%d value:%x\n", __func__,
             write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue);
-    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+
     if (!write) {
         /* READ */
         /* TODO Read debugging resources */
         switch (offset) {
         case MONITOR_READ_LIST:
             /* print monitoring list */
-            result = monitor_list();
+            result = monitor_list(mvmid);
             break;
         case MONITOR_READ_RUN:
             /* go */
-            result = monitor_run_guest();
+            result = monitor_run_guest(mvmid);
             break;
         case MONITOR_READ_CEAN_ALL:
             /* all clean */
-            result = monitor_clean_all_guest();
+            result = monitor_clean_all_guest(mvmid);
             break;
         case MONITOR_READ_DUMP_MEMORY:
             /* memory dump */
-            result = monitor_dump_guest_memory();
+            result = monitor_dump_guest_memory(mvmid);
             break;
         }
     } else {
@@ -56,23 +59,19 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         switch (offset) {
         case MONITOR_WRITE_TRACE_GUEST:
             /* Set monitoring point */
-            result = monitor_insert_trace_to_guest(*pvalue);
+            result = monitor_insert_trace_to_guest(mvmid, *pvalue);
             break;
         case MONITOR_WRITE_CLEAN_TRACE_GUEST:
             /* Clean monitoring point */
-            result = monitor_clean_trace_guest(*pvalue);
-            break;
-        case 0x8:
-            /* read-only register, ignored, but no error */
-            result = HVMM_STATUS_SUCCESS;
+            result = monitor_clean_trace_guest(mvmid, *pvalue);
             break;
         case MONITOR_WRITE_BREAK_GUEST:
             /* break */
-            result = monitor_insert_break_to_guest(*pvalue);
+            result = monitor_insert_break_to_guest(mvmid, *pvalue);
             break;
         case MONITOR_WRITE_CLEAN_BREAK_GUEST:
             /* Clean breaking point */
-            result = monitor_clean_break_guest(*pvalue);
+            result = monitor_clean_break_guest(mvmid, *pvalue);
             break;
         }
     }
@@ -122,6 +121,11 @@ static int32_t vdev_monitor_check(struct arch_vdev_trigger_info *info,
 static hvmm_status_t vdev_monitor_reset(void)
 {
     printh("vdev init:'%s'\n", __func__);
+    struct monitor_vmid *mvmid = (struct monitor_vmid *)(SHARED_VMID);
+
+    mvmid->vmid_monitor = MONITOR_GUEST_VMID;
+    mvmid->vmid_target = MONITOR_TARGET_VMID;
+
     return HVMM_STATUS_SUCCESS;
 }
 
