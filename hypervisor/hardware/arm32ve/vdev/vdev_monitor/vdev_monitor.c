@@ -8,6 +8,7 @@
 #include <monitor.h>
 #include <asm_io.h>
 #include <guest.h>
+
 #define MONITOR_BASE_ADDR 0x3FFFD000
 
 struct vdev_monitor_regs {
@@ -33,45 +34,45 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         /* READ */
         /* TODO Read debugging resources */
         switch (offset) {
-        case 0x8:
+        case MONITOR_READ_LIST:
             /* print monitoring list */
-            result = kmo_list();
+            result = monitor_list();
             break;
-        case 0x10:
+        case MONITOR_READ_RUN:
             /* go */
-            result = kmo_run();
+            result = monitor_run_guest();
             break;
-        case 0x18:
+        case MONITOR_READ_CEAN_ALL:
             /* all clean */
-            result = kmo_all_clean();
+            result = monitor_clean_all_guest();
             break;
-        case 0x1C:
+        case MONITOR_READ_DUMP_MEMORY:
             /* memory dump */
-            result = kmo_memory_dump();
+            result = monitor_dump_guest_memory();
             break;
         }
     } else {
         /* WRITE */
         switch (offset) {
-        case 0x0:
+        case MONITOR_WRITE_TRACE_GUEST:
             /* Set monitoring point */
-            result = kmo_break(*pvalue, TRAP);
+            result = monitor_insert_trace_to_guest(*pvalue);
             break;
-        case 0x4:
+        case MONITOR_WRITE_CLEAN_TRACE_GUEST:
             /* Clean monitoring point */
-            result = kmo_clean(*pvalue, TRAP);
+            result = monitor_clean_trace_guest(*pvalue);
             break;
         case 0x8:
             /* read-only register, ignored, but no error */
             result = HVMM_STATUS_SUCCESS;
             break;
-        case 0xC:
+        case MONITOR_WRITE_BREAK_GUEST:
             /* break */
-            result = kmo_break(*pvalue, BREAK_TRAP);
+            result = monitor_insert_break_to_guest(*pvalue);
             break;
-        case 0x14:
+        case MONITOR_WRITE_CLEAN_BREAK_GUEST:
             /* Clean breaking point */
-            result = kmo_clean(*pvalue, BREAK_TRAP);
+            result = monitor_clean_break_guest(*pvalue);
             break;
         }
     }
