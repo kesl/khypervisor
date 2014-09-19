@@ -191,3 +191,21 @@ char *strcat(char *dest, const char *src)
     *dest = '\0';
     return dest;
 }
+
+int arm_str2int(char *src)
+{
+    int val = 0, pos = 0, minus = 0;
+
+    if (src[pos] == '-') {
+        minus = 1;
+        pos++;
+    }
+
+    while (src[pos]) {
+        val = 10 * val + (src[pos] - '0');
+        pos++;
+    }
+
+    return (minus) ? -val : val;
+}
+

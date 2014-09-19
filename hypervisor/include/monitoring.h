@@ -46,5 +46,6 @@ hvmm_status_t kmo_run(void);
 hvmm_status_t kmo_break(uint32_t va, uint32_t type);
 hvmm_status_t kmo_clean(uint32_t va, uint32_t type);
 hvmm_status_t kmo_all_clean();
+hvmm_status_t kmo_memory_dump(void);
 void kmo_break_handler(struct arch_regs **regs, uint32_t type);
 #endif

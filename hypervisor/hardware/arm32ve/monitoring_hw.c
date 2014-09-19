@@ -23,7 +23,8 @@
 #define l2_descriptor(page_table_base_address, l2_table_index) \
         readl(l2_descriptor_address(page_table_base_address, l2_table_index))
 
-#define SHARED_ADDRESS (CFG_MEMMAP_GUEST1_OFFSET + 0xEC00000)
+#define SHARED_ADDRESS      (CFG_MEMMAP_GUEST1_OFFSET + 0xEC00000)
+#define SHARED_DUMP_ADDRESS (CFG_MEMMAP_GUEST1_OFFSET + 0xEC00100)
 /*
  * Guest's VA to PA Monitoring
  */
@@ -162,12 +163,45 @@ uint32_t load_inst(uint32_t va)
 #define MO_VIRQ 20
 #include <k-hypervisor-config.h>
 
+#define LIST 0
+#define MONITORING 1
+#define MEMORY 2
+
+/* size 88 -> 0x8EC00100 : memory dump*/
 struct monitoring_data {
+    uint8_t type;
     uint32_t caller_va;
     uint32_t callee_va;
     uint32_t inst;
+    uint32_t sp;
     struct arch_regs regs;
+    uint32_t memory_range;
+    uint32_t start_memory;
 };
+
+hvmm_status_t kmo_memory_dump(void)
+{
+    uint32_t range, base_memory;
+    uint32_t *dump_base = (uint32_t *)SHARED_DUMP_ADDRESS;
+    struct monitoring_data *data =
+        (struct monitoring_data *)(SHARED_ADDRESS);
+    int i;
+    uint32_t *base_memory_pa;
+
+    range = data->memory_range;
+    base_memory = data->start_memory;
+
+    for (i = 0; i < range; i++) {
+        base_memory_pa = (uint32_t *)(uint32_t)va_to_pa(base_memory, 0);
+        *dump_base = *base_memory_pa;
+        dump_base++;
+        base_memory += 4;
+    }
+    data->type = MEMORY;
+    interrupt_guest_inject(MO_GUEST, MO_VIRQ, 0, INJECT_SW);
+
+    return HVMM_STATUS_SUCCESS;
+}
 
 hvmm_status_t kmo_list(void)
 {
@@ -176,8 +210,8 @@ hvmm_status_t kmo_list(void)
     for (i = 0; i < NUM_DI; i++) {
         if (inst[i][INST] != EMPTY) {
             data = (struct monitoring_data *)(SHARED_ADDRESS);
+            data->type = LIST;
             data->caller_va = inst[i][INST_VA];
-            data->callee_va = 0;
             data->inst = inst[i][INST];
             interrupt_guest_inject(MO_GUEST, MO_VIRQ, 0, INJECT_SW);
         }
@@ -225,9 +259,10 @@ hvmm_status_t kmo_all_clean()
 
 void kmo_break_handler(struct arch_regs **regs, uint32_t type)
 {
-    uint32_t restore_inst, ori_va, ori_pa, lr;
+    uint32_t restore_inst, ori_va, ori_pa, lr, sp;
 
     asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
+    asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
     ori_va = (*regs)->pc - 4;
     ori_pa = (uint32_t)va_to_pa(ori_va, TTBR0);
 
@@ -237,14 +272,17 @@ void kmo_break_handler(struct arch_regs **regs, uint32_t type)
     if (type != RETRAP) {
         struct monitoring_data *data =
             (struct monitoring_data *)(SHARED_ADDRESS);
+        data->type = MONITORING;
         data->caller_va = ori_va;
         data->callee_va = lr;
         data->inst = restore_inst;
         data->regs.cpsr = (*regs)->cpsr;
         data->regs.pc = (*regs)->pc;
         data->regs.lr = (*regs)->lr;
+        data->sp = sp;
         int i;
-        for (i = 0; i < 13; i++)
+
+        for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
             data->regs.gpr[i] = (*regs)->gpr[i];
         interrupt_guest_inject(MO_GUEST, MO_VIRQ, 0, INJECT_SW);
     }

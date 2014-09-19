@@ -16,4 +16,5 @@ extern char *(strcpy)(char *dest, const char *src);
 extern unsigned int arm_hexstr2uint(char *src);
 extern char *(strcat)(char *dest, const char *src);
 extern void arm_uint2hexstr(char *dst, unsigned int src);
+extern int arm_str2int(char *src);
 #endif

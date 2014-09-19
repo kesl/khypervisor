@@ -68,6 +68,7 @@ SECTIONS
  end_bss = .;
 
  shared_memory_start = 0x8EC00000;
+ . = shared_memory_start;
  shared_memory_end = . + 0x400000;
 
  . = PHYS_STACK;

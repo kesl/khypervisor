@@ -165,12 +165,28 @@ struct arch_regs {
     uint32_t gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
 } __attribute((packed));
 
+#define LIST 0
+#define MONITORING 1
+#define MEMORY 2
+
+/* size 88 -> 0x8EC00100 : memory dump*/
 struct monitoring_data {
+    uint8_t type;
     uint32_t caller_va;
     uint32_t callee_va;
     uint32_t inst;
+    uint32_t sp;
     struct arch_regs regs;
+    uint32_t memory_range;
+    uint32_t start_memory;
 };
+
+void send_monitoring_data(uint32_t range, uint32_t src)
+{
+    struct monitoring_data *shared_start = (struct monitoring_data *)0x8EC00000;
+    shared_start->memory_range = range;
+    shared_start->start_memory = src;
+}
 
 void monitoring_handler(int irq, void *pregs, void *pdata)
 {
@@ -179,13 +195,33 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
 
     struct monitoring_data *shared_start = (struct monitoring_data *)0x8EC00000;
     symbol_getter_from_va(shared_start->caller_va, call_symbol);
-    if (shared_start->callee_va != 0) {
+    if (shared_start->type == MONITORING) {
         symbol_getter_from_va(shared_start->callee_va, callee_symbol);
         printh("CPU 0 %s <- %s\n", call_symbol, callee_symbol);
-    } else {
+    } else if (shared_start->type == LIST) {
         /* showing list */
         printh("Monitoring symbol is %s, va is %x, instruction is %x\n",
                     call_symbol, shared_start->caller_va, shared_start->inst);
+    } else if (shared_start->type == MEMORY) {
+        /* dump memory */
+        int i, j;
+        uint32_t *dump_base = (uint32_t *)0x8EC00100;
+        uint32_t base_memory = shared_start->start_memory;
+        for (i = 0; i < shared_start->memory_range; i++) {
+            if ((uint32_t)dump_base > &shared_memory_end) {
+                printh("The memory range out!!\n");
+                return;
+            }
+            if (i % 4 == 0)
+                printh("0x%x :", base_memory);
+            printh(" 0x%x", *dump_base);
+            dump_base++;
+            if (i % 4 == 3) {
+                printh("\n");
+                base_memory += 16;
+            }
+        }
+        printh("\n");
     }
 }
 

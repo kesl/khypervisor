@@ -45,6 +45,10 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
             /* all clean */
             result = kmo_all_clean();
             break;
+        case 0x1C:
+            /* memory dump */
+            result = kmo_memory_dump();
+            break;
         }
     } else {
         /* WRITE */
