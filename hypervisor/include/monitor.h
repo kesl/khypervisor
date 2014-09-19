@@ -22,10 +22,11 @@
 */
 enum breakpoint_type {
     EMPTY =      0b000,
-    TRAP =       0b001,
-    RETRAP =     0b010,
-    BREAK_TRAP = 0b100
+    MONITOR_TRACE_TRAP =       0b001,
+    MONITOR_RETRAP =     0b010,
+    MONITOR_BREAK_TRAP = 0b100
 };
+
 enum ttbr_type {
     TTBR0,
     TTBR1

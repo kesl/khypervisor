@@ -128,7 +128,7 @@ hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
 {
     vmid_t vmid = mvmid->vmid_target;
 
-    monitor_store_inst(vmid, va, BREAK_TRAP);
+    monitor_store_inst(vmid, va, MONITOR_BREAK_TRAP);
     /* TODO : This code will move to hardware interface */
     writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, va, TTBR0));
 
@@ -140,7 +140,7 @@ hvmm_status_t monitor_insert_trace_to_guest(struct monitor_vmid *mvmid,
 {
     vmid_t vmid = mvmid->vmid_target;
 
-    monitor_store_inst(vmid, va, TRAP);
+    monitor_store_inst(vmid, va, MONITOR_TRACE_TRAP);
     /* TODO : This code will move to hardware interface */
     writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, va, TTBR0));
 
@@ -161,7 +161,7 @@ hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
 
     /* Clean point's retrap point */
     inst = monitor_load_inst(vmid, (va) + 4);
-    if (monitor_clean_inst(vmid, (va) + 4 , RETRAP)) {
+    if (monitor_clean_inst(vmid, (va) + 4 , MONITOR_RETRAP)) {
         /* TODO : This code will move to hardware interface */
         writel(inst, (uint32_t)va_to_pa(vmid, (va) + 4 , TTBR0));
     }
@@ -171,12 +171,12 @@ hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
 
 hvmm_status_t monitor_clean_break_guest(struct monitor_vmid *mvmid, uint32_t va)
 {
-    return monitor_clean_guest(mvmid, va, BREAK_TRAP);
+    return monitor_clean_guest(mvmid, va, MONITOR_BREAK_TRAP);
 }
 
 hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid, uint32_t va)
 {
-    return monitor_clean_guest(mvmid, va, TRAP);
+    return monitor_clean_guest(mvmid, va, MONITOR_TRACE_TRAP);
 }
 
 hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid)
@@ -187,7 +187,8 @@ hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid)
     for (i = 0; i < NUM_DI; i++) {
         if (inst[vmid][i][INST] != EMPTY)
             monitor_clean_guest(mvmid,
-                    inst[vmid][i][INST_VA], TRAP | RETRAP | BREAK_TRAP);
+                    inst[vmid][i][INST_VA],
+                    MONITOR_TRACE_TRAP | MONITOR_RETRAP | MONITOR_BREAK_TRAP);
     }
 
     return HVMM_STATUS_SUCCESS;
