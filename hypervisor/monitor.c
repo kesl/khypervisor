@@ -85,7 +85,7 @@ uint32_t monitor_load_inst(vmid_t vmid, uint32_t va)
     return 0;
 }
 
-hvmm_status_t monitor_list(struct monitor_vmid *mvmid)
+hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va)
 {
     int i;
     vmid_t vmid = mvmid->vmid_target;
@@ -105,20 +105,20 @@ hvmm_status_t monitor_list(struct monitor_vmid *mvmid)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid)
-{
-    clean_manually_select_vmid();
-    guest_switchto(0, 0);
-
-    return HVMM_STATUS_SUCCESS;
-}
-
 hvmm_status_t monitor_break_guest(vmid_t vmid)
 {
 
     /* Run other guest for stop this guest */
     set_manually_select_vmid(1);
     guest_switchto(1, 0);
+
+    return HVMM_STATUS_SUCCESS;
+}
+
+hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid, uint32_t va)
+{
+    clean_manually_select_vmid();
+    guest_switchto(0, 0);
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -179,7 +179,7 @@ hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid, uint32_t va)
     return monitor_clean_guest(mvmid, va, MONITOR_TRACE_TRAP);
 }
 
-hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid)
+hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid, uint32_t va)
 {
     int i;
     vmid_t vmid = mvmid->vmid_target;
@@ -194,7 +194,7 @@ hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid)
+hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
 {
     uint32_t range, base_memory;
     uint32_t *dump_base = (uint32_t *)SHARED_DUMP_ADDRESS;

@@ -21,6 +21,19 @@ static struct vdev_memory_map _vdev_monitor_info = {
    .size = 0x1000
 };
 
+typedef hvmm_status_t (*monitor_handler_t)(struct monitor_vmid *mvmid, uint32_t va);
+
+static monitor_handler_t _monitor_handler[] = {
+    monitor_list,                       /* offset : 0x00 */
+    monitor_run_guest,                  /* offset : 0x01 */
+    monitor_clean_all_guest,            /* offset : 0x02 */
+    monitor_dump_guest_memory,          /* offset : 0x03 */
+    monitor_insert_trace_to_guest,      /* offset : 0x04 */
+    monitor_clean_trace_guest,          /* offset : 0x05 */
+    monitor_insert_break_to_guest,      /* offset : 0x06 */
+    monitor_clean_break_guest,          /* offset : 0x07 */
+};
+
 /* static struct vdev_monitor_regs monitor_regs[NUM_GUESTS_STATIC]; */
 
 static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
@@ -28,53 +41,15 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     struct monitor_vmid *mvmid = (struct monitor_vmid *)(SHARED_VMID);
+    uint32_t index = offset / 4;
 
-    printh("%s: %s offset:%d value:%x\n", __func__,
+    printH("%s: %s offset:%d value:%x\n", __func__,
             write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue);
 
-    if (!write) {
-        /* READ */
-        /* TODO Read debugging resources */
-        switch (offset) {
-        case MONITOR_READ_LIST:
-            /* print monitoring list */
-            result = monitor_list(mvmid);
-            break;
-        case MONITOR_READ_RUN:
-            /* go */
-            result = monitor_run_guest(mvmid);
-            break;
-        case MONITOR_READ_CEAN_ALL:
-            /* all clean */
-            result = monitor_clean_all_guest(mvmid);
-            break;
-        case MONITOR_READ_DUMP_MEMORY:
-            /* memory dump */
-            result = monitor_dump_guest_memory(mvmid);
-            break;
-        }
-    } else {
-        /* WRITE */
-        switch (offset) {
-        case MONITOR_WRITE_TRACE_GUEST:
-            /* Set monitoring point */
-            result = monitor_insert_trace_to_guest(mvmid, *pvalue);
-            break;
-        case MONITOR_WRITE_CLEAN_TRACE_GUEST:
-            /* Clean monitoring point */
-            result = monitor_clean_trace_guest(mvmid, *pvalue);
-            break;
-        case MONITOR_WRITE_BREAK_GUEST:
-            /* break */
-            result = monitor_insert_break_to_guest(mvmid, *pvalue);
-            break;
-        case MONITOR_WRITE_CLEAN_BREAK_GUEST:
-            /* Clean breaking point */
-            result = monitor_clean_break_guest(mvmid, *pvalue);
-            break;
-        }
-    }
+    if (_monitor_handler[index])
+        result = _monitor_handler[index](mvmid, *pvalue);
+
     return result;
 }
 
@@ -115,6 +90,7 @@ static int32_t vdev_monitor_check(struct arch_vdev_trigger_info *info,
     if (info->fipa >= _vdev_monitor_info.base &&
         offset < _vdev_monitor_info.size)
         return 0;
+
     return VDEV_NOT_FOUND;
 }
 

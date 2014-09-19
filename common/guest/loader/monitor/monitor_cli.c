@@ -8,17 +8,32 @@
 
 #define VDEV_MONITORING_BASE 0x3FFFD000
 
-volatile uint32_t *base_set =   (uint32_t *) VDEV_MONITORING_BASE;
-volatile uint32_t *base_clean = (uint32_t *) (VDEV_MONITORING_BASE + 0x4);
-volatile uint32_t *base_list =  (uint32_t *) (VDEV_MONITORING_BASE + 0x8);
-volatile uint32_t *base_break = (uint32_t *) (VDEV_MONITORING_BASE + 0xC);
-volatile uint32_t *base_go =    (uint32_t *) (VDEV_MONITORING_BASE + 0x10);
+
+#define MONITOR_READ_LIST                   0x00
+#define MONITOR_READ_RUN                    0x01 * 4
+#define MONITOR_READ_CEAN_ALL               0x02 * 4
+#define MONITOR_READ_DUMP_MEMORY            0x03 * 4
+#define MONITOR_WRITE_TRACE_GUEST           0x04 * 4
+#define MONITOR_WRITE_CLEAN_TRACE_GUEST     0x05 * 4
+#define MONITOR_WRITE_BREAK_GUEST           0x06 * 4
+#define MONITOR_WRITE_CLEAN_BREAK_GUEST     0x07 * 4
+
+volatile uint32_t *base_set =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_WRITE_TRACE_GUEST);
+volatile uint32_t *base_clean =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_WRITE_CLEAN_TRACE_GUEST);
+volatile uint32_t *base_list =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_LIST);
+volatile uint32_t *base_break =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_WRITE_BREAK_GUEST);
+volatile uint32_t *base_go =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_RUN);
 volatile uint32_t *base_break_clean =
-                                (uint32_t *) (VDEV_MONITORING_BASE + 0x14);
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_WRITE_CLEAN_BREAK_GUEST);
 volatile uint32_t *base_all_clean =
-                                (uint32_t *) (VDEV_MONITORING_BASE + 0x18);
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_CEAN_ALL);
 volatile uint32_t *base_memory_dump =
-                                (uint32_t *) (VDEV_MONITORING_BASE + 0x1C);
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_DUMP_MEMORY);
 
 #define monitoring_list()  (*base_list)
 #define NUM_MONITORING_CMD MONITORING_NOINPUT

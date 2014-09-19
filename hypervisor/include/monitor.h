@@ -39,15 +39,15 @@ enum inst_index {
     NUM_INST
 };
 
-#define MONITOR_READ_LIST           0x08
-#define MONITOR_READ_RUN            0x10
-#define MONITOR_READ_CEAN_ALL       0x18
-#define MONITOR_READ_DUMP_MEMORY    0x1C
+#define MONITOR_READ_LIST           0x00
+#define MONITOR_READ_RUN            0x01
+#define MONITOR_READ_CEAN_ALL       0x02
+#define MONITOR_READ_DUMP_MEMORY    0x03
 
-#define MONITOR_WRITE_TRACE_GUEST           0x00
-#define MONITOR_WRITE_CLEAN_TRACE_GUEST     0x04
-#define MONITOR_WRITE_BREAK_GUEST           0x0C
-#define MONITOR_WRITE_CLEAN_BREAK_GUEST     0x14
+#define MONITOR_WRITE_TRACE_GUEST           0x04
+#define MONITOR_WRITE_CLEAN_TRACE_GUEST     0x05
+#define MONITOR_WRITE_BREAK_GUEST           0x06
+#define MONITOR_WRITE_CLEAN_BREAK_GUEST     0x07
 
 /* size 88 -> 0x8EC00100 : memory dump*/
 struct monitoring_data {
@@ -72,7 +72,7 @@ uint32_t monitor_inst_type(vmid_t vmid, uint32_t va);
 uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, uint32_t type);
 uint32_t monitor_clean_inst(vmid_t vmid, uint32_t va, uint32_t type);
 
-hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_break_guest(vmid_t vmid);
 hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
                                                 uint32_t va);
@@ -82,13 +82,13 @@ hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
                                                 uint32_t type);
 hvmm_status_t monitor_clean_break_guest(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid, uint32_t va);
-hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid);
-hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid, uint32_t va);
+hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid);
 hvmm_status_t monitor_recovery_guest(struct monitor_vmid *mvmid);
 hvmm_status_t monitor_request(int irq, struct monitor_vmid *mvmid, int address);
 hvmm_status_t monitor_notify_guest(vmid_t vmid);
-hvmm_status_t monitor_list(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_init();
 
 #endif
