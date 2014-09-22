@@ -2,6 +2,10 @@
 #define __LINUXLOADER_H__
 #include "arch_types.h"
 
+#ifdef USE_ANDROID_INITRD
+extern unsigned initrd_start;
+extern unsigned initrd_end;
+#endif
 /**
 * @brief Sets tags that linux uses for booting.
 * @param *src Base address of tags.
