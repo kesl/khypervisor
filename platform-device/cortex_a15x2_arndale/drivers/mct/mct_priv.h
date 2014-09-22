@@ -20,5 +20,6 @@
 #define _EXYNOS5_MCT_L_BASE     EXYNOS5_MCTREG(0x300)
 #define EXYNOS5_MCT_L_BASE(x)   (_EXYNOS5_MCT_L_BASE + (0x100 + x))
 
+void mct_init(void);
 
 #endif
