@@ -7,6 +7,7 @@
 #include <gic_regs.h>
 #include <test/tests.h>
 #include <smp.h>
+#include <drivers/mct/mct_priv.h>
 
 #define PLATFORM_BASIC_TESTS 0
 
@@ -74,8 +75,8 @@ static struct memmap_desc guest_device_md1[] = {
 };
 
 static struct memmap_desc guest_memory_md0[] = {
-    /* 756MB */
-    {"start", 0x00000000, 0, 0x30000000,
+    /* 1024MB */
+    {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -92,8 +93,8 @@ static struct memmap_desc guest_memory_md1[] = {
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest_mdlist0[] = {
     guest_device_md0,   /* 0x0000_0000 */
-    guest_md_empty,     /* 0x4000_0000 */
-    guest_memory_md0,
+    guest_memory_md0,   /* 0x4000_0000 */
+    guest_md_empty,
     guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
     0
 };
@@ -101,8 +102,8 @@ static struct memmap_desc *guest_mdlist0[] = {
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest_mdlist1[] = {
     guest_device_md1,
-    guest_md_empty,
     guest_memory_md1,
+    guest_md_empty,
     guest_md_empty,
     0
 };
@@ -203,8 +204,8 @@ void setup_memory()
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
      * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
      */
-    guest_memory_md0[0].pa = (uint64_t)((uint32_t) &_guest_bin_start);
-    guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
+    guest_memory_md0[0].pa = (uint64_t)((uint32_t) &_guest0_bin_start);
+    guest_memory_md1[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
 }
 
 /** @brief Registers generic timer irqs such as hypervisor timer event
@@ -223,6 +224,7 @@ void setup_memory()
 void setup_timer()
 {
     _timer_irq = 26; /* GENERIC_TIMER_HYP */
+    mct_init();
 }
 
 int main_cpu_init()
