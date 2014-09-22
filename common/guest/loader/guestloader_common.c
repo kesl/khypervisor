@@ -46,7 +46,7 @@ void loader_boot_guest(uint32_t guest_os_type)
     uint32_t pc;
 
     if (guest_os_type == GUEST_TYPE_LINUX) {
-        linuxloader_setup_atags(START_ADDR_LINUX);
+        linuxloader_setup_atags(GUEST_START_ADDR);
         /* r1 : machine type
          * r2 : atags address
          */
