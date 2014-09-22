@@ -6,59 +6,69 @@
 #define DEBUG
 #include <log/print.h>
 
-#define VGICD_ITLINESNUM    128
-/* Lines:128, CPU:0, Security Extenstin:No */
-#define VGICD_TYPER_DEFAULT ((VGICD_ITLINESNUM >> 5) - 1)
-#define VGICD_IIDR_DEFAULT  (0x43B) /* Cortex-A15 */
-#define VGICD_NUM_IGROUPR   (VGICD_ITLINESNUM/32)
-#define VGICD_NUM_IENABLER  (VGICD_ITLINESNUM/32)
-
 /* return the bit position of the first bit set from msb
  * for example, firstbit32(0x7F = 111 1111) returns 7
  */
 #define firstbit32(word) (31 - asm_clz(word))
-#define NUM_MAX_VIRQS   128
-#define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 
 /*
-    1. High Priority Registers to be implemented first for test with linux
-    2. access size support: 8/16/32bit
-    3. notifying enable status changed interrupts to outside
-    4. API for interrupt enable status change callback registeration
-   */
+ 1. High Priority Registers to be implemented first for test with linux
+ 2. access size support: 8/16/32bit
+ 3. notifying enable status changed interrupts to outside
+ 4. API for interrupt enable status change callback registeration
+ */
 
 /* Virtual GIC Distributor */
 /* Priority of implementation
-   - [V] CTLR, TYPER
-   - [V] ICFGR
-   - [V] ITARGETSR
-   - [V] IPRIORITYR
-   - [V] ISCENABLER
-   -----------------------
-   - [ ]
+ - [V] CTLR, TYPER
+ - [V] ICFGR
+ - [V] ITARGETSR
+ - [V] IPRIORITYR
+ - [V] ISCENABLER
+ -----------------------
+ - [ ]
  */
-struct gicd_regs {
-    uint32_t CTLR;              /*0x000 RW*/
-    uint32_t TYPER;             /*      RO*/
-    uint32_t IIDR;              /*      RO*/
 
-    uint32_t IGROUPR[VGICD_NUM_IGROUPR];       /* 0x080 */
-    uint32_t ISCENABLER[VGICD_NUM_IENABLER];    /* 0x100, ISENABLER/ICENABLER */
-    uint32_t ISPENDR[32];       /* 0x200, ISPENDR/ICPENDR */
-    uint32_t ISACTIVER[32];     /* 0x300, ISACTIVER/ICACTIVER */
-    uint32_t IPRIORITYR[128];   /* 0x400 */
-    uint32_t ITARGETSR[128];    /* 0x800 [0]: RO, Otherwise, RW */
-    uint32_t ICFGR[64];         /* 0xC00 */
+/* hard coding for arndale, fastmodel */
+#define TILinesNumber 4
+#define NUM_MAX_VIRQS   160
+
+#define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
+#define VGICE_NUM_ISCPENDR (TILinesNumber + 1)
+#define VGICE_NUM_ISCENABLER (TILinesNumber + 1)
+#define VGICE_NUM_ISCACTIVER (TILinesNumber + 1)
+#define VGICE_NUM_IPRIORITYR (8*(TILinesNumber + 1))
+#define VGICE_NUM_ITARGETSR (8*(TILinesNumber + 1))
+#define VGICE_NUM_ICFGR (2*(TILinesNumber + 1))
+#define VGICE_NUM_SPISR (TILinesNumber + 1)
+#define VGICE_NUM_CPENDSGIR (TILinesNumber + 1)
+#define VGICE_NUM_SPENDSGIR (TILinesNumber + 1)
+#define VGICD_NUM_IGROUPR (TILinesNumber + 1)
+#define VGICD_NUM_IENABLER (TILinesNumber + 1)
+
+struct gicd_regs {
+    uint32_t CTLR; /*0x000 RW*/
+    uint32_t TYPER; /*      RO*/
+    uint32_t IIDR; /*      RO*/
+
+    uint32_t IGROUPR[VGICD_NUM_IGROUPR]; /* 0x080 */
+    uint32_t ISCENABLER[VGICE_NUM_ISCENABLER]; /* 0x100, ISENABLER/ICENABLER */
+    uint32_t ISCPENDR[VGICE_NUM_ISCPENDR]; /* 0x200, ISPENDR/ICPENDR */
+    uint32_t ISCACTIVER[VGICE_NUM_ISCACTIVER]; /* 0x300, ISACTIVER/ICACTIVER */
+    uint32_t IPRIORITYR[VGICE_NUM_IPRIORITYR]; /* 0x400 */
+    uint32_t ITARGETSR[VGICE_NUM_ITARGETSR]; /* 0x800 [0]: RO, Otherwise, RW */
+    uint32_t ICFGR[VGICE_NUM_ICFGR]; /* 0xC00 */
 
     /* Cortex-A15 */
     /* 0xD00 GICD_PPISR RO */
     /* 0xD04 ~ 0xD1C GICD_SPISRn RO */
 
-    uint32_t NSACR[64];         /* 0xE00 */
-    uint32_t SGIR;              /* 0xF00 WO */
-    uint32_t CPENDSGIR[4];      /* 0xF10 CPENDSGIR 0xF20 SPENDGIR */
+    uint32_t NSACR[64]; /* 0xE00 */
+    uint32_t SGIR; /* 0xF00 WO */
+    uint32_t CPENDSGIR[VGICE_NUM_CPENDSGIR];
+    /* 0xF10 CPENDSGIR 0xF20 SPENDGIR */
 
-    /* 0xFD0 ~ 0xFFC RO Cortex-A15 PIDRn, CIDRn */
+/* 0xFD0 ~ 0xFFC RO Cortex-A15 PIDRn, CIDRn */
 };
 
 struct gicd_handler_entry {
@@ -502,7 +512,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;
-
+    int j = 0;
     printh("vdev init:'%s'\n", __func__);
 
     for (i = 0; i < NUM_GUESTS_STATIC; i++) {
@@ -510,10 +520,104 @@ static hvmm_status_t vdev_gicd_reset_values(void)
          * ITARGETS[0~ 7], CPU Targets are set to 0,
          * due to current single-core support design
          */
-        int j = 0;
-        for (j = 0; j < 7; j++)
-            _regs[i].ITARGETSR[j] = 0;
+
+        uint32_t inc_address = 0x00000000;
+
+        _regs[i].CTLR =
+                (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                        + GIC_OFFSET_GICD)));
+        _regs[i].TYPER =
+                (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                        + GIC_OFFSET_GICD + GICD_OFFSET_TYPER)));
+        _regs[i].IIDR =
+                (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                        + GIC_OFFSET_GICD + 0x8)));
+        printh("vdev init:'%s' vmid:%d, gicd TYPER:%x\n", __func__, i,
+                _regs[i].TYPER);
+        printh("vdev init:'%s' vmid:%d, gicd IIDR:%x\n", __func__, i,
+                _regs[i].IIDR);
+        for (j = 0; j < VGICD_NUM_IGROUPR; j++) {
+            _regs[i].IGROUPR[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + inc_address)));
+            inc_address += 0x00000004;
+
+        }
+        inc_address = 0x00000000;
+
+        for (j = 0; j < VGICE_NUM_ISCENABLER; j++) {
+            _regs[i].ISCENABLER[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_ICENABLER
+                            + inc_address)));
+            old_vgicd_status[i][(inc_address) >> 2] =
+                    _regs[i].ISCENABLER[j];
+            inc_address += 0x00000004;
+        }
+        inc_address = 0x00000000;
+
+        for (j = 0; j < VGICE_NUM_ISCPENDR; j++) {
+            _regs[i].ISCPENDR[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_ICPENDR
+                            + inc_address)));
+            inc_address += 0x00000004;
+        }
+        inc_address = 0x00000000;
+
+        for (j = 0; j < VGICE_NUM_ISCACTIVER; j++) {
+            _regs[i].ISCACTIVER[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_ISCACTIVER
+                            + inc_address)));
+
+            inc_address += 0x00000004;
+        }
+        inc_address = 0x00000000;
+
+        for (j = 0; j < VGICE_NUM_IPRIORITYR; j++) {
+            _regs[i].IPRIORITYR[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_IPRIORITYR
+                            + inc_address)));
+
+            inc_address += 0x00000004;
+        }
+
+        inc_address = 0x00000000;
+        for (j = 0; j < VGICE_NUM_ITARGETSR; j++) {
+            _regs[i].ITARGETSR[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_ITARGETSR
+                            + inc_address)));
+            inc_address += 0x00000004;
+        }
+
+        inc_address = 0x00000000;
+        for (j = 0; j < VGICE_NUM_ICFGR; j++) {
+            _regs[i].ICFGR[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_ICFGR
+                            + inc_address)));
+            inc_address += 0x00000004;
+        }
+
+        _regs[i].SGIR =
+                (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                        + GIC_OFFSET_GICD + 0xF00)));
+
+        inc_address = 0x00000000;
+        for (j = 0; j < VGICE_NUM_CPENDSGIR; j++) {
+            _regs[i].CPENDSGIR[j] =
+                    (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
+                            + GIC_OFFSET_GICD + GICD_OFFSET_CPENDGIR
+                            + inc_address)));
+            inc_address += 0x00000004;
+        }
+
+        inc_address = 0x00000000;
     }
+
     return result;
 }
 
