@@ -20,7 +20,7 @@ GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
 			 -I$(COMMON_LOADER_DIR) -I$(COMMON_SOURCE_DIR)/guest \
-			 -I$(COMMON_SOURCE_DIR)/guest/core
+			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
@@ -33,6 +33,9 @@ else
 GUESTBIN	= ../../guestimages/bmguest.bin
 endif
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN)
+ifeq ($(ANDROID), y)
+GUESTLOADERCONFIGS += -DINITRD_PATH=../android_boot/uInitrd -DUSE_ANDROID_INITRD
+endif
 all: $(GUESTLOADERBIN)
 clean distclean:
 	rm -f $(GUESTLOADERIMG) $(GUESTLOADERBIN) \
