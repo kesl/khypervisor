@@ -12,16 +12,20 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 #include "memmap.cfg"
 INPUT(GUEST_PATH)
-PHYS_STACK  = LDS_STACK;
-GUEST_START = LDS_GUEST_START;
-LOADER_PHYS_START = LDS_LOADER_PHYS_START;
+PHYS_STACK  = CFG_GUEST_STACK;
+GUEST_START = CFG_GUEST_START;
+LOADER_PHYS_START = CFG_LOADER_PHYS_START;
 SECTIONS
 {
+#ifdef LINUX_GUEST
  . = GUEST_START;
  guest_start = .;
- .guest : {GUEST_PATH}
- guest_end = .;
- loader_end = .;
+ guest_end = . + 0x500000;
+#else
+ . = GUEST_START;
+ guest_start = .;
+ guest_end = . + 0x200000;
+#endif
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {
@@ -41,6 +45,8 @@ SECTIONS
     *(.bss)
  }
  end_bss = .;
+
+ loader_end = .;
 
 . = PHYS_STACK;
 guestloader_stacktop_svc = .;
