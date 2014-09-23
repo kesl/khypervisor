@@ -72,9 +72,9 @@ struct guest_module {
 
 };
 
-extern uint32_t guest_bin_start;
-extern uint32_t guest_bin_end;
-extern uint32_t guest2_bin_start;
+extern uint32_t guest0_bin_start;
+extern uint32_t guest0_bin_end;
+extern uint32_t guest1_bin_start;
 extern struct guest_module _guest_module;
 extern struct guest_struct *_current_guest;
 
