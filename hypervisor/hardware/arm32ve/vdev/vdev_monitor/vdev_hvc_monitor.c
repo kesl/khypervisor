@@ -10,7 +10,6 @@
 #include <asm_io.h>
 #include <guest.h>
 #define HVC_TRAP 0xe14fff7c
-/* 80315514 */
 
 void monitor_hvc_pre_handler(vmid_t vmid, struct arch_regs **regs)
 {
@@ -26,45 +25,11 @@ void monitor_hvc_pre_handler(vmid_t vmid, struct arch_regs **regs)
 void monitor_hvc_post_handler(vmid_t vmid, struct arch_regs **regs,
                                 uint32_t type)
 {
-    /* Restore pc */
-    if (type != MONITOR_BREAK_TRAP)
-        (*regs)->pc -= 4;
+    (*regs)->pc -= 4;
 }
 
 void monitor_hvc_break_handler(vmid_t vmid, struct arch_regs **regs)
 {
-    int i;
-    uint32_t ori_va, lr, sp;
-
-    struct monitoring_data *data =
-        (struct monitoring_data *)(SHARED_ADDRESS);
-
-    asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
-    asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
-    ori_va = (*regs)->pc - 4;
-
-    data->type = MONITORING;
-    data->caller_va = ori_va;
-    data->callee_va = lr;
-    data->inst = 0;
-    data->regs.cpsr = (*regs)->cpsr;
-    data->regs.pc = (*regs)->pc;
-    data->regs.lr = (*regs)->lr;
-    data->sp = sp;
-
-    for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
-        data->regs.gpr[i] = (*regs)->gpr[i];
-
-    monitor_notify_guest(MONITOR_GUEST_VMID);
-
-    /* Set next trap for retrap */
-    /* TODO Needs status of Branch instruction. */
-    monitor_store_inst(vmid, (*regs)->pc, MONITOR_RETRAP);
-    writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc, TTBR0));
-
-    /* Restore pc */
-     (*regs)->pc -= 4;
-
     monitor_break_guest(vmid);
 }
 
@@ -116,26 +81,11 @@ static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
     vmid_t vmid = guest_current_vmid();
-/*
-    uint32_t sp, lr, spsr;
-    printH("[hyp] : Dump K-Hypervisor's registers\n\r");
-    printH(" - banked regs\n");
-    asm volatile(" mrs     %0, sp_usr\n\t" : "=r"(sp) : : "memory", "cc");
-    asm volatile(" mrs     %0, lr_usr\n\t" : "=r"(lr) : : "memory", "cc");
-    printH(" - usr: sp:%x lr:%x\n", sp, lr);
-    asm volatile(" mrs     %0, spsr_svc\n\t" : "=r"(spsr) : : "memory", "cc");
-    asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
-    asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
-    printH(" - svc: spsr:%x sp:%x lr:%x\n", spsr, sp, lr);
-    asm volatile(" mrs     %0, spsr_irq\n\t" : "=r"(spsr) : : "memory", "cc");
-    asm volatile(" mrs     %0, sp_irq\n\t" : "=r"(sp) : : "memory", "cc");
-    asm volatile(" mrs     %0, lr_irq\n\t" : "=r"(lr) : : "memory", "cc");
-    printH(" - irq: spsr:%x sp:%x lr:%x\n", spsr, sp, lr);
-    printH(" - Current guest's vmid is %d\n", guest_current_vmid());
-*/
+
     switch (monitor_inst_type(vmid, regs->pc - 4)) {
     case MONITOR_BREAK_TRAP:
         monitor_hvc_pre_handler(vmid, &regs);
+        monitor_hvc_trace_handler(vmid, &regs);
         monitor_hvc_break_handler(vmid, &regs);
         monitor_hvc_post_handler(vmid, &regs, MONITOR_BREAK_TRAP);
         break;

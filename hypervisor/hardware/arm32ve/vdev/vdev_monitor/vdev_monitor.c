@@ -21,7 +21,8 @@ static struct vdev_memory_map _vdev_monitor_info = {
    .size = 0x1000
 };
 
-typedef hvmm_status_t (*monitor_handler_t)(struct monitor_vmid *mvmid, uint32_t va);
+typedef hvmm_status_t (*monitor_handler_t)
+    (struct monitor_vmid *mvmid, uint32_t va);
 
 static monitor_handler_t _monitor_handler[] = {
     monitor_list,                       /* offset : 0x00 */
