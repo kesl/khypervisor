@@ -8,6 +8,7 @@
 include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
 COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
+ARNDALE_ROOT_DIR=../../
 OBJS += boot.o main.o drivers/uart.o \
 	$(COMMON_SOURCE_DIR)/log/string.o \
 	$(COMMON_LOADER_DIR)/linuxloader.o \
@@ -17,7 +18,7 @@ GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
-			 -I$(COMMON_LOADER_DIR)
+			 -I$(COMMON_LOADER_DIR) -I$(ARNDALE_ROOT_DIR)
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
