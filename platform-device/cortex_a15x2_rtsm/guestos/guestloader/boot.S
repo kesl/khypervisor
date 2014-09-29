@@ -18,6 +18,7 @@ guestloader_start:
     ldr     r0, = guestloader_vector
     mcr     p15, 0, r0, c12, c0, 0  @ VBAR
 
+    mov     r0, r10
     @ Call the C entrypoint
     b   main
     .type guestloader_start, %function

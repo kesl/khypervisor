@@ -18,7 +18,7 @@ OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
 	$(COMMON_LOADER_DIR)/guestloader_common.o \
 	$(COMMON_LOADER_DIR)/cli.o \
 	$(COMMON_LOADER_DIR)/monitor/monitor_cli.o \
-	$(COMMON_LOADER_DIR)/monitor/monitor.o
+	$(COMMON_LOADER_DIR)/monitor/guest_monitor.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
@@ -37,7 +37,6 @@ GUESTLOADERCONFIGS = -DLINUX_GUEST
 GUESTBIN	= ../../guestimages/zImage
 else
 GUESTBIN	= ../../guestimages/bmguest.bin
-GUESTLOADERCONFIGS += -D_MON_
 endif
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN)
 ifeq ($(ANDROID), y)

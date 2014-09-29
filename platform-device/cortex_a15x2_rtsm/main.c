@@ -94,8 +94,7 @@ static struct memmap_desc guest3_device_md[] = {
  * @brief Memory map for guest 0.
  */
 static struct memmap_desc guest0_memory_md[] = {
-    /* 768MB */
-    {"start", 0x00000000, 0, 0x30000000,
+    {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},

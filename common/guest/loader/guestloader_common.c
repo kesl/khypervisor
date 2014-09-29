@@ -18,22 +18,18 @@ enum guest_image_type {
     GUEST
 };
 
-/**
-* @brief Copies a guest to address.
-* @param img_type Guest Image type you want to copy. LOADER or GUEST.
-* @param dst_addr Destination address.
-*/
-void copy_image_to_addr(enum guest_image_type img_type, uint32_t *dst_addr)
+
+/*
+ * @brief Copies a guest to address.
+ * @param img_type Guest Image type you want to copy. LOADER or GUEST.
+ * @param dst_addr Destination address.
+ */
+
+void copy_image_to(uint32_t *src_addr, uint32_t *end_addr, uint32_t *dst_addr)
 {
-    uint32_t *src, *end;
+    uint32_t *src = src_addr;
+    uint32_t *end = end_addr;
     uint32_t *dst = dst_addr;
-    if (img_type == LOADER) {
-        src = &loader_start;
-        end = &loader_end;
-    } else {
-        src = &guest_start;
-        end = &guest_end;
-    }
     while (src < end)
         *dst++ = *src++;
 }
@@ -46,6 +42,7 @@ void loader_boot_guest(uint32_t guest_os_type)
     uint32_t pc;
 
     if (guest_os_type == GUEST_TYPE_LINUX) {
+
         linuxloader_setup_atags(START_ADDR_LINUX);
         /* r1 : machine type
          * r2 : atags address
@@ -54,13 +51,13 @@ void loader_boot_guest(uint32_t guest_os_type)
         SET_ATAGS_TO_R2();
     } else {
         /* Copies loader to next to guest */
-        copy_image_to_addr(LOADER, &guest_end);
+        copy_image_to(&loader_start, &loader_end, &guest_end);
         /* Jump pc to (pc + offset). */
         offset = ((uint32_t)(&guest_end - &loader_start) * sizeof(uint32_t));
         ADD_PC_TO_OFFSET(offset);
         JUMP_TO_ADDRESS(offset);
         /* Copies guest to start address */
-        copy_image_to_addr(GUEST, (uint32_t *)START_ADDR);
+        copy_image_to(&guest_start, &guest_end, (uint32_t *)START_ADDR);
     }
     /* Jump to start address of guest */
     JUMP_TO_ADDRESS(START_ADDR);

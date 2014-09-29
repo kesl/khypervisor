@@ -4,7 +4,7 @@
 #include <log/uart_print.h>
 #include <hvmm_types.h>
 #include <arch_types.h>
-#include <guest.h>
+#include <guest_hw.h>
 
 #define NUM_BREAK_POINT 50
 #define NUM_DI (NUM_BREAK_POINT * 2)
@@ -80,15 +80,20 @@ hvmm_status_t monitor_insert_trace_to_guest(struct monitor_vmid *mvmid,
                                                 uint32_t va);
 hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
                                                 uint32_t type);
-hvmm_status_t monitor_clean_break_guest(struct monitor_vmid *mvmid, uint32_t va);
-hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid, uint32_t va);
+hvmm_status_t monitor_clean_break_guest(struct monitor_vmid *mvmid,
+                                                uint32_t va);
+hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid,
+                                                uint32_t va);
 hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid, uint32_t va);
-hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va);
-hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid);
+hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid,
+                                                uint32_t va);
+hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_recovery_guest(struct monitor_vmid *mvmid);
 hvmm_status_t monitor_request(int irq, struct monitor_vmid *mvmid, int address);
 hvmm_status_t monitor_notify_guest(vmid_t vmid);
 hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va);
-hvmm_status_t monitor_init();
+hvmm_status_t monitor_reboot(struct monitor_vmid *mvmid, uint32_t va);
+hvmm_status_t monitor_init(void);
+hvmm_status_t monitor_recovery(struct monitor_vmid *mvmid, uint32_t va);
 
 #endif

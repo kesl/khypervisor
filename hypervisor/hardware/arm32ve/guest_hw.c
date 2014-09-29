@@ -267,6 +267,8 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
     struct arch_context *context = &guest->context;
 
     regs->pc = CFG_GUEST_START_ADDRESS;
+    /* Initialize loader status for reboot */
+    regs->gpr[10] = 0;
     /* supervisor mode */
     regs->cpsr = 0x1d3;
     /* regs->gpr[] = whatever */

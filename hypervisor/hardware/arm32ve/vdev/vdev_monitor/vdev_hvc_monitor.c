@@ -63,6 +63,10 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
     /* TODO Needs status of Branch instruction. */
     monitor_store_inst(vmid, (*regs)->pc, MONITOR_RETRAP);
     writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc, TTBR0));
+
+    /* TODO Detecting fault here. It is not working now.
+     * monitor_detect_fault((struct monitor_vmid *)(SHARED_VMID), ori_va, regs);
+     */
 }
 
 void monitor_hvc_retrap_handler(vmid_t vmid, struct arch_regs **regs)

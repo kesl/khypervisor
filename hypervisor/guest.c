@@ -308,3 +308,15 @@ struct guest_struct get_guest(uint32_t guest_num)
 {
    return guests[guest_num];
 }
+
+void reboot_guest(struct monitor_vmid *mvmid, uint32_t pc,
+        struct arch_regs **regs)
+{
+    vmid_t vmid = mvmid->vmid_target;
+    monitor_clean_all_guest(mvmid, 0);
+    _guest_module.ops->init(&guests[vmid], &(guests[vmid].regs));
+    guests[vmid].regs.pc = pc;
+    guests[vmid].regs.gpr[10] = 1;
+    if (regs != 0)
+        _guest_module.ops->restore(&guests[vmid], *regs);
+}

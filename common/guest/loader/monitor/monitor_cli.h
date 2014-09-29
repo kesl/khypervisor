@@ -4,4 +4,5 @@
 #define NUM_DEBUG_CMD 5
 
 int monitoring_cmd(void);
+void monitoring_reboot(void);
 #endif

@@ -67,9 +67,13 @@ SECTIONS
  }
  end_bss = .;
 
+ . = ALIGN(4);
+
  shared_memory_start = 0x8EC00000;
  . = shared_memory_start;
  shared_memory_end = . + 0x400000;
+
+ guestloader_end = .;
 
  . = PHYS_STACK;
  guestloader_stacktop_svc = .;
@@ -78,4 +82,9 @@ SECTIONS
  guestloader_stacktop_irq = .;
  . = PHYS_STACK + 0x00800000;
  guestloader_stacklimit_irq = .;
+
+ restore_start = 0xB0000000;
+ restore_guest_start = restore_start + 0x00500000;
+ restore_guest_end = restore_guest_start + (guest_end - guest_start);
+ restore_end = restore_start + (guestloader_end - loader_start);
 }

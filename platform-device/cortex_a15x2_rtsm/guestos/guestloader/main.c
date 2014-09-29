@@ -4,7 +4,10 @@
 #include <asm-arm_inline.h>
 #include <log/uart_print.h>
 #include "drivers/timer.h"
-#include <monitor.h>
+#include <guest_monitor.h>
+#define DEBUG
+#include <log/print.h>
+#include <guestloader_common.h>
 
 #define MAX_CMD_STR_SIZE    256
 #define PROMPT  "kboot# "
@@ -18,15 +21,14 @@ static void guestloader_init(void)
     uart_init();
     /* Initializes GIC */
     gic_init();
+    /* Initializes monitoring */
+    monitoring_init();
     /* Ready to accept irqs with GIC. Enable it now */
     irq_enable();
     /* Initializes timer */
     timer_init();
     /* Initializes autoboot flag */
     autoboot = 0;
-#ifdef _MON_
-    monitoring_init();
-#endif
 }
 
 void guestloader_flag_autoboot(int flag)
@@ -53,13 +55,18 @@ static void guestloader_cliboot(void)
     }
 }
 
-void main(void)
+void main(int boot_status)
 {
 #if _SMP_
     uart_print("guest bootloader\n");
     while (1)
         ;
 #endif
+    /*If Booting status is reboot, run this function. */
+    uart_print("guest bootloader\n");
+    if(boot_status){
+      reboot();
+    }
     /* Initializes guestloder */
     guestloader_init();
     /* Show Hypervisor Banner */

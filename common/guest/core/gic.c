@@ -199,6 +199,8 @@ hvmm_status_t gic_init(void)
     if (result == HVMM_STATUS_SUCCESS)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
 
+    for (i = 0; i < 4; i++)
+        _gic.ba_gicd[GICD_ICENABLER + i] = 0xffffffff;
     HVMM_TRACE_EXIT();
     return result;
 }

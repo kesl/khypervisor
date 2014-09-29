@@ -33,9 +33,9 @@ static monitor_handler_t _monitor_handler[] = {
     monitor_clean_trace_guest,          /* offset : 0x05 */
     monitor_insert_break_to_guest,      /* offset : 0x06 */
     monitor_clean_break_guest,          /* offset : 0x07 */
+    monitor_reboot,                     /* offset : 0x08 */
+    monitor_detect_fault                /* offset : 0x09 */
 };
-
-/* static struct vdev_monitor_regs monitor_regs[NUM_GUESTS_STATIC]; */
 
 static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)

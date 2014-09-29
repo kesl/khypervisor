@@ -1,5 +1,5 @@
 #include <monitor_cli.h>
-#include <monitor.h>
+#include <guest_monitor.h>
 #include <arch_types.h>
 #include <gic.h>
 #define DEBUG
@@ -9,14 +9,16 @@
 #define VDEV_MONITORING_BASE 0x3FFFD000
 
 
-#define MONITOR_READ_LIST                   0x00
-#define MONITOR_READ_RUN                    0x01 * 4
-#define MONITOR_READ_CEAN_ALL               0x02 * 4
-#define MONITOR_READ_DUMP_MEMORY            0x03 * 4
-#define MONITOR_WRITE_TRACE_GUEST           0x04 * 4
-#define MONITOR_WRITE_CLEAN_TRACE_GUEST     0x05 * 4
-#define MONITOR_WRITE_BREAK_GUEST           0x06 * 4
-#define MONITOR_WRITE_CLEAN_BREAK_GUEST     0x07 * 4
+#define MONITOR_READ_LIST                   (0x00)
+#define MONITOR_READ_RUN                    (0x01 * 4)
+#define MONITOR_READ_CEAN_ALL               (0x02 * 4)
+#define MONITOR_READ_DUMP_MEMORY            (0x03 * 4)
+#define MONITOR_WRITE_TRACE_GUEST           (0x04 * 4)
+#define MONITOR_WRITE_CLEAN_TRACE_GUEST     (0x05 * 4)
+#define MONITOR_WRITE_BREAK_GUEST           (0x06 * 4)
+#define MONITOR_WRITE_CLEAN_BREAK_GUEST     (0x07 * 4)
+#define MONITOR_READ_REBOOT                 (0x08 * 4)
+#define MONITOR_READ_RECOVERY               (0x09 * 4)
 
 volatile uint32_t *base_set =
         (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_WRITE_TRACE_GUEST);
@@ -34,6 +36,10 @@ volatile uint32_t *base_all_clean =
         (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_CEAN_ALL);
 volatile uint32_t *base_memory_dump =
         (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_DUMP_MEMORY);
+volatile uint32_t *base_reboot =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_REBOOT);
+volatile uint32_t *base_recovery =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_RECOVERY);
 
 #define monitoring_list()  (*base_list)
 #define NUM_MONITORING_CMD MONITORING_NOINPUT
@@ -54,6 +60,8 @@ enum monitoring_cmd_type {
     MONITORING_BREAK_CLEAN,
     MONITORING_ALL_CLEAN,
     MONITORING_MEMORY_DUMP,
+    MONITORING_REBOOT,
+    MONITORING_RECOVERY,
     MONITORING_NOINPUT
 };
 
@@ -78,6 +86,8 @@ static struct monitoring_cmd monitoring_cmd_type_map_tbl[NUM_MONITORING_CMD] = {
     {"bc", MONITORING_BREAK_CLEAN},
     {"clear", MONITORING_ALL_CLEAN},
     {"x", MONITORING_MEMORY_DUMP},
+    {"rb", MONITORING_REBOOT},
+    {"rc", MONITORING_RECOVERY},
     {"exit", MONITORING_EXIT}
 };
 
@@ -92,6 +102,8 @@ static void monitoring_help(void)
                "bc <address>        - Clean breaking point\n"
                "clear               - Clean all monitoring point\n"
                "x <range> <address> - Dump memory. [x 20 0x30000000]\n"
+               "rb                  - Target System reboot\n"
+               "rc                  - Set Fault tolerance system\n"
                "exit                - exit monitoring mode\n");
 }
 
@@ -111,6 +123,13 @@ static enum cmd_status check_vaild_va(char **argv, int argc, uint32_t *va)
     }
     return CMD_STATUS_SUCCESS;
 }
+
+struct monitor_vmid {
+    unsigned char vmid_monitor;
+    unsigned char vmid_target;
+};
+
+struct monitor_vmid vmids = {1, 0};
 
 static void monitoring_clean(char **argv, int argc)
 {
@@ -147,12 +166,23 @@ static void monitoring_break_clean(char **argv, int argc)
     }
 }
 
+static void monitoring_recovery(void)
+{
+    printh("Set Fault tolerance system\n");
+    set_recovery(1);
+    *base_recovery;
+}
 static void monitoring_go(void)
 {
     printh("Go!\n");
     *base_go;
 }
 
+void monitoring_reboot(void)
+{
+    printh("Taget System reboot..\n");
+    *base_reboot;
+}
 static void monitoring_all_clean(void)
 {
     printh("Clean all monitoring point!\n");
@@ -223,6 +253,13 @@ int monitoring_cmd(void)
     char input_cmd[MAX_INPUT_SIZE];
     char *argv[MAX_CMD_SIZE];
     int argc;
+
+    /* Saved vmids info */
+    struct monitor_vmid *vmids = (struct monitor_vmid *)
+        &shared_memory_start + (0xA0/4);
+    vmids->vmid_monitor = 1;
+    vmids->vmid_target = 0;
+
     while (1) {
         uart_print("monitoring# ");
         uart_gets(input_cmd, MAX_INPUT_SIZE);
@@ -253,6 +290,12 @@ int monitoring_cmd(void)
             break;
         case MONITORING_MEMORY_DUMP:
             monitoring_dump_memory(argv, argc);
+            break;
+        case MONITORING_REBOOT:
+            monitoring_reboot();
+            break;
+        case MONITORING_RECOVERY:
+            monitoring_recovery();
             break;
         case MONITORING_EXIT:
             monitoring_all_clean();

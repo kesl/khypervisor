@@ -9,6 +9,8 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 #include <asm_io.h>
+#include <armv7_p15.h>
+#include <guest.h>
 
 static uint32_t inst[NUM_GUESTS_STATIC][NUM_DI][NUM_INST];
 
@@ -220,13 +222,50 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid)
+hvmm_status_t monitor_reboot(struct monitor_vmid *mvmid, uint32_t va)
+{
+    hvmm_status_t ret = HVMM_STATUS_SUCCESS;
+
+    monitor_reboot_guest(mvmid);
+
+    return ret;
+}
+
+hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid, uint32_t va)
+{
+    hvmm_status_t ret = HVMM_STATUS_SUCCESS;
+
+    /* Trap to loop_delay */
+    monitor_insert_trace_to_guest(mvmid, 0x8015fbcc);
+
+#if 0
+    /* TODO : It is working in hypervisor, not guest finally.. */
+    if (va == 0x8015fbcc) {
+        printH("Target guest's panic occured!\n");
+        printH("Auto system recovery start...\n");
+        monitor_recovery_guest(mvmid);
+        reboot_guest(mvmid, 0xB0000000, regs);
+        printH("regs is %x\n", (*regs)->pc);
+    }
+#endif
+    return ret;
+}
+
+hvmm_status_t monitor_reboot_guest(struct monitor_vmid *mvmid)
+{
+    hvmm_status_t ret = HVMM_STATUS_SUCCESS;
+
+    reboot_guest(mvmid, 0xB0000000, 0);
+
+    return ret;
+}
+
+hvmm_status_t monitor_recovery(struct monitor_vmid *mvmid, uint32_t va)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 
     return ret;
 }
-
 hvmm_status_t monitor_recovery_guest(struct monitor_vmid *mvmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
@@ -265,7 +304,7 @@ hvmm_status_t monitor_restore(struct monitor_vmid *mvmid)
     return ret;
 }
 
-hvmm_status_t monitor_init()
+hvmm_status_t monitor_init(void)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 

@@ -41,5 +41,7 @@ extern uint32_t shared_memory_end;
 *  Types of guest OS are bmguest, Linux guest and RTOS guest.
 */
 void loader_boot_guest(uint32_t guest_os_type);
+void copy_image_to(uint32_t *src_addr, uint32_t *end_addr, uint32_t *dst_addr);
+
 #endif
 

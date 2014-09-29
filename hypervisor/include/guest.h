@@ -7,6 +7,7 @@
 #include <hvmm_types.h>
 #include <vgic.h>
 #include <guest_hw.h>
+#include <monitor.h>
 
 enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
@@ -109,6 +110,8 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
 struct guest_struct get_guest(uint32_t guest_num);
+void reboot_guest(struct monitor_vmid *mvmid, uint32_t pc,
+        struct arch_regs **regs);
 void set_manually_select_vmid(vmid_t vmid);
 void clean_manually_select_vmid(void);
 

@@ -1,7 +1,6 @@
 #include <cli.h>
 #include <guestloader_common.h>
 #include <version.h>
-#include <monitor.h>
 
 #define NUM_CMD 3
 
