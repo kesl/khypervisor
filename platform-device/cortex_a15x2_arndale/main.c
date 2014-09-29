@@ -294,6 +294,7 @@ void setup_timer()
 }
 
 #include <io-exynos.h>
+extern void init_secondary();
 
 int main_cpu_init()
 {

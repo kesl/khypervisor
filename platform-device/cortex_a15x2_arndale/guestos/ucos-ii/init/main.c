@@ -149,7 +149,7 @@ void TaskStart(void *data)
 
     while (1) {
         OSCtxSwCtr = 0;
-#if 0
+#if 1
         for(i = 0; i <N_TASKS; i++){
             OSTaskQuery(11+i, &(MYTaskData[i]));
         }
@@ -165,7 +165,7 @@ void TaskStart(void *data)
         printf("#Task switch/sec :%5d\n", OSCtxSwCtr);
         printf("\n");
 #endif
-        OSTimeDlyHMSM(0, 0, 5, 0);
+        OSTimeDlyHMSM(0, 0, 1, 0);
     }
 }
 

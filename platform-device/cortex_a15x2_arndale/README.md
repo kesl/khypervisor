@@ -300,7 +300,7 @@ $ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 C8;mmc re
 
 
 
-# How to test linaro-android(kitkat) + bmguest
+# How to test android(kitkat) + bmguest
 
 ## Download linaro-kernel
 before next step (Make a build in one step continuous integration)
@@ -317,6 +317,8 @@ Cross compiler : arm-none-linux-gnueabi- (version 4.5.2) (build linaro kernel)
 Go to "How to Flash a K-hypervisor to arndale board (bmguest + Linux guest)"
 this section, if you done this process first.
 
+- get the linaro kernel before you run the following command.
+
 <pre>
 $ cd khypervisor
 $ source platform-device/cortex_a15x2_arndale/build/linaro_bmguest.sh
@@ -327,13 +329,13 @@ $ make
 ## Build bootloader
 - build bootloader or get builded bootfile
 
-1.build bootloader
+1.Build bootloader
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/u-boot-native
 $ make arndale5250 CROSS_COMPILE=arm-none-eabi- -j8
 </pre>
 
-2.get builded bootfile<pre>
+2.Get builded bootfile<pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
 $ ./get-builded-bootfile.sh
 </pre>
@@ -386,7 +388,7 @@ $ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ make
 </pre>
 
-## How to Flash a K-hypervisor to arndale board (linaro android + bmguest)
+## How to Flash a K-hypervisor to arndale board ( android + bmguest)
 
 1. Get linaro tool to flash native android (kitkat)
 <pre>
@@ -395,7 +397,7 @@ $ sudo apt-get update
 $ sudo apt-get install linaro-image-tools
 </pre>
 
-2. get builded bootfile
+2. Get builded bootfile
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
 $ ./get-builded-bootfile.sh
@@ -430,13 +432,26 @@ $ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1f4a;mmc 
 *You can get information(android + bmguest) at khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/README
 
 
+## Summary of all process to build kernel and flash sdcard
+- This summary is building linaro kernel, bmguest and flashing android (kitkat).
 
+<pre>
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro
+$ ./get_linaro_kernel.sh
+$ ./get-builded-bootfile.sh
+$ cd khypervisor
+$ source platform-device/cortex_a15x2_arndale/build/linaro_bmguest.sh
+$ make
+$ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/android-linaro/
+$ ./get-android.sh
+$ ./upload-sdcard.sh
+"Then in shell input you're sdcard name then enter you're sdcard name (sda,sdc ....)"
+input you're sdcard name
+$ sdX
 
+"if you finish process, then insert sdcard in arndale board and turn on. and see arndale shell
+and enter command "
 
+ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1f4a;mmc read 0x80000000 23ff 14;mmc read 0x46400000 2413 1bbc;mmc read 80100000 3fcf A; go 0xb000004c
 
-
-
-
-
-
-
+</pre>
