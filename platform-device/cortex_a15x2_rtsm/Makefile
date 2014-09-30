@@ -103,6 +103,9 @@ clean distclean:
 
 $(SEMIIMG): $(OBJS) modelsemi.lds
 	$(LD) -o $@ $(OBJS) --script=modelsemi.lds
+ifeq ($(VEXPRESS), y)
+	$(OBJCOPY) -O binary $(SEMIIMG) $(HYPBIN)
+endif
 
 $(HYPBIN): $(SEMIIMG)
 	$(OBJCOPY) -O binary $(SEMIIMG) $(HYPBIN)

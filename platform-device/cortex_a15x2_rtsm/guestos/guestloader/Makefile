@@ -51,7 +51,11 @@ endif
 boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 %.o: %.c
+ifeq ($(VEXPRESS), y)
+	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -O0 -ffreestanding -I.  -c -o $@ $<
+else
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -O2 -ffreestanding -I.  -c -o $@ $<
+endif
 model.lds: $(LD_SCRIPT) Makefile $(GUESTBIN)
 	$(CC) $(CPPFLAGS) $(GUESTLOADERCONFIGS) -E -P -C -o $@ $<
 force: ;

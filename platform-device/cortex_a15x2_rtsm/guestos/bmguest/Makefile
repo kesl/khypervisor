@@ -110,7 +110,11 @@ boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
+ifneq ($(VEXPRESS), y)
 	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -O2 -ffreestanding -I.  -c -o $@ $<
+else
+	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -O0 -ffreestanding -I.  -c -o $@ $<
+endif
 
 model.lds: $(LD_SCRIPT) Makefile
 	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -E -P -C -o $@ $<
