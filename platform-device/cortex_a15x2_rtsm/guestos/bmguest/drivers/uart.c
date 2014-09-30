@@ -1,6 +1,8 @@
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
 
-#define UART_BASE       ((volatile unsigned int *) 0x1C090000)
+#define UART_BASE       (0x1C090000)
+#define UART_FR 0x18
+#define UART_FR_TXFF    0x20
 
 static char _dummy_byte;
 
@@ -18,9 +20,8 @@ void uart_init(void)
 
 void uart_print(char *str)
 {
-    char *pUART = (char *) UART_BASE;
     while (*str)
-        *pUART = *str++;
+        uart_putc(*str++);
 }
 
 void uart_putc(char c)
