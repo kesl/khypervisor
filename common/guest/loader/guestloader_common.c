@@ -57,7 +57,7 @@ void loader_boot_guest(uint32_t guest_os_type)
     copy_image_to_addr(GUEST, (uint32_t *)START_ADDR);
 
     if (guest_os_type == GUEST_TYPE_LINUX) {
-        linuxloader_setup_atags(START_ADDR_LINUX);
+        linuxloader_setup_atags(LINUX_START_ADDR);
         /* r1 : machine type
          * r2 : atags address
          */
