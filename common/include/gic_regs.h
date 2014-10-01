@@ -23,6 +23,8 @@
 
 #ifdef _SMP_
 #define GICD_SGIR   (0xF00/4)
+#define GICD_CPENDSGIR  (0xF10/4)
+#define GICD_SPENDSGIR  (0xF20/4)
 #endif
 
 /* Distributor offset */
@@ -40,6 +42,8 @@
 #define GICD_OFFSET_ICFGR    0xC00
 #define GICD_OFFSET_CPENDGIR    0xF10
 #define GICD_OFFSET_SGIR    0xF00
+#define GICD_OFFSET_CPENDSGIR   0xF10
+#define GICD_OFFSET_SPENDSGIR   0xF20
 
 /* CPU Interface */
 #define GICC_CTLR    (0x0000/4)

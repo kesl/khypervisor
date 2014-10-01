@@ -368,13 +368,11 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
     uint32_t *preg_s;
     uint32_t *preg_c;
     if(((offset >> 2) - GICD_ISPENDR) == 0 ||
-       ((offset >> 2) - GICD_ICPENDR) == 0)
-    {
+       ((offset >> 2) - GICD_ICPENDR) == 0) {
         preg_s = &(regs_banked->ISCPENDR);
         preg_c = &(regs_banked->ISCPENDR);
     }
-    else
-    {
+    else {
         preg_s = &(regs->ISCPENDR[(offset >> 2) - GICD_ISPENDR]);
         preg_c = &(regs->ISCPENDR[(offset >> 2) - GICD_ICPENDR]);
     }
@@ -535,16 +533,24 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     vmid_t vmid;
-    //struct gicd_regs_banked *regs_banked;
+    struct gicd_regs_banked *regs_banked;
     uint32_t target = 0;
     uint32_t sgi_id = *pvalue & GICD_SGIR_SGI_INT_ID_MASK;
     uint32_t i;
+    uint32_t *preg_s;
+    uint32_t *preg_c;
 
     vmid = guest_current_vmid();
-    //regs_banked = &_regs_banked[vmid];
+
+    if(((offset >> 2) == GICD_CPENDSGIR) ||
+       ((offset >> 2) == GICD_SPENDSGIR)) {
+        regs_banked = &_regs_banked[vmid];
+        preg_s = &(regs_banked->CPENDSGIR[(offset >> 2) - GICD_SPENDSGIR]);
+        preg_c = &(regs_banked->CPENDSGIR[(offset >> 2) - GICD_CPENDSGIR]);
+    }
     offset >>= 2;
 
-    if(offset == GICD_SGIR) {
+    if (offset == GICD_SGIR) {
         // Filter Mask
         switch(*pvalue & GICD_SGIR_TARGET_LIST_FILTER_MASK)
         {
@@ -569,12 +575,29 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
 
         for (i=0; i<NUM_VCPU_STATIC;i++) {
             uint8_t _target = target & 0x1;
-            if (_target)
+            if (_target) {
+                regs_banked = &_regs_banked[_target];
+                (regs_banked -> CPENDSGIR[(sgi_id>>2)]) = 0x1 << ((sgi_id&0x3) * 8);
                 result = virq_inject(i, sgi_id, sgi_id, 0);
+            }
             target = target>>1;
         }
-    } else { //not implemented
-        printh("vgicd:%s: not implemented\n", __func__);
+    } else if (offset == GICD_CPENDSGIR) {
+        if (write) {
+            if (*pvalue)
+                *preg_c |= ~(*pvalue);
+        } else // read
+            *pvalue = *preg_c;
+        result = HVMM_STATUS_SUCCESS;
+    } else if (offset == GICD_SPENDSGIR) {
+        if (write) {
+            if (*pvalue)
+                *preg_s |= *pvalue;
+        } else // read
+            *pvalue = *preg_s;
+        result = HVMM_STATUS_SUCCESS;
+    } else { //ICPIDR2 is not implemented
+        printH("vgicd:%s: not implemented\n", __func__);
     }
     return result;
 }
@@ -785,7 +808,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
                         + GIC_OFFSET_GICD + GICD_OFFSET_SGIR)));
 
         inc_address = 0x00000000;
-        for (j = 0; j < VGICE_NUM_CPENDSGIR; j++) {
+        for (j = 0; j < VGICD_BANKED_NUM_CPENDSGIR; j++) {
             _regs_banked[vmid].CPENDSGIR[j] =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                             + GIC_OFFSET_GICD + GICD_OFFSET_CPENDGIR
