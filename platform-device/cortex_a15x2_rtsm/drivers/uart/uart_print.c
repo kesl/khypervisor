@@ -5,6 +5,8 @@
 #ifdef CFG_GENERIC_CA15
 #ifdef CFG_BOARD_RTSM_VE_CA15
 #define UART0_BASE       0x1C090000
+#define UART0_FR    0x18
+#define UART0_FR_TXFF   0x20
 #else
 #error "Configuration for board is not specified!"\
    " GENERIC_CA15 but board is unknown."
@@ -13,15 +15,14 @@
 
 void uart_print(const char *str)
 {
-    volatile char *pUART = (char *) UART0_BASE;
     while (*str)
-        *pUART = *str++;
+        uart_putc(*str++);
 }
 
 void uart_putc(const char c)
 {
     /* Wait until there is space in the FIFO */
-    while (*((uint32_t *)(UART0_BASE + 0x18)) & 0x20)
+    while (*((uint32_t *)(UART0_BASE + UART0_FR)) & UART0_FR_TXFF)
         ;
     /* Send the character */
     volatile char *pUART = (char *) UART0_BASE;
