@@ -166,7 +166,7 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
 
             /* host_interrupt_end() */
             _host_ops->end(irq);
-        }
+        } else
 #endif
         if (interrupt_check_guest_irq(irq) == GUEST_IRQ) {
 
