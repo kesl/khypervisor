@@ -5,7 +5,7 @@
 
 #ifdef CFG_EXYNOS5250
 #ifdef CFG_BOARD_ARNDALE
-#define UART2_BASE           0x12c20000
+#define UART2_BASE           0x12c10000
 #else
 #error "Configuration for board is not specified!"
 #endif

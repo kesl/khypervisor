@@ -13,7 +13,7 @@
 #define PROMPT  "kboot# "
 #define BOOTCMD "boot"
 
-int autoboot;
+volatile int autoboot;
 
 static void guestloader_init(void)
 {

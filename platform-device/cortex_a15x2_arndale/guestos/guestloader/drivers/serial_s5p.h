@@ -22,6 +22,8 @@
 #ifndef __ASM_ARCH_UART_H_
 #define __ASM_ARCH_UART_H_
 
+#include "arch_types.h"
+
 /* baudrate rest value */
 union br_rest {
         unsigned short        slot;                /* udivslot */
@@ -45,5 +47,17 @@ struct s5p_uart {
         union br_rest        rest;
         unsigned char        res3[0xffd0];
 };
+
+/* Exynos 5250 UART register macros */
+#define UTXH        0x20
+#define UFSTAT      0x18
+/* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
+#define UART_BASE           0x12C10000
+
+int serial_tst_fifo(void);
+int serial_getc(void);
+void serial_putc(const char c);
+void serial_setbrg_dev(uint32_t base);
+void serial_init(void);
 #endif
 

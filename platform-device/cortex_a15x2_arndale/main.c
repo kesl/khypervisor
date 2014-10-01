@@ -114,7 +114,7 @@ static struct memmap_desc guest1_device_md[] = {
 
 #if _SMP_
 static struct memmap_desc guest2_device_md[] = {
-    { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
+    { "uart", 0x12C10000, 0x12C00000, 0x1000, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
     { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
     { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
@@ -126,7 +126,7 @@ static struct memmap_desc guest2_device_md[] = {
 };
 
 static struct memmap_desc guest3_device_md[] = {
-    { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
+    { "uart", 0x12C10000, 0x12C00000, 0x1000, MEMATTR_DM },
     { "pwm_timer", 0x3FD10000, 0x12DD0000, 0x1000, MEMATTR_DM },
     { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
     { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
@@ -245,6 +245,7 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 64, 64);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 66, 66);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 67, 67);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 84, 84);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 85, 85);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 88, 88);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 90, 96);

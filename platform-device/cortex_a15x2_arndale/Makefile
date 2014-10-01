@@ -29,6 +29,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
 	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
 	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
+	$(HYPERVISOR_SOURCE_DIR)/monitor.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
 	$(HYPERVISOR_HW_DIR)/guest_hw.o					\
 	$(HYPERVISOR_HW_DIR)/timer_hw.o					\
@@ -41,6 +42,9 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_hvc_yield.o		\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_sample.o			\
 	$(HYPERVISOR_HW_DIR)/vdev/vdev_timer.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_hvc_monitor.o		\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor.o			\
+	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor_utils.o		\
 	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
