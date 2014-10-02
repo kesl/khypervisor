@@ -20,9 +20,6 @@ void uart_print(const char *str)
         uart_putc(*str);
         str++;
     }
-    volatile char *pUART = (char *) UART_BASE;
-    while (*str)
-        *pUART = *str++;
 }
 
 #define UART_PRINT_BUF  12
