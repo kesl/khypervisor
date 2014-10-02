@@ -20,5 +20,6 @@ ARCH		?= arm
 SYSTEM ?= vexpress
 
 CPPFLAGS	+= -DSMP -D_SMP_
+#CPPFLAGS    += -D_VEXPRESS_
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
 CPPFLAGS	+= -g

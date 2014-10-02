@@ -14,8 +14,10 @@ ENTRY(start)
 
 #include <k-hypervisor-config.h>
 
+#ifndef _VEXPRESS_
 INPUT(./guestimages/guest0.bin)
 INPUT(./guestimages/guest1.bin)
+#endif
 
 
 MON_STACK   = CFG_MEMMAP_MON_OFFSET + MON_SIZE;
@@ -37,7 +39,9 @@ SECTIONS
 /* Guest 1 */
  . = CFG_MEMMAP_GUEST_OFFSET;
   _guest_bin_start = .;
+#ifndef _VEXPRESS_
   .guest : { ./guestimages/guest0.bin}
+#endif
   _guest_bin_end = .;
 
  . = GUEST_STACK;
@@ -48,7 +52,9 @@ SECTIONS
 /* Guest 2 */
  . = CFG_MEMMAP_GUEST2_OFFSET;
   _guest2_bin_start = .;
+#ifndef _VEXPRESS_
  .guest2 : { ./guestimages/guest1.bin }
+#endif
   _guest2_bin_end = .;
 
  . = GUEST2_STACK;
