@@ -11,7 +11,10 @@
 #define JUMP_TO_ADDRESS(addr) \
     asm volatile ("mov pc, %0" : : "r" (addr) : "memory", "cc")
 #define ADD_PC_TO_OFFSET(offset) \
-    asm volatile ("add  %0, pc, %0" : : "r" (offset) : "memory", "cc")
+    ({uint32_t rval; asm volatile (\
+    "add  %1, pc, %1;"\
+    "mov  %0, %1" : "=r" (rval) : "r" (offset) : "memory", "cc"); \
+     (rval + 0x18); })
 
 enum guest_image_type {
     LOADER,
@@ -50,7 +53,7 @@ void loader_boot_guest(uint32_t guest_os_type)
 
     /* Jump pc to (pc + offset). */
     offset = ((uint32_t)(&guest_end - &loader_start) * sizeof(uint32_t));
-    ADD_PC_TO_OFFSET(offset);
+    offset = ADD_PC_TO_OFFSET(offset);
     JUMP_TO_ADDRESS(offset);
 
     /* Copies guest to start address */

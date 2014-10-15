@@ -30,8 +30,8 @@
  */
 
 /* hard coding for arndale, fastmodel */
-#define TILinesNumber 4
-#define NUM_MAX_VIRQS   160
+#define TILinesNumber 5
+#define NUM_MAX_VIRQS   192
 
 #define NUM_STATUS_WORDS    (NUM_MAX_VIRQS / 32)
 #define VGICE_NUM_ISCPENDR (TILinesNumber + 1)
