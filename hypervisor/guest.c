@@ -241,7 +241,7 @@ vmid_t sched_policy_determ_next(void)
 void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
-    uint32_t cpu = smp_processor_id();
+    //uint32_t cpu = smp_processor_id();
     /* guest_hw_dump */
     if (_cpu_module.ops->dump)
         _cpu_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
@@ -313,9 +313,9 @@ void reboot_guest(struct monitor_vmid *mvmid, uint32_t pc,
 {
     vmid_t vmid = mvmid->vmid_target;
     monitor_clean_all_guest(mvmid, 0);
-    _guest_module.ops->init(&guests[vmid], &(guests[vmid].regs));
+    _cpu_module.ops->init(&guests[vmid], &(guests[vmid].regs));
     guests[vmid].regs.pc = pc;
     guests[vmid].regs.gpr[10] = 1;
     if (regs != 0)
-        _guest_module.ops->restore(&guests[vmid], *regs);
+        _cpu_module.ops->restore(&guests[vmid], *regs);
 }

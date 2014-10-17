@@ -4,7 +4,7 @@
 #include <log/uart_print.h>
 #include <hvmm_types.h>
 #include <arch_types.h>
-#include <guest_hw.h>
+#include <cpu_hw.h>
 
 #define NUM_BREAK_POINT 50
 #define NUM_DI (NUM_BREAK_POINT * 2)
