@@ -94,15 +94,15 @@ struct virq_entry {
 
 static struct vgic _vgic;
 
-static uint32_t _guest_pirqatslot[NUM_GUESTS_STATIC][VGIC_NUM_MAX_SLOTS];
-static uint32_t _guest_virqatslot[NUM_GUESTS_STATIC][VGIC_NUM_MAX_SLOTS];
+static uint32_t _guest_pirqatslot[NUM_VCPU_STATIC][VGIC_NUM_MAX_SLOTS];
+static uint32_t _guest_virqatslot[NUM_VCPU_STATIC][VGIC_NUM_MAX_SLOTS];
 
-static struct virq_entry _guest_virqs[NUM_GUESTS_STATIC][VIRQ_MAX_ENTRIES + 1];
+static struct virq_entry _guest_virqs[NUM_VCPU_STATIC][VIRQ_MAX_ENTRIES + 1];
 
 void vgic_slotpirq_init(void)
 {
     int i, j;
-    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+    for (i = 0; i < NUM_VCPU_STATIC; i++) {
         for (j = 0; j < VGIC_NUM_MAX_SLOTS; j++) {
             _guest_pirqatslot[i][j] = PIRQ_INVALID;
             _guest_virqatslot[i][j] = VIRQ_INVALID;
@@ -112,7 +112,7 @@ void vgic_slotpirq_init(void)
 
 void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq)
 {
-    if (vmid < NUM_GUESTS_STATIC) {
+    if (vmid < NUM_VCPU_STATIC) {
         printh("vgic: setting vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq);
         _guest_pirqatslot[vmid][slot] = pirq;
     }
@@ -121,7 +121,7 @@ void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq)
 uint32_t vgic_slotpirq_get(vmid_t vmid, uint32_t slot)
 {
     uint32_t pirq = PIRQ_INVALID;
-    if (vmid < NUM_GUESTS_STATIC) {
+    if (vmid < NUM_VCPU_STATIC) {
         pirq = _guest_pirqatslot[vmid][slot];
         printh("vgic: reading vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq);
     }
@@ -135,7 +135,7 @@ void vgic_slotpirq_clear(vmid_t vmid, uint32_t slot)
 
 void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq)
 {
-    if (vmid < NUM_GUESTS_STATIC) {
+    if (vmid < NUM_VCPU_STATIC) {
         printh("vgic: setting vmid:%d slot:%d virq:%d\n", vmid, slot, virq);
         _guest_virqatslot[vmid][slot] = virq;
     } else {
@@ -148,7 +148,7 @@ uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq)
 {
     uint32_t slot = SLOT_INVALID;
     int i;
-    if (vmid < NUM_GUESTS_STATIC) {
+    if (vmid < NUM_VCPU_STATIC) {
         for (i = 0; i < VGIC_NUM_MAX_SLOTS; i++) {
             if (_guest_virqatslot[vmid][i] == virq) {
                 slot = i;
@@ -189,12 +189,13 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
         } else {
             slot = vgic_inject_virq_sw(virq,
                     VIRQ_STATE_PENDING, 0,
-                    smp_processor_id(), 1);
+                    vmid/*(smp_processor_id()*/, 1);
         }
         if (slot == VGIC_SLOT_NOTFOUND)
             return result;
 
         vgic_slotvirq_set(vmid, slot, virq);
+        result = HVMM_STATUS_SUCCESS;
     } else {
         int slot = vgic_slotvirq_getslot(vmid, virq);
         if (slot == SLOT_INVALID) {
@@ -216,6 +217,12 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
             printh("virq: rejected queueing duplicated virq %d pirq %d to "
                     "vmid %d %s\n", virq, pirq, vmid);
         }
+#ifdef _SMP_
+        if( (result == HVMM_STATUS_SUCCESS) &&
+                (virq < 16) ) {
+            gic_set_sgi(1<<vmid, GIC_SGI_SLOT_CHECK);
+        }
+#endif
     }
     return result;
 }
@@ -600,7 +607,7 @@ static uint64_t _vgic_valid_lr_mask(uint32_t num_lr)
 hvmm_status_t virq_init(void)
 {
     int i, j;
-    for (i = 0; i < NUM_GUESTS_STATIC; i++)
+    for (i = 0; i < NUM_VCPU_STATIC; i++)
         for (j = 0; j < (VIRQ_MAX_ENTRIES + 1); j++)
             _guest_virqs[i][j].valid = 0;
 
@@ -683,3 +690,25 @@ hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
     return result;
 }
 
+#ifdef _SMP_
+hvmm_status_t vgic_sgi(uint32_t cpu, enum gic_sgi sgi)
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid;
+    vmid = guest_current_vmid();
+
+    if(cpu != vmid)
+        return result;
+
+    switch(sgi) {
+        case GIC_SGI_SLOT_CHECK:
+            result = vgic_flush_virqs(vmid);
+            break;
+        default:
+            printh("sgi: wrong sgi %d\n", sgi);
+            break;
+    }
+
+    return result;
+}
+#endif

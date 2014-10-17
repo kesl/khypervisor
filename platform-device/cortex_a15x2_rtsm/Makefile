@@ -31,7 +31,7 @@ OBJS 		= boot.o	\
 	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
 	$(HYPERVISOR_SOURCE_DIR)/monitor.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\
-	$(HYPERVISOR_HW_DIR)/guest_hw.o					\
+	$(HYPERVISOR_HW_DIR)/cpu_hw.o					\
 	$(HYPERVISOR_HW_DIR)/timer_hw.o					\
 	$(HYPERVISOR_HW_DIR)/interrupt_hw.o				\
 	$(HYPERVISOR_HW_DIR)/memory_hw.o				\

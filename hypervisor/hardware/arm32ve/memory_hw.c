@@ -1211,7 +1211,8 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
         for (i = 0; i < NUM_GUESTS_STATIC; i++)
             _vmid_ttbl[i] = &_ttbl_guest[i][0];
         guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
-        guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
+        //guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);   //test for smp
+        _vmid_ttbl[1] = &_ttbl_guest[0][0];
     } else {
         guest_memory_init_ttbl(&_ttbl_guest[2][0], guest0_map);
         guest_memory_init_ttbl(&_ttbl_guest[3][0], guest1_map);
@@ -1254,7 +1255,8 @@ static int memory_hw_init(struct memmap_desc **guest0,
     uint32_t cpu = smp_processor_id();
     uart_print("[memory] memory_init: enter\n\r");
 
-    guest_memory_init(guest0, guest1);
+    if(!cpu)    //test for smp
+        guest_memory_init(guest0, guest1);
 
     guest_memory_init_mmu();
 

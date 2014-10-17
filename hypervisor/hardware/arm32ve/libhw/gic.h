@@ -15,6 +15,12 @@ enum gic_int_polarity {
     GIC_INT_POLARITY_EDGE = 1
 };
 
+#ifdef _SMP_
+enum gic_sgi {
+    GIC_SGI_SLOT_CHECK = 1,
+};
+#endif
+
 void gic_interrupt(int fiq, void *regs);
 hvmm_status_t gic_enable_irq(uint32_t irq);
 hvmm_status_t gic_disable_irq(uint32_t irq);

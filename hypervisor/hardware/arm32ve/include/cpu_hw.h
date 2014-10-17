@@ -1,12 +1,11 @@
-#ifndef _GUEST_HW_H__
-#define _GUEST_HW_H__
+#ifndef __CPU_HW_H__
+#define __CPU_HW_H__
 
 #include <k-hypervisor-config.h>
 #include <test/tests.h>
 #include <version.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <vgic.h>
 
 #define ARCH_REGS_NUM_GPR    13
 
@@ -60,4 +59,4 @@ struct arch_context {
     struct regs_banked regs_banked;
 };
 
-#endif
+#endif /* __CPU_HW_H__ */

@@ -1,8 +1,5 @@
-#include <k-hypervisor-config.h>
-#include <log/print.h>
-#include <hvmm_trace.h>
 #include <guest.h>
-#include <guest_hw.h>
+#include <cpu_hw.h>
 
 #define CPSR_MODE_USER  0x10
 #define CPSR_MODE_FIQ   0x11
@@ -14,7 +11,7 @@
 #define CPSR_MODE_UND   0x1B
 #define CPSR_MODE_SYS   0x1F
 
-static void context_copy_regs(struct arch_regs *regs_dst,
+static void cpu_copy_regs(struct arch_regs *regs_dst,
                 struct arch_regs *regs_src)
 {
     int i;
@@ -26,7 +23,7 @@ static void context_copy_regs(struct arch_regs *regs_dst,
 }
 
 /* banked registers */
-static void context_init_banked(struct regs_banked *regs_banked)
+static void cpu_init_banked(struct regs_banked *regs_banked)
 {
     regs_banked->sp_usr = 0;
     regs_banked->spsr_svc = 0;
@@ -51,7 +48,7 @@ static void context_init_banked(struct regs_banked *regs_banked)
     /* Cortex-A15 processor does not support sp_fiq */
 }
 
-static void context_save_banked(struct regs_banked *regs_banked)
+static void cpu_save_banked(struct regs_banked *regs_banked)
 {
     /* USR banked register */
     asm volatile(" mrs     %0, sp_usr\n\t"
@@ -101,7 +98,7 @@ static void context_save_banked(struct regs_banked *regs_banked)
                  : "=r"(regs_banked->r12_fiq) : : "memory", "cc");
 }
 
-static void context_restore_banked(struct regs_banked *regs_banked)
+static void cpu_restore_banked(struct regs_banked *regs_banked)
 {
     /* USR banked register */
     asm volatile(" msr    sp_usr, %0\n\t"
@@ -152,7 +149,7 @@ static void context_restore_banked(struct regs_banked *regs_banked)
 }
 
 /* Co-processor state management: init/save/restore */
-static void context_init_cops(struct regs_cop *regs_cop)
+static void cpu_init_cops(struct regs_cop *regs_cop)
 {
     regs_cop->vbar = 0;
     regs_cop->ttbr0 = 0;
@@ -161,7 +158,7 @@ static void context_init_cops(struct regs_cop *regs_cop)
     regs_cop->sctlr = 0;
 }
 
-static void context_save_cops(struct regs_cop *regs_cop)
+static void cpu_save_cops(struct regs_cop *regs_cop)
 {
     regs_cop->vbar = read_vbar();
     regs_cop->ttbr0 = read_ttbr0();
@@ -170,7 +167,7 @@ static void context_save_cops(struct regs_cop *regs_cop)
     regs_cop->sctlr = read_sctlr();
 }
 
-static void context_restore_cops(struct regs_cop *regs_cop)
+static void cpu_restore_cops(struct regs_cop *regs_cop)
 {
     write_vbar(regs_cop->vbar);
     write_ttbr0(regs_cop->ttbr0);
@@ -216,7 +213,7 @@ static char *_modename(uint8_t mode)
 }
 #endif
 
-static hvmm_status_t guest_hw_save(struct guest_struct *guest,
+static hvmm_status_t cpu_hw_save(struct guest_struct *guest,
                 struct arch_regs *current_regs)
 {
     struct arch_regs *regs = &guest->regs;
@@ -225,9 +222,11 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     if (!current_regs)
         return HVMM_STATUS_SUCCESS;
 
-    context_copy_regs(regs, current_regs);
-    context_save_cops(&context->regs_cop);
-    context_save_banked(&context->regs_banked);
+    guest->vmpidr = read_vmpidr();
+
+    cpu_copy_regs(regs, current_regs);
+    cpu_save_cops(&context->regs_cop);
+    cpu_save_banked(&context->regs_banked);
     printh("guest_hw_save  context: saving vmid[%d] mode(%x):%s pc:0x%x\n",
             _current_guest[0]->vmid,
            regs->cpsr & 0x1F,
@@ -237,11 +236,12 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
+static hvmm_status_t cpu_hw_restore(struct guest_struct *guest,
                 struct arch_regs *current_regs)
 {
     struct arch_context *context = &guest->context;
 
+    write_vmpidr(guest->vmpidr);
 
     if (!current_regs) {
         /* init -> hyp mode -> guest */
@@ -254,17 +254,23 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
     }
 
     /* guest -> hyp -> guest */
-    context_copy_regs(current_regs, &guest->regs);
-    context_restore_cops(&context->regs_cop);
-    context_restore_banked(&context->regs_banked);
+    cpu_copy_regs(current_regs, &guest->regs);
+    cpu_restore_cops(&context->regs_cop);
+    cpu_restore_banked(&context->regs_banked);
 
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_init(struct guest_struct *guest,
+static hvmm_status_t cpu_hw_init(struct guest_struct *guest,
                 struct arch_regs *regs)
 {
     struct arch_context *context = &guest->context;
+    uint32_t vmpidr;
+
+    vmpidr = read_vmpidr();
+    vmpidr &= 0xFFFFFFFC;
+    vmpidr |=guest->vmid;   //vmid will changed to vcpu number
+    guest->vmpidr = vmpidr;
 
     regs->pc = CFG_GUEST_START_ADDRESS;
     /* Initialize loader status for reboot */
@@ -272,13 +278,13 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
     /* supervisor mode */
     regs->cpsr = 0x1d3;
     /* regs->gpr[] = whatever */
-    context_init_cops(&context->regs_cop);
-    context_init_banked(&context->regs_banked);
+    cpu_init_cops(&context->regs_cop);
+    cpu_init_banked(&context->regs_banked);
 
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
+static hvmm_status_t cpu_hw_dump(uint8_t verbose, struct arch_regs *regs)
 {
     if (verbose & GUEST_VERBOSE_LEVEL_0) {
         uart_print("cpsr: ");
@@ -323,16 +329,15 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
     return HVMM_STATUS_SUCCESS;
 }
 
-struct guest_ops _guest_ops = {
-    .init = guest_hw_init,
-    .save = guest_hw_save,
-    .restore = guest_hw_restore,
-    .dump = guest_hw_dump,
+struct cpu_ops _cpu_ops = {
+    .init = cpu_hw_init,
+    .save = cpu_hw_save,
+    .restore = cpu_hw_restore,
+    .dump = cpu_hw_dump,
 };
 
-struct guest_module _guest_module = {
-    .name = "K-Hypervisor Guest Module",
+struct cpu_module _cpu_module = {
+    .name = "K-Hypervisor CPU Module",
     .author = "Kookmin Univ.",
-    .ops = &_guest_ops,
+    .ops = &_cpu_ops,
 };
-

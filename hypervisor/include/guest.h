@@ -6,8 +6,8 @@
 #include <log/uart_print.h>
 #include <hvmm_types.h>
 #include <vgic.h>
-#include <guest_hw.h>
 #include <monitor.h>
+#include <cpu_hw.h>
 
 enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
@@ -24,13 +24,16 @@ enum hyp_hvc_result {
 #define GUEST_VERBOSE_LEVEL_6   0x40
 #define GUEST_VERBOSE_LEVEL_7   0x80
 
+//guest_struct's features will be vcpu's and change guest_struct
+//this time, guest_struct is vcpu.
 struct guest_struct {
     struct arch_regs regs;
     struct arch_context context;
+    uint32_t vmpidr;
     vmid_t vmid;
 };
 
-struct guest_ops {
+struct cpu_ops {
     /** Initalize guest state */
     hvmm_status_t (*init)(struct guest_struct *, struct arch_regs *);
 
@@ -44,7 +47,7 @@ struct guest_ops {
     hvmm_status_t (*dump)(uint8_t, struct arch_regs *regs);
 };
 
-struct guest_module {
+struct cpu_module {
     /** tag must be initialized to HAL_TAG */
     uint32_t tag;
 
@@ -69,7 +72,7 @@ struct guest_module {
     const char *author;
 
     /** Guest Operation */
-    struct guest_ops *ops;
+    struct cpu_ops *ops;
 
 };
 
@@ -82,7 +85,7 @@ extern uint32_t _guest2_bin_end;
 extern uint32_t _guest3_bin_start;
 extern uint32_t _guest3_bin_end;
 #endif
-extern struct guest_module _guest_module;
+extern struct cpu_module _cpu_module;
 extern struct guest_struct *_current_guest[NUM_CPUS];
 
 /**
@@ -115,9 +118,9 @@ void reboot_guest(struct monitor_vmid *mvmid, uint32_t pc,
 void set_manually_select_vmid(vmid_t vmid);
 void clean_manually_select_vmid(void);
 
-static inline unsigned long num_of_guest(int cpu)
+static inline unsigned long num_of_guest(int pcpu)
 {
-    if (cpu == 0)
+    if (pcpu == 0)
         return NUM_GUESTS_CPU0_STATIC;
     else
         return NUM_GUESTS_CPU1_STATIC;

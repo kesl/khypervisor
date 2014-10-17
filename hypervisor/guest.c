@@ -13,7 +13,7 @@
 #define _valid_vmid(vmid) \
     (guest_first_vmid() <= vmid && guest_last_vmid() >= vmid)
 
-static struct guest_struct guests[NUM_GUESTS_STATIC];
+static struct guest_struct guests[NUM_VCPU_STATIC];
 static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, VMID_INVALID};
 static int _next_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 struct guest_struct *_current_guest[NUM_CPUS];
@@ -24,8 +24,8 @@ static hvmm_status_t guest_save(struct guest_struct *guest,
                         struct arch_regs *regs)
 {
     /* guest_hw_save : save the current guest's context*/
-    if (_guest_module.ops->save)
-        return  _guest_module.ops->save(guest, regs);
+    if (_cpu_module.ops->save)
+        return  _cpu_module.ops->save(guest, regs);
 
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
@@ -34,8 +34,8 @@ static hvmm_status_t guest_restore(struct guest_struct *guest,
                         struct arch_regs *regs)
 {
     /* guest_hw_restore : The next becomes the current */
-    if (_guest_module.ops->restore)
-        return  _guest_module.ops->restore(guest, regs);
+    if (_cpu_module.ops->restore)
+        return  _cpu_module.ops->restore(guest, regs);
 
 
 
@@ -56,8 +56,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     guest_save(&guests[_current_guest_vmid[cpu]], regs);
     memory_save();
     interrupt_save(_current_guest_vmid[cpu]);
-    if (!cpu)
-        vdev_save(_current_guest_vmid[cpu]);
+    vdev_save(_current_guest_vmid[cpu]);
 
     /* The context of the next guest */
     guest = &guests[next_vmid];
@@ -65,11 +64,10 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     _current_guest_vmid[cpu] = next_vmid;
 
     /* guest_hw_dump */
-    if (_guest_module.ops->dump)
-        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
+    if (_cpu_module.ops->dump)
+        _cpu_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
-    if (!cpu)
-        vdev_restore(_current_guest_vmid[cpu]);
+    vdev_restore(_current_guest_vmid[cpu]);
 
     interrupt_restore(_current_guest_vmid[cpu]);
     memory_restore(_current_guest_vmid[cpu]);
@@ -119,12 +117,13 @@ void guest_sched_start(void)
     else
         guest = &guests[0];
     /* guest_hw_dump */
-    if (_guest_module.ops->dump)
-        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
+    if (_cpu_module.ops->dump)
+        _cpu_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
     /* Context Switch with current context == none */
 
     if (cpu) {
-        guest_switchto(2, 0);
+        //guest_switchto(2, 0);
+        guest_switchto(1, 0);
 
         guest_perform_switch(&guest->regs);
     } else {
@@ -139,7 +138,7 @@ vmid_t guest_first_vmid(void)
 
     /* FIXME:Hardcoded for now */
     if (cpu)
-        return 2;
+        return 1;//2;   //test for smp
     else
         return 0;
 }
@@ -150,9 +149,9 @@ vmid_t guest_last_vmid(void)
 
     /* FIXME:Hardcoded for now */
     if (cpu)
-        return 3;
+        return 1;//3;    test for smp
     else
-        return 1;
+        return 0;//1;    test for smp
 }
 
 vmid_t guest_next_vmid(vmid_t ofvmid)
@@ -162,7 +161,7 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
     uint32_t cpu = smp_processor_id();
 
     if (cpu)
-        return 2;
+        return 1;//2;   //test for smp
     else
         return 0;
 #endif
@@ -192,7 +191,7 @@ vmid_t guest_waiting_vmid(void)
 void guest_dump_regs(struct arch_regs *regs)
 {
     /* guest_hw_dump */
-    _guest_module.ops->dump(GUEST_VERBOSE_ALL, regs);
+    _cpu_module.ops->dump(GUEST_VERBOSE_ALL, regs);
 }
 
 hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
@@ -244,8 +243,8 @@ void guest_schedule(void *pdata)
     struct arch_regs *regs = pdata;
     uint32_t cpu = smp_processor_id();
     /* guest_hw_dump */
-    if (_guest_module.ops->dump)
-        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
+    if (_cpu_module.ops->dump)
+        _cpu_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
     /*
      * Note: As of guest_switchto() and guest_perform_switch()
      * are available, no need to test if trapped from Hyp mode.
@@ -286,8 +285,8 @@ hvmm_status_t guest_init()
         regs = &guest->regs;
         guest->vmid = i;
         /* guest_hw_init */
-        if (_guest_module.ops->init)
-            _guest_module.ops->init(guest, regs);
+        if (_cpu_module.ops->init)
+            _cpu_module.ops->init(guest, regs);
     }
 
     printh("[hyp] init_guests: return\n");
