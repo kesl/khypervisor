@@ -130,3 +130,22 @@ hvmm_status_t timer_init(uint32_t irq)
 
     return HVMM_STATUS_SUCCESS;
 }
+uint64_t savecnt;
+
+void set_timer_cnt(void)
+{
+    savecnt = read_cntpct();
+}
+
+uint64_t get_timer_savecnt(void)
+{
+    return savecnt;
+}
+uint64_t get_timer_curcnt(void)
+{
+    return read_cntpct();
+}
+uint32_t get_timer_interval_us(uint64_t after, uint64_t before)
+{
+    return (uint32_t)(after - before) / COUNT_PER_USEC;
+}

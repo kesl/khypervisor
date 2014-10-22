@@ -8,6 +8,7 @@
 #define DEBUG
 #include <log/print.h>
 #include <guestloader_common.h>
+#include <guest_monitor.h>
 
 #define MAX_CMD_STR_SIZE    256
 #define PROMPT  "kboot# "
@@ -21,6 +22,9 @@ static void guestloader_init(void)
     uart_init();
     /* Initializes GIC */
     gic_init();
+#ifdef _MON_
+    monitoring_init();
+#endif
     /* Ready to accept irqs with GIC. Enable it now */
     irq_enable();
     /* Initializes timer */
@@ -31,14 +35,12 @@ static void guestloader_init(void)
 
 void guestloader_flag_autoboot(int flag)
 {
-    timer_disable();
     autoboot = flag;
-    uart_print_hex32(autoboot);
-    uart_print("\n");
 }
 
 static void guestloader_autoboot(void)
 {
+    timer_disable();
     cli_exec_cmd(BOOTCMD);
 }
 

@@ -20,6 +20,7 @@ void monitoring_init(void);
 void send_monitoring_data(uint32_t range, uint32_t src);
 void reboot(void);
 void set_recovery(int cnt);
+void allset(void);
 
 extern uint32_t loader_start;
 extern uint32_t restore_start;

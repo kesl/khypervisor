@@ -1,5 +1,6 @@
 #ifndef __ASM_IO_H__
 #define __ASM_IO_H__
+
 #define putw(v, a)   (*(volatile unsigned short *)(a) = (v))
 #define putb(v, a)   (*(volatile unsigned char *)(a) = (v))
 #define getw(a)      (*(volatile unsigned short *)(a))

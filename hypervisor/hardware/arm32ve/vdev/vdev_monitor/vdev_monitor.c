@@ -41,16 +41,19 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
         uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    struct monitor_vmid *mvmid = (struct monitor_vmid *)(SHARED_VMID);
+    struct monitor_vmid *mvmid;
+
+    flush_dcache_all();
+
+    mvmid = (struct monitor_vmid *)(SHARED_VMID);
+
     uint32_t index = offset / 4;
 
-    printH("%s: %s offset:%d value:%x\n", __func__,
+    printh("%s: %s offset:%d value:%x\n", __func__,
             write ? "write" : "read", offset,
             write ? *pvalue : (uint32_t) pvalue);
-
     if (_monitor_handler[index])
         result = _monitor_handler[index](mvmid, *pvalue);
-
     return result;
 }
 

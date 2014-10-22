@@ -74,7 +74,11 @@ void cli_exec_cmd(char *cmd)
         loader_boot_guest(GUEST_TYPE);
         break;
     case MONITOR:
+#ifdef _MON_
         monitoring_cmd();
+        break;
+#endif
+        print_cli_usage();
         break;
     }
 }

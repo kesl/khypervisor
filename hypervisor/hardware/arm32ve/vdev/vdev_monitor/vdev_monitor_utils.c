@@ -1,6 +1,7 @@
 #include <monitor.h>
 #include <interrupt.h>
 #include <asm_io.h>
+#include <asm-arm_inline.h>
 #include <guest.h>
 #include <log/print.h>
 #include <memory.h>
@@ -90,3 +91,194 @@ uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num)
     }
     return 0;
 }
+
+void invalidate_icache_all(void)
+{
+    /*
+       Invalidate all instruction caches to PoU.
+       Also flushes branch target cache.
+    */
+    asm volatile ("mcr p15, 0, %0, c7, c5, 0" : : "r" (0));
+    /* Invalidate entire branch predictor array */
+    asm volatile ("mcr p15, 0, %0, c7, c5, 6" : : "r" (0));
+    /* Full system DSB - make sure that the invalidation is complete
+     */
+    CP15DSB;
+    /* Full system ISB - make sure the instruction stream sees it */
+    CP15ISB;
+}
+#define ARMV7_DCACHE_INVAL_ALL              1
+#define ARMV7_DCACHE_CLEAN_INVAL_ALL        2
+#define ARMV7_DCACHE_INVAL_RANGE            3
+#define ARMV7_DCACHE_CLEAN_INVAL_RANGE      4
+#define ARMV7_CSSELR_IND_DATA_UNIFIED       0
+#define ARMV7_CSSELR_IND_INSTRUCTION        1
+#define ARMV7_CLIDR_CTYPE_NO_CACHE          0
+#define ARMV7_CLIDR_CTYPE_INSTRUCTION_ONLY  1
+#define ARMV7_CLIDR_CTYPE_DATA_ONLY         2
+#define ARMV7_CLIDR_CTYPE_INSTRUCTION_DATA  3
+#define ARMV7_CLIDR_CTYPE_UNIFIED           4
+/* CCSIDR */
+#define CCSIDR_LINE_SIZE_OFFSET     0
+#define CCSIDR_LINE_SIZE_MASK       0x7
+#define CCSIDR_ASSOCIATIVITY_OFFSET 3
+#define CCSIDR_ASSOCIATIVITY_MASK   (0x3FF << 3)
+#define CCSIDR_NUM_SETS_OFFSET      13
+#define CCSIDR_NUM_SETS_MASK        (0x7FFF << 13)
+
+static inline int log_2_n_round_up(uint32_t n)
+{
+    int log2n = -1;
+    uint32_t temp = n;
+
+    while (temp) {
+        log2n++;
+        temp >>= 1;
+    }
+
+    if (n & (n - 1))
+        return log2n + 1; /* not power of 2 - round up
+                           */
+    else
+        return log2n; /* power of 2 */
+}
+
+static inline int log_2_n_round_down(int n)
+{
+    int log2n = -1;
+    uint32_t temp = n;
+
+    while (temp) {
+        log2n++;
+        temp >>= 1;
+    }
+
+    return log2n;
+}
+
+
+/*
+ * Write the level and type you want to Cache Size Selection Register(CSSELR)
+ * to get size details from Current Cache Size ID Register(CCSIDR)
+ */
+static void set_csselr(uint32_t level, uint32_t type)
+{   uint32_t csselr = level << 1 | type;
+
+    /* Write to Cache Size Selection Register(CSSELR) */
+    asm volatile ("mcr p15, 2, %0, c0, c0, 0" : : "r" (csselr));
+}
+
+static uint32_t get_ccsidr(void)
+{
+    uint32_t ccsidr;
+
+    /* Read current CP15 Cache Size ID Register */
+    asm volatile ("mrc p15, 1, %0, c0, c0, 0" : "=r" (ccsidr));
+    return ccsidr;
+}
+
+static uint32_t get_clidr(void)
+{
+    uint32_t clidr;
+
+    /* Read current CP15 Cache Level ID Register */
+    asm volatile ("mrc p15,1,%0,c0,c0,1" : "=r" (clidr));
+    return clidr;
+}
+
+static void v7_inval_dcache_level_setway(uint32_t level, uint32_t num_sets,
+        uint32_t num_ways, uint32_t way_shift, uint32_t log2_line_len)
+{
+    int way, set, setway;
+    for (way = num_ways - 1; way >= 0 ; way--) {
+        for (set = num_sets - 1; set >= 0; set--) {
+            setway = (level << 1) | (set << log2_line_len) |
+                (way << way_shift);
+            /* Invalidate data/unified cache line by set/way */
+            asm volatile (" mcr p15, 0, %0, c7, c6, 2" : : "r"(setway));
+        }
+    }
+    CP15DSB;
+}
+
+static void v7_clean_inval_dcache_level_setway(uint32_t level,
+        uint32_t num_sets, uint32_t num_ways, uint32_t way_shift,
+        uint32_t log2_line_len)
+{
+    int way, set, setway;
+
+    for (way = num_ways - 1; way >= 0 ; way--) {
+        for (set = num_sets - 1; set >= 0; set--) {
+            setway = (level << 1) | (set << log2_line_len) |
+                (way << way_shift);
+            /*
+             * Clean & Invalidate data/unified cache line by set/way
+             */
+            asm volatile (" mcr p15, 0, %0, c7, c14, 2" : : "r" (setway));
+        }
+    }
+    /* DSB to make sure the operation is complete */
+    CP15DSB;
+}
+
+static void v7_maint_dcache_level_setway(uint32_t level, uint32_t operation)
+{
+    uint32_t ccsidr;
+    uint32_t num_sets, num_ways, log2_line_len, log2_num_ways;
+    uint32_t way_shift;
+
+    set_csselr(level, ARMV7_CSSELR_IND_DATA_UNIFIED);
+
+    ccsidr = get_ccsidr();
+
+    log2_line_len = ((ccsidr & CCSIDR_LINE_SIZE_MASK) >>
+            CCSIDR_LINE_SIZE_OFFSET) + 2;
+    /* Converting from words to bytes */
+    log2_line_len += 2;
+
+    num_ways  = ((ccsidr & CCSIDR_ASSOCIATIVITY_MASK) >>
+            CCSIDR_ASSOCIATIVITY_OFFSET) + 1;
+    num_sets  = ((ccsidr & CCSIDR_NUM_SETS_MASK) >>
+            CCSIDR_NUM_SETS_OFFSET) + 1;
+
+    log2_num_ways = log_2_n_round_up(num_ways);
+
+    way_shift = (32 - log2_num_ways);
+    if (operation == ARMV7_DCACHE_INVAL_ALL) {
+        v7_inval_dcache_level_setway(level, num_sets, num_ways, way_shift,
+                log2_line_len);
+    } else if (operation == ARMV7_DCACHE_CLEAN_INVAL_ALL) {
+                v7_clean_inval_dcache_level_setway(level, num_sets, num_ways,
+                        way_shift, log2_line_len);
+            }
+}
+
+static void v7_maint_dcache_all(uint32_t operation)
+{
+    uint32_t level, cache_type, level_start_bit = 0;
+
+    uint32_t clidr = get_clidr();
+
+    for (level = 0; level < 7; level++) {
+        cache_type = (clidr >> level_start_bit) & 0x7;
+        if ((cache_type == ARMV7_CLIDR_CTYPE_DATA_ONLY) ||
+            (cache_type == ARMV7_CLIDR_CTYPE_INSTRUCTION_DATA) ||
+            (cache_type == ARMV7_CLIDR_CTYPE_UNIFIED))
+            v7_maint_dcache_level_setway(level, operation);
+        level_start_bit += 3;
+    }
+}
+
+void invalidate_dcache_all(void)
+{
+    v7_maint_dcache_all(ARMV7_DCACHE_INVAL_ALL);
+}
+
+/*
+ * Performs a clean & invalidation of the entire data cache at all levels
+ */
+void flush_dcache_all(void)
+{
+    v7_maint_dcache_all(ARMV7_DCACHE_CLEAN_INVAL_ALL);
+}
+

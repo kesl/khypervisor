@@ -30,10 +30,15 @@ SECTIONS
 #endif
 
  #ifdef _MON_
- system_map_start = 0x80D00000;
+ system_map_start = 0x40D00000;
  . = system_map_start;
  system_map_end = .;
  #endif
+
+ shared_memory_start = 0x4EC00000;
+ . = shared_memory_start;
+ shared_memory_end = . + 0x400000;
+
  . = LOADER_PHYS_START;
  loader_start = .;
  .text : {
@@ -54,10 +59,6 @@ SECTIONS
  }
  end_bss = .;
 
- shared_memory_start = 0x4EC00000;
- . = shared_memory_start;
- shared_memory_end = . + 0x400000;
-
  guestloader_end = .;
 
 . = PHYS_STACK;
@@ -68,7 +69,7 @@ guestloader_stacktop_irq = .;
 . = PHYS_STACK + 0x00800000;
 guestloader_stacklimit_irq = .;
 
- restore_start = 0xB0000000;
+ restore_start = 0x70000000;
  restore_guest_start = restore_start + 0x00500000;
  restore_guest_end = restore_guest_start + (guest_end - guest_start);
  restore_end = restore_start + (guestloader_end - loader_start);

@@ -174,8 +174,11 @@ static void monitoring_recovery(void)
 }
 static void monitoring_go(void)
 {
-    printh("Go!\n");
     *base_go;
+}
+void monitoring_allset(uint32_t va)
+{
+    *base_set = va;
 }
 
 void monitoring_reboot(void)
@@ -200,7 +203,7 @@ static void monitoring_dump_memory(char **argv, int argc)
     va = arm_hexstr2uint(argv[2]);
     while (argv[2][i])
         i++;
-    /* 1048512 is max shared memory range */
+    /* Hard coding :  1048512 is max shared memory range */
     if (i > 10 || cnt > 1048512) {
         monitoring_help();
         return;

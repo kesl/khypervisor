@@ -9,23 +9,28 @@
 #include <monitor.h>
 #include <asm_io.h>
 #include <guest.h>
+#include <timer.h>
 #define HVC_TRAP 0xe14fff7c
 
+uint32_t trapped_va, trapped_pa;
 void monitor_hvc_pre_handler(vmid_t vmid, struct arch_regs **regs)
 {
-    uint32_t restore_inst, ori_va, ori_pa;
+    uint32_t restore_inst;
 
-    ori_va = (*regs)->pc - 4;
-    ori_pa = (uint32_t)va_to_pa(vmid, ori_va, TTBR0);
+    trapped_va = (*regs)->pc - 4;
+    trapped_pa = (uint32_t)va_to_pa(vmid, trapped_va, TTBR0);
+    restore_inst = monitor_load_inst(vmid, trapped_va);
 
-    restore_inst = monitor_load_inst(vmid, ori_va);
-    writel(restore_inst, ori_pa);
+    if (restore_inst != NOTFOUND)
+        writel(restore_inst, trapped_pa);
 }
 
 void monitor_hvc_post_handler(vmid_t vmid, struct arch_regs **regs,
                                 uint32_t type)
 {
     (*regs)->pc -= 4;
+    flush_dcache_all();
+    invalidate_icache_all();
 }
 
 void monitor_hvc_break_handler(vmid_t vmid, struct arch_regs **regs)
@@ -36,17 +41,18 @@ void monitor_hvc_break_handler(vmid_t vmid, struct arch_regs **regs)
 void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 {
     int i;
-    uint32_t ori_va, lr, sp;
+    uint32_t lr, sp, cur_va;
 
-    struct monitoring_data *data =
-        (struct monitoring_data *)(SHARED_ADDRESS);
+    struct monitoring_data *data;
 
     asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
     asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
-    ori_va = (*regs)->pc - 4;
+    data = (struct monitoring_data *)(SHARED_ADDRESS);
+    trapped_va = (*regs)->pc - 4;
+    cur_va = (*regs)->pc;
 
     data->type = MONITORING;
-    data->caller_va = ori_va;
+    data->caller_va = trapped_va;
     data->callee_va = lr;
     data->inst = 0;
     data->regs.cpsr = (*regs)->cpsr;
@@ -57,12 +63,12 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
     for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
         data->regs.gpr[i] = (*regs)->gpr[i];
 
-    monitor_notify_guest(MONITOR_GUEST_VMID);
-
     /* Set next trap for retrap */
     /* TODO Needs status of Branch instruction. */
-    monitor_store_inst(vmid, (*regs)->pc, MONITOR_RETRAP);
-    writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc, TTBR0));
+    if (monitor_store_inst(vmid, (*regs)->pc, MONITOR_RETRAP))
+        writel(HVC_TRAP, trapped_pa + 4) ;
+
+    monitor_notify_guest(MONITOR_GUEST_VMID);
 
     /* TODO Detecting fault here. It is not working now.
      * monitor_detect_fault((struct monitor_vmid *)(SHARED_VMID), ori_va, regs);
@@ -71,16 +77,11 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 
 void monitor_hvc_retrap_handler(vmid_t vmid, struct arch_regs **regs)
 {
-    uint32_t ori_va;
-
-    ori_va = (*regs)->pc - 4;
-
     /* Clean break point at retrap point. It do not need keep break point */
-    monitor_clean_inst(vmid, ori_va, MONITOR_RETRAP);
+    monitor_clean_inst(vmid, trapped_va, MONITOR_RETRAP);
     /* Set previous pc to trap */
-    writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, (*regs)->pc-8, TTBR0));
+    writel(HVC_TRAP, trapped_pa - 4);
 }
-
 static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {

@@ -18,6 +18,22 @@ guestloader_start:
     ldr     r0, = guestloader_vector
     mcr     p15, 0, r0, c12, c0, 0  @ VBAR
 
+	/* Initilaize bss section */
+	ldr r2, =begin_bss
+	ldr r3, =end_bss
+	mov r0, #0
+1: 	str r0, [r2], #4		@ clear bss
+	cmp r2, r3
+	blo 1b
+
+	/* Initilaize shared memory */
+	ldr r2, =shared_memory_start
+	ldr r3, =shared_memory_end
+	mov r0, #0
+2: 	str r0, [r2], #4
+	cmp r2, r3
+	blo 2b
+	mov		r0, r10			@ For Boot status
     @ Call the C entrypoint
     b   main
 

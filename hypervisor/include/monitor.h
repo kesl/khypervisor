@@ -14,6 +14,9 @@
 #define MONITORING 1
 #define MEMORY 2
 
+#define NOTFOUND 0
+#define FOUND 1
+
 /*
 * EMPTY =  0b000
 * TRAP =   0b001
@@ -49,7 +52,7 @@ enum inst_index {
 #define MONITOR_WRITE_BREAK_GUEST           0x06
 #define MONITOR_WRITE_CLEAN_BREAK_GUEST     0x07
 
-/* size 88 -> 0x8EC00100 : memory dump*/
+/* size 92 -> 0xEC00100 : memory dump, 0xEC000A0 : vmid info*/
 struct monitoring_data {
     uint8_t type;
     uint32_t caller_va;
@@ -59,6 +62,7 @@ struct monitoring_data {
     struct arch_regs regs;
     uint32_t memory_range;
     uint32_t start_memory;
+    uint8_t monitor_cnt;
 };
 
 struct monitor_vmid {
@@ -67,6 +71,9 @@ struct monitor_vmid {
 };
 
 uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num);
+void invalidate_icache_all(void);
+void invalidate_dcache_all(void);
+void flush_dcache_all(void);
 uint32_t monitor_load_inst(vmid_t vmid, uint32_t va);
 uint32_t monitor_inst_type(vmid_t vmid, uint32_t va);
 uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, uint32_t type);

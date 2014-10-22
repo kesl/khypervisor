@@ -31,18 +31,21 @@ int symbol_binary_search(struct system_map map[], int key, int imin, int imax)
 }
 
 /*
- * cnt : The number of type T symbol
- * return : The number of total symbol
+ * return cnt : The number of type T symbol
  */
-uint32_t number_symbol(uint32_t *cnt)
+uint32_t number_symbol(void)
 {
-#ifdef _MON_
     /* hard coding */
-    unsigned char *base = 0;
-    uint32_t n_symbol = 0;
     char last[MAX_LENGTH_SYMBOL];
     int i;
+    unsigned char *base;
+    uint32_t n_symbol;
+    uint32_t cnt;
+
     base = (unsigned char *)&system_map_start;
+    n_symbol = 0;
+    cnt = 0;
+
     while (1) {
         while (*base != ' ') {
             /* address */
@@ -52,7 +55,7 @@ uint32_t number_symbol(uint32_t *cnt)
         base++;
         /* type */
         if (*base == 't' || *base == 'T')
-            (*cnt)++;
+            cnt++;
         base++;
         /* space */
         base++;
@@ -68,27 +71,30 @@ uint32_t number_symbol(uint32_t *cnt)
         if (strcmp(last, "_end") == 0)
             break;
     }
-    return n_symbol;
-#endif
+    printh("pre cnt %d\n", cnt);
+    return cnt;
 }
 
 void symbol_parser_init(void)
 {
-#ifdef _MON_
     /* hard coding */
-    number_symbol(&num_symbols_code);
-    printh("%d\n", num_symbols_code);
     /* memory alloc needed to modify TODO : inkyu */
     /*
-    struct system_map* system_maps =
-        (struct system_map *)memory_alloc(n_symbol * sizeof(struct system_map));
+        printh("num_symbols_code is %d\n", num_symbols_code);
+        struct system_map* system_maps = (struct system_map *)
+            memory_alloc(n_symbol * sizeof(struct system_map));
         */
-    uint8_t *base = (uint8_t *)&system_map_start;
-    int cnt = 0;
-    int cnt_code = 0;
+    uint8_t *base;
+    int cnt;
+    int cnt_code;
     int i;
     char address[9];
     char last[MAX_LENGTH_SYMBOL];
+
+    cnt = 0;
+    cnt_code = 0;
+    base =  (uint8_t *)&system_map_start;
+
     while (1) {
         i = 0;
         while (*base != ' ') {
@@ -106,7 +112,6 @@ void symbol_parser_init(void)
         base++;
         /* space */
         base++;
-
         i = 0;
         while (*base != '\r' &&  *base != '\n') {
             /* symbol */
@@ -125,7 +130,6 @@ void symbol_parser_init(void)
                 system_maps_code[cnt_code].type == 'T')
             cnt_code++;
     }
-#endif
 }
 
 void show_symbol(uint32_t va)
@@ -171,7 +175,7 @@ struct arch_regs {
 #define MONITORING 1
 #define MEMORY 2
 
-/* size 88 -> 0x8EC00100 : memory dump*/
+/* size 92 -> 0xEC00100 : memory dump, 0xEC000A0 : vmid info*/
 struct monitoring_data {
     uint8_t type;
     uint32_t caller_va;
@@ -181,6 +185,7 @@ struct monitoring_data {
     struct arch_regs regs;
     uint32_t memory_range;
     uint32_t start_memory;
+    uint8_t monitor_cnt;
 };
 
 void send_monitoring_data(uint32_t range, uint32_t src)
@@ -205,13 +210,15 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
 
     struct monitoring_data *shared_start = (struct monitoring_data
             *)(&shared_memory_start);
-    symbol_getter_from_va(shared_start->caller_va, call_symbol);
+    int i;
+
     if (shared_start->type == MONITORING) {
+        symbol_getter_from_va(shared_start->caller_va, call_symbol);
         symbol_getter_from_va(shared_start->callee_va, callee_symbol);
 
         printh("CPU 0 %s <- %s\n", call_symbol, callee_symbol);
 
-        if (strcmp(call_symbol, "__loop_delay") == 0 && recovery_cnt == 1) {
+        if (strcmp(call_symbol, "panic") == 0 && recovery_cnt == 1) {
             recovery_cnt = 0;
             printh("Target guest's panic occured!\n");
             printh("Auto system recovery start...\n");
@@ -219,9 +226,17 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
         }
 
     } else if (shared_start->type == LIST) {
-        /* showing list */
-        printh("Monitoring symbol is %s, va is %x, instruction is %x\n",
-                    call_symbol, shared_start->caller_va, shared_start->inst);
+        uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
+        uint32_t va, inst;
+        for (i = 0; i < shared_start->monitor_cnt; i++) {
+            va = *dump_base;
+            symbol_getter_from_va(va, call_symbol);
+            dump_base++;
+            inst = dump_base;
+            /* showing list */
+            printh("Monitoring symbol is %s, va is %x, instruction is %x\n",
+                     call_symbol, va, inst);
+        }
     } else if (shared_start->type == MEMORY) {
         /* dump memory */
         int i, j;
@@ -233,7 +248,7 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
                 return;
             }
             if (i % 4 == 0)
-                printh("0x%x :", base_memory);
+                printH("0x%x :", base_memory);
             printh(" 0x%x", *dump_base);
             dump_base++;
             if (i % 4 == 3) {
@@ -243,6 +258,13 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
         }
         printh("\n");
     }
+}
+
+void allset(void)
+{
+    int i = 0;
+    for (i = 0; i < num_symbols_code; i++)
+        monitoring_allset(system_maps_code[i].address);
 }
 
 #define MONITORING_IRQ 20
@@ -258,19 +280,15 @@ void reboot(void)
 void monitoring_init(void)
 {
 #ifdef BM_GUEST
-#ifdef _MON_
     gic_set_irq_handler(MONITORING_IRQ, monitoring_handler, 0);
+    num_symbols_code =  number_symbol();
     symbol_parser_init();
-    printh("%x %x\n", shared_memory_start, &shared_memory_start);
-#endif
 #endif
 
 #ifdef LINUX_GUEST
     /* For reboot */
-#ifdef _MON_
+    /* TODO Not arndale board yet */
     copy_image_to(&loader_start, &guestloader_end, &restore_start);
-#endif
-
 #endif
 }
 

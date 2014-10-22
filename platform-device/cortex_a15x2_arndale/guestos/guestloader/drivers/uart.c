@@ -75,4 +75,5 @@ void uart_gets(char *str, int max_column)
 void uart_init(void)
 {
     serial_init();
+    init_print();
 }

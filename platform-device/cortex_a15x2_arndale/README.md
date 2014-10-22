@@ -455,3 +455,29 @@ and enter command "
 ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1f4a;mmc read 0x80000000 23ff 14;mmc read 0x46400000 2413 1bbc;mmc read 80100000 3fcf A; go 0xb000004c
 
 </pre>
+
+
+# How to use monitoring at arndale board
+
+1. Added monitoring config
+<pre>
+$ vi config-default.mk
++ CPPFLAGS += -D_MON_
+</pre>
+
+2. Flash sdcard
+<pre>
+$ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=1205
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=17589
+$ sudo dd if=guestimages/zImage of=/dev/sdX bs=512 seek=17789
+$ sudo dd if=guestimages/bmguest.bin of=/dev/sdX bs=512 seek=34173
+$ sudo dd if=guestimages/System.map of=/dev/sdX bs=512 seek=34373
+$ sudo sync
+$ sudo umount /dev/sdX*
+</pre>
+
+3. Bootloader command
+<pre>
+mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 4000;mmc read 0x80000000 44B5 C8;mmc read 0x46400000 457D 4000;mmc read 80500000 857D C8;mmc read 80D00000 8645 800;go 0xb000004c
+</pre>

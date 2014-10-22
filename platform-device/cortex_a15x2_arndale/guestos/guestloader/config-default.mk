@@ -1,3 +1,5 @@
+include ../../config-default.mk
+
 #
 # Main options
 #
