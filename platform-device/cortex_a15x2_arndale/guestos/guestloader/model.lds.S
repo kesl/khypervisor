@@ -29,11 +29,9 @@ SECTIONS
  guest_end = . + 0x200000;
 #endif
 
- #ifdef _MON_
  system_map_start = 0x40D00000;
  . = system_map_start;
  system_map_end = .;
- #endif
 
  shared_memory_start = 0x4EC00000;
  . = shared_memory_start;
