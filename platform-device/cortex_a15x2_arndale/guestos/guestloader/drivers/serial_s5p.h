@@ -52,7 +52,7 @@ struct s5p_uart {
 #define UTXH        0x20
 #define UFSTAT      0x18
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
-#define UART_BASE           0x12C10000
+#define UART_BASE           0x12C20000
 
 int serial_tst_fifo(void);
 int serial_getc(void);

@@ -117,10 +117,10 @@ start:
     str	r1, [r0, #0x4]			@ GIC ICCPMR
 
     @ Set NSACR to allow coprocessor access from non-secure
-    mrc	p15, 0, r0, c1, c1, 2
-    ldr	r1, =0x43fff
-    orr	r0, r0, r1
-    mcr	p15, 0, r0, c1, c1, 2
+#    mrc	p15, 0, r0, c1, c1, 2
+#    ldr	r1, =0x43fff
+#    orr	r0, r0, r1
+#    mcr	p15, 0, r0, c1, c1, 2
 
     @ Check CPU nr again
     @ MPIDR (ARMv7 only)
@@ -134,7 +134,7 @@ start:
     @
     @ UART initialisation (38400 8N1)
     @
-    ldr	r0, =0x1c090000			@ UART base (Versatile Express)
+#    ldr	r0, =0x1c090000			@ UART base (Versatile Express)
 
 /* Initialize bss section */
     ldr  r2, =begin_bss
@@ -145,9 +145,9 @@ start:
     blo  1b
     @ Now we've got rid of the secondary CPUs, set up a stack
     @ for CPU 0 so we can write most of this in C.
-    ldr     sp, =sec_stacklimit
+#    ldr     sp, =sec_stacklimit
 
-    bl mon_init
+#    bl mon_init
     bl mon_to_hyp   // Secure -> NS.Hyp -> hyp_main()
 
     @ Never reached
@@ -214,8 +214,8 @@ mon_init:
 
 .global mon_to_hyp
 mon_to_hyp:
-    smc #0  @ -> trap_smc
-    hvc #0  @ -> trap_hyp_entry
+#    smc #0  @ -> trap_smc
+#    hvc #0  @ -> trap_hyp_entry
     /* Place the right Hyp exception vector for the first time */
     ldr r0, = hyp_init_vectors
     mcr p15, 4, r0, c12, c0, 0
