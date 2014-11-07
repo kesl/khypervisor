@@ -248,8 +248,9 @@ void setup_interrupt()
     DECLARE_VIRQMAP(_guest_virqmap, 0, 84, 84);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 85, 85);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 88, 88);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 90, 96);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 103, 103);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 90, 90);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 96, 96);
+	DECLARE_VIRQMAP(_guest_virqmap, 0, 103, 103);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 104, 104);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 107, 107);
     DECLARE_VIRQMAP(_guest_virqmap, 0, 109, 109);
