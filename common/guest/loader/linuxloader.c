@@ -192,8 +192,9 @@ void linuxloader_setup_atags(uint32_t src)
      * "rw ip=dhcp earlyprintk console=ttyAMA0 mem=256M";
      */
 /* ramdisk-rtsm */
-     "root=/dev/ram rw earlyprintk console=ttyAMA0 "
-     "mem=512M rdinit=/sbin/init";
+     //"root=/dev/ram rw earlyprintk console=ttyAMA0 "
+     //"mem=512M rdinit=/sbin/init";
+     "mem=512M console=ttySAC2,115200n8 mem=512M root=/dev/ram rw earlyprintk rdinit=/sbin/init";
 /* android-arndale board */
     /*
      * "root=/dev/ram0 rw ramdisk=8192 initrd=0x41000000,8M "
