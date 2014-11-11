@@ -31,10 +31,14 @@ static struct memmap_desc guest0_device_md[] = {
     { "pl330.1", 0x121A0000, 0x121A0000, SZ_64K, MEMATTR_DM },
     { "pl330.2", 0x121B0000, 0x121B0000, SZ_64K, MEMATTR_DM },
     { "usb", 0x12000000, 0x12000000, SZ_64K, MEMATTR_DM },
-    { "uart.0", 0x12C00000, 0x12C00000, SZ_64K, MEMATTR_DM },
-    { "uart.1", 0x12C10000, 0x12C10000, SZ_64K, MEMATTR_DM },
+    { "uart.0", 0x12C00000, 0x12C20000, SZ_64K, MEMATTR_DM },
+    { "uart.1", 0x12C10000, 0x12C20000, SZ_64K, MEMATTR_DM },
     { "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
-    { "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
+    { "uart.3", 0x12C30000, 0x12C20000, SZ_64K, MEMATTR_DM },
+    //{ "uart.0", 0x12C00000, 0x12C00000, SZ_64K, MEMATTR_DM },
+    //{ "uart.1", 0x12C10000, 0x12C10000, SZ_64K, MEMATTR_DM },
+    //{ "uart.2", 0x12C20000, 0x12C20000, SZ_64K, MEMATTR_DM },
+    //{ "uart.3", 0x12C30000, 0x12C30000, SZ_64K, MEMATTR_DM },
     { "chipid", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
     { "timer", 0x12DD0000, 0x12DD0000, SZ_16K, MEMATTR_DM },
     { "wdt", 0x101D0000, 0x101D0000, SZ_4K, MEMATTR_DM },
@@ -95,13 +99,17 @@ static struct memmap_desc guest0_device_md[] = {
     { "HDMI-0", 0x14530000, 0x14530000, SZ_64K, MEMATTR_DM },
     { "HDMI-1", 0x14540000, 0x14540000, SZ_64K, MEMATTR_DM },
     { "HDMI-5", 0x14580000, 0x14580000, SZ_64K, MEMATTR_DM },
+    /* Exynos 5422*/
+    { "mali", 0x11800000, 0x11800000, SZ_32K, MEMATTR_DM },
+    { "lpass2", 0x3000000, 0x3000000, SZ_512K, MEMATTR_DM },
+    { "clkcntlr", 0x10030000, 0x10030000, 3 * SZ_1M, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
 };
 
 
 static struct memmap_desc guest1_device_md[] = {
-    { "uart", 0x12C10000, 0x12C20000, 0x1000, MEMATTR_DM },
-    { "uart2", 0x12C20000, 0x12C20000, 0x1000, MEMATTR_DM },
+    { "uart", 0x12C10000, 0x12C10000, 0x1000, MEMATTR_DM },
+    { "uart2", 0x12C20000, 0x12C10000, 0x1000, MEMATTR_DM },
     { "gpio1", 0x11400000, 0x11400000, SZ_4K, MEMATTR_DM },
     { "gpio2", 0x13400000, 0x13400000, SZ_4K, MEMATTR_DM },
     { "gpio3", 0x10D10000, 0x10D10000, SZ_256, MEMATTR_DM },
