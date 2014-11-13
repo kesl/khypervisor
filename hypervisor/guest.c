@@ -227,6 +227,7 @@ void clean_manually_select_vmid(void){
 
 vmid_t sched_policy_determ_next(void)
 {
+#if 1
     if (manually_next_vmid)
         return selected_manually_next_vmid;
 
@@ -237,6 +238,8 @@ vmid_t sched_policy_determ_next(void)
         next = guest_first_vmid();
 
     return next;
+#endif
+//    return guest_first_vmid();
 }
 
 void guest_schedule(void *pdata)
@@ -267,7 +270,7 @@ hvmm_status_t guest_init()
     int guest_count;
     int start_vmid = 0;
     uint32_t cpu = smp_processor_id();
-
+    printH("guest size is %d\n", sizeof(struct guest_struct));
     printh("[hyp] init_guests: enter\n");
     /* Initializes 2 guests */
     guest_count = num_of_guest(cpu);
@@ -309,14 +312,18 @@ struct guest_struct get_guest(uint32_t guest_num)
    return guests[guest_num];
 }
 
-void reboot_guest(struct monitor_vmid *mvmid, uint32_t pc,
+void guest_copy(struct guest_struct *dst, vmid_t vmid_src)
+{
+    _guest_module.ops->move(dst, &(guests[vmid_src]));
+}
+
+void reboot_guest(vmid_t vmid, uint32_t pc,
         struct arch_regs **regs)
 {
-    vmid_t vmid = mvmid->vmid_target;
-    monitor_clean_all_guest(mvmid, 0);
     _guest_module.ops->init(&guests[vmid], &(guests[vmid].regs));
     guests[vmid].regs.pc = pc;
     guests[vmid].regs.gpr[10] = 1;
     if (regs != 0)
         _guest_module.ops->restore(&guests[vmid], *regs);
 }
+

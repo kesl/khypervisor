@@ -7,7 +7,6 @@
 #include <hvmm_types.h>
 #include <vgic.h>
 #include <guest_hw.h>
-#include <monitor.h>
 
 enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
@@ -42,6 +41,10 @@ struct guest_ops {
 
     /** Dump state of the guest */
     hvmm_status_t (*dump)(uint8_t, struct arch_regs *regs);
+
+    /** Move Guest's info from src to dst */
+//    hvmm_status_t (*move)(struct arch_regs *, struct arch_regs *);
+    hvmm_status_t (*move)(struct guest_struct *, struct guest_struct *);
 };
 
 struct guest_module {
@@ -99,6 +102,7 @@ vmid_t sched_policy_determ_next(void);
  */
 hvmm_status_t guest_perform_switch(struct arch_regs *regs);
 
+void guest_copy(struct guest_struct *dst, vmid_t vmid_src);
 void guest_dump_regs(struct arch_regs *regs);
 void guest_sched_start(void);
 vmid_t guest_first_vmid(void);
@@ -110,8 +114,7 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
 struct guest_struct get_guest(uint32_t guest_num);
-void reboot_guest(struct monitor_vmid *mvmid, uint32_t pc,
-        struct arch_regs **regs);
+void reboot_guest(vmid_t vmid, uint32_t pc, struct arch_regs **regs);
 void set_manually_select_vmid(vmid_t vmid);
 void clean_manually_select_vmid(void);
 

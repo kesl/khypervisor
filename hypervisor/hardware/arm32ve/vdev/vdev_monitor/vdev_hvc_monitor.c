@@ -45,6 +45,7 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 
     struct monitoring_data *data;
 
+    // linux
     asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
     asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
     data = (struct monitoring_data *)(SHARED_ADDRESS);
@@ -53,16 +54,21 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 
     data->type = MONITORING;
     data->caller_va = trapped_va;
-    data->callee_va = lr;
+    // linux
+    // data->callee_va = lr - 4;
+    // bmguest
+    data->callee_va = ((*regs)->lr)-4;
     data->inst = 0;
-    data->regs.cpsr = (*regs)->cpsr;
-    data->regs.pc = (*regs)->pc;
-    data->regs.lr = (*regs)->lr;
-    data->sp = sp;
+/*
+    data->guest.regs.cpsr = (*regs)->cpsr;
+    data->guest.regs.pc = (*regs)->pc;
+    data->guest.regs.lr = (*regs)->lr;
+    data->guest.context.regs_banked.sp_svc = (*regs)->sp;
 
     for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
-        data->regs.gpr[i] = (*regs)->gpr[i];
-
+        data->guest.regs.gpr[i] = (*regs)->gpr[i];
+//        data->regs.gpr[i] = (*regs)->gpr[i];
+*/
     /* Set next trap for retrap */
     /* TODO Needs status of Branch instruction. */
     if (monitor_store_inst(vmid, (*regs)->pc, MONITOR_RETRAP))

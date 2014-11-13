@@ -30,6 +30,10 @@
 uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num)
 {
     uint32_t linux_guest_ttbr, l1_des, l2_des;
+
+    /* Not MMU mode */
+    return va;
+
     if (ttbr_num) {
         uint32_t linux_guest_ttbr1 = get_guest(0).context.regs_cop.ttbr1;
         linux_guest_ttbr = linux_guest_ttbr1;

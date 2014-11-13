@@ -239,10 +239,10 @@ void gic_interrupt(int fiq, void *pregs)
         _gic.ba_gicc[GICC_DIR] = irq;
     } else {
     /*TODO  Need to know why this part occurred*/
-    /*
+    #if 0
        uart_print("end of irq(no pending):");
        uart_print_hex32(irq);
        uart_print("\n\r");
-       */
+    #endif
     }
 }

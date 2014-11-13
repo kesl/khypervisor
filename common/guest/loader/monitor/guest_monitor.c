@@ -1,7 +1,9 @@
 #include <guest_monitor.h>
+#include <serial_s5p.h>
 #include <monitor_cli.h>
 #include <log/string.h>
 #include <log/uart_print.h>
+#include <asm-arm_inline.h>
 #define DEBUG
 #include <log/print.h>
 #include <gic.h>
@@ -9,6 +11,8 @@
 
 struct system_map system_maps_code[18000];
 uint32_t num_symbols_code;
+struct arch_regs target_regs;
+uint32_t target_sp;
 
 #define MAX_LENGTH_SYMBOL 50
 #define KEY_NOT_FOUND -1
@@ -162,30 +166,21 @@ int symbol_getter_from_va(uint32_t va, char *symbol)
     return 0;
 }
 
-#define ARCH_REGS_NUM_GPR    13
-/* Defines the architecture specific registers */
-struct arch_regs {
-    uint32_t cpsr; /* CPSR */
-    uint32_t pc; /* Program Counter */
-    uint32_t lr;
-    uint32_t gpr[ARCH_REGS_NUM_GPR]; /* R0 - R12 */
-} __attribute((packed));
-
 #define LIST 0
 #define MONITORING 1
 #define MEMORY 2
+#define REGISTER 3
 
-/* size 92 -> 0xEC00100 : memory dump, 0xEC000A0 : vmid info*/
+/* size 200..0xc8 -> 0xEC00100 : memory dump, 0xEC000D0 : vmid info*/
 struct monitoring_data {
     uint8_t type;
     uint32_t caller_va;
     uint32_t callee_va;
     uint32_t inst;
-    uint32_t sp;
-    struct arch_regs regs;
     uint32_t memory_range;
     uint32_t start_memory;
     uint8_t monitor_cnt;
+    struct guest_struct guest;
 };
 
 void send_monitoring_data(uint32_t range, uint32_t src)
@@ -215,7 +210,8 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
     if (shared_start->type == MONITORING) {
         symbol_getter_from_va(shared_start->caller_va, call_symbol);
         symbol_getter_from_va(shared_start->callee_va, callee_symbol);
-
+//        printh("caller va %x callee va %x\n", shared_start->caller_va,
+//                shared_start->callee_va);
         printh("CPU 0 %s <- %s\n", call_symbol, callee_symbol);
 
         if (strcmp(call_symbol, "panic") == 0 && recovery_cnt == 1) {
@@ -232,16 +228,21 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
             va = *dump_base;
             symbol_getter_from_va(va, call_symbol);
             dump_base++;
-            inst = dump_base;
+            inst = *dump_base;
             /* showing list */
             printh("Monitoring symbol is %s, va is %x, instruction is %x\n",
                      call_symbol, va, inst);
         }
     } else if (shared_start->type == MEMORY) {
         /* dump memory */
+#if 1
+        // for gdb
         int i, j;
         uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
         uint32_t base_memory = shared_start->start_memory;
+
+        set_uart_mode(MODE_GDB);
+
         for (i = 0; i < shared_start->memory_range; i++) {
             if ((uint32_t)dump_base > (uint32_t)&shared_memory_end) {
                 printh("The memory range out!!\n");
@@ -257,7 +258,53 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
             }
         }
         printh("\n");
+        set_uart_mode(MODE_LOADER);
+#endif
+    } else if (shared_start->type == REGISTER) {
+        struct arch_regs regs = shared_start->guest.regs;
+        int i;
+        target_regs.cpsr = regs.cpsr;
+        target_regs.pc = regs.pc;
+//        target_regs.lr = shared_start->guest.context.regs_banked.lr_svc;
+        target_regs.lr = regs.lr;
+        for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+            target_regs.gpr[i] = regs.gpr[i];
+        }
+        target_sp = shared_start->guest.context.regs_banked.sp_svc;
+
+#if 1
+        set_uart_mode(MODE_GDB);
+
+         // temp code for gdb
+        printh("cpsr is %x pc is %x lr is %x ", target_regs.cpsr, target_regs.pc, target_regs.lr);
+        printh("each register is \n");
+        for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+            printh("r%d : %x ", i, target_regs.gpr[i]);
+            if(i % 4 == 0 && i != 0)
+                printh("\n");
+        }
+        printh("\n");
+
+        set_uart_mode(MODE_LOADER);
+#endif
     }
+}
+
+
+
+void get_general_reg(struct arch_regs *regs, uint32_t *sp)
+{
+    int i;
+    monitoring_register();
+    isb();
+    dsb();
+    regs->cpsr = target_regs.cpsr;
+    regs->pc = target_regs.pc;
+    regs->lr = target_regs.lr;
+    for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+        regs->gpr[i] = target_regs.gpr[i];
+    }
+    *sp = target_sp;
 }
 
 void allset(void)
@@ -279,7 +326,7 @@ void reboot(void)
 
 void monitoring_init(void)
 {
-#ifdef BM_GUEST
+#ifdef MONITOR_GUEST
     gic_set_irq_handler(MONITORING_IRQ, monitoring_handler, 0);
     num_symbols_code =  number_symbol();
     symbol_parser_init();

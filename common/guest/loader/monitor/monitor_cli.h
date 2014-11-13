@@ -6,4 +6,5 @@
 int monitoring_cmd(void);
 void monitoring_reboot(void);
 void monitoring_allset(uint32_t va);
+void monitoring_register(void);
 #endif

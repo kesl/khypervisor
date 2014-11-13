@@ -52,12 +52,32 @@ struct s5p_uart {
 #define UTXH        0x20
 #define UFSTAT      0x18
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
-#define UART_BASE           0x12C10000
+/*
+#ifdef LINUX_GUEST
+#define UART_BASE              0x12C10000
+#else
+#define UART_BASE              0x12C20000
+#endif
+*/
+
+#ifdef MONITOR_GUEST
+#define UART_BASE              0x12C20000
+#else
+#define UART_BASE              0x12C10000
+#endif
+
+
+#define UART_GDB_LOG_BASE      0x12C10000
+#define UART_GDB_BASE          0x12C20000
+
+#define MODE_GDB       1
+#define MODE_LOADER    0
 
 int serial_tst_fifo(void);
 int serial_getc(void);
 void serial_putc(const char c);
 void serial_setbrg_dev(uint32_t base);
 void serial_init(void);
+int set_uart_mode(int mode);
 #endif
 

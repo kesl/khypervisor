@@ -18,10 +18,13 @@ export ZIMAGE_BIN="zImage"
 export BMGUEST_BIN="bmguest.bin"
 export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
+#make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 
+#cp arch/arm/boot/zImage ../../guestimages/ && \
+#cp System.map ../../guestimages/ &&\
 export GUEST0_BUILD_SCRIPT="cd ../linux && \
-make ARCH=arm arndale_minimal_linux_defconfig && \
-make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 && \
+make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 
 cp arch/arm/boot/zImage ../../guestimages/ && \
+cp System.map ../../guestimages/ &&\
 cd ../../$GUEST0_DIR && \
 make clean && \
 make LINUX=y"
@@ -35,7 +38,7 @@ make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
-make GUEST_NUMBER=1"
+make GUEST_NUMBER=1 MONITOR=y"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
 export GUEST_IMAGE_DIR="guestimages"

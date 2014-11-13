@@ -6,20 +6,6 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 
-#define VDEV_MONITORING_BASE 0x3FFFD000
-
-
-#define MONITOR_READ_LIST                   (0x00)
-#define MONITOR_READ_RUN                    (0x01 * 4)
-#define MONITOR_READ_CEAN_ALL               (0x02 * 4)
-#define MONITOR_READ_DUMP_MEMORY            (0x03 * 4)
-#define MONITOR_WRITE_TRACE_GUEST           (0x04 * 4)
-#define MONITOR_WRITE_CLEAN_TRACE_GUEST     (0x05 * 4)
-#define MONITOR_WRITE_BREAK_GUEST           (0x06 * 4)
-#define MONITOR_WRITE_CLEAN_BREAK_GUEST     (0x07 * 4)
-#define MONITOR_READ_REBOOT                 (0x08 * 4)
-#define MONITOR_READ_RECOVERY               (0x09 * 4)
-
 volatile uint32_t *base_set =
         (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_WRITE_TRACE_GUEST);
 volatile uint32_t *base_clean =
@@ -40,8 +26,13 @@ volatile uint32_t *base_reboot =
         (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_REBOOT);
 volatile uint32_t *base_recovery =
         (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_RECOVERY);
+volatile uint32_t *base_register =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_REGISTER);
+volatile uint32_t *base_stop =
+        (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_STOP);
 
 #define monitoring_list()  (*base_list)
+#define monitoring_stop()  (*base_stop)
 #define NUM_MONITORING_CMD MONITORING_NOINPUT
 
 #define MAX_INPUT_SIZE    256
@@ -62,6 +53,8 @@ enum monitoring_cmd_type {
     MONITORING_MEMORY_DUMP,
     MONITORING_REBOOT,
     MONITORING_RECOVERY,
+    MONITORING_REGISTER,
+    MONITORING_STOP,
     MONITORING_NOINPUT
 };
 
@@ -88,7 +81,9 @@ static struct monitoring_cmd monitoring_cmd_type_map_tbl[NUM_MONITORING_CMD] = {
     {"x", MONITORING_MEMORY_DUMP},
     {"rb", MONITORING_REBOOT},
     {"rc", MONITORING_RECOVERY},
-    {"exit", MONITORING_EXIT}
+    {"exit", MONITORING_EXIT},
+    {"reg", MONITORING_REGISTER},
+    {"stop", MONITORING_STOP},
 };
 
 static void monitoring_help(void)
@@ -104,6 +99,7 @@ static void monitoring_help(void)
                "x <range> <address> - Dump memory. [x 20 0x30000000]\n"
                "rb                  - Target System reboot\n"
                "rc                  - Set Fault tolerance system\n"
+               "reg                 - Dump target vm's register info\n"
                "exit                - exit monitoring mode\n");
 }
 
@@ -191,6 +187,10 @@ static void monitoring_all_clean(void)
     printh("Clean all monitoring point!\n");
     *base_all_clean;
 }
+void monitoring_register(void)
+{
+    *base_register;
+}
 
 static void monitoring_dump_memory(char **argv, int argc)
 {
@@ -211,6 +211,7 @@ static void monitoring_dump_memory(char **argv, int argc)
     send_monitoring_data(cnt, va);
     *base_memory_dump;
 }
+
 static enum monitoring_cmd_type convert_to_monitoring_cmd_type(char *input_cmd)
 {
     int i;
@@ -259,7 +260,7 @@ int monitoring_cmd(void)
 
     /* Saved vmids info */
     struct monitor_vmid *vmids = (struct monitor_vmid *)
-        &shared_memory_start + (0xA0/4);
+        &shared_memory_start + (0xB0/4);
     vmids->vmid_monitor = 1;
     vmids->vmid_target = 0;
 
@@ -303,6 +304,12 @@ int monitoring_cmd(void)
         case MONITORING_EXIT:
             monitoring_all_clean();
             return 0;
+        case MONITORING_REGISTER:
+            monitoring_register();
+            break;
+        case MONITORING_STOP:
+            monitoring_stop();
+            break;
         }
     }
     return 0;

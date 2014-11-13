@@ -106,7 +106,7 @@ hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va)
         }
     }
     if (monitor_cnt > 0) {
-        data = (struct monitoring_date *)(SHARED_ADDRESS);
+        data = (struct monitoring_data *)(SHARED_ADDRESS);
         data->type = LIST;
         data->monitor_cnt = monitor_cnt;
         monitor_notify_guest(vmid_monitor);
@@ -253,13 +253,36 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
     return HVMM_STATUS_SUCCESS;
 }
 
+hvmm_status_t monitor_stop(struct monitor_vmid *mvmid, uint32_t va)
+{
+    monitor_break_guest(mvmid->vmid_target);
+}
+hvmm_status_t monitor_register(struct monitor_vmid *mvmid, uint32_t va)
+{
+    hvmm_status_t ret = HVMM_STATUS_SUCCESS;
+    vmid_t vmid, vmid_monitor;
+    vmid = mvmid->vmid_target;
+    vmid_monitor = mvmid->vmid_monitor;
+    //struct arch_regs *regs;
+    struct monitoring_data *data;
+    data = (struct monitoring_data *)(SHARED_ADDRESS);
+    data->type = REGISTER;
+
+    guest_copy(&(data->guest_info), vmid);
+
+    monitor_notify_guest(vmid_monitor);
+    flush_dcache_all();
+    return ret;
+}
 hvmm_status_t monitor_reboot_guest(struct monitor_vmid *mvmid)
 {
     hvmm_status_t ret = HVMM_STATUS_SUCCESS;
 
+    monitor_clean_all_guest(mvmid, 0);
+
     /* TODO there is dependency target board problem*/
-    reboot_guest(mvmid, 0xB0000000, 0);
-    /* reboot_guest(mvmid, 0x70000000, 0); */
+    /* reboot_guest(mvmid, 0xB0000000, 0); */
+    reboot_guest(mvmid->vmid_target, 0x70000000, 0);
 
     return ret;
 }
@@ -279,7 +302,7 @@ hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid, uint32_t va)
 
     /* Trap to panic */
     /* monitor_insert_trace_to_guest(mvmid, 0x8015fbcc); */
-    monitor_insert_trace_to_guest(mvmid, 0x403da0e4);
+    monitor_insert_trace_to_guest(mvmid, 0x407956c8);
 
 #if 0
     /* TODO : It is working in hypervisor, not guest finally.. */

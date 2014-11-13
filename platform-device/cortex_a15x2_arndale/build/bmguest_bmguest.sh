@@ -20,6 +20,8 @@ export GUEST0_BUILD_SCRIPT="cd ../bmguest/ && \
 make clean && \
 make GUEST_NUMBER=0 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
+nm bmguest.axf -n > System.map && \
+cp System.map ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
 make clean && \
 make GUEST_NUMBER=0 "
@@ -33,7 +35,7 @@ make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
-make GUEST_NUMBER=1 "
+make GUEST_NUMBER=1 MONITOR=y"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
 export GUEST_IMAGE_DIR="guestimages"

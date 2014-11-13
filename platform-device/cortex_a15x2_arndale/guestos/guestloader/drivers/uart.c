@@ -49,8 +49,9 @@ void uart_print_hex64(uint64_t v)
 char uart_getc(void)
 {
     char ch = serial_getc();
-    if (ch == '\r')
+    if (ch == '\r'){
         ch = '\n';
+    }
     uart_putc(ch);
     return ch;
 }
@@ -67,8 +68,7 @@ void uart_gets(char *str, int max_column)
         max_column--;
         if (max_column == 0)
             break;
-        ch =
-            uart_getc();
+        ch =  uart_getc();
     }
     *retval = NULL;
 }

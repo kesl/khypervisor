@@ -57,7 +57,7 @@ SECTIONS {
         *(.bss)
     }
     end_bss = .;
-
+	_end = .;
     . = GUEST_STACK;
     guest_stacktop_svc = .;
     . = GUEST_STACK + 0x00400000;

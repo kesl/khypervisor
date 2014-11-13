@@ -150,7 +150,30 @@ static void context_restore_banked(struct regs_banked *regs_banked)
     asm volatile(" msr    r12_fiq, %0\n\t"
                  : : "r"(regs_banked->r12_fiq) : "memory", "cc");
 }
-
+static void context_copy_banked(struct regs_banked *banked_dst, struct
+        regs_banked *banked_src)
+{
+    banked_dst->sp_usr = banked_src->sp_usr;
+    banked_dst->spsr_svc = banked_src->spsr_svc;
+    banked_dst->sp_svc = banked_src->sp_svc;
+    banked_dst->lr_svc = banked_src->lr_svc;
+    banked_dst->spsr_abt = banked_src->spsr_abt;
+    banked_dst->sp_abt = banked_src->sp_abt;
+    banked_dst->lr_abt = banked_src->lr_abt;
+    banked_dst->spsr_und = banked_src->spsr_und;
+    banked_dst->sp_und = banked_src->sp_und;
+    banked_dst->lr_und = banked_src->sp_und;
+    banked_dst->spsr_irq = banked_src->spsr_irq;
+    banked_dst->sp_irq = banked_src->sp_irq;
+    banked_dst->lr_irq = banked_src->lr_irq;
+    banked_dst->spsr_fiq = banked_src->spsr_fiq;
+    banked_dst->lr_fiq = banked_src->lr_fiq;
+    banked_dst->r8_fiq = banked_src->r8_fiq;
+    banked_dst->r9_fiq = banked_src->r9_fiq;
+    banked_dst->r10_fiq = banked_src->r10_fiq;
+    banked_dst->r11_fiq = banked_src->r11_fiq;
+    banked_dst->r12_fiq = banked_src->r12_fiq;
+}
 /* Co-processor state management: init/save/restore */
 static void context_init_cops(struct regs_cop *regs_cop)
 {
@@ -323,11 +346,20 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
     return HVMM_STATUS_SUCCESS;
 }
 
+//hvmm_status_t guest_hw_move(struct arch_regs *dst, struct arch_regs *src)
+hvmm_status_t guest_hw_move(struct guest_struct *dst, struct guest_struct *src)
+{
+    context_copy_regs(&(dst->regs), &(src->regs));
+    context_copy_banked(&(dst->context.regs_banked),
+            &(src->context.regs_banked));
+}
+
 struct guest_ops _guest_ops = {
     .init = guest_hw_init,
     .save = guest_hw_save,
     .restore = guest_hw_restore,
     .dump = guest_hw_dump,
+    .move = guest_hw_move
 };
 
 struct guest_module _guest_module = {

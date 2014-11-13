@@ -10,6 +10,7 @@ COMMON_SOURCE_DIR=../../../../common
 COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
 OBJS += boot.o main.o drivers/serial_s5p.o drivers/uart.o drivers/timer.o \
 	$(COMMON_SOURCE_DIR)/log/print.o \
+	$(COMMON_SOURCE_DIR)/log/sscanf.o \
 	$(COMMON_SOURCE_DIR)/log/format.o \
 	$(COMMON_SOURCE_DIR)/log/string.o \
 	$(COMMON_SOURCE_DIR)/guest/core/exception.o \
@@ -19,6 +20,7 @@ OBJS += boot.o main.o drivers/serial_s5p.o drivers/uart.o drivers/timer.o \
 	$(COMMON_LOADER_DIR)/guestloader_common.o \
 	$(COMMON_LOADER_DIR)/cli.o \
 	$(COMMON_LOADER_DIR)/monitor/monitor_cli.o \
+	$(COMMON_LOADER_DIR)/monitor/gdb_stub.o \
 	$(COMMON_LOADER_DIR)/monitor/guest_monitor.o
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
@@ -26,7 +28,8 @@ LD_SCRIPT	= model.lds.S
 INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
 			 -I$(COMMON_LOADER_DIR) -I$(COMMON_SOURCE_DIR)/guest \
 			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../ \
-			 -I$(COMMON_LOADER_DIR)/monitor
+			 -I$(COMMON_LOADER_DIR)/monitor \
+			 -I drivers
 
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
@@ -41,6 +44,9 @@ endif
 ifeq ($(RTOS), y)
 GUESTLOADERCONFIGS = -DRTOS_GUEST
 GUESTBIN	= ../../guestimages/rtos.bin
+endif
+ifeq ($(MONITOR), y)
+GUESTLOADERCONFIGS += -DMONITOR_GUEST
 endif
 GUESTLOADERCONFIGS += -DGUEST_NUMBER=$(GUEST_NUMBER)
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN) -DARNDALE

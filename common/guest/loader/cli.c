@@ -1,14 +1,14 @@
 #include <cli.h>
 #include <guestloader_common.h>
-#include <version.h>
-
-#define NUM_CMD 3
-
+#include <log/uart_print.h>
+#include <gdb_stub.h>
+#define NUM_CMD 4
 /* Guest Loader's command line interface command type. */
 enum cmd_type {
     HELP,
     BOOT,
     MONITOR,
+    GDB,
     NOINPUT
 };
 
@@ -22,7 +22,8 @@ struct cmd {
 static struct cmd cmd_type_map_tbl[NUM_CMD] = {
     {"help", HELP},
     {"boot", BOOT},
-    {"monitor", MONITOR}
+    {"monitor", MONITOR},
+    {"gdb", GDB}
 };
 
 /** @brief Converts input command to a command type.
@@ -47,7 +48,7 @@ static void print_cli_usage(void)
     uart_print("help         - List commands and their usage\n"
                "boot         - Boot guestos\n"
                "monitor      - Set Monitoring mode\n"
-               "debug        - Set Debug mode\n");
+               "gdb          - Set gdb stub mode\n");
 }
 
 #define SPACE ' '
@@ -79,6 +80,9 @@ void cli_exec_cmd(char *cmd)
         break;
 #endif
         print_cli_usage();
+        break;
+    case GDB:
+        gdb();
         break;
     }
 }

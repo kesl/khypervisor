@@ -20,6 +20,7 @@ ARCH		?= arm
 SYSTEM ?= arndale
 
 #CPPFLAGS	+= -D_SMP_
-#CPPFLAGS	+= -D_MON_
+CPPFLAGS	+= -D_MON_
+CPPFLAGS	+= -D_GDB_
 CPPFLAGS	+= -mcpu=cortex-a15 -marm
 CPPFLAGS	+= -g

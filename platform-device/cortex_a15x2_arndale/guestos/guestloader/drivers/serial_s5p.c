@@ -5,10 +5,29 @@
 #define RX_FIFO_COUNT_MASK  0xff
 #define RX_FIFO_FULL_MASK   (1 << 8)
 
-static int serial_err_check(int op)
+static uint32_t uart_base_in;
+static uint32_t uart_base_out;
+
+int set_uart_mode(int mode)
 {
-    struct s5p_uart *const uart = (struct s5p_uart *) UART_BASE;
+    if(mode == MODE_LOADER) {
+        uart_base_in = UART_BASE;
+        uart_base_out = UART_BASE;
+    } else if (mode == MODE_GDB) {
+        uart_base_in = UART_GDB_BASE;
+        uart_base_out = UART_GDB_LOG_BASE;
+    }
+}
+
+static int serial_err_check(int op, int io)
+{
+    struct s5p_uart *uart;
     unsigned int mask;
+    if(io == 0)
+       uart = (struct s5p_uart *) uart_base_in;
+    else
+       uart = (struct s5p_uart *) uart_base_out;
+
     if (op)
         mask = 0x8;
     else
@@ -18,7 +37,7 @@ static int serial_err_check(int op)
 
 int serial_tst_fifo(void)
 {
-    struct s5p_uart *const uart = (struct s5p_uart *) UART_BASE;
+    struct s5p_uart *const uart = (struct s5p_uart *) uart_base_in;
 
     /* There is not a data in the FIFO */
     while (!(readl(&uart->ufstat) & (RX_FIFO_COUNT_MASK |
@@ -31,12 +50,12 @@ int serial_tst_fifo(void)
 
 int serial_getc(void)
 {
-    struct s5p_uart *const uart = (struct s5p_uart *) UART_BASE;
+    struct s5p_uart *const uart = (struct s5p_uart *) uart_base_in;
 
     /* wait for character to arrive */
     while (!(readl(&uart->ufstat) & (RX_FIFO_COUNT_MASK |
                     RX_FIFO_FULL_MASK))) {
-        if (serial_err_check(0))
+        if (serial_err_check(0, 0))
             return 0;
     }
     return (int)(readb(&uart->urxh) & 0xff);
@@ -44,9 +63,9 @@ int serial_getc(void)
 
 void serial_putc(const char c)
 {
-    struct s5p_uart *const uart = (struct s5p_uart *) UART_BASE;
+    struct s5p_uart *const uart = (struct s5p_uart *) uart_base_out;
     while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {
-        if (serial_err_check(1))
+        if (serial_err_check(1, 1))
             return;
     }
     writeb(c, &uart->utxh);
@@ -78,4 +97,18 @@ void serial_init(void)
     writel(0x3, &uart->ulcon);
     /* No interrupts, no DMA, pure polling */
     writel(0x245, &uart->ucon);
+#if 0
+#ifndef LINUX_GUEST
+    struct s5p_uart *const uart_gdb = (struct s5p_uart *)UART_GDB_BASE;
+    /* enable FIFOs */
+    writel(0x1, &uart_gdb->ufcon);
+    writel(0, &uart_gdb->umcon);
+    /* 8N1 */
+    writel(0x3, &uart_gdb->ulcon);
+    /* No interrupts, no DMA, pure polling */
+    writel(0x245, &uart_gdb->ucon);
+#endif
+#endif
+    uart_base_in  = UART_BASE;
+    uart_base_out = UART_BASE;
 }
