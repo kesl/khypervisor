@@ -224,6 +224,7 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
     } else if (shared_start->type == LIST) {
         uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
         uint32_t va, inst;
+
         for (i = 0; i < shared_start->monitor_cnt; i++) {
             va = *dump_base;
             symbol_getter_from_va(va, call_symbol);
@@ -240,8 +241,16 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
         int i, j;
         uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
         uint32_t base_memory = shared_start->start_memory;
+/*
+        uint32_t addr = 0x4ec00100;;
+        uint32_t addr_1 = addr + 1;
 
-        set_uart_mode(MODE_GDB);
+        printh("%x, %x\n", addr, *((uint32_t *)addr));
+        printh("%x, %x\n", addr, *((uint8_t *)addr));
+        printh("%x, %x\n", addr, *((uint32_t *)(addr+4)));
+        printh("%x, %x\n", addr, *((uint8_t *)(addr+1)));
+*/
+//        set_uart_mode(MODE_GDB);
 
         for (i = 0; i < shared_start->memory_range; i++) {
             if ((uint32_t)dump_base > (uint32_t)&shared_memory_end) {
@@ -258,22 +267,22 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
             }
         }
         printh("\n");
-        set_uart_mode(MODE_LOADER);
+//        set_uart_mode(MODE_LOADER);
 #endif
     } else if (shared_start->type == REGISTER) {
         struct arch_regs regs = shared_start->guest.regs;
         int i;
         target_regs.cpsr = regs.cpsr;
         target_regs.pc = regs.pc;
-//        target_regs.lr = shared_start->guest.context.regs_banked.lr_svc;
-        target_regs.lr = regs.lr;
+        target_regs.lr = shared_start->guest.context.regs_banked.lr_svc;
+//        target_regs.lr = regs.lr;
         for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
             target_regs.gpr[i] = regs.gpr[i];
         }
         target_sp = shared_start->guest.context.regs_banked.sp_svc;
 
 #if 1
-        set_uart_mode(MODE_GDB);
+ //       set_uart_mode(MODE_GDB);
 
          // temp code for gdb
         printh("cpsr is %x pc is %x lr is %x ", target_regs.cpsr, target_regs.pc, target_regs.lr);
@@ -285,7 +294,7 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
         }
         printh("\n");
 
-        set_uart_mode(MODE_LOADER);
+//        set_uart_mode(MODE_LOADER);
 #endif
     }
 }

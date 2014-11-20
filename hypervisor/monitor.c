@@ -317,6 +317,35 @@ hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid, uint32_t va)
     return ret;
 }
 
+hvmm_status_t monitor_write_memory(struct monitor_vmid *mvmid, uint32_t va)
+{
+    uint32_t range, base_memory;
+    uint8_t *dump_base;
+    struct monitoring_data *data;
+    vmid_t vmid, vmid_monitor;
+    int i;
+
+    flush_dcache_all();
+
+    dump_base = (uint8_t *)SHARED_DUMP_ADDRESS;
+    vmid = mvmid->vmid_target;
+    vmid_monitor = mvmid->vmid_monitor;
+    data =  (struct monitoring_data *)(SHARED_ADDRESS);
+
+    range = data->memory_range;
+    base_memory = data->start_memory;
+
+    for (i = 0; i < range; i++) {
+        *(uint8_t *)(uint8_t)va_to_pa(vmid, base_memory, 0) = *dump_base;
+//        *dump_base = *(uint8_t *)(uint8_t)va_to_pa(vmid, base_memory, 0);
+        dump_base++;
+        base_memory++;
+    }
+
+    return HVMM_STATUS_SUCCESS;
+
+}
+
 hvmm_status_t monitor_recovery(struct monitor_vmid *mvmid, uint32_t va)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;

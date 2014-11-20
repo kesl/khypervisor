@@ -75,6 +75,7 @@ uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num);
 void invalidate_icache_all(void);
 void invalidate_dcache_all(void);
 void flush_dcache_all(void);
+void flush_cache(unsigned long start, unsigned long size);
 uint32_t monitor_load_inst(vmid_t vmid, uint32_t va);
 uint32_t monitor_inst_type(vmid_t vmid, uint32_t va);
 uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, uint32_t type);
@@ -98,6 +99,7 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid,
 hvmm_status_t monitor_detect_fault(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_register(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_stop(struct monitor_vmid *mvmid, uint32_t va);
+hvmm_status_t monitor_write_memory(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_recovery_guest(struct monitor_vmid *mvmid);
 hvmm_status_t monitor_request(int irq, struct monitor_vmid *mvmid, int address);
 hvmm_status_t monitor_notify_guest(vmid_t vmid);

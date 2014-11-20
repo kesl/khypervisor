@@ -15,6 +15,7 @@ static void hex_byte(char *s, int byte) {
     s[1] = hexchars[byte & 0xf];
 }
 
+
 static void reply_ok(char *reply) {
     strcpy(reply, "OK");
 }
@@ -24,6 +25,20 @@ static void reply_error(int n, char *reply) {
     reply[0] = 'E';
     hex_byte(reply + 1, n);
     reply[3] = 0;
+}
+
+static int hex(char ch) {
+    if ((ch >= 'a') && (ch <= 'f'))
+        return ch - 'a' + 10;
+    if ((ch >= '0') && (ch <= '9'))
+        return ch - '0';
+    if ((ch >= 'A') && (ch <= 'F'))
+        return ch - 'A' + 10;
+    return -1;
+}
+
+static int get_hex_byte(char *s) {
+        return (hex(s[0]) << 4) + hex(s[1]);
 }
 
 static void put_packet(char *buf) {
@@ -46,16 +61,6 @@ static void put_packet(char *buf) {
         ch = uart_getc();
 
     } while (ch != '+');
-}
-
-static int hex(char ch) {
-    if ((ch >= 'a') && (ch <= 'f'))
-        return ch - 'a' + 10;
-    if ((ch >= '0') && (ch <= '9'))
-        return ch - '0';
-    if ((ch >= 'A') && (ch <= 'F'))
-        return ch - 'A' + 10;
-    return -1;
 }
 
 // word -> hex, little endian order
@@ -283,31 +288,49 @@ static void cmd_get_memory(char *args, char *reply) {
         reply_error(1, reply);
         return;
     }
-    /*
-    if(addr < 0x80008000 || addr > 0x808c9a88)
-        reply_error(1, reply);
-        return;
 
-    send_monitoring_data(len, addr);
-    *base_memory_dump;
-    
-    dsb();
-    dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
-
-    for (i = 0; i < len; i++)
-        hex_byte(reply + i * 2,  *((unsigned char *)(dump_base + i)));
-    */
     send_monitoring_data(len, addr);
     *base_memory_dump;
 
     dsb();
     isb();
 
-    dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
+    /* Shared memory Address */
+    addr = 0x4ec00100;
 
     for (i = 0; i < len; i++)
-        hex_byte(reply + i * 2,  *((unsigned char *)(dump_base + i)));
+        hex_byte(reply + i * 2,  *((unsigned char *)(addr + i)));
     reply[len * 2] = 0;
+}
+
+static void cmd_put_memory(char *args, char *reply) {
+    unsigned long addr, len, i;
+    unsigned long shared_address;
+    int pos;
+    volatile uint32_t *base_memory_dump =
+            (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_PUT_MEMORY);
+
+    pos = -1;
+    sscanf(args, "%lx,%lx,:%n", &addr, &len, &pos);
+
+    if (pos == -1) {
+        reply_error(0, reply);
+        return;
+    }
+
+    /* Shared memory Address */
+    shared_address = 0x4ec00100;
+
+    for (i = 0; i < len; i++)
+        *((unsigned char *)(shared_address + i))= get_hex_byte(args + pos + i * 2);
+
+    send_monitoring_data(len, addr);
+    *base_memory_dump;
+
+    dsb();
+    isb();
+
+    reply_ok(reply);
 }
 
 void reply_signal(int n, char *reply)
@@ -353,10 +376,11 @@ void gdb(void)
             cmd_get_memory(packet_buf + 1, reply_buf);
             break;
         case 'M':
+            cmd_put_memory(packet_buf + 1, reply_buf);
             break;
         case 'q':
-//            if (strcmp("qSupported:multiprocess+;qRelocInsn+", packet_buf) == 0) {
-            if (strcmp("qSupported:qRelocInsn+", packet_buf) == 0) {
+            if (strcmp("qSupported;qRelocInsn+", packet_buf) == 0) {
+//            if (strcmp("qSupported:qRelocInsn+", packet_buf) == 0) {
                 //put_packet("PacketSize=3fff");
                 strcpy(reply_buf, "PacketSize=3fff");
             } else if (strcmp("qSymbol::", packet_buf) == 0){
@@ -375,6 +399,7 @@ void gdb(void)
             }
             break;
         case 'c':
+            *base_go;
             break;
         case 's':
             break;
@@ -383,14 +408,14 @@ void gdb(void)
             break;
         case 'k':
             set_uart_mode(MODE_LOADER);
-            base_go;
+            *base_go;
             return;
         default:
             reply_buf[0] = 0;
         }
         if (!no_reply){
             set_uart_mode(MODE_GDB);
-            printh(" // reply buf ->  %s\n", reply_buf);
+            printh(" // reply packet -> %s\n", reply_buf);
             set_uart_mode(MODE_LOADER);
             dsb();
             isb();
@@ -399,7 +424,7 @@ void gdb(void)
         }
     }
     set_uart_mode(MODE_LOADER);
-    base_go;
+    *base_go;
 }
 
 

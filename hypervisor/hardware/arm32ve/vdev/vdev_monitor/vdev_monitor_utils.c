@@ -32,7 +32,7 @@ uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num)
     uint32_t linux_guest_ttbr, l1_des, l2_des;
 
     /* Not MMU mode */
-    return va;
+//    return va;
 
     if (ttbr_num) {
         uint32_t linux_guest_ttbr1 = get_guest(0).context.regs_cop.ttbr1;
@@ -205,6 +205,82 @@ static void v7_inval_dcache_level_setway(uint32_t level, uint32_t num_sets,
     CP15DSB;
 }
 
+static void v7_dcache_clean_inval_range(uint32_t start,
+        uint32_t stop, uint32_t line_len)
+{
+    uint32_t mva;
+
+    /* Align start to cache line boundary */
+    start &= ~(line_len - 1);
+    for (mva = start; mva < stop; mva = mva + line_len) {
+        /* DCCIMVAC - Clean & Invalidate data cache by MVA
+         * to PoC */
+        asm volatile ("mcr p15, 0, %0, c7, c14, 1" : : "r"
+                (mva));
+    }
+}
+
+static void v7_dcache_inval_range(uint32_t start, uint32_t stop,
+        uint32_t line_len)
+{
+    uint32_t mva;
+
+    /*  
+     *       * If start address is not aligned to cache-line do not
+     *            * invalidate the first cache-line
+     *                 */
+    if (start & (line_len - 1)) {
+        printh("ERROR: %s - start address is not aligned - 0x%08x\n", __func__, start);
+        /* move to next cache line */
+        start = (start + line_len - 1) & ~(line_len - 1);
+    }
+
+    /*  
+     *       * If stop address is not aligned to cache-line do not
+     *            * invalidate the last cache-line
+     *                 */
+    if (stop & (line_len - 1)) {
+        printh("ERROR: %s - stop address is not aligned - 0x%08x\n", __func__, stop);
+        /* align to the beginning of this cache line
+         * */
+        stop &= ~(line_len - 1);
+    }
+
+    for (mva = start; mva < stop; mva = mva + line_len) {
+        /* DCIMVAC - Invalidate data cache by MVA to PoC
+         * */
+        asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva));
+    }
+}
+
+static void v7_dcache_maint_range(uint32_t start, uint32_t stop, uint32_t range_op)
+{
+    uint32_t line_len, ccsidr;
+
+    ccsidr = get_ccsidr();
+    line_len = ((ccsidr & CCSIDR_LINE_SIZE_MASK) >>
+            CCSIDR_LINE_SIZE_OFFSET) + 2;
+    /* Converting from words to bytes */
+    line_len += 2;
+    /* converting from log2(linelen) to linelen */
+    line_len = 1 << line_len;
+
+    switch (range_op) {
+    case ARMV7_DCACHE_CLEAN_INVAL_RANGE:
+        v7_dcache_clean_inval_range(start, stop, line_len);
+        break;
+        case
+            ARMV7_DCACHE_INVAL_RANGE:
+            v7_dcache_inval_range(start, stop, line_len);
+        break;
+    }
+
+    /* DSB to make sure the operation is complete */
+    CP15DSB;
+}
+
+
+
 static void v7_clean_inval_dcache_level_setway(uint32_t level,
         uint32_t num_sets, uint32_t num_ways, uint32_t way_shift,
         uint32_t log2_line_len)
@@ -273,10 +349,41 @@ static void v7_maint_dcache_all(uint32_t operation)
     }
 }
 
+/*
+ *  * Invalidates range in all levels of D-cache/unified cache used:
+ *   * Affects the range [start, stop - 1]
+ *    */
+void invalidate_dcache_range(unsigned long start, unsigned long stop)
+{
+    v7_dcache_maint_range(start, stop, ARMV7_DCACHE_INVAL_RANGE);
+}
+
+/*
+ *  * Flush range(clean & invalidate) from all levels of D-cache/unified
+ *   * cache used:
+ *    * Affects the range [start, stop - 1]
+ *     */
+void flush_dcache_range(unsigned long start, unsigned long stop)
+{
+    v7_dcache_maint_range(start, stop, ARMV7_DCACHE_CLEAN_INVAL_RANGE);
+}
+
+
 void invalidate_dcache_all(void)
 {
     v7_maint_dcache_all(ARMV7_DCACHE_INVAL_ALL);
 }
+
+/*
+ *  * Flush range from all levels of d-cache/unified-cache used:
+ *   * Affects the range [start, start + size - 1]
+ *    */
+
+void flush_cache(unsigned long start, unsigned long size)
+{
+    flush_dcache_range(start, start + size);
+}
+
 
 /*
  * Performs a clean & invalidation of the entire data cache at all levels

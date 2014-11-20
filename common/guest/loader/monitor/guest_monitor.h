@@ -18,6 +18,7 @@
 #define MONITOR_READ_RECOVERY               (0x09 * 4)
 #define MONITOR_READ_REGISTER               (0x0a * 4)
 #define MONITOR_READ_STOP                   (0x0b * 4)
+#define MONITOR_READ_PUT_MEMORY             (0x0c * 4)
 
 struct system_map {
     uint32_t address;

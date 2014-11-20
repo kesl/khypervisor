@@ -35,8 +35,9 @@ static monitor_handler_t _monitor_handler[] = {
     monitor_clean_break_guest,          /* offset : 0x07 */
     monitor_reboot,                     /* offset : 0x08 */
     monitor_detect_fault,               /* offset : 0x09 */
-    monitor_register,                   /* offset : 0xa */
-    monitor_stop                        /* offset : 0xb */
+    monitor_register,                   /* offset : 0x0a */
+    monitor_stop,                       /* offset : 0x0b */
+    monitor_write_memory                /* offset : 0x0c */
 };
 
 static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
@@ -45,7 +46,7 @@ static hvmm_status_t vdev_monitor_access_handler(uint32_t write,
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     struct monitor_vmid *mvmid;
 
-    flush_dcache_all();
+    flush_cache(SHARED_VMID, sizeof(struct monitor_vmid));
 
     mvmid = (struct monitor_vmid *)(SHARED_VMID);
 
