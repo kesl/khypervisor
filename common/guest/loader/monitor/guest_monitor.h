@@ -20,6 +20,9 @@
 #define MONITOR_READ_STOP                   (0x0b * 4)
 #define MONITOR_READ_PUT_MEMORY             (0x0c * 4)
 
+#define GDBSTUB 1
+#define MONITORSTUB 2
+
 struct system_map {
     uint32_t address;
     uint8_t type;
@@ -105,4 +108,6 @@ extern uint32_t guestloader_end;
 extern uint32_t restore_guest_start;
 extern uint32_t restore_guest_end;
 extern uint32_t guest_start;
+int get_guest_mode(void);
+void set_guest_mode(int mode);
 #endif

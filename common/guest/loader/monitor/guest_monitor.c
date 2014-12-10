@@ -1,5 +1,4 @@
 #include <guest_monitor.h>
-#include <serial_s5p.h>
 #include <monitor_cli.h>
 #include <log/string.h>
 #include <log/uart_print.h>
@@ -8,13 +7,15 @@
 #include <log/print.h>
 #include <gic.h>
 #include <guestloader_common.h>
-
+#ifdef _GDB_
+#include <gdb_stub.h>
+#endif
 struct system_map system_maps_code[18000];
 uint32_t num_symbols_code;
 struct arch_regs target_regs;
 uint32_t target_sp;
 
-#define MAX_LENGTH_SYMBOL 50
+#define MAX_LENGTH_SYMBOL 100
 #define KEY_NOT_FOUND -1
 int symbol_binary_search(struct system_map map[], int key, int imin, int imax)
 {
@@ -170,6 +171,7 @@ int symbol_getter_from_va(uint32_t va, char *symbol)
 #define MONITORING 1
 #define MEMORY 2
 #define REGISTER 3
+#define BREAK 4
 
 /* size 200..0xc8 -> 0xEC00100 : memory dump, 0xEC000D0 : vmid info*/
 struct monitoring_data {
@@ -185,8 +187,9 @@ struct monitoring_data {
 
 void send_monitoring_data(uint32_t range, uint32_t src)
 {
-    struct monitoring_data *shared_start =
+    volatile struct monitoring_data *shared_start =
         (struct monitoring_data *)(&shared_memory_start);
+
     shared_start->memory_range = range;
     shared_start->start_memory = src;
 }
@@ -206,12 +209,9 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
     struct monitoring_data *shared_start = (struct monitoring_data
             *)(&shared_memory_start);
     int i;
-
     if (shared_start->type == MONITORING) {
         symbol_getter_from_va(shared_start->caller_va, call_symbol);
         symbol_getter_from_va(shared_start->callee_va, callee_symbol);
-//        printh("caller va %x callee va %x\n", shared_start->caller_va,
-//                shared_start->callee_va);
         printh("CPU 0 %s <- %s\n", call_symbol, callee_symbol);
 
         if (strcmp(call_symbol, "panic") == 0 && recovery_cnt == 1) {
@@ -237,64 +237,63 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
     } else if (shared_start->type == MEMORY) {
         /* dump memory */
 #if 1
-        // for gdb
-        int i, j;
-        uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
-        uint32_t base_memory = shared_start->start_memory;
-/*
-        uint32_t addr = 0x4ec00100;;
-        uint32_t addr_1 = addr + 1;
+        if(get_guest_mode() == MONITORSTUB) {
 
-        printh("%x, %x\n", addr, *((uint32_t *)addr));
-        printh("%x, %x\n", addr, *((uint8_t *)addr));
-        printh("%x, %x\n", addr, *((uint32_t *)(addr+4)));
-        printh("%x, %x\n", addr, *((uint8_t *)(addr+1)));
-*/
-//        set_uart_mode(MODE_GDB);
+            int i, j;
+            uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
+            uint32_t base_memory = shared_start->start_memory;
 
-        for (i = 0; i < shared_start->memory_range; i++) {
-            if ((uint32_t)dump_base > (uint32_t)&shared_memory_end) {
-                printh("The memory range out!!\n");
-                return;
+            for (i = 0; i < shared_start->memory_range / 4; i++) {
+                if ((uint32_t)dump_base > (uint32_t)&shared_memory_end) {
+                    printh("The memory range out!!\n");
+                    return;
+                }
+                if (i % 4 == 0)
+                    printH("0x%x :", base_memory);
+                printh(" 0x%x", *dump_base);
+                dump_base++;
+                if (i % 4 == 3) {
+                    printh("\n");
+                    base_memory += 16;
+                }
             }
-            if (i % 4 == 0)
-                printH("0x%x :", base_memory);
-            printh(" 0x%x", *dump_base);
-            dump_base++;
-            if (i % 4 == 3) {
-                printh("\n");
-                base_memory += 16;
-            }
+            printh("\n");
         }
-        printh("\n");
-//        set_uart_mode(MODE_LOADER);
+
 #endif
     } else if (shared_start->type == REGISTER) {
         struct arch_regs regs = shared_start->guest.regs;
         int i;
         target_regs.cpsr = regs.cpsr;
         target_regs.pc = regs.pc;
+        // linux
         target_regs.lr = shared_start->guest.context.regs_banked.lr_svc;
-//        target_regs.lr = regs.lr;
+        // bmguest
+        //target_regs.lr = regs.lr;
         for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
             target_regs.gpr[i] = regs.gpr[i];
         }
+        //linux
         target_sp = shared_start->guest.context.regs_banked.sp_svc;
+        //bmguest
+//        target_sp = shared_start->guest.context.regs_banked.sp_usr;
 
 #if 1
- //       set_uart_mode(MODE_GDB);
-
-         // temp code for gdb
-        printh("cpsr is %x pc is %x lr is %x ", target_regs.cpsr, target_regs.pc, target_regs.lr);
-        printh("each register is \n");
-        for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
-            printh("r%d : %x ", i, target_regs.gpr[i]);
-            if(i % 4 == 0 && i != 0)
-                printh("\n");
+        if(get_guest_mode() == MONITORSTUB) {
+            printH("cpsr is %x pc is %x lr is %x sp-svc is %x\n", target_regs.cpsr, target_regs.pc, target_regs.lr, shared_start->guest.context.regs_banked.sp_svc);
+            printH("each register is \n");
+            for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
+                printh("r%d : %x ", i, target_regs.gpr[i]);
+                if(i % 4 == 0 && i != 0)
+                    printh("\n");
+            }
+            printh("\n");
         }
-        printh("\n");
-
-//        set_uart_mode(MODE_LOADER);
+#endif
+    } else if (shared_start->type == BREAK) {
+        // break target
+#ifdef _GDB_
+        reply_signal_from_break();
 #endif
     }
 }
@@ -348,3 +347,14 @@ void monitoring_init(void)
 #endif
 }
 
+static int guest_mode = 0;
+
+int get_guest_mode(void)
+{
+    return guest_mode;
+}
+
+void set_guest_mode(int mode)
+{
+    guest_mode = mode;
+}

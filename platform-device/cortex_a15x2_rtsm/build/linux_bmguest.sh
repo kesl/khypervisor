@@ -20,9 +20,8 @@ export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
 export GUEST0_BUILD_SCRIPT="cd ../linux && \
 make ARCH=arm vexpress_minhw_defconfig && \
-cp -a ../../patch/fs.cpio . && \
 cp -a ../../patch/host-a15.dtb . && \
-make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm -j8 && \
+make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm -j8 && \
 cp System.map ../../guestimages/ && \
 cat host-a15.dtb >> arch/arm/boot/zImage && \
 cp arch/arm/boot/zImage ../../guestimages/ && \
@@ -39,7 +38,7 @@ make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
-make"
+make MONITOR=y"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
 export GUEST_IMAGE_DIR="guestimages"

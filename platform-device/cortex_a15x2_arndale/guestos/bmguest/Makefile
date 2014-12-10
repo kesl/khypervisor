@@ -113,7 +113,7 @@ boot.o: boot.S
 	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -DKCMD='$(KCMD)' -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -O2 -ffreestanding -I.  -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -O0 -ffreestanding -I.  -c -o $@ $<
 
 model.lds: $(LD_SCRIPT) Makefile
 	$(CC) $(CPPFLAGS) $(GUESTCONFIGS) -E -P -C -o $@ $<

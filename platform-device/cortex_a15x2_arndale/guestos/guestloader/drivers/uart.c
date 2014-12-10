@@ -19,8 +19,18 @@ int uart_tst_fifo(void)
 
 void uart_print(const char *str)
 {
-    while (*str)
+    int i = 0;
+    while (*str) {
+        if(check_uart_mode() == MODE_GDB){
+            i++;
+            if(i > 80) {
+                i = 0;
+                uart_putc('\n');
+            }
+        }
         uart_putc(*str++);
+    }
+
 }
 
 void uart_print_hex32(uint32_t v)
@@ -52,7 +62,8 @@ char uart_getc(void)
     if (ch == '\r'){
         ch = '\n';
     }
-    uart_putc(ch);
+    if(check_uart_mode() != MODE_GDB)
+        uart_putc(ch);
     return ch;
 }
 

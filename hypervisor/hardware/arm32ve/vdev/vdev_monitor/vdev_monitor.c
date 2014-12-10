@@ -37,7 +37,8 @@ static monitor_handler_t _monitor_handler[] = {
     monitor_detect_fault,               /* offset : 0x09 */
     monitor_register,                   /* offset : 0x0a */
     monitor_stop,                       /* offset : 0x0b */
-    monitor_write_memory                /* offset : 0x0c */
+    monitor_write_memory,               /* offset : 0x0c */
+    monitor_check_status                /* offset : 0x0d */
 };
 
 static hvmm_status_t vdev_monitor_access_handler(uint32_t write,

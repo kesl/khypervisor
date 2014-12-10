@@ -15,6 +15,7 @@
 #define MONITORING 1
 #define MEMORY 2
 #define REGISTER 3
+#define BREAK 4
 
 #define NOTFOUND 0
 #define FOUND 1
@@ -107,5 +108,5 @@ hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_reboot(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_init(void);
 hvmm_status_t monitor_recovery(struct monitor_vmid *mvmid, uint32_t va);
-
+hvmm_status_t monitor_check_status(struct monitor_vmid *mvmid, uint32_t va);
 #endif

@@ -8,6 +8,14 @@
 static uint32_t uart_base_in;
 static uint32_t uart_base_out;
 
+int check_uart_mode(void)
+{
+    if (uart_base_out == UART_BASE)
+        return MODE_LOADER;
+    else
+        return MODE_GDB;
+}
+
 int set_uart_mode(int mode)
 {
     if(mode == MODE_LOADER) {

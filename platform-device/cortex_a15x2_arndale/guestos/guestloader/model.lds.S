@@ -1,4 +1,5 @@
 /*
+
  * model.lds.S - simple linker script for stand-alone Linux booting
  *
  * Copyright (C) 2011 ARM Limited. All rights reserved.

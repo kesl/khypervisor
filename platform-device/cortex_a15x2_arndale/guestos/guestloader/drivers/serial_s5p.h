@@ -79,5 +79,6 @@ void serial_putc(const char c);
 void serial_setbrg_dev(uint32_t base);
 void serial_init(void);
 int set_uart_mode(int mode);
+int check_uart_mode(void);
 #endif
 

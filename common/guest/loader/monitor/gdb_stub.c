@@ -8,6 +8,8 @@
 #include <log/sscanf.h>
 #include <guest_monitor.h>
 
+#define DEMO
+
 static const char hexchars[] = "0123456789abcdef";
 
 static void hex_byte(char *s, int byte) {
@@ -39,28 +41,6 @@ static int hex(char ch) {
 
 static int get_hex_byte(char *s) {
         return (hex(s[0]) << 4) + hex(s[1]);
-}
-
-static void put_packet(char *buf) {
-    int i, checksum;
-    int ch;
-    char tmp[3];
-
-    do {
-        uart_putc('$');
-
-        checksum = 0;
-        for (i = 0; buf[i]; i++)
-            checksum += buf[i];
-        printh("%s", buf);
-        dsb();
-        tmp[0] = '#';
-        hex_byte(tmp + 1, checksum & 0xff);
-        printh("%s", tmp);
-        dsb();
-        ch = uart_getc();
-
-    } while (ch != '+');
 }
 
 // word -> hex, little endian order
@@ -140,8 +120,39 @@ static void cmd_get_register(char *args, char *reply) {
     }
 }
 
+void serial_write(unsigned char *buf, int len) {
+    int i;
+    for (i = 0; i < len; i++)
+        serial_putc(buf[i]);
+}
 
+static void put_packet(char *buf) {
+    int i, checksum;
+    int ch;
+    char tmp[3];
 
+    do {
+        uart_putc('$');
+
+        checksum = 0;
+        for (i = 0; buf[i]; i++)
+            checksum += buf[i];
+
+        dsb();isb();
+        serial_write(buf, i);
+        dsb();isb();
+
+        tmp[0] = '#';
+        hex_byte(tmp + 1, checksum & 0xff);
+
+        dsb();isb();
+        serial_write(tmp, 3);
+        dsb();isb();
+        ch = uart_getc();
+
+    } while (ch != '+');
+
+}
 
 #define BUFMAX 1024
 
@@ -217,63 +228,12 @@ static inline int isxdigit(char c)
     return ((c >= '0') && (c <= '9'))
         || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
 }
-#if 0
-static void remote_cmd(char *cmd, char *reply) {
-    int i, err;
-    i = 0;
-    err = 0;
-    while ((cmd[i] >= 'a' && cmd[i] <= 'z') || cmd[i] == '_')
-        i++;
-    if (!strncmp(cmd, "reboot", i)) {
-        reply_ok(reply);
-        put_packet(reply);
-        watchdog_enable(1);
-        (*(volatile unsigned long *)0x80002804) = 1;
-        while (1);
-    }
-    else if (!strncmp(cmd, "power_off", i)) {
-        reply_ok(reply);
-        put_packet(reply);
-//        GPIO1_CLR = 1 << 16;
-//        GPIO2_SET = 1;
-        while (1);
-    }
-    else if (!strncmp(cmd, "watchdog", i)) {
-        int t;
-#if 0
-        if (sscanf(cmd + i, "%d", &t) == 1)
-            watchdog_enable(t != 0);
-        else
-            err = 1;
-#endif
-        reply_ok(reply);
-    }
-    else
-        hex_string(reply, "Unrecognized command\n");
-    if (err)
-        reply_error(err, reply);
-}
-#endif
 
 static void cmd_query(char *args, char *reply) {
-    /*
-    if (!strncmp(args, "Rcmd,", 5)) {
-        unsigned i = 0;
-        char *s = args + 5;
-        char cmd[200];
-        while (isxdigit(s[0]) && isxdigit(s[1]) && i < sizeof(cmd) - 1) {
-            cmd[i++] = get_hex_byte(s);
-            s += 2;
-        }
-        cmd[i] = 0;
-        remote_cmd(cmd, reply);
-    } else
-        reply[0] = 0;
-        */
     reply[0] = 0;
 }
 
-static void cmd_get_memory(char *args, char *reply) {
+void cmd_get_memory(char *args, char *reply) {
     volatile uint32_t *base_memory_dump =
             (uint32_t *) (VDEV_MONITORING_BASE + MONITOR_READ_DUMP_MEMORY);
     unsigned long addr, len, i;
@@ -290,6 +250,16 @@ static void cmd_get_memory(char *args, char *reply) {
     }
 
     send_monitoring_data(len, addr);
+
+#ifndef DEMO
+            set_uart_mode(MODE_GDB);
+            printH("!!!!!!!!!!!! addr is %x len %d\n", addr, len);
+            set_uart_mode(MODE_LOADER);
+#endif
+
+    dsb();
+    isb();
+
     *base_memory_dump;
 
     dsb();
@@ -333,6 +303,33 @@ static void cmd_put_memory(char *args, char *reply) {
     reply_ok(reply);
 }
 
+volatile int break_signal = 0;
+
+void reply_signal_from_break(void)
+{
+    break_signal = 1;
+
+    //test
+    char reply[50] = "S05";
+    int uart_mode;
+    reply[3] = 0;
+    uart_mode = check_uart_mode();
+    if (uart_mode == MODE_GDB) {
+        set_uart_mode(MODE_LOADER);
+        dsb();
+        isb();
+        put_packet(reply);
+        dsb();
+        set_uart_mode(uart_mode);
+    } else {
+        dsb();
+        isb();
+        put_packet(reply);
+        dsb();
+    }
+
+}
+
 void reply_signal(int n, char *reply)
 {
     int signal;
@@ -354,6 +351,7 @@ void gdb(void)
     *base_stop;
     /* Wait gdb query */
     while(1) {
+        no_reply = 0;
         set_uart_mode(MODE_GDB);
         get_packet(packet_buf, sizeof(packet_buf) - 1);
         dsb();
@@ -364,6 +362,7 @@ void gdb(void)
             reply_signal(0, reply_buf);
             break;
         case 'p':
+            cmd_get_register(packet_buf + 1, reply_buf);
             break;
         case 'P':
             break;
@@ -390,16 +389,26 @@ void gdb(void)
                 strcpy(reply_buf, "0");
             } else if (strcmp("qAttached", packet_buf) == 0){
                 strcpy(reply_buf, "1");
-            } else if (strcmp("qOffsets", packet_buf) == 0){
-//                cmd_query(packet_buf + 1, reply_buf);
-                strcpy(reply_buf, "Text=0;Data=0;Bss=0");
                 */
+            } else if (strcmp("qOffsets", packet_buf) == 0){
+                //strcpy(reply_buf, "Text=40000000;Data=4000123c;Bss=40001240");
+                strcpy(reply_buf, "Text=0;Data=0;Bss=0");
             } else {
                 cmd_query(packet_buf + 1, reply_buf);
             }
             break;
         case 'c':
             *base_go;
+/*
+            while(1) {
+                if(break_signal == 1)
+                    break;
+            }
+            break_signal = 0;
+            reply_signal(0, reply_buf);
+*/
+            // test
+            no_reply = 1;
             break;
         case 's':
             break;
@@ -414,9 +423,11 @@ void gdb(void)
             reply_buf[0] = 0;
         }
         if (!no_reply){
+#ifndef DEMO
             set_uart_mode(MODE_GDB);
             printh(" // reply packet -> %s\n", reply_buf);
             set_uart_mode(MODE_LOADER);
+#endif
             dsb();
             isb();
             put_packet(reply_buf);

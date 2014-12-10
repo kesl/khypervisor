@@ -41,7 +41,7 @@ SECTIONS
  #endif
 
  #ifdef _MON_
- system_map_start = 0x80D00000;
+ system_map_start = 0x82000000;
  . = system_map_start;
  .systemmap : {../../guestimages/System.map}
  system_map_end = .;

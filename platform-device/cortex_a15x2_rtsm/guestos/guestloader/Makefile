@@ -38,6 +38,9 @@ GUESTBIN	= ../../guestimages/zImage
 else
 GUESTBIN	= ../../guestimages/bmguest.bin
 endif
+ifeq ($(MONITOR), y)
+GUESTLOADERCONFIGS += -DMONITOR_GUEST
+endif
 GUESTLOADERCONFIGS += -DGUEST_PATH=$(GUESTBIN)
 ifeq ($(ANDROID), y)
 GUESTLOADERCONFIGS += -DINITRD_PATH=../android_boot/uInitrd -DUSE_ANDROID_INITRD

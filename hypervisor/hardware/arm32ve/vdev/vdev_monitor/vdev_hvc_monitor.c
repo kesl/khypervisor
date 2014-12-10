@@ -31,7 +31,6 @@ void monitor_hvc_post_handler(vmid_t vmid, struct arch_regs **regs,
                                 uint32_t type)
 {
     (*regs)->pc -= 4;
-//    flush_dcache_all();
     invalidate_icache_all();
 }
 
@@ -57,25 +56,15 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
     data->type = MONITORING;
     data->caller_va = trapped_va;
     // linux
-     data->callee_va = lr - 4;
+    data->callee_va = lr - 4;
     // bmguest
-    //data->callee_va = ((*regs)->lr)-4;
+//    data->callee_va = ((*regs)->lr)-4;
     data->inst = 0;
-/*
-    data->guest.regs.cpsr = (*regs)->cpsr;
-    data->guest.regs.pc = (*regs)->pc;
-    data->guest.regs.lr = (*regs)->lr;
-    data->guest.context.regs_banked.sp_svc = (*regs)->sp;
-
-    for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
-        data->guest.regs.gpr[i] = (*regs)->gpr[i];
-//        data->regs.gpr[i] = (*regs)->gpr[i];
-*/
     /* Set next trap for retrap */
     /* TODO Needs status of Branch instruction. */
     if (monitor_store_inst(vmid, (*regs)->pc, MONITOR_RETRAP)){
         writel(HVC_TRAP, trapped_pa + 4);
-       flush_cache((unsigned long)trapped_pa + 4, sizeof(uint32_t));
+        flush_cache((unsigned long)trapped_pa + 4, sizeof(uint32_t));
     }
 
     flush_cache((unsigned long)SHARED_ADDRESS, sizeof(struct monitoring_data));
@@ -102,8 +91,8 @@ static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
 
     switch (monitor_inst_type(vmid, regs->pc - 4)) {
     case MONITOR_BREAK_TRAP:
-        monitor_hvc_pre_handler(vmid, &regs);
-        monitor_hvc_trace_handler(vmid, &regs);
+//        monitor_hvc_pre_handler(vmid, &regs);
+//        monitor_hvc_trace_handler(vmid, &regs);
         monitor_hvc_break_handler(vmid, &regs);
         monitor_hvc_post_handler(vmid, &regs, MONITOR_BREAK_TRAP);
         break;

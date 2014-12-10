@@ -11,6 +11,9 @@
 #include <asm_io.h>
 #include <armv7_p15.h>
 #include <guest.h>
+#include <asm-arm_inline.h>
+
+#define DEMO
 
 static uint32_t inst[NUM_GUESTS_STATIC][NUM_DI][NUM_INST];
 
@@ -35,7 +38,9 @@ uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, enum breakpoint_type type)
             inst[vmid][i][INST] = (*(uint32_t *)pa);
             inst[vmid][i][INST_VA] = va;
             inst[vmid][i][INST_TYPE] = type;
+#ifndef DEMO
             printh("[monitor_store_inst] : %x\n", inst[vmid][i][INST]);
+#endif
             return FOUND;
         }
     }
@@ -81,10 +86,10 @@ uint32_t monitor_load_inst(vmid_t vmid, uint32_t va)
             return ori_inst;
         }
     }
-
+#ifndef DEMO
     printH("[%s : %d] corresponded instruction not found va : %x\n",
             __func__, __LINE__, va);
-
+#endif
     return NOTFOUND;
 }
 
@@ -118,9 +123,20 @@ hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va)
 
 hvmm_status_t monitor_break_guest(vmid_t vmid)
 {
+    struct monitoring_data *data;
+    //uint32_t sp;
     /* Run other guest for stop this guest */
     set_manually_select_vmid(1);
     guest_switchto(1, 0);
+
+    data = (struct monitoring_data *)(SHARED_ADDRESS);
+    data->type = BREAK;
+    flush_cache(SHARED_ADDRESS, sizeof(struct monitoring_data));
+
+    monitor_notify_guest(1);
+
+    //asm volatile(" mrs     %0, sp_usr\n\t" : "=r"(sp) : : "memory", "cc");
+    //printH("[monitor_break_guest] : target sp is %x \n", sp);
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -138,11 +154,10 @@ hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
 {
     vmid_t vmid = mvmid->vmid_target;
 
-
     if (NOTFOUND != monitor_store_inst(vmid, va, MONITOR_BREAK_TRAP)) {
         /* TODO : This code will move to hardware interface */
         writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, va, TTBR0));
-        flush_dcache_all();
+        flush_cache((uint32_t)va_to_pa(vmid, va, TTBR0), sizeof(uint32_t));
         invalidate_icache_all();
     }
     return HVMM_STATUS_SUCCESS;
@@ -170,7 +185,9 @@ hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
     inst = monitor_load_inst(vmid, va);
     if (inst != NOTFOUND && monitor_clean_inst(vmid, va, type)) {
         /* TODO : This code will move to hardware interface */
+#ifndef DEMO
         printH("[Monitor device] : clean va %x\n", va);
+#endif
         writel(inst, (uint32_t)va_to_pa(vmid, va , TTBR0));
     }
 
@@ -223,13 +240,16 @@ hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid, uint32_t va)
 
 hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
 {
-    uint32_t range, base_memory;
-    uint32_t *dump_base, *base_memory_pa;
-    struct monitoring_data *data;
+    volatile uint32_t range, base_memory, base_memory_pa;
+    //volatile uint32_t *dump_base;
+    volatile uint8_t *dump_base_byte;
+    volatile struct monitoring_data *data;
     vmid_t vmid, vmid_monitor;
     int i;
+    int cnt = 0;
 
-    dump_base = (uint32_t *)SHARED_DUMP_ADDRESS;
+    flush_cache((unsigned long)SHARED_ADDRESS, sizeof(struct monitoring_data));
+
     vmid = mvmid->vmid_target;
     vmid_monitor = mvmid->vmid_monitor;
     data =  (struct monitoring_data *)(SHARED_ADDRESS);
@@ -237,17 +257,78 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
     range = data->memory_range;
     base_memory = data->start_memory;
 
-    for (i = 0; i < range; i++) {
-        base_memory_pa = (uint32_t *)(uint32_t)va_to_pa(vmid, base_memory, 0);
-        *dump_base = *base_memory_pa;
-        dump_base++;
-        base_memory += 4;
-    }
+//    base_memory_pa = (uint32_t)va_to_pa(vmid, base_memory, 0);
+/*
+    printH("[monitoring_dump_guest_memory %x %x\n",
+            data->start_memory, *(uint32_t *)base_memory_pa);
+*/
 
+    uint32_t temp_byte = 0;
+    uint32_t dump_byte = 0;
+    int j;
+    dump_base_byte = (uint8_t *)SHARED_DUMP_ADDRESS;
+#ifndef DEMO
+    printH("check dump address %x\n", base_memory);
+#endif
+    if(base_memory <= 0x40008040 || base_memory >= 0xff000000) {
+        /* It's zImage's address. Not supporeted yet. So just return 0 */
+        //printH("Dump_guest : Do not reference, It's over linux's memory area..\n");
+        for (i = 0; i < range; i++) {
+            *dump_base_byte = 0;
+            dump_base_byte++;
+        }
+    } else {
+        for (i = 0; i < range; i++) {
+            cnt++;
+            base_memory_pa = (uint32_t)va_to_pa(vmid, base_memory, 0);
+#ifndef DEMO
+            printH("base_memory_pa : %x\n", base_memory_pa);
+#endif
+            temp_byte = *(uint8_t *)base_memory_pa;
+            dump_byte |= temp_byte << (8 * (cnt - 1));
+            if (cnt % 4 == 0) {
+#ifndef DEMO
+                printH("dump %x\n", dump_byte);
+#endif
+                if (dump_byte == 0xe14fff7c) {
+                /* Read break point It's return gdb's breakpoint not hvc instruction */
+                    dump_byte = 0xe7f001f0;
+                }
+                for (j = 0; j < 4; j++) {
+                    *dump_base_byte = ((dump_byte >> (8 * j)) & 0xff);
+                    dump_base_byte++;
+                }
+                cnt = 0;
+                dump_byte = 0;
+            }
+            base_memory++;
+        }
+    }
+#if 0
+
+    if (range == 4 &&  (*(uint32_t *)base_memory_pa == 0xe14fff7c)) {
+        dump_base = (uint32_t *)SHARED_DUMP_ADDRESS;
+        /* Read break point It's return gdb's breakpoint not hvc instruction */
+        *dump_base = 0xe7f001f0;
+    } else {
+        dump_base_byte = (uint8_t *)SHARED_DUMP_ADDRESS;
+        for (i = 0; i < range; i++) {
+            *dump_base_byte = *(uint8_t *)base_memory_pa;
+            dump_base_byte++;
+            base_memory_pa++;
+            /*
+            *dump_base = *(uint32_t *)base_memory_pa;
+            dump_base++;
+            base_memory_pa += 4;
+            */
+        }
+    }
+#endif
     if (range > 0) {
         data->type = MEMORY;
-        monitor_notify_guest(vmid_monitor);
-        flush_dcache_all();
+        flush_cache((unsigned long)SHARED_ADDRESS, sizeof(struct monitoring_data));
+        monitor_notify_guest(MONITOR_GUEST_VMID);
+        flush_cache((unsigned long)SHARED_DUMP_ADDRESS, range);
     }
 
     return HVMM_STATUS_SUCCESS;
@@ -255,8 +336,13 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
 
 hvmm_status_t monitor_stop(struct monitor_vmid *mvmid, uint32_t va)
 {
-    monitor_break_guest(mvmid->vmid_target);
+    hvmm_status_t ret = HVMM_STATUS_SUCCESS;
+    set_manually_select_vmid(1);
+    guest_switchto(1, 0);
+//    monitor_break_guest(mvmid->vmid_target);
+    return ret;
 }
+
 hvmm_status_t monitor_register(struct monitor_vmid *mvmid, uint32_t va)
 {
     hvmm_status_t ret = HVMM_STATUS_SUCCESS;
@@ -269,8 +355,30 @@ hvmm_status_t monitor_register(struct monitor_vmid *mvmid, uint32_t va)
     data->type = REGISTER;
 
     guest_copy(&(data->guest_info), vmid);
+/*
+    printH("[monitor_register] : sp_usr is %x saved guest0's sp_usr is %x\n",
+            data->guest_info.context.regs_banked.sp_usr,
+            get_guest(0).context.regs_banked.sp_usr);
 
-    monitor_notify_guest(vmid_monitor);
+    struct guest_struct target = get_guest(0);
+    uint32_t r11 = target.regs.gpr[11];
+    uint32_t r0 = r11 - 32;
+    uint32_t r1 = r11 - 36;
+    uint32_t r2 = r11 - 40;
+    uint32_t r3 = r11 - 44;
+
+    printH("[monitor_register] : r0 %x r1 %x r2 %x r3 %x r4 %x r5 %x\n",
+            target.regs.gpr[0], target.regs.gpr[1], target.regs.gpr[2],
+            target.regs.gpr[3], target.regs.gpr[4], target.regs.gpr[5]);
+    printH("[monitor_register] : r6 %x r7 %x r8 %x r9 %x r10 %x r11 %x r12 %x\n",
+            target.regs.gpr[6], target.regs.gpr[7], target.regs.gpr[8],
+            target.regs.gpr[9], target.regs.gpr[10], target.regs.gpr[11],
+            target.regs.gpr[12]);
+
+    printH("[monitor_register] : r0 %x r1 %x r2 %x r3 %x\n", *(uint32_t *)r0,
+            *(uint32_t *)r1, *(uint32_t *)r2, *(uint32_t *)r3);
+*/
+    monitor_notify_guest(MONITOR_GUEST_VMID);
     flush_dcache_all();
     return ret;
 }
@@ -325,22 +433,59 @@ hvmm_status_t monitor_write_memory(struct monitor_vmid *mvmid, uint32_t va)
     vmid_t vmid, vmid_monitor;
     int i;
 
-    flush_dcache_all();
+    flush_cache((unsigned long)SHARED_ADDRESS, sizeof(struct monitoring_data));
 
-    dump_base = (uint8_t *)SHARED_DUMP_ADDRESS;
     vmid = mvmid->vmid_target;
     vmid_monitor = mvmid->vmid_monitor;
-    data =  (struct monitoring_data *)(SHARED_ADDRESS);
 
+    data =  (struct monitoring_data *)(SHARED_ADDRESS);
     range = data->memory_range;
     base_memory = data->start_memory;
 
-    for (i = 0; i < range; i++) {
-        *(uint8_t *)(uint8_t)va_to_pa(vmid, base_memory, 0) = *dump_base;
-//        *dump_base = *(uint8_t *)(uint8_t)va_to_pa(vmid, base_memory, 0);
-        dump_base++;
-        base_memory++;
+    flush_cache((unsigned long)SHARED_DUMP_ADDRESS, range);
+
+    dump_base = (uint8_t *)SHARED_DUMP_ADDRESS;
+#ifndef DEMO
+    printH("[hyp] before base_memory : %x, contents : %x\n", base_memory,
+            *(uint32_t *)(uint32_t)va_to_pa(vmid, base_memory, 0));
+#endif
+
+    if (range == 4 &&  (*(uint32_t *)SHARED_DUMP_ADDRESS) == 0xe7f001f0) {
+        //break
+#ifndef DEMO
+        printH("[hyp] insert break point hvc\n");
+#endif
+        monitor_insert_break_to_guest(mvmid, base_memory);
+    } else if (range == 4 && ((*(uint32_t *)SHARED_DUMP_ADDRESS) == monitor_load_inst(vmid, base_memory))) {
+        // clean
+#ifndef DEMO
+        printH("[hyp] : restore !!!\n");
+#endif
+        // restore
+        *(uint32_t *)(uint32_t)va_to_pa(vmid, base_memory, 0) =
+            *(uint32_t *)SHARED_DUMP_ADDRESS;
+        // clean
+        monitor_clean_break_guest(mvmid, base_memory);
+        flush_cache((unsigned long) va_to_pa(vmid, base_memory, 0), range);
     }
+        //other
+      else {
+        for (i = 0; i < range; i++) {
+            *(uint8_t *)(uint8_t)va_to_pa(vmid, base_memory, 0) = *dump_base;
+#ifndef DEMO
+            printH("[hyp] contents : %x %x\n", *dump_base, dump_base);
+#endif
+            dump_base++;
+            base_memory++;
+        }
+
+        flush_cache((unsigned long) va_to_pa(vmid, data->start_memory, 0), range);
+        invalidate_icache_all();
+    }
+#ifndef DEMO
+    printH("[hyp] After1 base_memory : %x, contents : %x\n", data->start_memory,
+            *(uint32_t *)(uint32_t)va_to_pa(vmid, (data->start_memory), 0));
+#endif
 
     return HVMM_STATUS_SUCCESS;
 
@@ -396,3 +541,23 @@ hvmm_status_t monitor_init(void)
 
     return ret;
 }
+hvmm_status_t monitor_check_status(struct monitor_vmid *mvmid, uint32_t va)
+{
+    hvmm_status_t ret = HVMM_STATUS_SUCCESS;
+    uint32_t lr, sp;
+    struct guest_struct target = get_guest(0);
+    printH("start!!\n");
+    printH("show sp's %x \n", target.context.regs_banked.sp_usr);
+    printH("show sp's %x \n", target.context.regs_banked.sp_abt);
+    printH("show sp's %x \n", target.context.regs_banked.sp_und);
+    printH("show sp's %x \n", target.context.regs_banked.sp_irq);
+
+    asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
+    printH("show sp's %x \n", sp);
+    asm volatile(" mrs     %0, sp_usr\n\t" : "=r"(sp) : : "memory", "cc");
+    printH("show sp's %x \n", sp);
+    printH("end!!\n");
+
+    return ret;
+}
+

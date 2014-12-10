@@ -23,7 +23,7 @@ make GUEST_NUMBER=0 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST0_DIR && \
 make clean && \
-make"
+make GUEST_NUMBER=0"
 export GUEST0_CLEAN_SCRIPT="make clean"
 
 export GUEST1_DIR="guestos/guestloader"
@@ -34,7 +34,7 @@ make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
-make"
+make GUEST_NUMBER=1 MONITOR=y"
 export GUEST1_CLEAN_SCRIPT="make clean"
 
 export GUEST_IMAGE_DIR="guestimages"

@@ -2,6 +2,7 @@
 #include <guestloader_common.h>
 #include <log/uart_print.h>
 #include <gdb_stub.h>
+#include <guest_monitor.h>
 #define NUM_CMD 4
 /* Guest Loader's command line interface command type. */
 enum cmd_type {
@@ -76,13 +77,17 @@ void cli_exec_cmd(char *cmd)
         break;
     case MONITOR:
 #ifdef _MON_
+        set_guest_mode(MONITORSTUB);
         monitoring_cmd();
         break;
 #endif
         print_cli_usage();
         break;
     case GDB:
+#ifdef _GDB_
+        set_guest_mode(GDBSTUB);
         gdb();
+#endif
         break;
     }
 }
