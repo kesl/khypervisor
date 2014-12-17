@@ -8,7 +8,7 @@
 include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
 COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
-OBJS += boot.o main.o drivers/serial_s5p.o drivers/uart.o drivers/timer.o \
+OBJS += boot.o main.o drivers/serial_s5p.o drivers/uart.o drivers/timer.o drivers/gpio.o\
 	$(COMMON_SOURCE_DIR)/log/print.o \
 	$(COMMON_SOURCE_DIR)/log/sscanf.o \
 	$(COMMON_SOURCE_DIR)/log/format.o \

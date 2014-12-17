@@ -226,9 +226,9 @@ static void v7_dcache_inval_range(uint32_t start, uint32_t stop,
     uint32_t mva;
 
     /*  
-     *       * If start address is not aligned to cache-line do not
-     *            * invalidate the first cache-line
-     *                 */
+     *  If start address is not aligned to cache-line do not
+     *  invalidate the first cache-line
+     */
     if (start & (line_len - 1)) {
         printh("ERROR: %s - start address is not aligned - 0x%08x\n", __func__, start);
         /* move to next cache line */
@@ -236,19 +236,19 @@ static void v7_dcache_inval_range(uint32_t start, uint32_t stop,
     }
 
     /*  
-     *       * If stop address is not aligned to cache-line do not
-     *            * invalidate the last cache-line
-     *                 */
+     * If stop address is not aligned to cache-line do not
+     * invalidate the last cache-line
+     */
     if (stop & (line_len - 1)) {
         printh("ERROR: %s - stop address is not aligned - 0x%08x\n", __func__, stop);
         /* align to the beginning of this cache line
-         * */
+         */
         stop &= ~(line_len - 1);
     }
 
     for (mva = start; mva < stop; mva = mva + line_len) {
         /* DCIMVAC - Invalidate data cache by MVA to PoC
-         * */
+         */
         asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva));
     }
 }
@@ -350,19 +350,19 @@ static void v7_maint_dcache_all(uint32_t operation)
 }
 
 /*
- *  * Invalidates range in all levels of D-cache/unified cache used:
- *   * Affects the range [start, stop - 1]
- *    */
+ * Invalidates range in all levels of D-cache/unified cache used:
+ * Affects the range [start, stop - 1]
+ */
 void invalidate_dcache_range(unsigned long start, unsigned long stop)
 {
     v7_dcache_maint_range(start, stop, ARMV7_DCACHE_INVAL_RANGE);
 }
 
 /*
- *  * Flush range(clean & invalidate) from all levels of D-cache/unified
- *   * cache used:
- *    * Affects the range [start, stop - 1]
- *     */
+ * Flush range(clean & invalidate) from all levels of D-cache/unified
+ * cache used:
+ * Affects the range [start, stop - 1]
+ */
 void flush_dcache_range(unsigned long start, unsigned long stop)
 {
     v7_dcache_maint_range(start, stop, ARMV7_DCACHE_CLEAN_INVAL_RANGE);
@@ -375,9 +375,9 @@ void invalidate_dcache_all(void)
 }
 
 /*
- *  * Flush range from all levels of d-cache/unified-cache used:
- *   * Affects the range [start, start + size - 1]
- *    */
+ * Flush range from all levels of d-cache/unified-cache used:
+ * Affects the range [start, start + size - 1]
+ */
 
 void flush_cache(unsigned long start, unsigned long size)
 {

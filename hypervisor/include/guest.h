@@ -43,7 +43,6 @@ struct guest_ops {
     hvmm_status_t (*dump)(uint8_t, struct arch_regs *regs);
 
     /** Move Guest's info from src to dst */
-//    hvmm_status_t (*move)(struct arch_regs *, struct arch_regs *);
     hvmm_status_t (*move)(struct guest_struct *, struct guest_struct *);
 };
 

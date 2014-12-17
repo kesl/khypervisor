@@ -105,18 +105,6 @@ void serial_init(void)
     writel(0x3, &uart->ulcon);
     /* No interrupts, no DMA, pure polling */
     writel(0x245, &uart->ucon);
-#if 0
-#ifndef LINUX_GUEST
-    struct s5p_uart *const uart_gdb = (struct s5p_uart *)UART_GDB_BASE;
-    /* enable FIFOs */
-    writel(0x1, &uart_gdb->ufcon);
-    writel(0, &uart_gdb->umcon);
-    /* 8N1 */
-    writel(0x3, &uart_gdb->ulcon);
-    /* No interrupts, no DMA, pure polling */
-    writel(0x245, &uart_gdb->ucon);
-#endif
-#endif
     uart_base_in  = UART_BASE;
     uart_base_out = UART_BASE;
 }

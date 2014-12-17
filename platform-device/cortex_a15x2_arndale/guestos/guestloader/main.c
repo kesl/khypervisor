@@ -9,6 +9,7 @@
 #include <log/print.h>
 #include <guestloader_common.h>
 #include <guest_monitor.h>
+#include "drivers/gpio.h"
 
 #define MAX_CMD_STR_SIZE    256
 #define PROMPT  "kboot# "
@@ -49,6 +50,7 @@ static void guestloader_cliboot(void)
     char input_cmd[MAX_CMD_STR_SIZE];
     /* Disable timer for guest os */
     timer_disable();
+
     while (1) {
         uart_print(PROMPT);
         uart_gets(input_cmd, MAX_CMD_STR_SIZE);
@@ -69,6 +71,10 @@ void main(int boot_status)
     guestloader_init();
     /* Show Hypervisor Banner */
     uart_print(BANNER_STRING);
+
+#ifdef MONITOR_GUEST
+    guestloader_cliboot();
+#endif
     /* Auto boot or CLI boot */
     while (1) {
         /* Auto boot */

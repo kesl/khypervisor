@@ -270,7 +270,6 @@ hvmm_status_t guest_init()
     int guest_count;
     int start_vmid = 0;
     uint32_t cpu = smp_processor_id();
-    printH("guest size is %d\n", sizeof(struct guest_struct));
     printh("[hyp] init_guests: enter\n");
     /* Initializes 2 guests */
     guest_count = num_of_guest(cpu);
