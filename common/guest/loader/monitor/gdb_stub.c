@@ -253,7 +253,7 @@ void cmd_get_memory(char *args, char *reply) {
 
 #ifndef DEMO
             set_uart_mode(MODE_GDB);
-            printH("!!!!!!!!!!!! addr is %x len %d\n", addr, len);
+            printH("Addr is %x len %d\n", addr, len);
             set_uart_mode(MODE_LOADER);
 #endif
 
@@ -379,19 +379,10 @@ void gdb(void)
             break;
         case 'q':
             if (strcmp("qSupported;qRelocInsn+", packet_buf) == 0) {
-//            if (strcmp("qSupported:qRelocInsn+", packet_buf) == 0) {
-                //put_packet("PacketSize=3fff");
                 strcpy(reply_buf, "PacketSize=3fff");
             } else if (strcmp("qSymbol::", packet_buf) == 0){
                 reply_ok(reply_buf);
-/*
-            } else if (strcmp("qfThreadInfo", packet_buf) == 0){
-                strcpy(reply_buf, "0");
-            } else if (strcmp("qAttached", packet_buf) == 0){
-                strcpy(reply_buf, "1");
-                */
             } else if (strcmp("qOffsets", packet_buf) == 0){
-                //strcpy(reply_buf, "Text=40000000;Data=4000123c;Bss=40001240");
                 strcpy(reply_buf, "Text=0;Data=0;Bss=0");
             } else {
                 cmd_query(packet_buf + 1, reply_buf);
@@ -399,15 +390,6 @@ void gdb(void)
             break;
         case 'c':
             *base_go;
-/*
-            while(1) {
-                if(break_signal == 1)
-                    break;
-            }
-            break_signal = 0;
-            reply_signal(0, reply_buf);
-*/
-            // test
             no_reply = 1;
             break;
         case 's':
