@@ -88,7 +88,7 @@ void symbol_parser_init(void)
         printh("num_symbols_code is %d\n", num_symbols_code);
         struct system_map* system_maps = (struct system_map *)
             memory_alloc(n_symbol * sizeof(struct system_map));
-        */
+     */
     uint8_t *base;
     int cnt;
     int cnt_code;
@@ -238,7 +238,6 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
         /* dump memory */
 #if 1
         if(get_guest_mode() == MONITORSTUB) {
-
             int i, j;
             uint32_t *dump_base = (uint32_t *)(&shared_memory_start) + (0x100/4);
             uint32_t base_memory = shared_start->start_memory;
@@ -269,19 +268,19 @@ void monitoring_handler(int irq, void *pregs, void *pdata)
         // linux
         target_regs.lr = shared_start->guest.context.regs_banked.lr_svc;
         // bmguest
-        //target_regs.lr = regs.lr;
+        // target_regs.lr = regs.lr;
         for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
             target_regs.gpr[i] = regs.gpr[i];
         }
         //linux
         target_sp = shared_start->guest.context.regs_banked.sp_svc;
         //bmguest
-//        target_sp = shared_start->guest.context.regs_banked.sp_usr;
+        //target_sp = shared_start->guest.context.regs_banked.sp_usr;
 
 #if 1
         if(get_guest_mode() == MONITORSTUB) {
-            printH("cpsr is %x pc is %x lr is %x sp-svc is %x\n", target_regs.cpsr, target_regs.pc, target_regs.lr, shared_start->guest.context.regs_banked.sp_svc);
-            printH("each register is \n");
+            printH("Cpsr is %x pc is %x lr is %x sp-svc is %x\n", target_regs.cpsr, target_regs.pc, target_regs.lr, shared_start->guest.context.regs_banked.sp_svc);
+            printH("Each register is \n");
             for (i = 0; i < ARCH_REGS_NUM_GPR; i++) {
                 printh("r%d : %x ", i, target_regs.gpr[i]);
                 if(i % 4 == 0 && i != 0)

@@ -46,7 +46,7 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 
     struct monitoring_data *data;
 
-    // linux
+    /* linux */
     asm volatile(" mrs     %0, lr_svc\n\t" : "=r"(lr) : : "memory", "cc");
     asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
     data = (struct monitoring_data *)(SHARED_ADDRESS);
@@ -55,10 +55,10 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
 
     data->type = MONITORING;
     data->caller_va = trapped_va;
-    // linux
+    /* linux */
     data->callee_va = lr - 4;
-    // bmguest
-//    data->callee_va = ((*regs)->lr)-4;
+    /* bmguest */
+    /* data->callee_va = ((*regs)->lr)-4; */
     data->inst = 0;
     /* Set next trap for retrap */
     /* TODO Needs status of Branch instruction. */
@@ -91,8 +91,9 @@ static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
 
     switch (monitor_inst_type(vmid, regs->pc - 4)) {
     case MONITOR_BREAK_TRAP:
-//        monitor_hvc_pre_handler(vmid, &regs);
-//        monitor_hvc_trace_handler(vmid, &regs);
+        /* Do not need at gdb stub */
+        // monitor_hvc_pre_handler(vmid, &regs);
+        // monitor_hvc_trace_handler(vmid, &regs);
         monitor_hvc_break_handler(vmid, &regs);
         monitor_hvc_post_handler(vmid, &regs, MONITOR_BREAK_TRAP);
         break;
