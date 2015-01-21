@@ -47,7 +47,11 @@ uint32_t number_symbol(void)
     uint32_t n_symbol;
     uint32_t cnt;
 
+#ifdef MONITOR_GUEST
     base = (unsigned char *)&system_map_start;
+#else
+    base = 0;
+#endif
     n_symbol = 0;
     cnt = 0;
 
@@ -98,7 +102,11 @@ void symbol_parser_init(void)
 
     cnt = 0;
     cnt_code = 0;
+#ifdef MONITOR_GUEST
     base =  (uint8_t *)&system_map_start;
+#else
+    base = 0;
+#endif
 
     while (1) {
         i = 0;
@@ -342,7 +350,7 @@ void monitoring_init(void)
 #ifdef LINUX_GUEST
     /* For reboot */
     /* TODO Not arndale board yet */
-    copy_image_to(&loader_start, &guestloader_end, &restore_start);
+    /* copy_image_to(&loader_start, &guestloader_end, &restore_start); */
 #endif
 }
 
