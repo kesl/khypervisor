@@ -53,10 +53,16 @@ struct s5p_uart {
 #define UFSTAT      0x18
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
 
+#ifdef _MON_
+
 #ifdef MONITOR_GUEST
 #define UART_BASE              0x12C20000
 #else
 #define UART_BASE              0x12C10000
+#endif
+
+#else
+#define UART_BASE              0x12C20000
 #endif
 
 #define UART_GDB_LOG_BASE      0x12C10000

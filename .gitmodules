@@ -1,6 +1,6 @@
 [submodule "platform-device/cortex_a15x2_arndale/u-boot-native"]
 	path = platform-device/cortex_a15x2_arndale/u-boot-native
-	url = git://git.linaro.org/people/ronynandy/u-boot-arndale.git
+	url = git://git.linaro.org/boot/u-boot-linaro-stable.git
 [submodule "platform-device/cortex_a15x2_rtsm/u-boot-native"]
 	path = platform-device/cortex_a15x2_rtsm/u-boot-native
 	url = git://git.denx.de/u-boot.git

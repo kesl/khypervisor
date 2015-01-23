@@ -5,11 +5,8 @@
 
 #define GUEST_TYPE_BM       0
 #define GUEST_TYPE_LINUX    1
-#define GUEST_TYPE_RTOS     2
 
 #define START_ADDR_BM       GUEST_START_ADDR
-
-#define START_ADDR_RTOS     GUEST_START_ADDR
 
 #define START_ADDR_LINUX    GUEST_START_ADDR
 #define START_ADDR_ZIMAGE   ZIMAGE_PHYS_ADDR
@@ -17,14 +14,7 @@
 #if defined(LINUX_GUEST)
 #define START_ADDR START_ADDR_ZIMAGE
 #define GUEST_TYPE GUEST_TYPE_LINUX
-#endif
-
-#if defined(RTOS_GUEST)
-#define START_ADDR START_ADDR_RTOS
-#define GUEST_TYPE GUEST_TYPE_RTOS
-#endif
-
-#if defined(BM_GUEST)
+#else
 #define START_ADDR START_ADDR_BM
 #define GUEST_TYPE GUEST_TYPE_BM
 #endif

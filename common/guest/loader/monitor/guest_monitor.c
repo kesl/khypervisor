@@ -345,12 +345,13 @@ void monitoring_init(void)
     gic_set_irq_handler(MONITORING_IRQ, monitoring_handler, 0);
     num_symbols_code =  number_symbol();
     symbol_parser_init();
-#endif
 
 #ifdef LINUX_GUEST
     /* For reboot */
     /* TODO Not arndale board yet */
     /* copy_image_to(&loader_start, &guestloader_end, &restore_start); */
+#endif
+
 #endif
 }
 

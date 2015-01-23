@@ -35,7 +35,7 @@ make CROSS_COMPILE=arm-none-eabi- && \
 cp $RTOS_BIN ../../guestimages/ && \
 cd ../../$GUEST1_DIR && \
 make clean && \
-make GUEST_NUMBER=1 RTOS=y"
+make GUEST_NUMBER=1"
 
 export GUEST1_CLEAN_SCRIPT="make clean"
 

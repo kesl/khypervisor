@@ -35,15 +35,8 @@ CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY	= $(CROSS_COMPILE)objcopy
-GUESTLOADERCONFIGS = -DBM_GUEST
-GUESTBIN	= ../../guestimages/bmguest.bin
 ifeq ($(LINUX), y)
 GUESTLOADERCONFIGS = -DLINUX_GUEST
-GUESTBIN	= ../../guestimages/zImage
-endif
-ifeq ($(RTOS), y)
-GUESTLOADERCONFIGS = -DRTOS_GUEST
-GUESTBIN	= ../../guestimages/rtos.bin
 endif
 ifeq ($(MONITOR), y)
 GUESTLOADERCONFIGS += -DMONITOR_GUEST

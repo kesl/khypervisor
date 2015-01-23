@@ -1,7 +1,7 @@
 #include "includes.h"
 
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
-#define UART0           0x12C10000
+#define UART0           0x12C20000
 
 /* baudrate rest value */
 union br_rest {

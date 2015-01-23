@@ -16,8 +16,6 @@ echo $APPLY_ROOT/platform-device/cortex_a15x2_arndale/guestos/linux
 cd $APPLY_ROOT/platform-device/cortex_a15x2_arndale/u-boot-native
 git reset --hard
 git clean -xdf
-git checkout lue_arndale_13.1
-git apply ../patch/u-boot-bootz.patch
 
 cd $APPLY_ROOT/platform-device/cortex_a15x2_arndale/guestos/linux
 git reset --hard
