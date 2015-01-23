@@ -13,12 +13,7 @@
 3. Fill the form about your information(name, email, etc), then you will receive the download URL of your email
 
 ### Download Tool chain for k-hypervisor
-- ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-</i>
-- or running apt-get install like this
-<pre>
-sudo apt-get install gcc-arm-linux-gnueabihf
-</pre>
-
+- ARM Toolchain Shipped with DS-5: <i>arm-linux-gnueabihf-gcc(4.7.3)</i>
 
 # Download hypervisor
 <pre>
@@ -75,7 +70,7 @@ $ cp guestloader.bin ../../guestimages/guest0.bin
 3. Build guestloader for RTOS guest
 <pre>
 $ cd khypervisor/platform-device/cortex_a15x2_arndale/guestos/guestloader
-$ make RTOS=y
+$ make
 $ cp guestloader.bin ../../guestimages/guest1.bin
 </pre>
 
@@ -97,29 +92,27 @@ $ cd khypervisor/platform-device/cortex_a15x2_arndale
 $ sudo dd if=arndale-bl1.bin of=/dev/sdX bs=512 seek=1
 $ sudo dd if=./u-boot-native/spl/smdk5250-spl.bin of=/dev/sdX bs=512 seek=17
 $ sudo dd if=./u-boot-native/u-boot.bin of=/dev/sdX bs=512 seek=49
-$ sudo dd if=hvc-man-switch.bin of=/dev/sdX bs=512 seek=1105
-$ sudo dd if=guestimages/guest0.bin of=/dev/sdX bs=512 seek=1205
-$ sudo dd if=guestimages/guest1.bin of=/dev/sdX bs=512 seek=9205
-$ sudo dd if=guestimages/zImage of=/dev/sdX bs=512 seek=9405
-$ sudo dd if=guestimages/rtos.bin of=/dev/sdX bs=512 seek=17405
+$ sudo dd if=hvc-man-switch.bin of=/dev/sdb bs=512 seek=1105
+$ sudo dd if=guestimages/guest0.bin of=/dev/sdb bs=512 seek=1205
+$ sudo dd if=guestimages/guest1.bin of=/dev/sdb bs=512 seek=1305
+$ sudo dd if=guestimages/zImage of=/dev/sdb bs=512 seek=1405
+$ sudo dd if=guestimages/rtos.bin of=/dev/sdb bs=512 seek=17789
 </pre>
 
 2. Setting serial port and run minicom, open 2 minicoms
 <pre>
 $ minicom -s
 "serial device for hypervisor & rtos sets /dev/ttyS0"
-$ minicom -s
-"serial device for linuxguest sets /dev/ttyS1"
 </pre>
 
 3. Insert the SD card and turn it on. When booting the board, press any key(of HostPC Keyboard, focused on serial terminal program window) in 3 seconds for enter the u-boot command mode
 <pre>
-$ ZIMAGE: ARNDALE #
+ARNDALE5250 #
 </pre>
 
 4. Enter the following command
 <pre>
-$ ZIMAGE: ARNDALE # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 1F40;mmc read 0x80000000 23F5 C8;mmc read 0x46400000 24BD 1F40;mmc read 80100000 43FD C8;mmc read 90000000 43FD C8;mmc read a0000000 43FD C8;  go 0xb000004c
+ARNDALE5250 # mmc read 0xb0000000 451 64;mmc read 0x40000000 4B5 64;mmc read 0x80000000 519 64;mmc read 0x46400000 57D 4000;mmc read 80500000 457D C8;go 0xb000004c
 </pre>
 
 # How to test bmguest + linux guest
