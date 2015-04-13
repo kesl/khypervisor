@@ -1,9 +1,9 @@
 #include <k-hypervisor-config.h>
-//#include <guest.h>
-//#include <interrupt.h>
+#include <guest.h>
+#include <interrupt.h>
 //#include <timer.h>
 //#include <vdev.h>
-//#include <memory.h>
+#include <memory.h>
 //#include <gic_regs.h>
 //#include <test/tests.h>
 #include <smp.h>
@@ -19,10 +19,9 @@
     do {                                        \
         name[id].map[_pirq].virq = _virq;       \
         name[id].map[_virq].pirq = _pirq;       \
-    } while (0)
+    } while (0) 
 
-
-//static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
+static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
 
 /**
  * \defgroup Guest_memory_map_descriptor
@@ -35,10 +34,10 @@
  * - Memory Attribute
  * @{
  */
-//static struct memmap_desc guest_md_empty[] = {
-//    {       0, 0, 0, 0,  0},
-//};
-///*  label, ipa, pa, size, attr */
+static struct memmap_desc guest_md_empty[] = {
+    {       0, 0, 0, 0,  0},
+};
+/*  label, ipa, pa, size, attr */
 //static struct memmap_desc guest0_device_md[] = {
 //    { "sysreg", 0x1C010000, 0x1C010000, SZ_4K, MEMATTR_DM },
 //    { "sysctl", 0x1C020000, 0x1C020000, SZ_4K, MEMATTR_DM },
@@ -90,27 +89,27 @@
 //};
 //#endif
 //
-///**
-// * @brief Memory map for guest 0.
-// */
-//static struct memmap_desc guest0_memory_md[] = {
-//    {"start", 0x00000000, 0, 0x40000000,
-//     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-//    },
-//    {0, 0, 0, 0,  0},
-//};
-//
-///**
-// * @brief Memory map for guest 1.
-// */
-//static struct memmap_desc guest1_memory_md[] = {
-//    /* 256MB */
-//    {"start", 0x00000000, 0, 0x10000000,
-//     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-//    },
-//    {0, 0, 0, 0,  0},
-//};
-//
+/**
+ * @brief Memory map for guest 0.
+ */
+static struct memmap_desc guest0_memory_md[] = {
+    {"start", 0x00000000, 0, 0x40000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+/**
+ * @brief Memory map for guest 1.
+ */
+static struct memmap_desc guest1_memory_md[] = {
+    /* 256MB */
+    {"start", 0x00000000, 0, 0x10000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
 //#if _SMP_
 ///**
 // * @brief Memory map for guest 2.
@@ -135,7 +134,7 @@
 //};
 //#endif
 //
-///* Memory Map for Guest 0 */
+/* Memory Map for Guest 0 */
 //static struct memmap_desc *guest0_mdlist[] = {
 //    guest0_device_md,   /* 0x0000_0000 */
 //    guest_md_empty,     /* 0x4000_0000 */
@@ -238,20 +237,20 @@
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69);
 //}
 //
-//void setup_memory()
-//{
-//    /*
-//     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
-//     * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
-//     * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
-//     */
-//    guest0_memory_md[0].pa = (uint64_t)((uint32_t) &_guest0_bin_start);
-//    guest1_memory_md[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
-//#if _SMP_
-//    guest2_memory_md[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
-//    guest3_memory_md[0].pa = (uint64_t)((uint32_t) &_guest3_bin_start);
-//#endif
-//}
+void setup_memory()
+{
+    /*
+     * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
+     * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
+     * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
+     */
+    guest0_memory_md[0].pa = (uint64_t)((uint32_t) &_guest0_bin_start);
+    guest1_memory_md[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
+#if _SMP_
+    guest2_memory_md[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
+    guest3_memory_md[0].pa = (uint64_t)((uint32_t) &_guest3_bin_start);
+#endif
+}
 
 /** @brief Registers generic timer irqs such as hypervisor timer event
  *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
@@ -281,8 +280,8 @@ void main_cpu_init()
     printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
 
     /* Initialize Memory Management */
-//    setup_memory();
-//
+    setup_memory();
+
 //    if (memory_init(guest0_mdlist, guest1_mdlist))
 //        printh("[start_guest] virtual memory initialization failed...\n");
 //    /* Initialize PIRQ to VIRQ mapping */

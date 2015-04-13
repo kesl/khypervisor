@@ -41,27 +41,27 @@ SECTIONS
  fs_end = .;
 
 /* Guest 0 */
-/* . = CFG_MEMMAP_GUEST0_OFFSET;
+ . = CFG_MEMMAP_GUEST0_OFFSET;
   _guest0_bin_start = .;
-  .guest0 : { ./guestimages/guest0.bin}
+/*.guest0 : { ./guestimages/guest0.bin}*/
   _guest0_bin_end = .;
 
  . = GUEST0_STACK;
  guest0_stacktop = .;
  . = GUEST0_STACK + 0x01000000;
  guest0_stacklimit = .;
-*/
+
 /* Guest 1 */
- /*. = CFG_MEMMAP_GUEST1_OFFSET;
+ . = CFG_MEMMAP_GUEST1_OFFSET;
   _guest1_bin_start = .;
- .guest1 : { ./guestimages/guest1.bin }
+/*.guest1 : { ./guestimages/guest1.bin } */
   _guest1_bin_end = .;
 
  . = GUEST1_STACK;
  guest1_stacktop = .;
  . = GUEST1_STACK + 0x01000000;
  guest1_stacklimit = .;
-*/
+
 #ifdef _SMP_
 /* Guest 2 */
  . = CFG_MEMMAP_GUEST2_OFFSET;
