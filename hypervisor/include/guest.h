@@ -1,7 +1,7 @@
 #ifndef _GUEST_H__
 #define _GUEST_H__
 
-#include "armv7_p15.h"
+#include "armv8_processor.h"
 #include "timer.h"
 #include <log/uart_print.h>
 #include <hvmm_types.h>
