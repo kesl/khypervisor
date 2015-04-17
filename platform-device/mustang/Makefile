@@ -17,15 +17,17 @@ include config-default.mk
 endif
 
 HYPERVISOR_SOURCE_DIR=../../hypervisor
-HYPERVISOR_HW_DIR=../../hypervisor/hardware/arm32ve
-HYPERVISOR_HW_HWLIB_DIR=../../hypervisor/hardware/arm32ve/libhw
+HYPERVISOR_HW_DIR=../../hypervisor/hardware/armv8
+HYPERVISOR_HW_HWLIB_DIR=../../hypervisor/hardware/armv8/libhw
 COMMON_SOURCE_DIR=../../common
 
 BOOTLOADER	= boot.S
 
 OBJS 		= boot.o	\
 	main.o				\
-#	$(HYPERVISOR_SOURCE_DIR)/memory.o				\
+	$(HYPERVISOR_SOURCE_DIR)/memory.o				\
+	$(HYPERVISOR_HW_DIR)/memory_hw.o				\
+	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 #	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
 #	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
 #	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
@@ -46,7 +48,6 @@ OBJS 		= boot.o	\
 #	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor.o			\
 #	$(HYPERVISOR_HW_DIR)/vdev/vdev_monitor/vdev_monitor_utils.o		\
 #	$(HYPERVISOR_HW_HWLIB_DIR)/vector.o				\
-#	$(HYPERVISOR_HW_HWLIB_DIR)/lpae.o				\
 #	$(HYPERVISOR_HW_HWLIB_DIR)/gic.o				\
 #	$(HYPERVISOR_HW_HWLIB_DIR)/vgic.o				\
 #	$(HYPERVISOR_HW_HWLIB_DIR)/trap.o

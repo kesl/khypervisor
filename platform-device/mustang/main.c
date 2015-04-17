@@ -135,23 +135,25 @@ static struct memmap_desc guest1_memory_md[] = {
 //#endif
 //
 /* Memory Map for Guest 0 */
-//static struct memmap_desc *guest0_mdlist[] = {
-//    guest0_device_md,   /* 0x0000_0000 */
-//    guest_md_empty,     /* 0x4000_0000 */
-//    guest0_memory_md,
-//    guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
-//    0
-//};
-//
-///* Memory Map for Guest 1 */
-//static struct memmap_desc *guest1_mdlist[] = {
-//    guest1_device_md,
-//    guest_md_empty,
-//    guest1_memory_md,
-//    guest_md_empty,
-//    0
-//};
-//
+static struct memmap_desc *guest0_mdlist[] = {
+    guest_md_empty,
+    //guest0_device_md,   /* 0x0000_0000 */
+    guest_md_empty,     /* 0x4000_0000 */
+    guest0_memory_md,
+    guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
+    0
+};
+
+/* Memory Map for Guest 1 */
+static struct memmap_desc *guest1_mdlist[] = {
+    guest_md_empty,
+    //guest1_device_md,
+    guest_md_empty,
+    guest1_memory_md,
+    guest_md_empty,
+    0
+};
+
 //#if _SMP_
 ///* Memory Map for Guest 2 */
 //static struct memmap_desc *guest2_mdlist[] = {
@@ -282,9 +284,12 @@ void main_cpu_init()
     /* Initialize Memory Management */
     setup_memory();
 
-//    if (memory_init(guest0_mdlist, guest1_mdlist))
-//        printh("[start_guest] virtual memory initialization failed...\n");
-//    /* Initialize PIRQ to VIRQ mapping */
+    if (memory_init(guest0_mdlist, guest1_mdlist))
+        printh("[start_guest] virtual memory initialization failed...\n");
+    /* Initialize PIRQ to VIRQ mapping */
+    uart_print("[start_guest] AArch64 Processor Feature : ");
+    uart_print_hex64(read_sr64(id_aa64pfr0_el1));
+    uart_print("\n\r");
 //    setup_interrupt();
 //    /* Initialize Interrupt Management */
 //    if (interrupt_init(_guest_virqmap))
