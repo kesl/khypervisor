@@ -351,8 +351,9 @@ static void host_memory_heap_init(void)
  */
 static void host_memory_flushTLB(void)
 {
-    /* Invalidate entire unified TLB */
-    //invalidate_unified_tlb(0);
+    /* Invalidate all TLB, EL2 */
+    invalidate_tlb(alle2);
+
     asm volatile("dsb sy");
     asm volatile("isb");
 }
