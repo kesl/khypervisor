@@ -1,13 +1,14 @@
 /*
  * timer.c
  * --------------------------------------
- * Implementation of ARMv7 Generic Timer
+ * Implementation of ARMv8 Generic Timer
  * Responsible: Inkyu Han
  */
 
 #include <arch_types.h>
 #include <k-hypervisor-config.h>
 #include <hvmm_trace.h>
+#include <armv8_processor.h>
 #include <timer.h>
 #include <interrupt.h>
 #include <log/print.h>
