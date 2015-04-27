@@ -4,7 +4,7 @@
 //#include <timer.h>
 //#include <vdev.h>
 #include <memory.h>
-//#include <gic_regs.h>
+#include <gic_regs.h>
 //#include <test/tests.h>
 #include <smp.h>
 
@@ -38,30 +38,13 @@ static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
 };
 /*  label, ipa, pa, size, attr */
-//static struct memmap_desc guest0_device_md[] = {
-//    { "sysreg", 0x1C010000, 0x1C010000, SZ_4K, MEMATTR_DM },
-//    { "sysctl", 0x1C020000, 0x1C020000, SZ_4K, MEMATTR_DM },
-//    { "aaci", 0x1C040000, 0x1C040000, SZ_4K, MEMATTR_DM },
-//    { "mmci", 0x1C050000, 0x1C050000, SZ_4K, MEMATTR_DM },
-//    { "kmi", 0x1C060000, 0x1C060000,  SZ_64K, MEMATTR_DM },
-//    { "kmi2", 0x1C070000, 0x1C070000, SZ_64K, MEMATTR_DM },
-//    { "v2m_serial0", 0x1C090000, 0x1C0A0000, SZ_4K, MEMATTR_DM },
-//    { "v2m_serial1", 0x1C0A0000, 0x1C090000, SZ_4K, MEMATTR_DM },
-//    { "v2m_serial2", 0x1C0B0000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
-//    { "v2m_serial3", 0x1C0C0000, 0x1C0C0000, SZ_4K, MEMATTR_DM },
-//    { "wdt", 0x1C0F0000, 0x1C0F0000, SZ_4K, MEMATTR_DM },
-//    { "v2m_timer01(sp804)", 0x1C110000, 0x1C110000, SZ_4K,
-//            MEMATTR_DM },
-//    { "v2m_timer23", 0x1C120000, 0x1C120000, SZ_4K, MEMATTR_DM },
-//    { "rtc", 0x1C170000, 0x1C170000, SZ_4K, MEMATTR_DM },
-//    { "clcd", 0x1C1F0000, 0x1C1F0000, SZ_4K, MEMATTR_DM },
-//    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
-//            CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K,
-//            MEMATTR_DM },
-//    { "SMSC91c111i", 0x1A000000, 0x1A000000, SZ_16M, MEMATTR_DM },
-//    { "simplebus2", 0x18000000, 0x18000000, SZ_64M, MEMATTR_DM },
-//    { 0, 0, 0, 0, 0 }
-//};
+static struct memmap_desc guest0_device_md[] = {
+    { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+            CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
+            MEMATTR_DM },
+    { 0, 0, 0, 0, 0 }
+};
 //
 //static struct memmap_desc guest1_device_md[] = {
 //    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
@@ -136,8 +119,7 @@ static struct memmap_desc guest1_memory_md[] = {
 //
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest0_mdlist[] = {
-    guest_md_empty,
-    //guest0_device_md,   /* 0x0000_0000 */
+    guest0_device_md,   /* 0x0000_0000 */
     guest_md_empty,     /* 0x4000_0000 */
     guest0_memory_md,
     guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
@@ -154,8 +136,8 @@ static struct memmap_desc *guest1_mdlist[] = {
     0
 };
 
-//#if _SMP_
-///* Memory Map for Guest 2 */
+#if _SMP_
+/* Memory Map for Guest 2 */
 //static struct memmap_desc *guest2_mdlist[] = {
 //    guest2_device_md,
 //    guest_md_empty,
@@ -163,8 +145,8 @@ static struct memmap_desc *guest1_mdlist[] = {
 //    guest_md_empty,
 //    0
 //};
-//
-///* Memory Map for Guest 3 */
+
+/* Memory Map for Guest 3 */
 //static struct memmap_desc *guest3_mdlist[] = {
 //    guest3_device_md,
 //    guest_md_empty,
@@ -172,47 +154,47 @@ static struct memmap_desc *guest1_mdlist[] = {
 //    guest_md_empty,
 //    0
 //};
-//#endif
-//
-///** @}*/
-//
-//static uint32_t _timer_irq;
-//
-///*
-// * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
-// * Mapping of between pirq and virq is hard-coded.
-// */
-//void setup_interrupt()
-//{
-//    int i, j;
-//    struct virqmap_entry *map;
-//
-//    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
-//        map = _guest_virqmap[i].map;
-//        for (j = 0; j < MAX_IRQS; j++) {
-//            map[j].enabled = GUEST_IRQ_DISABLE;
-//            map[j].virq = VIRQ_INVALID;
-//            map[j].pirq = PIRQ_INVALID;
-//        }
-//    }
-//
-//    /*
-//     *  vimm-0, pirq-69, virq-69 = pwm timer driver
-//     *  vimm-0, pirq-32, virq-32 = WDT: shared driver
-//     *  vimm-0, pirq-34, virq-34 = SP804: shared driver
-//     *  vimm-0, pirq-35, virq-35 = SP804: shared driver
-//     *  vimm-0, pirq-36, virq-36 = RTC: shared driver
-//     *  vimm-0, pirq-38, virq-37 = UART: dedicated driver IRQ 37 for guest 0
-//     *  vimm-1, pirq-39, virq-37 = UART: dedicated driver IRQ 37 for guest 1
-//     *  vimm-2, pirq,40, virq-37 = UART: dedicated driver IRQ 37 for guest 2
-//     *  vimm-3, pirq,48, virq-37 = UART: dedicated driver IRQ 38 for guest 3 -ch
-//     *  vimm-0, pirq-43, virq-43 = ACCI: shared driver
-//     *  vimm-0, pirq-44, virq-44 = KMI: shared driver
-//     *  vimm-0, pirq-45, virq-45 = KMI: shared driver
-//     *  vimm-0, pirq-47, virq-47 = SMSC 91C111, Ethernet - etc0
-//     *  vimm-0, pirq-41, virq-41 = MCI - pl180
-//     *  vimm-0, pirq-42, virq-42 = MCI - pl180
-//     */
+#endif
+
+/** @}*/
+
+static uint32_t _timer_irq;
+
+/*
+ * Creates a mapping table between PIRQ and VIRQ.vmid/pirq/coreid.
+ * Mapping of between pirq and virq is hard-coded.
+ */
+void setup_interrupt()
+{
+    int i, j;
+    struct virqmap_entry *map;
+
+    for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+        map = _guest_virqmap[i].map;
+        for (j = 0; j < MAX_IRQS; j++) {
+            map[j].enabled = GUEST_IRQ_DISABLE;
+            map[j].virq = VIRQ_INVALID;
+            map[j].pirq = PIRQ_INVALID;
+        }
+    }
+
+    /*
+     *  vimm-0, pirq-69, virq-69 = pwm timer driver
+     *  vimm-0, pirq-32, virq-32 = WDT: shared driver
+     *  vimm-0, pirq-34, virq-34 = SP804: shared driver
+     *  vimm-0, pirq-35, virq-35 = SP804: shared driver
+     *  vimm-0, pirq-36, virq-36 = RTC: shared driver
+     *  vimm-0, pirq-38, virq-37 = UART: dedicated driver IRQ 37 for guest 0
+     *  vimm-1, pirq-39, virq-37 = UART: dedicated driver IRQ 37 for guest 1
+     *  vimm-2, pirq,40, virq-37 = UART: dedicated driver IRQ 37 for guest 2
+     *  vimm-3, pirq,48, virq-37 = UART: dedicated driver IRQ 38 for guest 3 -ch
+     *  vimm-0, pirq-43, virq-43 = ACCI: shared driver
+     *  vimm-0, pirq-44, virq-44 = KMI: shared driver
+     *  vimm-0, pirq-45, virq-45 = KMI: shared driver
+     *  vimm-0, pirq-47, virq-47 = SMSC 91C111, Ethernet - etc0
+     *  vimm-0, pirq-41, virq-41 = MCI - pl180
+     *  vimm-0, pirq-42, virq-42 = MCI - pl180
+     */
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 17, 17);
@@ -237,8 +219,8 @@ static struct memmap_desc *guest1_mdlist[] = {
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 46, 46);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 47, 47);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 69, 69);
-//}
-//
+}
+
 void setup_memory()
 {
     /*
@@ -258,19 +240,18 @@ void setup_memory()
  *  (GENERIC_TIMER_HYP), non-secure physical timer event(GENERIC_TIMER_NSP)
  *  and virtual timer event(GENERIC_TIMER_NSP).
  *  Each interrup source is identified by a unique ID.
- *  cf. "Cortex™-A15 Technical Reference Manual" 8.2.3 Interrupt sources
  *
- *  DEVICE : IRQ number
- *  GENERIC_TIMER_HYP : 26
- *  GENERIC_TIMER_NSP : 30
- *  GENERIC_TIMER_VIR : 27
+ *  DEVICE : armv8 IRQ number
+ *  GENERIC_TIMER_NSP : 13
+ *  GENERIC_TIMER_VIR : 14
+ *  GENERIC_TIMER_HYP : 15
  *
- *  @note "Cortex™-A15 Technical Reference Manual", 8.2.3 Interrupt sources
+ *  @note xgen-storm.dtsi, timer
  */
-//void setup_timer()
-//{
-//    _timer_irq = 26; /* GENERIC_TIMER_HYP */
-//}
+void setup_timer()
+{
+    _timer_irq = 15; /* GENERIC_TIMER_HYP */
+}
 
 uint8_t secondary_smp_pen;
 
@@ -287,45 +268,42 @@ void main_cpu_init()
     if (memory_init(guest0_mdlist, guest1_mdlist))
         printh("[start_guest] virtual memory initialization failed...\n");
     /* Initialize PIRQ to VIRQ mapping */
-    uart_print("[start_guest] AArch64 Processor Feature : ");
-    uart_print_hex64(read_sr64(id_aa64pfr0_el1));
-    uart_print("\n\r");
-//    setup_interrupt();
-//    /* Initialize Interrupt Management */
-//    if (interrupt_init(_guest_virqmap))
-//        printh("[start_guest] interrupt initialization failed...\n");
-//
-//#ifdef _SMP_
-//    printH("wake up...other CPUs\n");
-//    secondary_smp_pen = 1;
-//#endif
-//
-//    /* Initialize Timer */
-//    setup_timer();
-//    if (timer_init(_timer_irq))
-//        printh("[start_guest] timer initialization failed...\n");
-//
-//    /* Initialize Guests */
+    setup_interrupt();
+    /* Initialize Interrupt Management */
+    if (interrupt_init(_guest_virqmap))
+        printh("[start_guest] interrupt initialization failed...\n");
+
+#ifdef _SMP_
+    printH("wake up...other CPUs\n");
+    secondary_smp_pen = 1;
+#endif
+
+    /* Initialize Timer */
+    setup_timer();
+    if (timer_init(_timer_irq))
+        printh("[start_guest] timer initialization failed...\n");
+
+    /* Initialize Guests */
 //    if (guest_init())
 //        printh("[start_guest] guest initialization failed...\n");
-//
-//    /* Initialize Virtual Devices */
+
+    /* Initialize Virtual Devices */
 //    if (vdev_init())
 //        printh("[start_guest] virtual device initialization failed...\n");
-//
-//    /* Begin running test code for newly implemented features */
+
+    /* Begin running test code for newly implemented features */
 //    if (basic_tests_run(PLATFORM_BASIC_TESTS))
 //        printh("[start_guest] basic testing failed...\n");
-//
-//    /* Print Banner */
-//    printH("%s", BANNER_STRING);
-//
-//    /* Switch to the first guest */
-//    guest_sched_start();
-//
-//    /* The code flow must not reach here */
-//    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
-//    hyp_abort_infinite();
+
+    /* Print Banner */
+    printH("%s", BANNER_STRING);
+
+    /* Switch to the first guest */
+    //guest_sched_start();
+
+    /* The code flow must not reach here */
+    printH("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
+    hyp_abort_infinite();
 }
 
 void secondary_cpu_init(uint64_t cpu)
