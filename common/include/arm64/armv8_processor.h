@@ -18,10 +18,19 @@
                               "msr "#name", %0\n\t" \
                                 : : "r" ((val)) : "memory", "cc")
 
+#define invalidate_tlb(name)   asm volatile(\
+                              "tlbi "#name)
+
+#define HCR_FMO     0x8
+#define HCR_IMO     0x10
+#define HCR_VI      (0x1 << 7)
+
 /* */
 /* Generic ARM Registers  */
-#define read_vbar               read_sr64(vbar_el1)
+#define read_vbar()             read_sr64(vbar_el1)
 #define write_vbar(val)         write_sr64(val, vbar_el1)
+#define read_hvbar()            read_sr64(vbar_el2)
+#define write_hvbar(val)        write_sr64(val, vbar_el2)
 
 #define read_ttbr0()            read_sr64(ttbr0_el1)
 #define write_ttbr0(val)        write_sr64(val, ttbr0_el1)
@@ -108,7 +117,7 @@
 #define write_cntv_cval(val)    write_sr64(val, cntv_cval_el0)
 
 #define read_cntv_tval()        read_sr32(cntv_tval_el0)
-#define write_cntv_tval(val)    write_sr64(val, cntv_tval_el0)
+#define write_cntv_tval(val)    write_sr32(val, cntv_tval_el0)
 
 #define read_cntvct()           read_sr64(cntvct_el0)
 
