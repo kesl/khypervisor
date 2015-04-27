@@ -9,13 +9,6 @@
 
 #include <k-hypervisor-config.h>
     .text 
-hyp_init_vectors:
-    .word 0
-    .word 0
-    .word 0
-    .word 0
-    .word 0
-
 .align 5
     /*
      *
@@ -140,7 +133,7 @@ clear_bss:
     .global go_to_c 
 go_to_c:
     /* Place the right Hyp exception vector for the first time */
-    ldr x0, = hyp_init_vectors
+    ldr x0, =hyp_init_vectors
     msr vbar_el2, x0
 
     cmp	x20, #0				// is primary CPU?
