@@ -2,11 +2,10 @@
 #define __GIC_REGS_H__
 
 /* Offsets from GIC Base Address */
-#define GIC_OFFSET_GICD     0x1000
-#define GIC_OFFSET_GICC     0x2000
-#define GIC_OFFSET_GICH     0x4000
-#define GIC_OFFSET_GICV     0x5000
-#define GIC_OFFSET_GICVI    0x6000
+#define GIC_OFFSET_GICD     0x10000
+#define GIC_OFFSET_GICC     0x20000
+#define GIC_OFFSET_GICH     0x40000
+#define GIC_OFFSET_GICV    0x60000
 
 /* Distributor */
 #define GICD_CTLR   0x000
