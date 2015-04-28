@@ -1,15 +1,15 @@
 #include <k-hypervisor-config.h>
 #include <guest.h>
 #include <interrupt.h>
-//#include <timer.h>
-//#include <vdev.h>
+#include <timer.h>
+#include <vdev.h>
 #include <memory.h>
 #include <gic_regs.h>
-//#include <test/tests.h>
+#include <test/tests.h>
 #include <smp.h>
 
 #define DEBUG
-//#include "hvmm_trace.h"
+#include "hvmm_trace.h"
 #include <log/uart_print.h>
 
 
@@ -45,38 +45,33 @@ static struct memmap_desc guest0_device_md[] = {
             MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
 };
-//
-//static struct memmap_desc guest1_device_md[] = {
-//    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
-//    { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
-//    { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
-//       CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
-//    {0, 0, 0, 0, 0}
-//};
-//
-//#if _SMP_
-//static struct memmap_desc guest2_device_md[] = {
-//    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
-//    { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
-//    { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
-//       CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
-//    {0, 0, 0, 0, 0}
-//};
-//
-//static struct memmap_desc guest3_device_md[] = {
-//    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
-//    { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
-//    { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
-//       CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
-//    {0, 0, 0, 0, 0}
-//};
-//#endif
-//
+
+static struct memmap_desc guest1_device_md[] = {
+    { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
+    {0, 0, 0, 0, 0}
+};
+
+static struct memmap_desc guest2_device_md[] = {
+    { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
+    {0, 0, 0, 0, 0}
+};
+
+static struct memmap_desc guest3_device_md[] = {
+    { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
+    {0, 0, 0, 0, 0}
+};
+
 /**
  * @brief Memory map for guest 0.
  */
 static struct memmap_desc guest0_memory_md[] = {
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, 0x80000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -87,36 +82,34 @@ static struct memmap_desc guest0_memory_md[] = {
  */
 static struct memmap_desc guest1_memory_md[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, 0x10000000,
+    {"start", 0x00000000, 0, 0x80000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
 
-//#if _SMP_
-///**
-// * @brief Memory map for guest 2.
-// */
-//static struct memmap_desc guest2_memory_md[] = {
-//    /* 256MB */
-//    {"start", 0x00000000, 0, 0x10000000,
-//     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-//    },
-//    {0, 0, 0, 0,  0},
-//};
-//
-///**
-// * @brief Memory map for guest 3.
-// */
-//static struct memmap_desc guest3_memory_md[] = {
-//    /* 256MB */
-//    {"start", 0x00000000, 0, 0x10000000,
-//     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-//    },
-//    {0, 0, 0, 0,  0},
-//};
-//#endif
-//
+/**
+ * @brief Memory map for guest 2.
+ */
+static struct memmap_desc guest2_memory_md[] = {
+    /* 256MB */
+    {"start", 0x00000000, 0, 0x40000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+/**
+ * @brief Memory map for guest 3.
+ */
+static struct memmap_desc guest3_memory_md[] = {
+    /* 256MB */
+    {"start", 0x00000000, 0, 0x40000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
 /* Memory Map for Guest 0 */
 static struct memmap_desc *guest0_mdlist[] = {
     guest0_device_md,   /* 0x0000_0000 */
@@ -128,33 +121,30 @@ static struct memmap_desc *guest0_mdlist[] = {
 
 /* Memory Map for Guest 1 */
 static struct memmap_desc *guest1_mdlist[] = {
-    guest_md_empty,
-    //guest1_device_md,
+    guest1_device_md,
     guest_md_empty,
     guest1_memory_md,
     guest_md_empty,
     0
 };
 
-#if _SMP_
 /* Memory Map for Guest 2 */
-//static struct memmap_desc *guest2_mdlist[] = {
-//    guest2_device_md,
-//    guest_md_empty,
-//    guest2_memory_md,
-//    guest_md_empty,
-//    0
-//};
+static struct memmap_desc *guest2_mdlist[] = {
+    guest2_device_md,
+    guest_md_empty,
+    guest2_memory_md,
+    guest_md_empty,
+    0
+};
 
 /* Memory Map for Guest 3 */
-//static struct memmap_desc *guest3_mdlist[] = {
-//    guest3_device_md,
-//    guest_md_empty,
-//    guest3_memory_md,
-//    guest_md_empty,
-//    0
-//};
-#endif
+static struct memmap_desc *guest3_mdlist[] = {
+    guest3_device_md,
+    guest_md_empty,
+    guest3_memory_md,
+    guest_md_empty,
+    0
+};
 
 /** @}*/
 
@@ -228,11 +218,13 @@ void setup_memory()
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
      * PA: 0xB0000000 ~ 0xEFFFFFFF    guest2_bin_start
      */
-    guest0_memory_md[0].pa = (uint64_t)((uint32_t) &_guest0_bin_start);
-    guest1_memory_md[0].pa = (uint64_t)((uint32_t) &_guest1_bin_start);
+    //guest0_memory_md[0].pa = (uint64_t)((uint64_t) &_guest0_bin_start);
+    //guest1_memory_md[0].pa = (uint64_t)((uint64_t) &_guest1_bin_start);
+    guest0_memory_md[0].pa = 0x4000000000ULL;
+    guest1_memory_md[0].pa = 0x4080000000ULL;
 #if _SMP_
-    guest2_memory_md[0].pa = (uint64_t)((uint32_t) &_guest2_bin_start);
-    guest3_memory_md[0].pa = (uint64_t)((uint32_t) &_guest3_bin_start);
+    guest2_memory_md[0].pa = (uint64_t)((uint64_t) &_guest2_bin_start);
+    guest3_memory_md[0].pa = (uint64_t)((uint64_t) &_guest3_bin_start);
 #endif
 }
 
@@ -284,22 +276,22 @@ void main_cpu_init()
         printh("[start_guest] timer initialization failed...\n");
 
     /* Initialize Guests */
-//    if (guest_init())
-//        printh("[start_guest] guest initialization failed...\n");
+    if (guest_init())
+        printh("[start_guest] guest initialization failed...\n");
 
     /* Initialize Virtual Devices */
-//    if (vdev_init())
-//        printh("[start_guest] virtual device initialization failed...\n");
+    if (vdev_init())
+        printh("[start_guest] virtual device initialization failed...\n");
 
     /* Begin running test code for newly implemented features */
-//    if (basic_tests_run(PLATFORM_BASIC_TESTS))
-//        printh("[start_guest] basic testing failed...\n");
+    if (basic_tests_run(PLATFORM_BASIC_TESTS))
+        printh("[start_guest] basic testing failed...\n");
 
     /* Print Banner */
     printH("%s", BANNER_STRING);
 
     /* Switch to the first guest */
-    //guest_sched_start();
+    guest_sched_start();
 
     /* The code flow must not reach here */
     printH("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
@@ -308,38 +300,38 @@ void main_cpu_init()
 
 void secondary_cpu_init(uint64_t cpu)
 {
-//    if (cpu >= CFG_NUMBER_OF_CPUS)
-//        hyp_abort_infinite();
-//
-//    init_print();
-//    printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
-//
-//    /* Initialize Memory Management */
-//    if (memory_init(guest2_mdlist, guest3_mdlist))
-//        printh("[start_guest] virtual memory initialization failed...\n");
-//
-//    /* Initialize Interrupt Management */
-//    if (interrupt_init(_guest_virqmap))
-//        printh("[start_guest] interrupt initialization failed...\n");
-//
-//    /* Initialize Timer */
-//    if (timer_init(_timer_irq))
-//        printh("[start_guest] timer initialization failed...\n");
-//
-//    /* Initialize Guests */
-//    if (guest_init())
-//        printh("[start_guest] guest initialization failed...\n");
-//
-//    /* Initialize Virtual Devices */
-//    if (vdev_init())
-//        printh("[start_guest] virtual device initialization failed...\n");
-//
-//    /* Switch to the first guest */
-//    guest_sched_start();
-//
-//    /* The code flow must not reach here */
-//    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
-//    hyp_abort_infinite();
+    if (cpu >= CFG_NUMBER_OF_CPUS)
+        hyp_abort_infinite();
+
+    init_print();
+    printH("[%s : %d] Starting...CPU : #%d\n", __func__, __LINE__, cpu);
+
+    /* Initialize Memory Management */
+    if (memory_init(guest2_mdlist, guest3_mdlist))
+        printh("[start_guest] virtual memory initialization failed...\n");
+
+    /* Initialize Interrupt Management */
+    if (interrupt_init(_guest_virqmap))
+        printh("[start_guest] interrupt initialization failed...\n");
+
+    /* Initialize Timer */
+    if (timer_init(_timer_irq))
+        printh("[start_guest] timer initialization failed...\n");
+
+    /* Initialize Guests */
+    if (guest_init())
+        printh("[start_guest] guest initialization failed...\n");
+
+    /* Initialize Virtual Devices */
+    if (vdev_init())
+        printh("[start_guest] virtual device initialization failed...\n");
+
+    /* Switch to the first guest */
+    guest_sched_start();
+
+    /* The code flow must not reach here */
+    printh("[hyp_main] ERROR: CODE MUST NOT REACH HERE\n");
+    hyp_abort_infinite();
 }
 
 int main(void)
