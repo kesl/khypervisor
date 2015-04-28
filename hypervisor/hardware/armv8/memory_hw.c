@@ -84,8 +84,8 @@
  * @{
  */
 #define INITIAL_MAIR0VAL 0xeeaa4400
-#define INITIAL_MAIR1VAL 0xff000004
-#define INITIAL_MAIRVAL (INITIAL_MAIR0VAL|INITIAL_MAIR1VAL<<32)
+#define INITIAL_MAIR1VAL 0xff000004ULL
+#define INITIAL_MAIRVAL (INITIAL_MAIR0VAL|(INITIAL_MAIR1VAL<<32))
 /** @}*/
 
 /**
@@ -442,9 +442,9 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  */
 //static void *host_memory_sbrk(unsigned int incr)
 //{
-//    unsigned int required_addr;
-//    unsigned int virt;
-//    unsigned int required_pages = 0;
+//    uint64_t required_addr;
+//    uint64_t virt;
+//    unsigned long required_pages = 0;
 //
 //    mm_prev_break = mm_break;
 //    virt = mm_break;
@@ -475,26 +475,26 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @param npages Number of pages.
  * @return void
  */
-static void host_memory_free(void *ap)
-{
-    union header *bp, *p;
-    bp = (union header *)ap - 1; /* point to block header */
-    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr) {
-        if (p >= p->s.ptr && (bp > p || bp < p->s.ptr))
-            break; /* freed block at start or end of arena */
-    }
-    if (bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
-        bp->s.size += p->s.ptr->s.size;
-        bp->s.ptr = p->s.ptr->s.ptr;
-    } else
-        bp->s.ptr = p->s.ptr;
-    if (p + p->s.size == bp) {      /* join to lower nbr */
-        p->s.size += bp->s.size;
-        p->s.ptr = bp->s.ptr;
-    } else
-        p->s.ptr = bp;
-    freep = p;
-}
+//static void host_memory_free(void *ap)
+//{
+//    union header *bp, *p;
+//    bp = (union header *)ap - 1; /* point to block header */
+//    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr) {
+//        if (p >= p->s.ptr && (bp > p || bp < p->s.ptr))
+//            break; /* freed block at start or end of arena */
+//    }
+//    if (bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
+//        bp->s.size += p->s.ptr->s.size;
+//        bp->s.ptr = p->s.ptr->s.ptr;
+//    } else
+//        bp->s.ptr = p->s.ptr;
+//    if (p + p->s.size == bp) {      /* join to lower nbr */
+//        p->s.size += bp->s.size;
+//        p->s.ptr = bp->s.ptr;
+//    } else
+//        p->s.ptr = bp;
+//    freep = p;
+//}
 
 /**
  * @brief Obtains the storage from the heap memory.
@@ -897,19 +897,19 @@ static void guest_memory_init_mmu(void)
  *        - 0 : Disable the MMU.
  * @return void
  */
-//static void guest_memory_stage2_enable(int enable)
-//{
-//    uint32_t hcr;
-//    /* HCR.VM[0] = enable */
-//    /* uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r"); */
-//    hcr = read_hcr();
-//    if (enable)
-//        hcr |= (0x1);
-//    else
-//        hcr &= ~(0x1);
-//
-//    write_hcr(hcr);
-//}
+static void guest_memory_stage2_enable(int enable)
+{
+    uint64_t hcr;
+    /* HCR.VM[0] = enable */
+    /* uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r"); */
+    hcr = read_hcr();
+    if (enable)
+        hcr |= (0x1);
+    else
+        hcr &= ~(0x1);
+
+    write_hcr(hcr);
+}
 
 /**
  * @brief Changes the stage-2 translation table base address by configuring
@@ -923,32 +923,32 @@ static void guest_memory_init_mmu(void)
  * @param ttbl Level 1 translation table of the guest.
  * @return HVMM_STATUS_SUCCESS only.
  */
-//static hvmm_status_t guest_memory_set_vmid_ttbl(vmid_t vmid, union lpaed *ttbl)
-//{
-//    uint64_t vttbr;
-//    /*
-//     * VTTBR.VMID = vmid
-//     * VTTBR.BADDR = ttbl
-//     */
-//    vttbr = read_vttbr();
-//#if 0 /* ignore message due to flood log message */
-//    uart_print("current vttbr:");
-//    uart_print_hex64(vttbr);
-//    uart_print("\n\r");
-//#endif
-//    vttbr &= ~(VTTBR_VMID_MASK);
-//    vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
-//    vttbr &= ~(VTTBR_BADDR_MASK);
-//    vttbr |= (uint32_t) ttbl & VTTBR_BADDR_MASK;
-//    write_vttbr(vttbr);
-//    vttbr = read_vttbr();
-//#if 0 /* ignore message due to flood log message */
-//    uart_print("changed vttbr:");
-//    uart_print_hex64(vttbr);
-//    uart_print("\n\r");
-//#endif
-//    return HVMM_STATUS_SUCCESS;
-//}
+static hvmm_status_t guest_memory_set_vmid_ttbl(vmid_t vmid, union lpaed *ttbl)
+{
+    uint64_t vttbr;
+    /*
+     * VTTBR.VMID = vmid
+     * VTTBR.BADDR = ttbl
+     */
+    vttbr = read_vttbr();
+#if 0 /* ignore message due to flood log message */
+    uart_print("current vttbr:");
+    uart_print_hex64(vttbr);
+    uart_print("\n\r");
+#endif
+    vttbr &= ~(VTTBR_VMID_MASK);
+    vttbr |= ((uint64_t)vmid << VTTBR_VMID_SHIFT) & VTTBR_VMID_MASK;
+    vttbr &= ~(VTTBR_BADDR_MASK);
+    vttbr |= (uint64_t) ttbl & VTTBR_BADDR_MASK;
+    write_vttbr(vttbr);
+    vttbr = read_vttbr();
+#if 0 /* ignore message due to flood log message */
+    uart_print("changed vttbr:");
+    uart_print_hex64(vttbr);
+    uart_print("\n\r");
+#endif
+    return HVMM_STATUS_SUCCESS;
+}
 
 static int memory_enable(void)
 {
@@ -1134,7 +1134,7 @@ static int memory_enable(void)
  */
 static void host_memory_init(void)
 {
-    int i, j;
+    int i;//, j;
     uint64_t pa = 0x0000000000ULL;
     _hmm_pgtable = lpaed_host_l0_table((uint64_t) _hmm_pgtable_l1);
 
@@ -1276,9 +1276,9 @@ static int memory_hw_init(struct memmap_desc **guest0,
     uart_print("[memory] AArch64 Memory Model Feature 0 : ");
     uart_print_hex64(id_aa64mmfr0_el1);
     uart_print("\n\r");
-//
-//    //guest_memory_init(guest0, guest1);
-//
+
+    //guest_memory_init(guest0, guest1);
+
     guest_memory_init_mmu();
 
     if (!cpu)
@@ -1299,11 +1299,11 @@ static int memory_hw_init(struct memmap_desc **guest0,
 //{
 //    return host_memory_malloc(size);
 //}
-
-static void memory_hw_free(void *ap)
-{
-    host_memory_free(ap);
-}
+//
+//static void memory_hw_free(void *ap)
+//{
+//    host_memory_free(ap);
+//}
 
 /**
  * @brief Stops stage-2 translation by disabling mmu.
@@ -1312,17 +1312,17 @@ static void memory_hw_free(void *ap)
  * management module.
  * - Disables stage-2 translation by HCR.vm = 0.
  */
-//static hvmm_status_t memory_hw_save(void)
-//{
-//    /*
-//     * We assume VTCR has been configured and initialized
-//     * in the memory management module
-//     */
-//    /* Disable Stage 2 Translation: HCR.VM = 0 */
-//    guest_memory_stage2_enable(0);
-//
-//    return HVMM_STATUS_SUCCESS;
-//}
+static hvmm_status_t memory_hw_save(void)
+{
+    /*
+     * We assume VTCR has been configured and initialized
+     * in the memory management module
+     */
+    /* Disable Stage 2 Translation: HCR.VM = 0 */
+    guest_memory_stage2_enable(0);
+
+    return HVMM_STATUS_SUCCESS;
+}
 
 /**
  * @brief Restores translation table for the next guest and enable stage-2 mmu.
@@ -1338,9 +1338,9 @@ static hvmm_status_t memory_hw_restore(vmid_t vmid)
      * Restore Translation Table for the next guest and
      * Enable Stage 2 Translation
      */
-    //guest_memory_set_vmid_ttbl(vmid, _vmid_ttbl[vmid]);
+    guest_memory_set_vmid_ttbl(vmid, _vmid_ttbl[vmid]);
 
-    //guest_memory_stage2_enable(1);
+    guest_memory_stage2_enable(1);
 
     return HVMM_STATUS_SUCCESS;
 }
@@ -1354,9 +1354,9 @@ struct memory_ops _memory_ops = {
     .init = memory_hw_init,
 //    .alloc = memory_hw_alloc,
 //    .free = memory_hw_free,
-//    .save = memory_hw_save,
-//    .restore = memory_hw_restore,
-//    .dump = memory_hw_dump,
+    .save = memory_hw_save,
+    .restore = memory_hw_restore,
+    .dump = memory_hw_dump,
 };
 
 struct memory_module _memory_module = {
