@@ -120,7 +120,7 @@ hvmm_status_t timer_set(struct timer_val *timer, uint32_t host)
 
 hvmm_status_t timer_init(uint32_t irq)
 {
-    uint32_t cpu = smp_processor_id();
+    //uint32_t cpu = smp_processor_id();
 
     _ops = _timer_module.ops;
 

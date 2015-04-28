@@ -274,7 +274,6 @@ hvmm_status_t guest_init()
     /* Initializes 2 guests */
     guest_count = num_of_guest(cpu);
 
-
     if (cpu)
         start_vmid = num_of_guest(cpu - 1);
     else
@@ -316,7 +315,7 @@ void guest_copy(struct guest_struct *dst, vmid_t vmid_src)
     _guest_module.ops->move(dst, &(guests[vmid_src]));
 }
 
-void reboot_guest(vmid_t vmid, uint32_t pc,
+void reboot_guest(vmid_t vmid, uint64_t pc,
         struct arch_regs **regs)
 {
     _guest_module.ops->init(&guests[vmid], &(guests[vmid].regs));

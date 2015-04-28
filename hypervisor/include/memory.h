@@ -34,7 +34,7 @@ struct memmap_desc {
     char *label;
     uint64_t va;
     uint64_t pa;
-    uint32_t size;
+    uint64_t size;
     enum memattr attr;
 };
 
@@ -87,8 +87,8 @@ struct memory_module {
 };
 
 extern struct memory_module _memory_module;
-extern uint32_t _guest_bin_start;
-extern uint32_t _guest2_bin_start;
+extern uint64_t _guest0_bin_start;
+extern uint64_t _guest1_bin_start;
 extern uint32_t _guest_secondary_bin_start;
 
 void memory_free(void *ap);

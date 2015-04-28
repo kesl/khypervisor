@@ -75,14 +75,15 @@ struct guest_module {
 
 };
 
-extern uint32_t _guest0_bin_start;
-extern uint32_t _guest0_bin_end;
-extern uint32_t _guest1_bin_start;
+extern uint64_t _guest0_bin_start;
+extern uint64_t _guest0_bin_end;
+extern uint64_t _guest1_bin_start;
+extern uint64_t _guest1_bin_end;
 #ifdef _SMP_
-extern uint32_t _guest2_bin_start;
-extern uint32_t _guest2_bin_end;
-extern uint32_t _guest3_bin_start;
-extern uint32_t _guest3_bin_end;
+extern uint64_t _guest2_bin_start;
+extern uint64_t _guest2_bin_end;
+extern uint64_t _guest3_bin_start;
+extern uint64_t _guest3_bin_end;
 #endif
 extern struct guest_module _guest_module;
 extern struct guest_struct *_current_guest[NUM_CPUS];
@@ -113,7 +114,7 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
 struct guest_struct get_guest(uint32_t guest_num);
-void reboot_guest(vmid_t vmid, uint32_t pc, struct arch_regs **regs);
+void reboot_guest(vmid_t vmid, uint64_t pc, struct arch_regs **regs);
 void set_manually_select_vmid(vmid_t vmid);
 void clean_manually_select_vmid(void);
 
