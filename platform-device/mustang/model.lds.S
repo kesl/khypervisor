@@ -92,6 +92,7 @@ SECTIONS
   */
  .text : {
     *(.text);
+ . = ALIGN(8);
     __vdev_module_high_start = .;
     *(.vdev_module0.init);
     __vdev_module_high_end = .;
@@ -101,15 +102,15 @@ SECTIONS
     __vdev_module_low_end = .;
  }
 
- .= ALIGN(4);
+ .= ALIGN(8);
  .rodata : {
     *(.rodata)
  }
- .= ALIGN(4);
+ .= ALIGN(8);
  .data : {
     *(.data)
  }
- .= ALIGN(4);
+ .= ALIGN(8);
  begin_bss = .;
  .bss : {
     *(.bss)
