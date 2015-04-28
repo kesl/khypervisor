@@ -9,7 +9,7 @@
 #include <log/print.h>
 #include <log/uart_print.h>
 #include <asm_io.h>
-#include <armv7_p15.h>
+#include <armv8_processor.h>
 #include <guest.h>
 #include <asm-arm_inline.h>
 
@@ -495,15 +495,13 @@ hvmm_status_t monitor_check_status(struct monitor_vmid *mvmid, uint32_t va)
     uint32_t lr, sp;
     struct guest_struct target = get_guest(0);
     printH("start!!\n");
-    printH("show sp's %x \n", target.context.regs_banked.sp_usr);
-    printH("show sp's %x \n", target.context.regs_banked.sp_abt);
-    printH("show sp's %x \n", target.context.regs_banked.sp_und);
-    printH("show sp's %x \n", target.context.regs_banked.sp_irq);
+    printH("show sp_el0's %x \n", target.context.regs_sys.sp_el0);
+    printH("show sp_el1's %x \n", target.context.regs_sys.sp_el1);
 
-    asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
-    printH("show sp's %x \n", sp);
-    asm volatile(" mrs     %0, sp_usr\n\t" : "=r"(sp) : : "memory", "cc");
-    printH("show sp's %x \n", sp);
+    //asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
+    //printH("show sp's %x \n", sp);
+    //asm volatile(" mrs     %0, sp_usr\n\t" : "=r"(sp) : : "memory", "cc");
+    //printH("show sp's %x \n", sp);
     printH("end!!\n");
 
     return ret;
