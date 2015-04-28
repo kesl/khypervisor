@@ -28,16 +28,9 @@ void uart_init(void)
 
 }
 
-
-void uart_print(const char *str)
-{
-    while (*str)
-        uart_putc(*str++);
-}
-
 void uart_putc(const char c)
 {
-    int i, j;
+    int i;
     if (c == '\n')
         uart_putc('\r');
     for( i=1; i<3500; i++)
@@ -49,12 +42,17 @@ void uart_putc(const char c)
     *pUART = c;
 }
 
-void uart_print_hex32(uint32_t v)
+void uart_print(const char *str)
+{
+    while (*str)
+        uart_putc(*str++);
+}
+
+void uart_print_hex(uint32_t v)
 {
     unsigned int mask8 = 0xF;
     unsigned int c;
     int i;
-    uart_print("0x");
     for (i = 7; i >= 0; i--) {
         c = ((v >> (i * 4)) & mask8);
         if (c < 10)
@@ -65,10 +63,18 @@ void uart_print_hex32(uint32_t v)
     }
 }
 
+void uart_print_hex32(uint32_t v)
+{
+    uart_print("0x");
+    uart_print_hex(v);
+}
+
 void uart_print_hex64(uint64_t v)
 {
-    uart_print_hex32(v >> 32);
-    uart_print_hex32((uint32_t)(v & 0xFFFFFFFF));
+    uart_print("0x");
+    uart_print_hex(v >> 32);
+    uart_print("_");
+    uart_print_hex((uint32_t)(v & 0xFFFFFFFF));
 }
 
 #endif
