@@ -2,14 +2,12 @@
 #include "gic_regs.h"
 #include <log/uart_print.h>
 #include <hvmm_trace.h>
-#include <armv7_p15.h>
+#include <armv8_processor.h>
 /* #ifdef _SMP_ */
 #include <smp.h>
 /* #endif */
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
-
-#define ARM_CPUID_CORTEXA15   0x412fc0f1
 
 #define MIDR_MASK_PPN        (0x0FFF << 4)
 #define MIDR_PPN_CORTEXA15    (0xC0F << 4)
@@ -36,11 +34,7 @@
  */
 
 /* Determined by Hypervisor's Stage2 Address Translation Table */
-#ifdef ARNDALE
-#define GIC_BASEADDR_GUEST                (0x10480000)
-#else
-#define GIC_BASEADDR_GUEST                (0x2C000000)
-#endif
+#define GIC_BASEADDR_GUEST                (0x78000000)
 
 struct gic {
     uint32_t baseaddr;

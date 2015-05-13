@@ -28,12 +28,13 @@ COMMON_OBJS = $(COMMON_SOURCE_DIR)/guest/core/c_start.o \
 	
 OBJS = boot.o main.o $(COMMON_OBJS)
 
-OBJS += drivers/uart.o drivers/sp804_timer.o
+OBJS += drivers/uart.o
+#drivers/sp804_timer.o
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin
 LD_SCRIPT	= model.lds.S
-INCLUDES    = -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include -I$(COMMON_SOURCE_DIR)/guest -I$(COMMON_SOURCE_DIR)/guest/core
+INCLUDES    = -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include/arm64 -I$(COMMON_SOURCE_DIR)/guest -I$(COMMON_SOURCE_DIR)/guest/core
 
 CPPFLAGS    += $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
@@ -51,7 +52,7 @@ GUESTTYPE?=GUEST_HYPMON
 
 
 ifeq ($(GUESTTYPE),GUEST_HYPMON)
-GUESTCONFIGS	= -D__MONITOR_CALL_HVC__ -DLDS_PHYS_OFFSET='0x80000000' -DLDS_GUEST_OFFSET='0x80000000' -DLDS_GUEST_STACK='0x8F000000'
+GUESTCONFIGS	= -D__MONITOR_CALL_HVC__ -DLDS_PHYS_OFFSET='0x4000000000' -DLDS_GUEST_OFFSET='0x4000000000' -DLDS_GUEST_STACK='0x400F000000'
 else
 # if GUESTTYPE == GUEST_SECMON, 
 #	"smc #0" will be used to switch instead of hvc #??

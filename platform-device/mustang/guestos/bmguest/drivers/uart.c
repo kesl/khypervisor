@@ -1,6 +1,6 @@
 /* UART Base Address determined by Hypervisor's Stage 2 Translation Table */
 
-#define UART_BASE       ((volatile unsigned int *) 0x1C090000)
+#define UART_BASE       ((volatile unsigned int *) 0x1C020000)
 
 static char _dummy_byte;
 

@@ -14,11 +14,11 @@
 ###########################################################################
 # Main options
 #
-CROSS_COMPILE	?= arm-linux-gnueabihf-
+CROSS_COMPILE	?= aarch64-apm-linux-gnu-
 ARCH		?= arm
 
 SYSTEM ?= vexpress
 
 CPPFLAGS	+= -DSMP
-CPPFLAGS	+= -mcpu=cortex-a15 -marm
+CPPFLAGS	+= #-mcpu=cortex-a15 -marm
 CPPFLAGS	+= -DVEXPRESS -g

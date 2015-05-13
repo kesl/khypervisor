@@ -1,5 +1,5 @@
 
-#define ARCH_REGS_NUM_GPR   13
+#define ARCH_REGS_NUM_GPR   31
 struct arch_regs {
     unsigned int cpsr;
     unsigned int pc;
