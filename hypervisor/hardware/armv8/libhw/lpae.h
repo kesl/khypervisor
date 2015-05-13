@@ -567,6 +567,24 @@ void lpaed_guest_stage1_disable_l3_table(union lpaed *ttbl2);
 void lpaed_guest_stage2_map_page(union lpaed *pte, uint64_t pa,
         enum memattr mattr);
 /**
+ * @brief Configure valid & table bit of the stage-2 level 0 table descriptor.
+ * And set the base address.
+ *
+ * Configure valid bit and table bit.
+ * And mapping physical address of the level 1 table.
+ *
+ * - State configuration
+ *   - valid = valid ? 1: 0, table = valid ? 1 : 0
+ *   - bass address = baddr
+ *
+ * @param *ttbl0 The stage-2 level0 translation table descriptor.
+ * @param baddr Base address.
+ * @param valid Validation
+ * @return void
+ */
+void lpaed_guest_stage2_conf_l0_table(union lpaed *ttbl0, uint64_t baddr,
+        uint8_t valid);
+/**
  * @brief Configure valid & table bit of the stage-2 level 1 table descriptor.
  * And set the base address.
  *

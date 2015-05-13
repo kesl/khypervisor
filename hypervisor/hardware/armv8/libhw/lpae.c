@@ -189,6 +189,15 @@ union lpaed lpaed_host_l3_table(uint64_t pa,
     return lpaed;
 }
 
+void lpaed_guest_stage2_conf_l0_table(union lpaed *ttbl0,
+        uint64_t baddr, uint8_t valid)
+{
+    ttbl0->pt.valid = valid ? 1 : 0;
+    ttbl0->pt.table = valid ? 1 : 0;
+    ttbl0->bits &= ~TTBL_L0_TABADDR_MASK;
+    ttbl0->bits |= baddr & TTBL_L0_TABADDR_MASK;
+}
+
 void lpaed_guest_stage2_conf_l1_table(union lpaed *ttbl1,
         uint64_t baddr, uint8_t valid)
 {
@@ -226,7 +235,7 @@ void lpaed_guest_stage2_map_page(union lpaed *pte, uint64_t pa,
     pte->bits |= pa & TTBL_L3_OUTADDR_MASK;
     pte->p2m.sbz3 = 0;
     /* Lower block attributes */
-    pte->p2m.mattr = mattr & 0x0F;
+    pte->p2m.mattr = mattr & 0xF;
     pte->p2m.read = 1;        /* Read/Write */
     pte->p2m.write = 1;
     pte->p2m.sh = 0;    /* Non-shareable */

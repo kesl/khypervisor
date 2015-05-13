@@ -8,7 +8,6 @@
 #include <log/uart_print.h>
 #include <guest.h>
 #include <smp.h>
-
 /**
  * \defgroup Memory_Attribute_Indirection_Register (MAIR)
  *
@@ -170,31 +169,14 @@
 #define HEAP_END_ADDR (HEAP_ADDR + HEAP_SIZE)
 #define NALLOC 1024
 
+/* Stage 2 Level 0 */
+#define VMM_L0_PTE_NUM          512 
 /* Stage 2 Level 1 */
-#define VMM_L1_PTE_NUM          4
-#define VMM_L1_PADDING_PTE_NUM   (512 - VMM_L1_PTE_NUM)
+#define VMM_L1_PTE_NUM          512
 /* Stage 2 Level 2 */
 #define VMM_L2_PTE_NUM          512
 #define VMM_L3_PTE_NUM          512
-/**
- * @brief Gets total number of level 2 and level 3 page table entry.
- *
- * <pre>
- * VMM_L2_PTE_NUM * VMM_L3_PTE_NUM = /
- * Total Number Of Level 3 Page Table Entry
- * + VMM_L2_PTE_NUM = Total Number Of Level 2 Page Table Entry
- * </pre>
- *
- * @return Total number of l2, l3 table entry.
- */
-#define VMM_L2L3_PTE_NUM_TOTAL  (VMM_L2_PTE_NUM \
-        * VMM_L3_PTE_NUM + VMM_L2_PTE_NUM)
-/**
- * @brief Gets total number of all page table entries.
- */
-#define VMM_PTE_NUM_TOTAL  (VMM_L1_PTE_NUM                  \
-        + VMM_L1_PADDING_PTE_NUM + VMM_L2L3_PTE_NUM_TOTAL   \
-        * VMM_L1_PTE_NUM)
+
 /**
  * \defgroup VTTBR
  *
@@ -208,7 +190,7 @@
 #define VTTBR_INITVAL                                   0x0000000000000000ULL
 #define VTTBR_VMID_MASK                                 0x00FF000000000000ULL
 #define VTTBR_VMID_SHIFT                                48
-#define VTTBR_BADDR_MASK                                0x000000FFFFFFF000ULL
+#define VTTBR_BADDR_MASK                                0x0000FFFFFFFFF000ULL
 #define VTTBR_BADDR_SHIFT                               12
 /** @} */
 
@@ -222,6 +204,10 @@
  *
  * - bit[31]
  *   - UNK/SBOP.
+ * - PS[18:16]
+ *   - Physical Address Size
+ * - TG0[15:14]
+ *   - Granule size
  * - SH0[13:12]
  *   - Shareability attribute.
  *   - \ref Shareability
@@ -237,6 +223,7 @@
  * SL0 Meaning
  * - 00 : Start at second level
  * - 01 : Start at first level
+ * - 20 : Start at zero level
  * </pre>
  * - S[4]
  *   - Sign extension bit. this bit must be programmed to the value of the
@@ -246,6 +233,10 @@
  * @{
  */
 #define VTCR_INITVAL                                    0x80000000
+#define VTCR_PS_MASK                                    0x00070000
+#define VTCR_PS_SHIFT                                   16
+#define VTCR_TG0_MASK                                   0x0000C000
+#define VTCR_TG0_SHIFT                                  14
 #define VTCR_SH0_MASK                                   0x00003000
 #define VTCR_SH0_SHIFT                                  12
 #define VTCR_ORGN0_MASK                                 0x00000C00
@@ -256,13 +247,16 @@
 #define VTCR_SL0_SHIFT                                  6
 #define VTCR_S_MASK                                     0x00000010
 #define VTCR_S_SHIFT                                    4
-#define VTCR_T0SZ_MASK                                  0x00000003
+#define VTCR_T0SZ_MASK                                  0x0000003f
 #define VTCR_T0SZ_SHIFT                                 0
 /** @} */
 
+#define VTCR_TG0_4K     0x0
+#define VTCR_TG0_64k    0x1
+#define VTCR_TG0_16K    0x2
 /*
  * Stage 2 Translation Table, look up begins at second level
- * VTTBR.BADDR[31:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range,
+ * VTTBR.BADDR[47:x]: x=14, VTCR.T0SZ = 0, 2^32 input address range,
  * VTCR.SL0 = 0(2nd), 16KB aligned base address
  * Statically allocated for now
  */
@@ -273,36 +267,35 @@ static union lpaed *_vmid_ttbl[NUM_GUESTS_STATIC];
  * We don't konw about this issue, so we will checking this later time.
  */
 union lpaed
-_ttbl_guest[NUM_GUESTS_STATIC][VMM_PTE_NUM_TOTAL] \
+_ttbl0_guest[NUM_GUESTS_STATIC][VMM_L0_PTE_NUM]\
                 __attribute((__aligned__(4096)));
-
-/**
- * @brief Obtains TTBL_L3 entry.
- * Returns the address of TTBL l3 at 'index_l2' entry of L2.
- *
- * - union lpaed *TTBL_L3(union lpaed *ttbl_l2, uint32_t index_l2);
- *
- */
-#define TTBL_L3(ttbl_l2, index_l2) \
-    (&ttbl_l2[VMM_L2_PTE_NUM + (VMM_L3_PTE_NUM * (index_l2))])
-/**
- * @brief Obtains TTBL_L2 Entry.
- * Returns the address of TTBL l2 at 'index_l1' entry of L1.
- *
- * - union lpaed *TTBL_L2(union lpaed *ttbl_l1, uint32_t index_l1);
- *
- */
-#define TTBL_L2(ttbl_l1, index_l1) \
-    (&ttbl_l1[(VMM_L1_PTE_NUM + VMM_L1_PADDING_PTE_NUM) \
-              + (VMM_L2L3_PTE_NUM_TOTAL * (index_l1))])
+union lpaed // 2 ~ 255 is empty space, 0-1, 256-263
+_ttbl1_guest[NUM_GUESTS_STATIC][VMM_L1_PTE_NUM]\
+                __attribute((__aligned__(4096)));
+/* ttbl2 */
+union lpaed
+_ttbl2_guest_dev[NUM_GUESTS_STATIC][VMM_L2_PTE_NUM*2]\
+                __attribute((__aligned__(4096)));
+union lpaed
+_ttbl2_guest_mem[NUM_GUESTS_STATIC][VMM_L2_PTE_NUM*2]\
+                __attribute((__aligned__(4096)));
+/* ttbl3 */
+union lpaed
+_ttbl3_guest_dev[NUM_GUESTS_STATIC][VMM_L3_PTE_NUM*VMM_L2_PTE_NUM*2]\
+                __attribute((__aligned__(4096)));
+union lpaed
+_ttbl3_guest_mem[NUM_GUESTS_STATIC][VMM_L3_PTE_NUM*VMM_L2_PTE_NUM*2]\
+                __attribute((__aligned__(4096)));
 
 static union lpaed _hmm_pgtable/*[HMM_L0_PTE_NUM]*/ \
                 __attribute((__aligned__(4096)));
 static union lpaed _hmm_pgtable_l1[HMM_L1_PTE_NUM] \
                 __attribute((__aligned__(4096)));
-static union lpaed _hmm_pgtable_l2[HMM_L2_PTE_NUM] \
+static union lpaed _hmm_pgtable_l2[CFG_MEMMAP_PHYS_SIZE / SZ_1G] \
+                 [HMM_L2_PTE_NUM] \
                 __attribute((__aligned__(4096)));
-static union lpaed _hmm_pgtable_l3[HMM_L2_PTE_NUM][HMM_L3_PTE_NUM] \
+static union lpaed _hmm_pgtable_l3[CFG_MEMMAP_PHYS_SIZE / SZ_1G] \
+                 [HMM_L2_PTE_NUM][HMM_L3_PTE_NUM] \
                 __attribute((__aligned__(4096)));
 
 
@@ -318,6 +311,10 @@ union header {
 
 /* AArch64 Memory Management Feature Register0 */
 static uint64_t id_aa64mmfr0_el1;
+
+#define ID_AA64MMFR0_PARange    (0xf << 0)
+#define ID_AA64MMFR0_ASIDBits   (0xf << 4)
+#define ID_AA64MMFR0_BigEnd     (0xf << 8)
 /* free list block header */
 
 static uint64_t mm_break; /* break point for sbrk()  */
@@ -583,22 +580,22 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @param mattr Memory Attribute.
  * @return void
  */
-//static void guest_memory_ttbl3_map(union lpaed *ttbl3, uint64_t offset,
-//                uint32_t pages, uint64_t pa, enum memattr mattr)
-//{
-//    int index_l3 = 0;
-//    int index_l3_last = 0;
-//    printh("%s[%d]: ttbl3:%x offset:%x pte:%x pages:%d, pa:%x\n",
-//            __func__, __LINE__, (uint32_t) ttbl3, (uint32_t) offset,
-//            &ttbl3[offset], pages, (uint32_t) pa);
-//    /* Initialize the address spaces with 'invalid' state */
-//    index_l3 = offset;
-//    index_l3_last = index_l3 + pages;
-//    for (; index_l3 < index_l3_last; index_l3++) {
-//        lpaed_guest_stage2_map_page(&ttbl3[index_l3], pa, mattr);
-//        pa += LPAE_PAGE_SIZE;
-//    }
-//}
+static void guest_memory_ttbl3_map(union lpaed *ttbl3, uint64_t offset,
+                uint32_t pages, uint64_t pa, enum memattr mattr)
+{
+    int index_l3 = 0;
+    int index_l3_last = 0;
+    printh("%s[%d]: ttbl3:%x offset:%x pte:%x pages:%d, pa:%x\n",
+            __func__, __LINE__, (uint32_t) ttbl3, (uint32_t) offset,
+            &ttbl3[offset], pages, (uint32_t) pa);
+    /* Initialize the address spaces with 'invalid' state */
+    index_l3 = offset;
+    index_l3_last = index_l3 + pages;
+    for (; index_l3 < index_l3_last; index_l3++) {
+        lpaed_guest_stage2_map_page(&ttbl3[index_l3], pa, mattr);
+        pa += LPAE_PAGE_SIZE;
+    }
+}
 
 /**
  * @brief Unmap level 3 descriptors.
@@ -647,8 +644,8 @@ static void guest_memory_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
  *        - It is aligned page size.
  * @return void
  */
-static void guest_memory_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
-                uint32_t size)
+static void guest_memory_ttbl2_unmap(union lpaed *ttbl2,
+        union lpaed *ttbl3, uint64_t va_offset,uint32_t size)
 {
     int index_l2 = 0;
     int index_l2_last = 0;
@@ -664,7 +661,6 @@ static void guest_memory_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
     size &= LPAE_BLOCK_L2_MASK;
     if (size) {
         /* last partial block */
-        union lpaed *ttbl3 = TTBL_L3(ttbl2, index_l2);
         guest_memory_ttbl3_unmap(ttbl3, 0x00000000, size >> LPAE_PAGE_SHIFT);
     }
 }
@@ -693,66 +689,63 @@ static void guest_memory_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
  * @param Memory Attribute
  * @return void
  */
-//static void guest_memory_ttbl2_map(union lpaed *ttbl2, uint64_t va_offset,
-//                uint64_t pa, uint32_t size, enum memattr mattr)
-//{
-//    uint64_t block_offset;
-//    uint32_t index_l2;
-//    uint32_t index_l2_last;
-//    uint32_t num_blocks;
-//    uint32_t pages;
-//    union lpaed *ttbl3;
-//    int i;
-//    HVMM_TRACE_ENTER();
-//
-//    printh("ttbl2:%x va_offset:%x pa:%x size:%d\n",
-//            (uint32_t) ttbl2, (uint32_t) va_offset, (uint32_t) pa, size);
-//    index_l2 = va_offset >> LPAE_BLOCK_L2_SHIFT;
-//    block_offset = va_offset & LPAE_BLOCK_L2_MASK;
-//    printh("- index_l2:%d block_offset:%x\n",
-//            index_l2, (uint32_t) block_offset);
-//    /* head < BLOCK */
-//    if (block_offset) {
-//        uint64_t offset;
-//        offset = block_offset >> LPAE_PAGE_SHIFT;
-//        pages = size >> LPAE_PAGE_SHIFT;
-//        if (pages > VMM_L3_PTE_NUM)
-//            pages = VMM_L3_PTE_NUM;
-//
-//        ttbl3 = TTBL_L3(ttbl2, index_l2);
-//        guest_memory_ttbl3_map(ttbl3, offset, pages, pa, mattr);
-//        lpaed_guest_stage2_enable_l2_table(&ttbl2[index_l2]);
-//        va_offset |= ~LPAE_BLOCK_L2_MASK;
-//        size -= pages * LPAE_PAGE_SIZE;
-//        pa += pages * LPAE_PAGE_SIZE;
-//        index_l2++;
-//    }
-//    /* body : n BLOCKS */
-//    if (size > 0) {
-//        num_blocks = size >> LPAE_BLOCK_L2_SHIFT;
-//        index_l2_last = index_l2 + num_blocks;
-//        printh("- index_l2_last:%d num_blocks:%d size:%d\n"
-//                index_l2_last, (uint32_t) num_blocks, size);
-//        for (i = index_l2; i < index_l2_last; i++) {
-//            lpaed_guest_stage2_enable_l2_table(&ttbl2[i]);
-//            guest_memory_ttbl3_map(TTBL_L3(ttbl2, i), 0,
-//                    VMM_L3_PTE_NUM, pa, mattr);
-//            pa += LPAE_BLOCK_L2_SIZE;
-//            size -= LPAE_BLOCK_L2_SIZE;
-//        }
-//    }
-//    /* tail < BLOCK */
-//    if (size > 0) {
-//        pages = size >> LPAE_PAGE_SHIFT;
-//        printh("- pages:%d size:%d\n", pages, size);
-//        if (pages) {
-//            ttbl3 = TTBL_L3(ttbl2, index_l2_last);
-//            guest_memory_ttbl3_map(ttbl3, 0, pages, pa, mattr);
-//            lpaed_guest_stage2_enable_l2_table(&ttbl2[index_l2_last]);
-//        }
-//    }
-//    HVMM_TRACE_EXIT();
-//}
+static void guest_memory_ttbl2_map(union lpaed *ttbl2, union lpaed *ttbl3,
+        uint64_t va_offset, uint64_t pa, uint32_t size, enum memattr mattr)
+{
+    uint64_t block_offset;
+    uint32_t index_l2;
+    uint32_t index_l2_last;
+    uint32_t num_blocks;
+    uint32_t pages;
+    int i;
+    HVMM_TRACE_ENTER();
+
+    printh("ttbl2:%x va_offset:%x pa:%x size:%d\n",
+            (uint64_t) ttbl2, (uint64_t) va_offset, (uint64_t) pa, size);
+    index_l2 = va_offset >> LPAE_BLOCK_L2_SHIFT;
+    block_offset = va_offset & LPAE_BLOCK_L2_MASK;
+    printh("- index_l2:%d block_offset:%x\n",
+            index_l2, (uint64_t) block_offset);
+    /* head < BLOCK */
+    if (block_offset) {
+        uint64_t offset;
+        offset = block_offset >> LPAE_PAGE_SHIFT;
+        pages = size >> LPAE_PAGE_SHIFT;
+        if (pages > VMM_L3_PTE_NUM)
+            pages = VMM_L3_PTE_NUM;
+
+        guest_memory_ttbl3_map(ttbl3, offset, pages, pa, mattr);
+        lpaed_guest_stage2_enable_l2_table(&ttbl2[index_l2]);
+        va_offset |= ~LPAE_BLOCK_L2_MASK;
+        size -= pages * LPAE_PAGE_SIZE;
+        pa += pages * LPAE_PAGE_SIZE;
+        index_l2++;
+    }
+    /* body : n BLOCKS */
+    if (size > 0) {
+        num_blocks = size >> LPAE_BLOCK_L2_SHIFT;
+        index_l2_last = index_l2 + num_blocks;
+        printh("- index_l2_last:%d num_blocks:%d size:%d\n",
+                index_l2_last, (uint64_t) num_blocks, size);
+        for (i = index_l2; i < index_l2_last; i++) {
+            lpaed_guest_stage2_enable_l2_table(&ttbl2[i]);
+            guest_memory_ttbl3_map(&ttbl3[i], 0,
+                    VMM_L3_PTE_NUM, pa, mattr);
+            pa += LPAE_BLOCK_L2_SIZE;
+            size -= LPAE_BLOCK_L2_SIZE;
+        }
+    }
+    /* tail < BLOCK */
+    if (size > 0) {
+        pages = size >> LPAE_PAGE_SHIFT;
+        printh("- pages:%d size:%d\n", pages, size);
+        if (pages) {
+            guest_memory_ttbl3_map(ttbl3, 0, pages, pa, mattr);
+            lpaed_guest_stage2_enable_l2_table(&ttbl2[index_l2_last]);
+        }
+    }
+    HVMM_TRACE_EXIT();
+}
 
 /**
  * @brief Initialize ttbl2 entries.
@@ -763,21 +756,19 @@ static void guest_memory_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
  * @param *ttbl2 Level 2 translation table descriptor.
  * @return void
  */
-//static void guest_memory_ttbl2_init_entries(union lpaed *ttbl2)
-//{
-//    int i, j;
-//    HVMM_TRACE_ENTER();
-//    union lpaed *ttbl3;
-//    for (i = 0; i < VMM_L2_PTE_NUM; i++) {
-//        ttbl3 = TTBL_L3(ttbl2, i);
-//        printh("ttbl2[%d]:%x ttbl3[]:%x\n", i, &ttbl2[i], ttbl3);
-//        lpaed_guest_stage2_conf_l2_table(&ttbl2[i],
-//                (uint64_t)((uint32_t) ttbl3), 0);
-//        for (j = 0; j < VMM_L2_PTE_NUM; j++)
-//            ttbl3[j].pt.valid = 0;
-//    }
-//    HVMM_TRACE_EXIT();
-//}
+static void guest_memory_ttbl2_init_entries(union lpaed *ttbl2, union lpaed *ttbl3)
+{
+    int i, j;
+    HVMM_TRACE_ENTER();
+    for (i = 0; i < VMM_L2_PTE_NUM; i++) {
+        printh("ttbl2[%d]:%x ttbl3[]:%x\n", i, &ttbl2[i], &ttbl3[i * 512]);
+        lpaed_guest_stage2_conf_l2_table(&ttbl2[i],
+                (uint64_t)((uint64_t) &ttbl3[i *512]), 0);
+        for (j = 0; j < VMM_L3_PTE_NUM; j++)
+            ttbl3[(i*512) + j].pt.valid = 0;
+    }
+    HVMM_TRACE_EXIT();
+}
 
 /**
  * @brief Initialize delivered ttbl2 descriptors.
@@ -789,53 +780,100 @@ static void guest_memory_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
  * @param *md Device memory map descriptor.
  * @return void
  */
-//static void guest_memory_init_ttbl2(union lpaed *ttbl2, struct memmap_desc *md)
-//{
-//    int i = 0;
-//    HVMM_TRACE_ENTER();
-//    printh(" - ttbl2:%x\n", (uint32_t) ttbl2);
-//    if (((uint64_t)((uint32_t) ttbl2)) & 0x0FFFULL)
-//        printh(" - error: invalid ttbl2 address alignment\n");
-//
-//    /* construct l2-l3 table hirerachy with invalid pages */
-//    guest_memory_ttbl2_init_entries(ttbl2);
-//    guest_memory_ttbl2_unmap(ttbl2, 0x00000000, 0x40000000);
-//    while (md[i].label != 0) {
-//        guest_memory_ttbl2_map(ttbl2, md[i].va, md[i].pa,
-//                md[i].size, md[i].attr);
-//        i++;
+static void guest_memory_init_ttbl2(union lpaed *ttbl2,
+        struct memmap_desc *md, int gid)
+{
+    int i = 0;
+    int ttbl2_index = 0;
+    union lpaed *ttbl3;
+    HVMM_TRACE_ENTER();
+    printh(" - ttbl2:%x\n", (uint64_t) ttbl2);
+    if (((uint64_t)((uint64_t) ttbl2)) & 0x0FFFULL)
+        printh(" - error: invalid ttbl2 address alignment\n");
+
+    /* calculate ttbl2 index by physical address and determine dev, mem area */
+    if ( md[i].pa < CFG_MEMMAP_PHYS_START) // device area
+    {
+        ttbl2_index = md[i].pa / SZ_1G;
+        ttbl3 = &_ttbl3_guest_dev[gid][ttbl2_index * 512 * 512];
+    }
+    else // mem area
+    {
+        ttbl2_index = (md[i].pa - CFG_MEMMAP_GUEST_SIZE * gid) / SZ_1G;
+        ttbl3 = &_ttbl3_guest_mem[gid][(ttbl2_index -256) * 512 * 512];
+    }
+
+//    if (ttbl2_index < 256) // device area
+//        ttbl3 = &_ttbl3_guest_dev[gid][ttbl2_index * 512 * 512];
+//    else    // mem area
+//    {
+//        ttbl3 = &_ttbl3_guest_mem[gid][(ttbl2_index -256) * 512 * 512];
 //    }
-//    HVMM_TRACE_EXIT();
-//}
+
+    /* construct l2-l3 table hirerachy with invalid pages */
+    guest_memory_ttbl2_init_entries(ttbl2, ttbl3);
+    //guest_memory_ttbl2_unmap(ttbl2, ttbl3, 0x00000000, 0x40000000);
+    while (md[i].label != 0) {
+        guest_memory_ttbl2_map(ttbl2, ttbl3, md[i].va, md[i].pa,
+                md[i].size, md[i].attr);
+        i++;
+    }
+    HVMM_TRACE_EXIT();
+}
+
+/**
+ * @brief Configure stage-2 translation table descriptors of guest.
+ *
+ * Configures the level 1 translation table based on the memory descriptor.
+ *
+ * @param *ttbl1 Target level1 translation table descriptor.
+ * @param *mdlist[] Memory map descriptor list.
+ * @return void
+ */
+static void guest_memory_init_ttbl1(union lpaed *ttbl1,
+            struct memmap_desc *mdlist[], int gid)
+{
+    int i = 0;
+    HVMM_TRACE_ENTER();
+    while (mdlist[i]) {
+        struct memmap_desc *md = mdlist[i];
+        if (md[0].label == 0)
+            lpaed_guest_stage2_conf_l1_table(&ttbl1[i], 0, 0);
+        else {
+            if(i < 256) { //device area
+                lpaed_guest_stage2_conf_l1_table(&ttbl1[i],
+                    (uint64_t)((uint64_t) &_ttbl2_guest_dev[gid][i * 512]), 1);
+                guest_memory_init_ttbl2(&_ttbl2_guest_dev[gid][i * 512], md, gid);
+            } else { // memory area
+                lpaed_guest_stage2_conf_l1_table(&ttbl1[i],
+                    (uint64_t)((uint64_t) &_ttbl2_guest_mem[gid][(i-256) * 512]), 1);
+                guest_memory_init_ttbl2(&_ttbl2_guest_mem[gid][(i-256) * 512], md, gid);
+            }
+        }
+        i++;
+    }
+    HVMM_TRACE_EXIT();
+}
 
 /**
  * @brief Configure stage-2 translation table descriptors of guest.
  *
  * Configures the translation table based on the memory descriptor list.
+ * It have to be fixed to control larger address space level0 ttbl.
  *
- * @param *ttbl Target translation table descriptor.
+ * @param *ttbl0 Target level 0 translation table descriptor.
  * @param *mdlist[] Memory map descriptor list.
+ * @param gid Guest identifier
  * @return void
  */
-//static void guest_memory_init_ttbl(union lpaed *ttbl,
-//            struct memmap_desc *mdlist[])
-//{
-//    int i = 0;
-//    HVMM_TRACE_ENTER();
-//    while (mdlist[i]) {
-//        struct memmap_desc *md = mdlist[i];
-//        if (md[0].label == 0)
-//            lpaed_guest_stage2_conf_l1_table(&ttbl[i], 0, 0);
-//        else {
-//            lpaed_guest_stage2_conf_l1_table(&ttbl[i],
-//                    (uint64_t)((uint32_t) TTBL_L2(ttbl, i)), 1);
-//            guest_memory_init_ttbl2(TTBL_L2(ttbl, i), md);
-//        }
-//        i++;
-//    }
-//    HVMM_TRACE_EXIT();
-//}
 
+static void guest_memory_init_ttbl(union lpaed *ttbl0,
+        struct memmap_desc *mdlist[], int gid)
+{
+    lpaed_guest_stage2_conf_l0_table(ttbl0,
+            (uint64_t)(uint64_t)_ttbl1_guest[gid], 1);
+    guest_memory_init_ttbl1(_ttbl1_guest[gid], mdlist, gid);
+}
 /**
  * @brief Configures Virtualization Translation Control Register(VTCR).
  *
@@ -849,33 +887,55 @@ static void guest_memory_ttbl2_unmap(union lpaed *ttbl2, uint64_t va_offset,
  *
  * @return void
  */
+struct vtcr_cfg {
+    uint32_t sl0;
+    uint32_t t0sz;
+};
+/* ps */            /* PA Size bits, Size */
+struct vtcr_cfg vtcr_info[] = {
+/* 0 */    {1, 32}, // 32, 4G
+/* 1 */    {1, 28}, // 36, 64G
+/* 2 */    {1, 24}, // 40, 1T
+/* 3 */    {1, 22}, // 42, 4T
+/* 4 */    {2, 20}, // 44, 16T
+/* 5 */    {2, 16}, // 48, 256T
+};
 static void guest_memory_init_mmu(void)
 {
     uint32_t vtcr_el2;
     uint64_t vttbr_el2;
+    uint32_t vtcr_ps = 0;
     HVMM_TRACE_ENTER();
     vtcr_el2 = read_vtcr();
     uart_print("vtcr_el2:");
     uart_print_hex32(vtcr_el2);
     uart_print("\n\r");
-    /* start lookup at level 1 table */
-    vtcr_el2 &= ~VTCR_SL0_MASK;
-    vtcr_el2 |= (0x01 << VTCR_SL0_SHIFT) & VTCR_SL0_MASK;
+    vtcr_ps = id_aa64mmfr0_el1 & ID_AA64MMFR0_PARange;
+    printH("ps: %d\n",vtcr_ps);
     vtcr_el2 &= ~VTCR_ORGN0_MASK;
     vtcr_el2 |= (0x3 << VTCR_ORGN0_SHIFT) & VTCR_ORGN0_MASK;
     vtcr_el2 &= ~VTCR_IRGN0_MASK;
     vtcr_el2 |= (0x3 << VTCR_IRGN0_SHIFT) & VTCR_IRGN0_MASK;
+
+    vtcr_el2 &= ~VTCR_PS_MASK;
+    vtcr_el2 |= (vtcr_ps << VTCR_PS_SHIFT) & VTCR_PS_MASK;
+    vtcr_el2 &= ~VTCR_TG0_MASK;
+    vtcr_el2 |= (VTCR_TG0_4K << VTCR_TG0_SHIFT) & VTCR_TG0_MASK;
+    vtcr_el2 &= ~VTCR_SL0_MASK;
+    vtcr_el2 |= (vtcr_info[vtcr_ps].sl0 << VTCR_SL0_SHIFT) & VTCR_SL0_MASK;
+    vtcr_el2 &= ~VTCR_T0SZ_MASK;
+    vtcr_el2 |= (vtcr_info[vtcr_ps].t0sz << VTCR_T0SZ_SHIFT) & VTCR_T0SZ_MASK;
+
     write_vtcr(vtcr_el2);
     vtcr_el2 = read_vtcr();
     uart_print("vtcr_el2:");
     uart_print_hex32(vtcr_el2);
     uart_print("\n\r");
     {
-        uint32_t sl0 = (vtcr_el2 & VTCR_SL0_MASK) >> VTCR_SL0_SHIFT;
-        uint32_t t0sz = vtcr_el2 & 0xF;
-        uint32_t baddr_x = (sl0 == 0 ? 14 - t0sz : 5 - t0sz);
+        uint32_t t0sz = vtcr_el2 & 0x3F;
+        uint64_t baddr_x = 1<<12;
         uart_print("vttbr.baddr.x:");
-        uart_print_hex32(baddr_x);
+        uart_print_hex(baddr_x);
         uart_print("\n\r");
     }
     /* VTTBR_EL2 */
@@ -1134,7 +1194,7 @@ static int memory_enable(void)
  */
 static void host_memory_init(void)
 {
-    int i;//, j;
+    int i, j, k;
     uint64_t pa = 0x0000000000ULL;
     _hmm_pgtable = lpaed_host_l0_table((uint64_t) _hmm_pgtable_l1);
 
@@ -1145,58 +1205,54 @@ static void host_memory_init(void)
     uart_print_hex64(_hmm_pgtable.bits);
     uart_print("\n\r");
 
-    for (i=0 ; i< 2; i++) {
+    /* _hmm_pgtable_l1 device area blocks */
+    for (i = 0 ; i < 2; i++) {
         _hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_DEV_SHARED);
         pa += 0x40000000;
     }
 
-    for( ; i< 264; i++) {
+    /* _hmm_pgtable_l1 empty area blocks, invalid */
+    for ( ; i < 256; i++) {
         _hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
+        _hmm_pgtable_l1[i].pt.valid = 0;
         pa += 0x40000000;
     }
-
-    /*
-    for(i=0; i<512; i++) {
+       
+    /* _hmm_pgtable_l1 mem refers Lv2 page table address. */
+    for (; i < 264; i++) {
+        _hmm_pgtable_l1[i] = \
+                 lpaed_host_l1_table((uint64_t) _hmm_pgtable_l2[i-256]);
         uart_print("&_hmm_pgtable_l1[");
-        uart_print_hex32((uint32_t)i);
+        uart_print_hex(i);
         uart_print("]:");
-        uart_print_hex64((uint64_t)&_hmm_pgtable_l1[i]);
+        uart_print_hex64((uint64_t) &_hmm_pgtable_l1[i]);
         uart_print("\n\r");
         uart_print("lpaed:");
-        uart_print_hex64((uint64_t)_hmm_pgtable_l1[i].bits);
+        uart_print_hex64(_hmm_pgtable_l1[i].bits);
         uart_print("\n\r");
     }
-    */
-        
-//    /* _hmm_pgtable[3] refers Lv2 page table address. */
-//    _hmm_pgtable_l1[3] = lpaed_host_l1_table((uint32_t) _hmm_pgtable_l2);
-//    uart_print("&_hmm_pgtable[3]:");
-//    uart_print_hex32((uint32_t) &_hmm_pgtable[3]);
-//    uart_print("\n\r");
-//    uart_print("lpaed:");
-//    uart_print_hex64(_hmm_pgtable[3].bits);
-//    uart_print("\n\r");
-//    for (i = 0; i < HMM_L2_PTE_NUM; i++) {
-//        /*
-//         * _hvmm_pgtable_lv2[i] refers Lv3 page table address.
-//         * each element correspond 2MB
-//         */
-//        _hmm_pgtable_l2[i] =
-//                lpaed_host_l2_table((uint32_t) _hmm_pgtable_l3[i]);
-//        /* _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB */
-//        for (j = 0; j < HMM_L3_PTE_NUM; pa += 0x1000, j++) {
-//            /* 0xF2000000 ~ 0xFF000000 - Heap memory 208MB */
-//            if (pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE) {
-//                _hmm_pgtable_l3[i][j] =
-//                        lpaed_host_l3_table(pa, ATTR_IDX_WRITEALLOC, 0);
-//            } else {
-//                _hmm_pgtable_l3[i][j] =
-//                        lpaed_host_l3_table(pa, ATTR_IDX_UNCACHED, 1);
-//            }
-//        }
-//    }
-//    for (i = 4; i < HMM_L1_PTE_NUM; i++)
-//        _hmm_pgtable[i].pt.valid = 0;
+    for (i = 0; i < CFG_MEMMAP_PHYS_SIZE / SZ_1G; i++) {
+        /*
+         * _hvmm_pgtable_lv2[i] refers Lv3 page table address.
+         * each element correspond 2MB
+         */
+        for (j = 0; j < HMM_L2_PTE_NUM; j++) {
+            _hmm_pgtable_l2[i][j] =
+                lpaed_host_l2_table((uint64_t) _hmm_pgtable_l3[i][j]);
+            /* _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB */
+            for (k = 0; k < HMM_L3_PTE_NUM; pa += 0x1000, k++) {
+                if (pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE) {
+                    _hmm_pgtable_l3[i][j][k] =
+                        lpaed_host_l3_table(pa, ATTR_IDX_WRITEALLOC, 0);
+                } else { // heap area configuration
+                    _hmm_pgtable_l3[i][j][k] =
+                        lpaed_host_l3_table(pa, ATTR_IDX_UNCACHED, 1);
+                }
+            }
+        }
+    }
+    for (; i < HMM_L1_PTE_NUM; i++)
+        _hmm_pgtable_l1[i].pt.valid = 0;
 }
 
 /*
@@ -1212,30 +1268,95 @@ static void host_memory_init(void)
  *
  * @return void
  */
-//static void guest_memory_init(struct memmap_desc **guest0_map,
-//        struct memmap_desc **guest1_map)
-//{
-//    /*
-//     * Initializes Translation Table for Stage2 Translation (IPA -> PA)
-//     */
-//    int i;
-//    uint32_t cpu = smp_processor_id();
-//
-//    HVMM_TRACE_ENTER();
+static void guest_memory_init(struct memmap_desc **guest_map, int gid)
+        //struct memmap_desc **guest1_map)
+{
+    /*
+     * Initializes Translation Table for Stage2 Translation (IPA -> PA)
+     */
+    int i;
+    uint32_t cpu = smp_processor_id();
+    uint32_t sl0 = vtcr_info[id_aa64mmfr0_el1 & ID_AA64MMFR0_PARange].sl0;
+
+    HVMM_TRACE_ENTER();
+
+    switch (sl0 )
+    {
+        case 0 : // start level 2, unimplemented
+            printh("unimplemented\n");
+            break;
+        case 1: // start level 1
+            _vmid_ttbl[gid] = &_ttbl1_guest[gid];
+            guest_memory_init_ttbl1(&_ttbl1_guest[gid], guest_map, gid);
+            break;
+        case 2: // start level 0
+            _vmid_ttbl[gid] = &_ttbl0_guest[gid];
+            guest_memory_init_ttbl(&_ttbl0_guest[gid], guest_map, gid);
+            break;
+        default:
+            printh("Invalid start level\n");
+    }
 //
 //    if (!cpu) {
-//        for (i = 0; i < NUM_GUESTS_STATIC; i++)
-//            _vmid_ttbl[i] = &_ttbl_guest[i][0];
-//        guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
-//        guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
+//        for (i = 0; i < NUM_GUESTS_STATIC; i++) {
+//            switch (sl0) {
+//                case 0:
+//                    // start level 3, unimplemented
+//                    printh("unimplemented\n");
+//                    break;
+//                case 1:
+//                    start_ttbl = _ttbl1_guest;
+//                case 2:
+//                    start_ttbl = _ttbl0_guest;
+//                default:
+//            }
+//            _vmid_ttbl[i] = &start_ttbl[i];
+//        }
+//        guest_memory_init_ttbl(&start_ttbl[0], guest0_map, 0);
+//        guest_memory_init_ttbl(&start_ttbl[1], guest1_map, 1);
 //    } else {
-//        guest_memory_init_ttbl(&_ttbl_guest[2][0], guest0_map);
-//        guest_memory_init_ttbl(&_ttbl_guest[3][0], guest1_map);
+//        guest_memory_init_ttbl(&start_ttbl[2], guest0_map, 2);
+//        guest_memory_init_ttbl(&start_ttbl[3], guest1_map, 3);
 //    }
 //
-//    HVMM_TRACE_EXIT();
-//}
+    HVMM_TRACE_EXIT();
+}
 
+#if 0
+void temp_check()
+{
+    uint32_t gid = 0;
+    int i, j;
+    for(i=0; i< 2; i++) {
+        gid = i;
+        printH("_ttbl0_guest[%d] : %x value : %x\n",
+                gid, _ttbl0_guest[gid], *_ttbl0_guest[gid]);
+    }
+
+    for(i=0; i< 2; i++){
+        gid = i;
+        printH("_ttbl1_guest[%d][0] : %x value : %x\n",
+                gid, &_ttbl1_guest[gid][0], _ttbl1_guest[gid][0]);
+        printH("_ttbl1_guest[%d][1] : %x value : %x\n",
+                gid, &_ttbl1_guest[gid][1], _ttbl1_guest[gid][1]);
+        for (j=256; j< 258; j++) {
+            printH("_ttbl1_guest[%d][%d] : %x value : %x\n",
+                    gid, j, &_ttbl1_guest[gid][j], _ttbl1_guest[gid][j]);
+            int k;
+            for(k=0; k< 2;k++) {
+                printH("_ttbl2_guest_mem[%d][%d] : %x value : %x\n",
+                        gid, k+ (VMM_L2_PTE_NUM * (j-256)),
+                        &_ttbl2_guest_mem[gid][k +(VMM_L2_PTE_NUM * (j-256))], 
+                        _ttbl2_guest_mem[gid][k +(VMM_L2_PTE_NUM * (j-256))]);
+                printH("_ttbl3_guest_mem[%d][%d] : %x value : %x\n",
+                        gid, 512 * (j-256) * k,
+                        &_ttbl3_guest_mem[gid][512 * (j-256)* k], 
+                        _ttbl3_guest_mem[gid][512 * (j-256)* k]);
+            }
+        }
+    }
+}
+#endif
 /**
  * @brief Configures the memory management features.
  *
@@ -1277,7 +1398,8 @@ static int memory_hw_init(struct memmap_desc **guest0,
     uart_print_hex64(id_aa64mmfr0_el1);
     uart_print("\n\r");
 
-    //guest_memory_init(guest0, guest1);
+    guest_memory_init(guest0, 0);
+    guest_memory_init(guest1, 1);
 
     guest_memory_init_mmu();
 
@@ -1285,6 +1407,10 @@ static int memory_hw_init(struct memmap_desc **guest0,
         host_memory_init();
 
     memory_enable();
+
+#if 0
+    temp_check();
+#endif
 
     uart_print("[memory] memory_init: exit\n\r");
     if (!cpu) {
