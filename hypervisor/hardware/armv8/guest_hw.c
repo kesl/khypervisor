@@ -31,7 +31,6 @@ static void context_copy_regs(struct arch_regs *regs_dst,
     int i;
     regs_dst->cpsr = regs_src->cpsr;
     regs_dst->pc = regs_src->pc;
-    regs_dst->lr = regs_src->lr;
     for (i = 0; i < ARCH_REGS_NUM_GPR; i++)
         regs_dst->gpr[i] = regs_src->gpr[i];
 }
@@ -46,6 +45,8 @@ static void context_init_sys(struct regs_sys *regs_sys)
     regs_sys->sctlr_el1 = 0;
     regs_sys->sp_el0 = 0;
     regs_sys->sp_el1 = 0;
+    regs_sys->elr_el1 = 0;
+    regs_sys->spsel = 0;
 }
 
 static void context_save_sys(struct regs_sys *regs_sys)
@@ -57,6 +58,8 @@ static void context_save_sys(struct regs_sys *regs_sys)
     regs_sys->sctlr_el1 = read_sctlr();
     regs_sys->sp_el0 = read_sr64(sp_el0);
     regs_sys->sp_el1 = read_sr64(sp_el1);
+    regs_sys->elr_el1 = read_sr64(elr_el1);
+    regs_sys->spsel = read_sr32(spsel);
 }
 
 static void context_restore_sys(struct regs_sys *regs_sys)
@@ -68,6 +71,8 @@ static void context_restore_sys(struct regs_sys *regs_sys)
     write_sctlr(regs_sys->sctlr_el1);
     write_sr64(regs_sys->sp_el0, sp_el0);
     write_sr64(regs_sys->sp_el1, sp_el1);
+    write_sr64(regs_sys->elr_el1, elr_el1);
+    write_sr32(regs_sys->spsel, spsel);
 }
 
 #ifndef DEBUG
@@ -182,7 +187,7 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
     /* Initialize loader status for reboot */
     regs->gpr[10] = 0;
     /* supervisor mode */
-    regs->cpsr = 0x1C0|CPSR_MODE_EL1h;
+    regs->cpsr = 0x1C0|CPSR_MODE_EL1t;
     /* regs->gpr[] = whatever */
     context_init_sys(&context->regs_sys);
 
@@ -196,10 +201,7 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
         uart_print_hex32(regs->cpsr);
         uart_print("\n\r");
         uart_print("  pc: ");
-        uart_print_hex32(regs->pc);
-        uart_print("\n\r");
-        uart_print("  lr: ");
-        uart_print_hex32(regs->lr);
+        uart_print_hex64(regs->pc);
         uart_print("\n\r");
         {
             int i;
@@ -212,13 +214,13 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
         }
     }
     if (verbose & GUEST_VERBOSE_LEVEL_1) {
-        uint32_t lr = 0;
-        asm volatile("mov  %0, x30" : "=r"(lr) : : "memory", "cc");
-        printH("context: restoring vmid[%d] mode(%x):%s pc:0x%x lr:0x%x\n",
+        uint64_t elr = 0;
+        elr =read_sr64(elr_el2);
+        printH("context: restoring vmid[%d] mode(%x):%s pc:0x%x elr:0x%x\n",
                 _current_guest[0]->vmid,
                 _current_guest[0]->regs.cpsr & 0x1F,
                 _modename(_current_guest[0]->regs.cpsr & 0x1F),
-                _current_guest[0]->regs.pc, lr);
+                _current_guest[0]->regs.pc, elr);
 
     }
     if (verbose & GUEST_VERBOSE_LEVEL_2) {

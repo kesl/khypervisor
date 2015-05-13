@@ -8,7 +8,7 @@
 #include <hvmm_trace.h>
 #include <vgic.h>
 
-#define ARCH_REGS_NUM_GPR    30
+#define ARCH_REGS_NUM_GPR    31
 
 /* system registers */
 struct regs_sys{
@@ -19,13 +19,14 @@ struct regs_sys{
     uint32_t sctlr_el1;
     uint64_t sp_el0;
     uint64_t sp_el1;
+    uint64_t elr_el1;
+    uint32_t spsel;
 };
 
 /* Defines the architecture specific registers */
 struct arch_regs {
     uint32_t cpsr; /* CPSR, SPSR_EL1 */
     uint64_t pc; /* Program Counter */
-    uint64_t lr; /* Link Register, X30 */
     uint64_t gpr[ARCH_REGS_NUM_GPR]; /* X0 - X29 */
 }; //__attribute((packed));
 
