@@ -17,7 +17,7 @@ static hvmm_status_t host_interrupt_init(void)
         uart_print("hcr_el2:");
         uart_print_hex64(hcr);
         uart_print("\n\r");
-        hcr |= HCR_IMO | HCR_FMO;
+        hcr |= HCR_RW | HCR_IMO | HCR_FMO | HCR_AMO;
         write_hcr(hcr);
         hcr = read_hcr();
         uart_print("hcr_el2:");
