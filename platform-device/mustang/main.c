@@ -38,40 +38,61 @@ static struct memmap_desc guest_md_empty[] = {
     {       0, 0, 0, 0,  0},
 };
 /*  label, ipa, pa, size, attr */
-static struct memmap_desc guest0_device_md[] = {
+static struct memmap_desc guest0_device_md0[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
-    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+    { 0, 0, 0, 0, 0 }
+};
+static struct memmap_desc guest0_device_md1[] = {
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
             CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
             MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
 };
 
-static struct memmap_desc guest1_device_md[] = {
+static struct memmap_desc guest1_device_md0[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
-    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+    { 0, 0, 0, 0, 0 }
+};
+static struct memmap_desc guest1_device_md1[] = {
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
        CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
     {0, 0, 0, 0, 0}
 };
 
-static struct memmap_desc guest2_device_md[] = {
+#ifdef _SMP_
+static struct memmap_desc guest2_device_md0[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
-    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+    { 0, 0, 0, 0, 0 }
+};
+static struct memmap_desc guest2_device_md1[] = {
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
        CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
     {0, 0, 0, 0, 0}
 };
 
-static struct memmap_desc guest3_device_md[] = {
+static struct memmap_desc guest3_device_md0[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
-    { "gicc", CFG_GIC_BASE_PA | GIC_OFFSET_GICC,
+    { 0, 0, 0, 0, 0 }
+};
+static struct memmap_desc guest3_device_md1[] = {
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
        CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
     {0, 0, 0, 0, 0}
 };
+#endif
 
 /**
  * @brief Memory map for guest 0.
  */
-static struct memmap_desc guest0_memory_md[] = {
-    {"start", 0x00000000, 0, 0x80000000,
+static struct memmap_desc guest0_memory_md0[] = {
+    {"start", 0x00000000, 0, 0x40000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+static struct memmap_desc guest0_memory_md1[] = {
+    {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -80,14 +101,22 @@ static struct memmap_desc guest0_memory_md[] = {
 /**
  * @brief Memory map for guest 1.
  */
-static struct memmap_desc guest1_memory_md[] = {
+static struct memmap_desc guest1_memory_md0[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, 0x80000000,
+    {"start", 0x00000000, 0, 0x40000000,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
 
+static struct memmap_desc guest1_memory_md1[] = {
+    {"start", 0x00000000, 0, 0x40000000,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
+    },
+    {0, 0, 0, 0,  0},
+};
+
+#ifdef _SMP_
 /**
  * @brief Memory map for guest 2.
  */
@@ -109,41 +138,26 @@ static struct memmap_desc guest3_memory_md[] = {
     },
     {0, 0, 0, 0,  0},
 };
+#endif
 
 /* Memory Map for Guest 0 */
-static struct memmap_desc *guest0_mdlist[] = {
-    guest0_device_md,   /* 0x0000_0000 */
-    guest_md_empty,     /* 0x4000_0000 */
-    guest0_memory_md,
-    guest_md_empty,     /* 0xC000_0000 PA:0x40000000*/
-    0
+static struct memmap_desc *guest0_mdlist[259] = {
+    0,
 };
 
 /* Memory Map for Guest 1 */
-static struct memmap_desc *guest1_mdlist[] = {
-    guest1_device_md,
-    guest_md_empty,
-    guest1_memory_md,
-    guest_md_empty,
-    0
+static struct memmap_desc *guest1_mdlist[259] = {
+    0,
 };
 
 /* Memory Map for Guest 2 */
-static struct memmap_desc *guest2_mdlist[] = {
-    guest2_device_md,
-    guest_md_empty,
-    guest2_memory_md,
-    guest_md_empty,
-    0
+static struct memmap_desc *guest2_mdlist[259] = {
+    0,
 };
 
 /* Memory Map for Guest 3 */
-static struct memmap_desc *guest3_mdlist[] = {
-    guest3_device_md,
-    guest_md_empty,
-    guest3_memory_md,
-    guest_md_empty,
-    0
+static struct memmap_desc *guest3_mdlist[259] = {
+    0,
 };
 
 /** @}*/
@@ -185,6 +199,8 @@ void setup_interrupt()
      *  vimm-0, pirq-41, virq-41 = MCI - pl180
      *  vimm-0, pirq-42, virq-42 = MCI - pl180
      */
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 6, 6);
+    DECLARE_VIRQMAP(_guest_virqmap, 0, 3, 3);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 17, 17);
@@ -213,6 +229,7 @@ void setup_interrupt()
 
 void setup_memory()
 {
+    int i;
     /*
      * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
@@ -220,8 +237,30 @@ void setup_memory()
      */
     //guest0_memory_md[0].pa = (uint64_t)((uint64_t) &_guest0_bin_start);
     //guest1_memory_md[0].pa = (uint64_t)((uint64_t) &_guest1_bin_start);
-    guest0_memory_md[0].pa = 0x4000000000ULL;
-    guest1_memory_md[0].pa = 0x4080000000ULL;
+    guest0_mdlist[0] = guest0_device_md0;
+    guest1_mdlist[0] = guest1_device_md0;
+
+    guest0_mdlist[1] = guest0_device_md1;
+    guest1_mdlist[1] = guest1_device_md1;
+
+    for(i=2; i< 256; i++) {
+        guest0_mdlist[i] = guest_md_empty;
+        guest1_mdlist[i] = guest_md_empty;
+    }
+
+    guest0_mdlist[i] = guest0_memory_md0;
+    guest1_mdlist[i++] = guest1_memory_md0;
+
+    guest0_mdlist[i] = guest0_memory_md1;
+    guest1_mdlist[i++] = guest1_memory_md1;
+
+    guest0_mdlist[i] = 0;
+    guest1_mdlist[i] = 0;
+
+    guest0_memory_md0[0].pa = 0x4000000000ULL;
+    guest0_memory_md1[0].pa = 0x4040000000ULL;
+    guest1_memory_md0[0].pa = 0x4080000000ULL;
+    guest1_memory_md1[0].pa = 0x40C0000000ULL;
 #if _SMP_
     guest2_memory_md[0].pa = (uint64_t)((uint64_t) &_guest2_bin_start);
     guest3_memory_md[0].pa = (uint64_t)((uint64_t) &_guest3_bin_start);
@@ -249,16 +288,22 @@ uint8_t secondary_smp_pen;
 
 void main_cpu_init()
 {
+    uint64_t aa64pfr0;
+    local_irq_enable();
+    local_fiq_enable();
+    local_serror_enable();
     uart_init();
 
     init_print();
     printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
+    aa64pfr0 = read_sr64(id_aa64pfr0_el1);
+    printH("ID_AA64PFR0_EL1: %x\n", aa64pfr0);
 
     /* Initialize Memory Management */
     setup_memory();
-
     if (memory_init(guest0_mdlist, guest1_mdlist))
         printh("[start_guest] virtual memory initialization failed...\n");
+
     /* Initialize PIRQ to VIRQ mapping */
     setup_interrupt();
     /* Initialize Interrupt Management */
