@@ -20,11 +20,33 @@
 
 #define invalidate_tlb(name)   asm volatile(\
                               "tlbi "#name)
-
+#define HCR_RW      (0x1 << 31)
+#define HCR_TGE     (0x1 << 27)
+#define HCR_AMO     (0x1 << 5)
 #define HCR_FMO     0x8
 #define HCR_IMO     0x10
 #define HCR_VI      (0x1 << 7)
 
+#define local_irq_enable()  asm volatile(\
+                            "msr daifclr, 0x2" \
+                               : : : )
+#define local_irq_disable() asm volatile(\
+                            "msr daifset, 0x2" \
+                               : : : )
+
+#define local_fiq_enable()  asm volatile(\
+                            "msr daifclr, 0x1" \
+                               : : : )
+#define local_fiq_disable() asm volatile(\
+                            "msr daifset, 0x1" \
+                               : : : )
+
+#define local_serror_enable()  asm volatile(\
+                            "msr daifclr, 0x4" \
+                               : : : )
+#define local_serror_disable() asm volatile(\
+                            "msr daifset, 0x4" \
+                               : : : )
 /* */
 /* Generic ARM Registers  */
 #define read_vbar()             read_sr64(vbar_el1)

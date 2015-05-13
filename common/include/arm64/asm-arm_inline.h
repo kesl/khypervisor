@@ -16,13 +16,13 @@
  * -march=armv5 in U-Boot
  */
 
-#define irq_enable() asm volatile("msr daifclr 0x2" : : : "memory")
+#define irq_enable() asm volatile("msr daifclr, 0x2" : : : "memory")
 #define asm_clz(x)      ({ uint32_t rval; asm volatile(\
                                 " clz %0, %1\n\t" \
                                 : "=r" (rval) : "r" (x) : ); rval; })
 
 
-#define irq_disable() asm volatile ("msr daifset 0x2" : : : "memory")
+#define irq_disable() asm volatile ("msr daifset, 0x2" : : : "memory")
 
 #define irq_disabled() ({ unsigned int tf; \
                 asm volatile (" mrs     %0, daif\n\t" \
