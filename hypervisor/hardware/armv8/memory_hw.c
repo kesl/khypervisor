@@ -803,13 +803,6 @@ static void guest_memory_init_ttbl2(union lpaed *ttbl2,
         ttbl3 = &_ttbl3_guest_mem[gid][(ttbl2_index -256) * 512 * 512];
     }
 
-//    if (ttbl2_index < 256) // device area
-//        ttbl3 = &_ttbl3_guest_dev[gid][ttbl2_index * 512 * 512];
-//    else    // mem area
-//    {
-//        ttbl3 = &_ttbl3_guest_mem[gid][(ttbl2_index -256) * 512 * 512];
-//    }
-
     /* construct l2-l3 table hirerachy with invalid pages */
     guest_memory_ttbl2_init_entries(ttbl2, ttbl3);
     //guest_memory_ttbl2_unmap(ttbl2, ttbl3, 0x00000000, 0x40000000);
@@ -1296,29 +1289,6 @@ static void guest_memory_init(struct memmap_desc **guest_map, int gid)
         default:
             printh("Invalid start level\n");
     }
-//
-//    if (!cpu) {
-//        for (i = 0; i < NUM_GUESTS_STATIC; i++) {
-//            switch (sl0) {
-//                case 0:
-//                    // start level 3, unimplemented
-//                    printh("unimplemented\n");
-//                    break;
-//                case 1:
-//                    start_ttbl = _ttbl1_guest;
-//                case 2:
-//                    start_ttbl = _ttbl0_guest;
-//                default:
-//            }
-//            _vmid_ttbl[i] = &start_ttbl[i];
-//        }
-//        guest_memory_init_ttbl(&start_ttbl[0], guest0_map, 0);
-//        guest_memory_init_ttbl(&start_ttbl[1], guest1_map, 1);
-//    } else {
-//        guest_memory_init_ttbl(&start_ttbl[2], guest0_map, 2);
-//        guest_memory_init_ttbl(&start_ttbl[3], guest1_map, 3);
-//    }
-//
     HVMM_TRACE_EXIT();
 }
 
