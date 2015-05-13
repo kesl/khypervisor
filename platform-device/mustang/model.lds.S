@@ -14,11 +14,7 @@ ENTRY(start)
 
 #include <k-hypervisor-config.h>
 
-/*INPUT(./guestimages/guest0.bin)
-INPUT(./guestimages/guest1.bin)*/
 #ifdef _SMP_
-/*INPUT(./guestimages/guest2.bin)
-INPUT(./guestimages/guest3.bin)*/
 #endif
 
 MON_STACK   = CFG_MEMMAP_MON_OFFSET + MON_SIZE;
@@ -43,7 +39,6 @@ SECTIONS
 /* Guest 0 */
  . = CFG_MEMMAP_GUEST0_OFFSET;
   _guest0_bin_start = .;
-/*.guest0 : { ./guestimages/guest0.bin}*/
   _guest0_bin_end = .;
 
  . = GUEST0_STACK;
@@ -54,7 +49,6 @@ SECTIONS
 /* Guest 1 */
  . = CFG_MEMMAP_GUEST1_OFFSET;
   _guest1_bin_start = .;
-/*.guest1 : { ./guestimages/guest1.bin } */
   _guest1_bin_end = .;
 
  . = GUEST1_STACK;
@@ -66,7 +60,6 @@ SECTIONS
 /* Guest 2 */
  . = CFG_MEMMAP_GUEST2_OFFSET;
   _guest2_bin_start = .;
- /*.guest2 : { ./guestimages/guest2.bin }*/
   _guest2_bin_end = .;
 
  . = GUEST2_STACK;
@@ -77,7 +70,6 @@ SECTIONS
 /* Guest 3 */
  . = CFG_MEMMAP_GUEST3_OFFSET;
   _guest3_bin_start = .;
- .guest3 : { ./guestimages/guest3.bin }
   _guest3_bin_end = .;
 
  . = GUEST3_STACK;
