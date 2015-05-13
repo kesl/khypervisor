@@ -15,20 +15,6 @@
  * 1 Link Register (LR), 1 Program Counter (PC).
  */
 
-/**@brief Handles data abort exception taken in Hyp mode.
- * This function uses current ARM registers to dump.
- * @param regs ARM registers for current virtual machine.
- * \ref ARM
- * @return Returns HVMM_STATUS_UNKNOWN_ERROR only.
- */
-hvmm_status_t _hyp_dabort(struct arch_regs *regs)
-{
-    //guest_dump_regs(regs);
-    uart_print("dabort\n\r");
-    hyp_abort_infinite();
-    return HVMM_STATUS_UNKNOWN_ERROR;
-}
-
 /**@brief Handles IRQ exception when interrupt is occured by a device.
  * This funcntion calls gic interrupt, context switch.
  * @param regs ARM registers for current virtual machine.
@@ -42,7 +28,7 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
     uart_print("irq!\n\r");
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
-    //guest_perform_switch(regs);
+    guest_perform_switch(regs);
     return HVMM_STATUS_SUCCESS;
 }
 
@@ -56,21 +42,21 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
 hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
 {
     uart_print("unhandled!\n\r");
-    //guest_dump_regs(regs);
+    guest_dump_regs(regs);
     hyp_abort_infinite();
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
-/**@brief Indirects _hyp_hvc_service function in file.
+/**@brief Indirects _hyp_sync_service function in file.
  * @param regs ARM registers for current virtual machine.
  * \ref ARM
- * @return Returns the result is the same as _hyp_hvc_service().
+ * @return Returns the result is the same as _hyp_sync_service().
  * @todo Within the near future, this function will be deleted.
  */
-enum hyp_hvc_result _hyp_hvc(struct arch_regs *regs)
+enum hyp_hvc_result _hyp_sync(struct arch_regs *regs)
 {
-    uart_print("unhandled!\n\r");
-    return _hyp_hvc_service(regs);
+    uart_print("sync!\n\r");
+    return _hyp_sync_service(regs);
 }
 
 /**@brief Shows temporary banked registers for debugging.
@@ -91,7 +77,7 @@ static void _trap_dump_bregs(void)
 }
 
 /*
- * hvc #imm handler
+ * sync #imm handler
  *
  * HYP Syndrome Register(HSR)
  * EC[31:26] is an exception class for the exception that is taken to HYP mode
@@ -102,7 +88,7 @@ static void _trap_dump_bregs(void)
  * END OF HSR DESCRIPTION FROM ARM DDI0406_C ARCHITECTURE MANUAL
  */
 
-/**@brief Handles every exceptions taken from a mode other than Hyp mode.
+/**@brief Handles every exceptions taken from a mode other than sync mode.
  * <pre> Exception class
  *     Unknown reason
  *     Trapped WFI or WFE instruction
@@ -128,14 +114,18 @@ static void _trap_dump_bregs(void)
  * If hypervisor can b handled the exception then it returns HYP_RESULT_ERET.
  * If not, hypervisor should be stopped into trap_error in handler.
  */
-enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
+enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
 {
+    /*
+     * todo
+     * - fit in armv8 - separate hvc, abort and other exception
+     */
     int32_t vdev_num = -1;
     uint32_t hsr = read_hsr();
     uint32_t ec = (hsr & HSR_EC_BIT) >> EXTRACT_EC;
     uint32_t iss = hsr & HSR_ISS_BIT;
     uint32_t far = read_hdfar();
-    uint32_t fipa;
+    uint64_t fipa;
     uint32_t srt;
     struct arch_vdev_trigger_info info;
     int level = VDEV_LEVEL_LOW;
@@ -201,6 +191,10 @@ enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs)
     return HYP_RESULT_ERET;
 trap_error:
     _trap_dump_bregs();
-    printH("fipa is %x guest pc is %x\n", fipa, regs->pc);
+    printH("fipa is ");
+    uart_print_hex64(fipa);
+    printH("guest pc is ");
+    uart_print_hex64(regs->pc);
+    printH("\n");
     hyp_abort_infinite();
 }

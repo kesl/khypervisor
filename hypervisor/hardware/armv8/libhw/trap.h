@@ -87,8 +87,8 @@
 #define ISS_SRT_MASK                        (0xf << ISS_SRT_SHIFT)
 
 /* HPFAR */
-#define HPFAR_INITVAL                       0x00000000
-#define HPFAR_FIPA_MASK                     0xFFFFFFF0
+#define HPFAR_INITVAL                       0x0000000000000000
+#define HPFAR_FIPA_MASK                     0xFFFFFFFFF0
 #define HPFAR_FIPA_SHIFT                    4
 #define HPFAR_FIPA_PAGE_MASK                0x00000FFF
 #define HPFAR_FIPA_PAGE_SHIFT               12
