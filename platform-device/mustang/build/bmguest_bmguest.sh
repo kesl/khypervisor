@@ -1,6 +1,6 @@
 #for bmguest + bmguest
 
-export TARGET_PRODUCT="cortex_a15x2_rtsm"
+export TARGET_PRODUCT="mustang"
 
 export GUEST_COUNT=2
 
