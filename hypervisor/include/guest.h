@@ -26,6 +26,7 @@ enum hyp_hvc_result {
 struct guest_struct {
     struct arch_regs regs;
     struct arch_context context;
+    uint64_t vmpidr_el2;
     vmid_t vmid;
 };
 

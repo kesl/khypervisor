@@ -143,6 +143,7 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
 
     if (!current_regs)
         return HVMM_STATUS_SUCCESS;
+    guest->vmpidr_el2 = read_sr64(vmpidr_el2);
 
     context_copy_regs(regs, current_regs);
     context_save_sys(&context->regs_sys);
@@ -159,7 +160,7 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
                 struct arch_regs *current_regs)
 {
     struct arch_context *context = &guest->context;
-
+    write_sr64(guest->vmpidr_el2, vmpidr_el2);
 
     if (!current_regs) {
         /* init -> hyp mode -> guest */
@@ -181,7 +182,15 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
 static hvmm_status_t guest_hw_init(struct guest_struct *guest,
                 struct arch_regs *regs)
 {
+    /*
+     * todo:
+     * - support multicore, configure vmpidr
+     *    -> now, just suggest uniprocessor guest system.
+     *
+     */
     struct arch_context *context = &guest->context;
+    /* vmpidr_el2 -> mpidr_el1 */
+    guest->vmpidr_el2 = (0x1 << 30);
 
     regs->pc = CFG_GUEST_START_ADDRESS;
     /* Initialize loader status for reboot */

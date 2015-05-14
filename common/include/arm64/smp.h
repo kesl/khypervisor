@@ -5,8 +5,11 @@
 #include "armv8_processor.h"
 #include <asm-arm_inline.h>
 
-#define MPIDR_MASK 0xFFFFFF
-#define MPIDR_CPUID_MASK 0xFF
+#define MPIDR_MASK 0xFFFFFFFFFF
+#define MPIDR_AFFI0_MASK 0xFF
+#define MPIDR_AFFI1_MASK 0xFF00
+#define MPIDR_AFFI2_MASK 0xFF0000
+#define MPIDR_AFFI3_MASK 0xFF00000000
 
 /**
  * @brief Gets current CPU ID of the Symmetric MultiProcessing(SMP).
@@ -14,13 +17,14 @@
  * Read the value from Multiprocessor ID Register(MPIDR) and obtains the CPU ID
  * by masking.
  * - Coretex-A15
- *   - MPIDR[1:0] - CPUID - 0, 1, 2, OR 3
- *   - MPIDR[7:2] - Reserved, Read as zero
+ *   - MPIDR[ 7: 0] - Affinity 0
+ *   - MPIDR[15: 8] - Affinity 1
+ *   - MPIDR[23:16] - Affinity 2
  * @return The current CPU ID.
  */
 static inline uint64_t smp_processor_id(void)
 {
-    return read_sr64(MPIDR_EL1) & MPIDR_MASK & MPIDR_CPUID_MASK;
+    return read_sr64(MPIDR_EL1) & MPIDR_MASK & MPIDR_AFFI0_MASK;
 }
 
 #define __ARCH_SPIN_LOCK_UNLOCKED 0
