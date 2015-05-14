@@ -1,6 +1,5 @@
 #ifndef __TRAP_H__
 #define __TRAP_H__
-
 #include <hvmm_types.h>
 #include <guest.h>
 
@@ -97,6 +96,6 @@
  * @param regs ARM registers for current virtual machine.
  * @return Returns the result of exceptions.
  */
-enum hyp_hvc_result _hyp_hvc_service(struct arch_regs *regs);
+enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs);
 
 #endif
