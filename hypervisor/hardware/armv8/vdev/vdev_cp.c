@@ -193,42 +193,39 @@ static int32_t vdev_cp_read(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
     unsigned int ec = info->ec;
-    unsigned int hsr = read_hsr();
+    unsigned int hsr = read_esr();
 
     switch (ec) {
-    case TRAP_EC_ZERO_UNKNOWN:
+    case TRAP_EC_UNKNOWN:
         printh("Unknown reason: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_WFI_WFE:
+    case TRAP_EC_WFI_WFE:
         printh("Trapped WFI or WFE instruction: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MCR_MRC_CP15:
+    case TRAP_EC_MCR_MRC_CP15:
         printh("Trapped MCR or MRC access to CP15: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MCRR_MRRC_CP15:
+    case TRAP_EC_MCRR_MRRC_CP15:
         printh("Trapped MCRR or MRRC access to CP15: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MCR_MRC_CP14:
+    case TRAP_EC_MCR_MRC_CP14:
         printh("Trapped MCR or MRC access to CP14: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_LDC_STC_CP14:
+    case TRAP_EC_LDC_STC_CP14:
         printh("Trapped LDC or STC access to CP14: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_HCRTR_CP0_CP13:
-        printh("HCPTR-trapped access to CP0-CP13: 0x%08x\n", hsr);
+    case TRAP_EC_SIMD_FP:
+        printh("HCPTR-trapped access to SIMD and FP: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MRC_VMRS_CP10:
+    case TRAP_EC_MCR_MRC_CP10:
         printh(
             "Trapped MRC or VMRS access to CP10, for ID group traps: 0x%08x\n",
             hsr);
         break;
-    case TRAP_EC_ZERO_BXJ:
-        printh("Trapped BXJ instruction: 0x%08x\n", hsr);
-        break;
-    case TRAP_EC_ZERO_MRRC_CP14:
+    case TRAP_EC_MRRC_CP14:
         printh("Trapped MRRC access to CP14: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_NON_ZERO_SVC:
+    case TRAP_EC_SVC:
         printh("Supervisor Call exception routed to Hyp mode: 0x%08x\n", hsr);
         break;
     }
@@ -240,42 +237,39 @@ static int32_t vdev_cp_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
     unsigned int ec = info->ec;
-    unsigned int hsr = read_hsr();
+    unsigned int hsr = read_esr();
 
     switch (ec) {
-    case TRAP_EC_ZERO_UNKNOWN:
+    case TRAP_EC_UNKNOWN:
         printh("Unknown reason: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_WFI_WFE:
+    case TRAP_EC_WFI_WFE:
         printh("Trapped WFI or WFE instruction: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MCR_MRC_CP15:
+    case TRAP_EC_MCR_MRC_CP15:
         printh("Trapped MCR or MRC access to CP15: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MCRR_MRRC_CP15:
+    case TRAP_EC_MCRR_MRRC_CP15:
         printh("Trapped MCRR or MRRC access to CP15: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MCR_MRC_CP14:
+    case TRAP_EC_MCR_MRC_CP14:
         printh("Trapped MCR or MRC access to CP14: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_LDC_STC_CP14:
+    case TRAP_EC_LDC_STC_CP14:
         printh("Trapped LDC or STC access to CP14: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_HCRTR_CP0_CP13:
-        printh("HCPTR-trapped access to CP0-CP13: 0x%08x\n", hsr);
+    case TRAP_EC_SIMD_FP:
+        printh("HCPTR-trapped access to SIMD and FP: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_ZERO_MRC_VMRS_CP10:
+    case TRAP_EC_MCR_MRC_CP10:
         printh(
             "Trapped MRC or VMRS access to CP10, for ID group traps: 0x%08x\n",
             hsr);
         break;
-    case TRAP_EC_ZERO_BXJ:
-        printh("Trapped BXJ instruction: 0x%08x\n", hsr);
-        break;
-    case TRAP_EC_ZERO_MRRC_CP14:
+    case TRAP_EC_MRRC_CP14:
         printh("Trapped MRRC access to CP14: 0x%08x\n", hsr);
         break;
-    case TRAP_EC_NON_ZERO_SVC:
+    case TRAP_EC_SVC:
         printh("Supervisor Call exception routed to Hyp mode: 0x%08x\n", hsr);
         break;
     }
@@ -301,14 +295,15 @@ static int32_t vdev_cp_check(struct arch_vdev_trigger_info *info,
 {
     uint32_t ec = info->ec;
 
-    if (ec == TRAP_EC_ZERO_MCR_MRC_CP15 ||
-        ec == TRAP_EC_ZERO_MCRR_MRRC_CP15 ||
-        ec == TRAP_EC_ZERO_MCR_MRC_CP14 ||
-        ec == TRAP_EC_ZERO_HCRTR_CP0_CP13 ||
-        ec == TRAP_EC_ZERO_MRC_VMRS_CP10 ||
-        ec == TRAP_EC_ZERO_MRRC_CP14 ||
-        ec == TRAP_EC_ZERO_MCR_MRC_CP14 ||
-        ec == TRAP_EC_ZERO_LDC_STC_CP14)
+    if (ec == TRAP_EC_MCR_MRC_CP15 ||
+        ec == TRAP_EC_MCRR_MRRC_CP15 ||
+        ec == TRAP_EC_MCR_MRC_CP14 ||
+        ec == TRAP_EC_SIMD_FP||
+        ec == TRAP_EC_MCR_MRC_CP10 ||
+        ec == TRAP_EC_MRRC_CP14 ||
+        ec == TRAP_EC_MCR_MRC_CP14 ||
+        ec == TRAP_EC_LDC_STC_CP14 ||
+        ec == TRAP_EC_SVC)
         return 0;
 
     return VDEV_NOT_FOUND;

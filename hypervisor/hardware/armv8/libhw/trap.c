@@ -136,9 +136,9 @@ enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
      * - fit in armv8 - separate hvc, abort and other exception
      */
     int32_t vdev_num = -1;
-    uint32_t hsr = read_hsr();
-    uint32_t ec = (hsr & HSR_EC_BIT) >> EXTRACT_EC;
-    uint32_t iss = hsr & HSR_ISS_BIT;
+    uint32_t esr = read_esr();
+    uint32_t ec = (esr & ESR_EC_BIT) >> EXTRACT_EC;
+    uint32_t iss = esr & ESR_ISS_BIT;
     uint32_t far = read_hdfar();
     uint64_t fipa;
     uint32_t srt;
@@ -155,33 +155,33 @@ enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
     srt = (iss & ISS_SRT_MASK) >> ISS_SRT_SHIFT;
     info.value = &(regs->gpr[srt]);
     switch (ec) {
-    case TRAP_EC_ZERO_UNKNOWN:
-    case TRAP_EC_ZERO_WFI_WFE:
-    case TRAP_EC_ZERO_MCR_MRC_CP15:
-    case TRAP_EC_ZERO_MCRR_MRRC_CP15:
-    case TRAP_EC_ZERO_MCR_MRC_CP14:
-    case TRAP_EC_ZERO_LDC_STC_CP14:
-    case TRAP_EC_ZERO_HCRTR_CP0_CP13:
-    case TRAP_EC_ZERO_MRC_VMRS_CP10:
-    case TRAP_EC_ZERO_BXJ:
-    case TRAP_EC_ZERO_MRRC_CP14:
-    case TRAP_EC_NON_ZERO_SVC:
-    case TRAP_EC_NON_ZERO_SMC:
-    case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_OTHER_MODE:
-    case TRAP_EC_NON_ZERO_PREFETCH_ABORT_FROM_HYP_MODE:
-    case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_HYP_MODE:
+    case TRAP_EC_UNKNOWN:
+    case TRAP_EC_WFI_WFE:
+    case TRAP_EC_MCR_MRC_CP15:
+    case TRAP_EC_MCRR_MRRC_CP15:
+    case TRAP_EC_MCR_MRC_CP14:
+    case TRAP_EC_LDC_STC_CP14:
+    case TRAP_EC_SIMD_FP:
+    case TRAP_EC_MCR_MRC_CP10:
+    case TRAP_EC_MRRC_CP14:
+
+    case TRAP_EC_SVC:
+    case TRAP_EC_SMC:
+    case TRAP_EC_PREFETCH_ABORT_FROM_OTHER_MODE:
+    case TRAP_EC_PREFETCH_ABORT_FROM_HYP_MODE:
+    case TRAP_EC_DATA_ABORT_FROM_HYP_MODE:
         level = VDEV_LEVEL_HIGH;
         break;
-    case TRAP_EC_NON_ZERO_HVC:
+    case TRAP_EC_HVC:
         level = VDEV_LEVEL_MIDDLE;
         break;
-    case TRAP_EC_NON_ZERO_DATA_ABORT_FROM_OTHER_MODE:
+    case TRAP_EC_DATA_ABORT_FROM_OTHER_MODE:
         level = VDEV_LEVEL_LOW;
         break;
     default:
-        printH("[hyp] _hyp_hvc_service:unknown hsr.iss= %x\n", iss);
-        printH("[hyp] hsr.ec= %x\n", ec);
-        printH("[hyp] hsr= %x\n", hsr);
+        printH("[hyp] _hyp_sync_service:unknown esr.iss= %x\n", iss);
+        printH("[hyp] esr.ec= %x\n", ec);
+        printH("[hyp] esr= %x\n", esr);
         guest_dump_regs(regs);
         goto trap_error;
     }

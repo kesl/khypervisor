@@ -76,7 +76,7 @@
 #define read_hmair()            read_sr64(mair_el2)
 #define write_hmair(val)        write_sr64(val, mair_el2)
 
-#define read_hsr()              read_sr32(esr_el2)
+#define read_esr()              read_sr32(esr_el2)
 
 #define read_htcr()             read_sr32(tcr_el2)
 #define write_htcr(val)         write_sr32(val, tcr_el2)
