@@ -9,6 +9,21 @@
 #define DEBUG
 #include <log/print.h>
 #include <interrupt.h>
+
+static const char *ext_level[] = {
+    "GUEST_64",
+    "GUEST_32",
+    "EL2T",
+    "EL2H"
+};
+
+static const char *mode[] = {
+   "synconous",
+   "IRQ",
+   "FIQ",
+   "Serror"
+};
+
 /**\defgroup ARM
  * <pre> ARM registers.
  * ARM registers include 13 general purpose registers r0-r12, 1 Stack Pointer,
@@ -21,11 +36,11 @@
  * \ref ARM
  * @return Returns HVMM_STATUS_SUCCESS only.
  */
-hvmm_status_t _hyp_irq(struct arch_regs *regs)
+hvmm_status_t _irq(struct arch_regs *regs, uint32_t el)
 {
     uint32_t irq;
 
-    uart_print("irq!\n\r");
+    printH("[%s]IRQ\n\r", ext_level[el]);
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
@@ -39,9 +54,9 @@ hvmm_status_t _hyp_irq(struct arch_regs *regs)
  * \ref ARM
  * @return Returns HVMM_STATUS_UNKNOWN_ERROR only.
  */
-hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
+hvmm_status_t _unhandled(struct arch_regs *regs, uint32_t el, uint32_t md)
 {
-    uart_print("unhandled!\n\r");
+    printH("[%s] %s is unhandled!\n\r", ext_level[el], mode[md]);
     guest_dump_regs(regs);
     hyp_abort_infinite();
     return HVMM_STATUS_UNKNOWN_ERROR;
@@ -53,9 +68,9 @@ hvmm_status_t _hyp_unhandled(struct arch_regs *regs)
  * @return Returns the result is the same as _hyp_sync_service().
  * @todo Within the near future, this function will be deleted.
  */
-enum hyp_hvc_result _hyp_sync(struct arch_regs *regs)
+enum hyp_hvc_result _sync(struct arch_regs *regs, uint32_t el)
 {
-    uart_print("sync!\n\r");
+    printH("[%s]sync!\n\r", ext_level[el]);
     return _hyp_sync_service(regs);
 }
 
