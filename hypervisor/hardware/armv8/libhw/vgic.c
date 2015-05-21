@@ -617,6 +617,7 @@ hvmm_status_t vgic_init(void)
         _vgic.base = gic_vgic_baseaddr();
         _vgic.num_lr = (_vgic.base[GICH_VTR] & GICH_VTR_LISTREGS_MASK) + 1;
         _vgic.valid_lr_mask = _vgic_valid_lr_mask(_vgic.num_lr);
+        _vgic.base[GICH_MISR] = GICH_MISR_EOI;
         _vgic.initialized = VGIC_SIGNATURE_INITIALIZED;
     }
 
