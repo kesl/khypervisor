@@ -1363,11 +1363,6 @@ static int memory_hw_init(struct memmap_desc **guest0,
 
     id_aa64mmfr0_el1 = read_sr64(id_aa64mmfr0_el1);
 
-    /* ID_AA64MMFR0_EL1 */
-    uart_print("[memory] AArch64 Memory Model Feature 0 : ");
-    uart_print_hex64(id_aa64mmfr0_el1);
-    uart_print("\n\r");
-
     guest_memory_init(guest0, 0);
     guest_memory_init(guest1, 1);
 

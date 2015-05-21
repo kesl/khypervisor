@@ -286,7 +286,45 @@ void setup_timer()
 
 uint8_t secondary_smp_pen;
 
+#define print_feature_64(val1, val2) \
+{ \
+    uint64_t feature_1, feature_2; \
+    feature_1 = read_sr64(val1); \
+    feature_2 = read_sr64(val2); \
+    uart_print_hex64(feature_1); \
+    printH(" "); \
+    uart_print_hex64(feature_2); \
+    printH("\n"); \
+}
 
+#define print_feature_32(val1, val2) \
+{ \
+    uint32_t feature_1, feature_2; \
+    feature_1 = read_sr32(val1); \
+    feature_2 = read_sr32(val2); \
+    uart_print_hex64(feature_1); \
+    printH(" "); \
+    uart_print_hex64(feature_2); \
+    printH("\n"); \
+}
+void feature_check()
+{
+    printH("[feature check]\n");
+
+    printH("aarch64 : \n");
+    printH("    Auxiliary :");
+    print_feature_64(id_aa64afr0_el1, id_aa64afr1_el1);
+    printH("    Debug:");
+    print_feature_64(id_aa64dfr0_el1, id_aa64dfr1_el1);
+    printH("    Instruction Set Attribute:");
+    print_feature_64(id_aa64isar0_el1, id_aa64isar1_el1);
+    printH("    Memory Model:");
+    print_feature_64(id_aa64mmfr0_el1, id_aa64mmfr1_el1);
+    printH("    Processor :");
+    print_feature_64(id_aa64pfr0_el1, id_aa64pfr1_el1);
+
+    //printH("aarch32 : \n");
+}
 void main_cpu_init()
 {
     uart_init();
@@ -294,6 +332,7 @@ void main_cpu_init()
     init_print();
     printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
 
+    feature_check();
     /* Initialize Memory Management */
     setup_memory();
     if (memory_init(guest0_mdlist, guest1_mdlist))
