@@ -23,6 +23,11 @@
                                          |(GIC_INT_PRIORITY_DEFAULT << 8) \
                                          |(GIC_INT_PRIORITY_DEFAULT))
 
+#define GIC_INT_PRIORITY_SGI_WORD    ((GIC_INT_PRIORITY_SGI << 24) \
+                                     |(GIC_INT_PRIORITY_SGI << 16) \
+                                     |(GIC_INT_PRIORITY_SGI << 8) \
+                                     |(GIC_INT_PRIORITY_SGI))
+
 #define GIC_SIGNATURE_INITIALIZED   0x5108EAD7
 /**
  * @brief Registers for Generic Interrupt Controller(GIC)
@@ -224,8 +229,12 @@ static hvmm_status_t gic_init_cpui(void)
     _gic.ba_gicd[GICD_ICENABLER] = 0xFFFF0000;
     /* Enable forwarding SGIs(ID0~15) */
     _gic.ba_gicd[GICD_ISENABLER] = 0x0000FFFF;
-    /* Default priority for SGIs and PPIs */
-    for (i = 0; i < 32; i += 4)
+    /* Default priority for SGIs */
+    for (i = 0; i < 16; i += 4)
+        _gic.ba_gicd[GICD_IPRIORITYR + i / 4] = GIC_INT_PRIORITY_SGI_WORD;
+
+    /* Default priority for SGIs */
+    for (i = 16; i < 32; i += 4)
         _gic.ba_gicd[GICD_IPRIORITYR + i / 4] = GIC_INT_PRIORITY_DEFAULT_WORD;
 
     /* No Priority Masking: the lowest value as the threshold : 255 */
@@ -262,7 +271,7 @@ hvmm_status_t gic_deactivate_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-volatile uint32_t *gic_vgic_baseaddr(void)
+volatile uint64_t *gic_vgic_baseaddr(void)
 {
     if (_gic.initialized != GIC_SIGNATURE_INITIALIZED) {
         HVMM_TRACE_ENTER();

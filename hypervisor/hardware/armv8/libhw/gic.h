@@ -9,6 +9,7 @@
 #define GIC_NUM_MAX_IRQS    1024
 #define gic_cpumask_current()    (1u << smp_processor_id())
 #define GIC_INT_PRIORITY_DEFAULT        0xa0
+#define GIC_INT_PRIORITY_SGI            0x90
 
 enum gic_int_polarity {
     GIC_INT_POLARITY_LEVEL = 0,
@@ -36,7 +37,7 @@ hvmm_status_t gic_completion_irq(uint32_t irq);
  * @brief Returns Virtual interface control register(GICH)'s base address.
  * @return Base address of GICH
  */
-volatile uint32_t *gic_vgic_baseaddr(void);
+volatile uint64_t *gic_vgic_baseaddr(void);
 
 /**
  * @brief           Configures for a given IRQ.
