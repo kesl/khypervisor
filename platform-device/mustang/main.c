@@ -286,18 +286,13 @@ void setup_timer()
 
 uint8_t secondary_smp_pen;
 
+
 void main_cpu_init()
 {
-    uint64_t aa64pfr0;
-    local_irq_enable();
-    local_fiq_enable();
-    local_serror_enable();
     uart_init();
 
     init_print();
     printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
-    aa64pfr0 = read_sr64(id_aa64pfr0_el1);
-    printH("ID_AA64PFR0_EL1: %x\n", aa64pfr0);
 
     /* Initialize Memory Management */
     setup_memory();
@@ -319,6 +314,9 @@ void main_cpu_init()
     setup_timer();
     if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
+
+    local_irq_enable();
+    local_serror_enable();
 
     /* Initialize Guests */
     if (guest_init())
@@ -362,6 +360,9 @@ void secondary_cpu_init(uint64_t cpu)
     /* Initialize Timer */
     if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
+
+    local_irq_enable();
+    local_serror_enable();
 
     /* Initialize Guests */
     if (guest_init())
