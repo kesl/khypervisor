@@ -139,7 +139,7 @@ enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
     uint32_t esr = read_esr();
     uint32_t ec = (esr & ESR_EC_BIT) >> EXTRACT_EC;
     uint32_t iss = esr & ESR_ISS_BIT;
-    uint32_t far = read_hdfar();
+    uint64_t far = read_hdfar();
     uint64_t fipa;
     uint32_t srt;
     struct arch_vdev_trigger_info info;
@@ -206,8 +206,14 @@ enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
     return HYP_RESULT_ERET;
 trap_error:
     _trap_dump_bregs();
+    printH("ESR_EL2:%x\n", esr);
+    printH("FAR_EL2:");
+    uart_print_hex64(far);
+    printH("\n");
+
     printH("fipa is ");
     uart_print_hex64(fipa);
+    printH("\n");
     printH("guest pc is ");
     uart_print_hex64(regs->pc);
     printH("\n");
