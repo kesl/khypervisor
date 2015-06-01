@@ -79,7 +79,7 @@ union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx)
     /* Valid Block Entry */
     lpaed.pt.valid = 1;
     lpaed.pt.table = 0;
-    lpaed.bits &= ~TTBL_L1_OUTADDR_MASK;
+    lpaed.bits &= ~TTBL_L1_TABADDR_MASK;
     lpaed.bits |= pa & TTBL_L1_OUTADDR_MASK;
     lpaed.pt.sbz = 0;
     /* Lower block attributes */
@@ -87,7 +87,7 @@ union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx)
     lpaed.pt.ns = 1;    /* Allow Non-secure access */
     lpaed.pt.user = 1;
     lpaed.pt.ro = 0;
-    lpaed.pt.sh = 2;    /* Outher Shareable */
+    lpaed.pt.sh = 3;    /* Outher Shareable */
     lpaed.pt.af = 1;    /* Access Flag set to 1? */
     lpaed.pt.ng = 1;
     /* Upper block attributes */
