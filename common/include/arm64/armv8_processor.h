@@ -22,10 +22,23 @@
                               "tlbi "#name)
 #define HCR_RW      (0x1 << 31)
 #define HCR_TGE     (0x1 << 27)
-#define HCR_AMO     (0x1 << 5)
-#define HCR_FMO     0x8
-#define HCR_IMO     0x10
+#define HCR_TAC     (0x1 << 21)
+#define HCR_TIDCP   (0x1 << 20)
+#define HCR_TSC     (0x1 << 19)
+#define HCR_TWE     (0x1 << 14)
+#define HCR_TWI     (0x1 << 13)
+#define HCR_BSU(x)  (x  << 10)
+#define HCR_BSU_NO      HCR_BSU(0x0)
+#define HCR_BSU_INNER   HCR_BSU(0x1)
+#define HCR_BSU_OUTER   HCR_BSU(0x2)
+#define HCR_BSU_FULL    HCR_BSU(0x3)
 #define HCR_VI      (0x1 << 7)
+#define HCR_AMO     (0x1 << 5)
+#define HCR_IMO     (0x1 << 4)
+#define HCR_FMO     (0x1 << 3)
+#define HCR_PTW     (0x1 << 2)
+#define HCR_SWIO    (0x1 << 1)
+#define HCR_VM      (0x1 << 0)
 
 #define local_irq_enable()  asm volatile(\
                             "msr daifclr, 0x2" \

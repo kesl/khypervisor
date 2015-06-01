@@ -17,8 +17,10 @@ static hvmm_status_t host_interrupt_init(void)
         uart_print("hcr_el2:");
         uart_print_hex64(hcr);
         uart_print("\n\r");
-        hcr |= HCR_RW | HCR_IMO | HCR_FMO | HCR_AMO;
+        hcr |= HCR_TIDCP| HCR_TAC| HCR_TSC| HCR_TWE| HCR_TWI| HCR_VM|
+            HCR_BSU_INNER| HCR_AMO| HCR_IMO| HCR_FMO| HCR_PTW| HCR_SWIO;
         write_hcr(hcr);
+        isb();
         hcr = read_hcr();
         uart_print("hcr_el2:");
         uart_print_hex64(hcr);
