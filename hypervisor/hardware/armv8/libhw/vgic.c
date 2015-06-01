@@ -508,13 +508,18 @@ uint32_t vgic_inject_virq(
     physicalid = (hw ? physrc : (maintenance << 9) | \
             (physrc & 0x7)) << GICH_LR_PHYSICALID_SHIFT;
     physicalid &= GICH_LR_PHYSICALID_MASK;
-    lr_desc = (GICH_LR_HW_MASK & (hw << GICH_LR_HW_SHIFT)) |
-              /* (GICH_LR_GRP1_MASK & (1 << GICH_LR_GRP1_SHIFT) )| */
-              (GICH_LR_STATE_MASK & (state << GICH_LR_STATE_SHIFT)) |
-              (GICH_LR_PRIORITY_MASK & \
-              ((priority >> 3)  << GICH_LR_PRIORITY_SHIFT)) |
-              physicalid |
-              (GICH_LR_VIRTUALID_MASK & virq);
+    lr_desc = (GICH_LR_STATE_MASK & (state << GICH_LR_STATE_SHIFT)) |
+        (GICH_LR_PRIORITY_MASK & \
+         ((priority >> 3)  << GICH_LR_PRIORITY_SHIFT)) |
+        physicalid | (GICH_LR_VIRTUALID_MASK & virq);
+
+    if(hw)
+        lr_desc |= GICH_LR_EOI;
+    //else
+    //{
+    //    /*lr_desc |= (GICH_LR_HW_MASK & (hw << GICH_LR_HW_SHIFT)); |*/
+    //    /* (GICH_LR_GRP1_MASK & (1 << GICH_LR_GRP1_SHIFT) )| */
+    //}
     slot = vgic_is_free_slot(slot);
     HVMM_TRACE_HEX32("lr_desc:", lr_desc);
     HVMM_TRACE_HEX32("free slot:", slot);

@@ -49,6 +49,7 @@ static void gic_dump_registers(void)
 {
     uint32_t midr;
     HVMM_TRACE_ENTER();
+
     midr = read_midr();
     uart_print("midr_el2:");
     uart_print_hex32(midr);
@@ -249,6 +250,7 @@ static hvmm_status_t gic_init_cpui(void)
 /* API functions */
 hvmm_status_t gic_enable_irq(uint32_t irq)
 {
+    dsb(sy);
     _gic.ba_gicd[GICD_ISENABLER + irq / 32] = (1u << (irq % 32));
     return HVMM_STATUS_SUCCESS;
 }
@@ -267,7 +269,8 @@ hvmm_status_t gic_completion_irq(uint32_t irq)
 
 hvmm_status_t gic_deactivate_irq(uint32_t irq)
 {
-    _gic.ba_gicc[GICC_DIR] = irq;
+    /* mustang's quirk applied by hardcoding, have to fixed it*/
+    _gic.ba_gicc[GICC_DIR + (0x10000 / 4)] = irq;
     return HVMM_STATUS_SUCCESS;
 }
 
@@ -338,6 +341,8 @@ hvmm_status_t gic_configure_irq(uint32_t irq,
                 icfg |= (2u << (2 * (irq % 16)));
 
             _gic.ba_gicd[GICD_ICFGR + irq / 16] = icfg;
+            icfg = _gic.ba_gicd[GICD_ICFGR + irq / 16];
+
             /* routing */
             reg8 = (uint8_t *) &(_gic.ba_gicd[GICD_ITARGETSR]);
             reg8[irq] = cpumask;
@@ -376,4 +381,3 @@ uint32_t gic_get_irq_number(void)
 
     return irq;
 }
-
