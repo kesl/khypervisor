@@ -97,11 +97,13 @@
 
     pop_registers
 .endm
-.global hyp_init_vectors
+
 /*
  * Hypervisor Vector Table
  */
-.align 11
+    .align 11
+    .global hyp_init_vectors
+    .align 2
 hyp_init_vectors:
     /* EL2t, SP_EL0 */
     entry   el2t_vector_sync            /* EL2t Synchronous */
@@ -135,7 +137,7 @@ el2h_vector_sync:
     push_registers
 
     // service other argument values -> _sync_service(sp)
-    msr daifclr, #2
+    //msr daifclr, #2
     mov x0, sp
     mov x1, EL2H
     bl  _sync    // r0: HSR
@@ -155,7 +157,7 @@ el2h_vector_sync:
     pop x0, x1
     tst x0, #0x1f
     beq 2f
-    ldr x0, #0
+    ldr x0, =0
     msr spsr_el2, x0
 2:
     msr elr_el2, x1
