@@ -51,6 +51,7 @@ start:
     # Program architected timer frequency
     #
     msr daifset, 0xf         // Disable all interrupt
+
     ldr	x0, = CFG_CNTFRQ
     msr cntfrq_el0, x0      // CNTFRQ
 1:
@@ -153,11 +154,11 @@ go_to_c:
 /* this code must be changed*/
 .global __mon_switch_to_guest_context
 __mon_switch_to_guest_context:    # struct arch_regs *x0
-    msr daifclr, 0x7
-    ldp x0, x1, [x0], #16
-    msr spsr_el2, x0
-    msr elr_el2, x1
-    ldp x0, x1, [x0], #16
+    ldr w1, [x0], #8
+    ldr x2, [x0], #8
+    msr spsr_el2, x1
+    msr elr_el2, x2
+    ldp x30, x1, [x0], #16
     ldp x2, x3, [x0], #16
     ldp x4, x5, [x0], #16
     ldp x6, x7, [x0], #16
