@@ -85,14 +85,14 @@ static struct memmap_desc guest3_device_md1[] = {
  * @brief Memory map for guest 0.
  */
 static struct memmap_desc guest0_memory_md0[] = {
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, SZ_1G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
 
 static struct memmap_desc guest0_memory_md1[] = {
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, SZ_1G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -103,18 +103,19 @@ static struct memmap_desc guest0_memory_md1[] = {
  */
 static struct memmap_desc guest1_memory_md0[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, SZ_1G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
 
 static struct memmap_desc guest1_memory_md1[] = {
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, SZ_1G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
 };
+
 
 #ifdef _SMP_
 /**
@@ -122,7 +123,7 @@ static struct memmap_desc guest1_memory_md1[] = {
  */
 static struct memmap_desc guest2_memory_md[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, SZ_1G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -133,7 +134,7 @@ static struct memmap_desc guest2_memory_md[] = {
  */
 static struct memmap_desc guest3_memory_md[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, 0x40000000,
+    {"start", 0x00000000, 0, SZ_1G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
     },
     {0, 0, 0, 0,  0},
@@ -281,7 +282,7 @@ void setup_memory()
  */
 void setup_timer()
 {
-    _timer_irq = 15; /* GENERIC_TIMER_HYP */
+    _timer_irq = 31; /* GENERIC_TIMER_HYP */
 }
 
 uint8_t secondary_smp_pen;
@@ -309,6 +310,8 @@ uint8_t secondary_smp_pen;
 }
 void feature_check()
 {
+    uint32_t currentEL = read_sr32(currentEL);
+    printH("current EL : %x\n", currentEL>>2);
     printH("[feature check]\n");
 
     printH("aarch64 : \n");
@@ -354,9 +357,6 @@ void main_cpu_init()
     if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
 
-    local_irq_enable();
-    local_serror_enable();
-
     /* Initialize Guests */
     if (guest_init())
         printh("[start_guest] guest initialization failed...\n");
@@ -399,9 +399,6 @@ void secondary_cpu_init(uint64_t cpu)
     /* Initialize Timer */
     if (timer_init(_timer_irq))
         printh("[start_guest] timer initialization failed...\n");
-
-    local_irq_enable();
-    local_serror_enable();
 
     /* Initialize Guests */
     if (guest_init())
