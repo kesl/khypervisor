@@ -6,8 +6,8 @@
 #define wfi()   __asm__ __volatile__ ("wfi" : : : "memory")
 
 #define isb() __asm__ __volatile__ ("isb" : : : "memory")
-#define dsb() __asm__ __volatile__ ("dsb" : : : "memory")
-#define dmb() __asm__ __volatile__ ("dmb" : : : "memory")
+#define dsb(scop) __asm__ __volatile__ ("dsb " #scop: : : "memory")
+#define dmb(scop) __asm__ __volatile__ ("dmb " #scop: : : "memory")
 
 /*
  * CP15 Barrier instructions
