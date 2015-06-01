@@ -104,7 +104,8 @@
 #define SCTLR_A         (1<<1)  /**< Alignment check enable. */
 #define SCTLR_M         (1<<0)  /**< MMU enable. */
 #define SCTLR_BASE        0x00c50078  /**< STCLR Base address */
-#define SCTLR_EL2_BASE       0x30c51878  /**< STCLR_EL2 Base Settings */
+//#define SCTLR_EL2_BASE       0x30c51838  /**< STCLR_EL2 Base Settings */
+#define SCTLR_EL2_BASE       0x30c51830  /**< STCLR_EL2 Base Settings */
 /** @}*/
 
 /**
@@ -142,7 +143,7 @@
 #define TCR_EL2_ORGN0_SHIFT             10
 #define TCR_EL2_IRGN0_MASK              0x00000300 /**< \ref Inner_cacheability */
 #define TCR_EL2_IRGN0_SHIFT             8
-#define TCR_EL2_T0SZ_MASK               0x00000003
+#define TCR_EL2_T0SZ_MASK               0x0000003F
 #define TCR_EL2_T0SZ_SHIFT              0
 /** @} */
 
@@ -159,6 +160,9 @@
 
 #define HEAP_ADDR (CFG_MEMMAP_MON_OFFSET + 0x02000000)
 #define HEAP_SIZE 0x0D000000
+
+#define L1_ENTRY_MASK 0x1FF
+#define L1_SHIFT 30
 
 #define L2_ENTRY_MASK 0x1FF
 #define L2_SHIFT 21
@@ -369,6 +373,7 @@ static void host_memory_flushTLB(void)
 static union lpaed *host_memory_get_l3_table_entry(unsigned long virt,
                 unsigned long npages)
 {
+    int l1_index = (virt >> L1_SHIFT) & L1_ENTRY_MASK;
     int l2_index = (virt >> L2_SHIFT) & L2_ENTRY_MASK;
     int l3_index = (virt >> L3_SHIFT) & L3_ENTRY_MASK;
     int maxsize = ((HMM_L2_PTE_NUM * HMM_L3_PTE_NUM) - \
@@ -382,7 +387,7 @@ static union lpaed *host_memory_get_l3_table_entry(unsigned long virt,
             printh("%s[%d] : Do not have available pages for map\n");
         return 0;
     }
-    return &_hmm_pgtable_l3[l2_index][l3_index];
+    return &_hmm_pgtable_l3[l1_index][l2_index][l3_index];
 }
 
 /**
@@ -418,15 +423,15 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @param npages Number of pages.
  * @return void
  */
-//static void host_memory_map(unsigned long phys, unsigned long virt,
-//        unsigned long npages)
-//{
-//    int i;
-//    union lpaed *map_table_p = host_memory_get_l3_table_entry(virt, npages);
-//    for (i = 0; i < npages; i++)
-//        lpaed_guest_stage1_conf_l3_table(&map_table_p[i], (uint64_t)phys, 1);
-//    host_memory_flushTLB();
-//}
+static void host_memory_map(unsigned long phys, unsigned long virt,
+        unsigned long npages)
+{
+    int i;
+    union lpaed *map_table_p = host_memory_get_l3_table_entry(virt, npages);
+    for (i = 0; i < npages; i++)
+        lpaed_guest_stage1_conf_l3_table(&map_table_p[i], (uint64_t)phys, 1);
+    host_memory_flushTLB();
+}
 
 /**
  * @brief General-purpose sbrk, basic memory management system calls.
@@ -437,30 +442,30 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @param  incr Size of memory wanted.
  * @return Pointer of allocated heap memory.
  */
-//static void *host_memory_sbrk(unsigned int incr)
-//{
-//    uint64_t required_addr;
-//    uint64_t virt;
-//    unsigned long required_pages = 0;
-//
-//    mm_prev_break = mm_break;
-//    virt = mm_break;
-//    mm_break += incr;
-//    if (mm_break > last_valid_address) {
-//        required_addr = mm_break - last_valid_address;
-//        for (; required_addr > 0x0; required_addr -= 0x1000) {
-//            if (last_valid_address + 0x1000 > HEAP_END_ADDR) {
-//                printh("%s[%d] required address is exceeded heap memory size\n",
-//                        __func__, __LINE__);
-//                return (void *)-1;
-//            }
-//            last_valid_address += 0x1000;
-//            required_pages++;
-//        }
-//        host_memory_map(virt, virt, required_pages);
-//    }
-//    return (void *)mm_prev_break;
-//}
+static void *host_memory_sbrk(unsigned int incr)
+{
+    uint64_t required_addr;
+    uint64_t virt;
+    unsigned long required_pages = 0;
+
+    mm_prev_break = mm_break;
+    virt = mm_break;
+    mm_break += incr;
+    if (mm_break > last_valid_address) {
+        required_addr = mm_break - last_valid_address;
+        for (; required_addr > 0x0; required_addr -= 0x1000) {
+            if (last_valid_address + 0x1000 > HEAP_END_ADDR) {
+                printh("%s[%d] required address is exceeded heap memory size\n",
+                        __func__, __LINE__);
+                return (void *)-1;
+            }
+            last_valid_address += 0x1000;
+            required_pages++;
+        }
+        host_memory_map(virt, virt, required_pages);
+    }
+    return (void *)mm_prev_break;
+}
 
 /**
  * @brief Unmaps level3 table entry in virtual address.
@@ -472,26 +477,26 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @param npages Number of pages.
  * @return void
  */
-//static void host_memory_free(void *ap)
-//{
-//    union header *bp, *p;
-//    bp = (union header *)ap - 1; /* point to block header */
-//    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr) {
-//        if (p >= p->s.ptr && (bp > p || bp < p->s.ptr))
-//            break; /* freed block at start or end of arena */
-//    }
-//    if (bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
-//        bp->s.size += p->s.ptr->s.size;
-//        bp->s.ptr = p->s.ptr->s.ptr;
-//    } else
-//        bp->s.ptr = p->s.ptr;
-//    if (p + p->s.size == bp) {      /* join to lower nbr */
-//        p->s.size += bp->s.size;
-//        p->s.ptr = bp->s.ptr;
-//    } else
-//        p->s.ptr = bp;
-//    freep = p;
-//}
+static void host_memory_free(void *ap)
+{
+    union header *bp, *p;
+    bp = (union header *)ap - 1; /* point to block header */
+    for (p = freep; !(bp > p && bp  < p->s.ptr); p = p->s.ptr) {
+        if (p >= p->s.ptr && (bp > p || bp < p->s.ptr))
+            break; /* freed block at start or end of arena */
+    }
+    if (bp + bp->s.size == p->s.ptr) { /* join to upper nbr */
+        bp->s.size += p->s.ptr->s.size;
+        bp->s.ptr = p->s.ptr->s.ptr;
+    } else
+        bp->s.ptr = p->s.ptr;
+    if (p + p->s.size == bp) {      /* join to lower nbr */
+        p->s.size += bp->s.size;
+        p->s.ptr = bp->s.ptr;
+    } else
+        p->s.ptr = bp;
+    freep = p;
+}
 
 /**
  * @brief Obtains the storage from the heap memory.
@@ -504,20 +509,20 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @return Pointer of free list block header & memory area.
  *         The size of this memory is bigger than 1KB.
  */
-//static union header *morecore(unsigned int nu)
-//{
-//    char *cp;
-//    union header *up;
-//    if (nu < NALLOC)
-//        nu = NALLOC;
-//    cp = host_memory_sbrk(nu * sizeof(union header));
-//    if (cp == (char *) -1) /* no space at all */
-//        return 0;
-//    up = (union header *)cp;
-//    up->s.size = nu;
-//    host_memory_free((void *)(up+1));
-//    return freep;
-//}
+static union header *morecore(unsigned int nu)
+{
+    char *cp;
+    union header *up;
+    if (nu < NALLOC)
+        nu = NALLOC;
+    cp = host_memory_sbrk(nu * sizeof(union header));
+    if (cp == (char *) -1) /* no space at all */
+        return 0;
+    up = (union header *)cp;
+    up->s.size = nu;
+    host_memory_free((void *)(up+1));
+    return freep;
+}
 
 /**
  * @brief Hyp mode general-purpose storage allocator.
@@ -531,37 +536,37 @@ static void host_memory_umap(unsigned long virt, unsigned long npages)
  * @param size Size of space
  * @return Allocated space
  */
-//static void *host_memory_malloc(unsigned long size)
-//{
-//    union header *p, *prevp;
-//    unsigned int nunits;
-//    nunits = (size + sizeof(union header) - 1)/sizeof(union header) + 1;
-//    if (nunits < 2)
-//        return 0;
-//    prevp = freep;
-//    if ((prevp) == 0) { /* no free list yet */
-//        freep_base.s.ptr = freep = prevp = &freep_base;
-//        freep_base.s.size = 0;
-//    }
-//    for (p = prevp->s.ptr; ; prevp = p, p = p->s.ptr) {
-//        if (p->s.size >= nunits) { /* big enough */
-//            if (p->s.size == nunits) /* exactly */
-//                prevp->s.ptr = p->s.ptr;
-//            else {                    /* allocate tail end */
-//                p->s.size -= nunits;
-//                p += p->s.size;
-//                p->s.size = nunits;
-//            }
-//            freep = prevp;
-//            return (void *)(p+1);
-//        }
-//        if (p == freep) {  /* wrapped around free list */
-//            p = morecore(nunits);
-//            if (p == 0)
-//                return 0;  /* none avaliable memory left */
-//        }
-//    }
-//}
+static void *host_memory_malloc(unsigned long size)
+{
+    union header *p, *prevp;
+    unsigned int nunits;
+    nunits = (size + sizeof(union header) - 1)/sizeof(union header) + 1;
+    if (nunits < 2)
+        return 0;
+    prevp = freep;
+    if ((prevp) == 0) { /* no free list yet */
+        freep_base.s.ptr = freep = prevp = &freep_base;
+        freep_base.s.size = 0;
+    }
+    for (p = prevp->s.ptr; ; prevp = p, p = p->s.ptr) {
+        if (p->s.size >= nunits) { /* big enough */
+            if (p->s.size == nunits) /* exactly */
+                prevp->s.ptr = p->s.ptr;
+            else {                    /* allocate tail end */
+                p->s.size -= nunits;
+                p += p->s.size;
+                p->s.size = nunits;
+            }
+            freep = prevp;
+            return (void *)(p+1);
+        }
+        if (p == freep) {  /* wrapped around free list */
+            p = morecore(nunits);
+            if (p == 0)
+                return 0;  /* none avaliable memory left */
+        }
+    }
+}
 /**
  * @brief Maps physical address of the guest to level 3 descriptors.
  *
@@ -867,6 +872,7 @@ static void guest_memory_init_ttbl(union lpaed *ttbl0,
             (uint64_t)(uint64_t)_ttbl1_guest[gid], 1);
     guest_memory_init_ttbl1(_ttbl1_guest[gid], mdlist, gid);
 }
+
 /**
  * @brief Configures Virtualization Translation Control Register(VTCR).
  *
@@ -884,6 +890,7 @@ struct vtcr_cfg {
     uint32_t sl0;
     uint32_t t0sz;
 };
+
 /* ps */            /* PA Size bits, Size */
 struct vtcr_cfg vtcr_info[] = {
 /* 0 */    {1, 32}, // 32, 4G
@@ -893,6 +900,7 @@ struct vtcr_cfg vtcr_info[] = {
 /* 4 */    {2, 20}, // 44, 16T
 /* 5 */    {2, 16}, // 48, 256T
 };
+
 static void guest_memory_init_mmu(void)
 {
     uint32_t vtcr_el2;
@@ -925,7 +933,6 @@ static void guest_memory_init_mmu(void)
     uart_print_hex32(vtcr_el2);
     uart_print("\n\r");
     {
-        uint32_t t0sz = vtcr_el2 & 0x3F;
         uint64_t baddr_x = 1<<12;
         uart_print("vttbr.baddr.x:");
         uart_print_hex(baddr_x);
@@ -957,9 +964,9 @@ static void guest_memory_stage2_enable(int enable)
     /* uart_print( "hcr:"); uart_print_hex32(hcr); uart_print("\n\r"); */
     hcr = read_hcr();
     if (enable)
-        hcr |= (0x1);
+        hcr |= HCR_VM;
     else
-        hcr &= ~(0x1);
+        hcr &= ~HCR_VM;
 
     write_hcr(hcr);
 }
@@ -1057,14 +1064,15 @@ static int memory_enable(void)
      * SH0 : Outer Shareable (b10)
      * ORGN0 : Normal, Outer Write-Through Cacheable (b01)
      * IRGN0 : Normal, Inner Write-Through Cacheable (b01)
-     * T0SZ : ??
+     * T0SZ : 0x22 (4 level translation)
      */
 
     tcr_el2 &= TCR_EL2_INITVAL;
     tcr_el2 |= ((id_aa64mmfr0_el1 & 0x7) << TCR_EL2_PS_SHIFT) & TCR_EL2_PS_MASK;
-    tcr_el2 |= (0x2 << TCR_EL2_SH0_SHIFT) & TCR_EL2_SH0_MASK;
+    tcr_el2 |= (0x3 << TCR_EL2_SH0_SHIFT) & TCR_EL2_SH0_MASK;
     tcr_el2 |= (0x1 << TCR_EL2_ORGN0_SHIFT) & TCR_EL2_ORGN0_MASK;
     tcr_el2 |= (0x1 << TCR_EL2_IRGN0_SHIFT) & TCR_EL2_IRGN0_MASK;
+    tcr_el2 |= (0x16 << TCR_EL2_T0SZ_SHIFT) & TCR_EL2_T0SZ_MASK;
 
     write_htcr(tcr_el2);
     tcr_el2= read_htcr();
@@ -1073,14 +1081,14 @@ static int memory_enable(void)
     uart_print("\n\r");
 
     /* SCTLR_EL2 */
-    /* i-Cache and Alignment Checking Enabled */
+    /* i-Cache */
     /* MMU, D-cache, Write-implies-XN, Low-latency IRQs Disabled */
 
     sctlr_el2 = read_hsctlr();
     uart_print("sctlr_el2:");
     uart_print_hex32(sctlr_el2);
     uart_print("\n\r");
-    sctlr_el2 = SCTLR_EL2_BASE | SCTLR_A;
+    sctlr_el2 = SCTLR_EL2_BASE;
     write_hsctlr(sctlr_el2);
     sctlr_el2 = read_hsctlr();
     uart_print("sctlr_el2:");
@@ -1140,7 +1148,7 @@ static int memory_enable(void)
     uart_print_hex64(ttbr0_el2);
     uart_print("\n\r");
 
-    /* Enable PL2 Stage 1 MMU */
+    /* Enable EL2 Stage 1 MMU */
 
     sctlr_el2 = read_hsctlr();
     uart_print("sctlr_el2:");
@@ -1150,13 +1158,19 @@ static int memory_enable(void)
     /* HSCTLR Enable MMU and D-cache */
     sctlr_el2 |= (SCTLR_M | SCTLR_C);
 
-    /* Flush PTE writes */
-    asm("dsb sy");
-
     write_hsctlr(sctlr_el2);
 
     /* Flush iCache */
-    asm("isb");
+    dsb(sy);
+    isb();
+    //asm("tlbi alle2");
+    dsb(sy);
+    isb();
+
+    asm volatile(
+            "ldr x0, =hyp_init_vectors;"
+            "msr vbar_el2, x0"
+            );
 
     sctlr_el2 = read_hsctlr();
     uart_print("sctlr_el2:");
@@ -1201,18 +1215,21 @@ static void host_memory_init(void)
     /* _hmm_pgtable_l1 device area blocks */
     for (i = 0 ; i < 2; i++) {
         _hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_DEV_SHARED);
-        pa += 0x40000000;
+        pa += SZ_1G;
     }
 
     /* _hmm_pgtable_l1 empty area blocks, invalid */
-    for ( ; i < 256; i++) {
-        _hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
+    for ( ; i <(CFG_MEMMAP_PHYS_START/SZ_1G) ; i++) {
+        //_hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
         _hmm_pgtable_l1[i].pt.valid = 0;
-        pa += 0x40000000;
+        //pa += SZ_1G;
     }
        
+    pa = CFG_MEMMAP_PHYS_START;
     /* _hmm_pgtable_l1 mem refers Lv2 page table address. */
-    for (; i < 264; i++) {
+    for (; i <((CFG_MEMMAP_PHYS_START + CFG_MEMMAP_PHYS_SIZE)/SZ_1G); i++) {
+//        _hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
+//        pa += SZ_1G;
         _hmm_pgtable_l1[i] = \
                  lpaed_host_l1_table((uint64_t) _hmm_pgtable_l2[i-256]);
         uart_print("&_hmm_pgtable_l1[");
@@ -1224,6 +1241,9 @@ static void host_memory_init(void)
         uart_print_hex64(_hmm_pgtable_l1[i].bits);
         uart_print("\n\r");
     }
+    for (; i < HMM_L1_PTE_NUM; i++)
+        _hmm_pgtable_l1[i].pt.valid = 0;
+
     for (i = 0; i < CFG_MEMMAP_PHYS_SIZE / SZ_1G; i++) {
         /*
          * _hvmm_pgtable_lv2[i] refers Lv3 page table address.
@@ -1233,7 +1253,7 @@ static void host_memory_init(void)
             _hmm_pgtable_l2[i][j] =
                 lpaed_host_l2_table((uint64_t) _hmm_pgtable_l3[i][j]);
             /* _hvmm_pgtable_lv3[i][j] refers page, that size is 4KB */
-            for (k = 0; k < HMM_L3_PTE_NUM; pa += 0x1000, k++) {
+            for (k = 0; k < HMM_L3_PTE_NUM; pa += SZ_4K, k++) {
                 if (pa >= HEAP_ADDR && pa < HEAP_ADDR + HEAP_SIZE) {
                     _hmm_pgtable_l3[i][j][k] =
                         lpaed_host_l3_table(pa, ATTR_IDX_WRITEALLOC, 0);
@@ -1244,8 +1264,6 @@ static void host_memory_init(void)
             }
         }
     }
-    for (; i < HMM_L1_PTE_NUM; i++)
-        _hmm_pgtable_l1[i].pt.valid = 0;
 }
 
 /*
@@ -1267,13 +1285,11 @@ static void guest_memory_init(struct memmap_desc **guest_map, int gid)
     /*
      * Initializes Translation Table for Stage2 Translation (IPA -> PA)
      */
-    int i;
-    uint32_t cpu = smp_processor_id();
     uint32_t sl0 = vtcr_info[id_aa64mmfr0_el1 & ID_AA64MMFR0_PARange].sl0;
 
     HVMM_TRACE_ENTER();
 
-    switch (sl0 )
+    switch (sl0)
     {
         case 0 : // start level 2, unimplemented
             printh("unimplemented\n");
@@ -1386,15 +1402,15 @@ static int memory_hw_init(struct memmap_desc **guest0,
     return HVMM_STATUS_SUCCESS;
 }
 
-//static void *memory_hw_alloc(unsigned long size)
-//{
-//    return host_memory_malloc(size);
-//}
-//
-//static void memory_hw_free(void *ap)
-//{
-//    host_memory_free(ap);
-//}
+static void *memory_hw_alloc(unsigned long size)
+{
+    return host_memory_malloc(size);
+}
+
+static void memory_hw_free(void *ap)
+{
+    host_memory_free(ap);
+}
 
 /**
  * @brief Stops stage-2 translation by disabling mmu.
