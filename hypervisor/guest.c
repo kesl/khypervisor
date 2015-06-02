@@ -37,8 +37,6 @@ static hvmm_status_t guest_restore(struct guest_struct *guest,
     if (_guest_module.ops->restore)
         return  _guest_module.ops->restore(guest, regs);
 
-
-
      return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
