@@ -46,7 +46,6 @@ static void context_init_sys(struct regs_sys *regs_sys)
     regs_sys->sp_el0 = 0;
     regs_sys->sp_el1 = 0;
     regs_sys->elr_el1 = 0;
-    regs_sys->spsel = 0;
 }
 
 static void context_save_sys(struct regs_sys *regs_sys)
@@ -59,7 +58,6 @@ static void context_save_sys(struct regs_sys *regs_sys)
     regs_sys->sp_el0 = read_sr64(sp_el0);
     regs_sys->sp_el1 = read_sr64(sp_el1);
     regs_sys->elr_el1 = read_sr64(elr_el1);
-    regs_sys->spsel = read_sr32(spsel);
 }
 
 static void context_restore_sys(struct regs_sys *regs_sys)
@@ -72,7 +70,6 @@ static void context_restore_sys(struct regs_sys *regs_sys)
     write_sr64(regs_sys->sp_el0, sp_el0);
     write_sr64(regs_sys->sp_el1, sp_el1);
     write_sr64(regs_sys->elr_el1, elr_el1);
-    write_sr32(regs_sys->spsel, spsel);
 }
 
 #ifndef DEBUG
@@ -194,9 +191,9 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
 
     regs->pc = CFG_GUEST_START_ADDRESS;
     /* Initialize loader status for reboot */
-    regs->gpr[10] = 0;
+    //regs->gpr[30] = 0;
     /* supervisor mode */
-    regs->cpsr = 0x1C0|CPSR_MODE_EL1t;
+    regs->cpsr = 0x1C0|CPSR_MODE_EL1h;
     /* regs->gpr[] = whatever */
     context_init_sys(&context->regs_sys);
 

@@ -20,7 +20,6 @@ struct regs_sys{
     uint64_t sp_el0;
     uint64_t sp_el1;
     uint64_t elr_el1;
-    uint32_t spsel;
 };
 
 /* Defines the architecture specific registers */
