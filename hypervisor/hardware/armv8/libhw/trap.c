@@ -38,9 +38,15 @@ static const char *mode[] = {
  */
 hvmm_status_t _irq(struct arch_regs *regs, uint32_t el)
 {
+    uint32_t cpsr = read_sr32(spsr_el1);
+    uint32_t currentel = read_sr32(currentel);
     uint32_t irq;
+    uint32_t daif = read_sr32(daif);
 
-    printH("[%s]IRQ\n\r", ext_level[el]);
+    printh("[%s]IRQ\n\r", ext_level[el]);
+    printh("cspr: %x\n", cpsr);
+    printh("currentEL:%x\n", currentel);
+    printh("daif:%x\n", daif);
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
@@ -70,7 +76,7 @@ hvmm_status_t _unhandled(struct arch_regs *regs, uint32_t el, uint32_t md)
  */
 enum hyp_hvc_result _sync(struct arch_regs *regs, uint32_t el)
 {
-    printH("[%s]sync!\n\r", ext_level[el]);
+    printh("[%s]sync!\n\r", ext_level[el]);
     return _hyp_sync_service(regs);
 }
 
@@ -205,6 +211,36 @@ enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
 
     return HYP_RESULT_ERET;
 trap_error:
+    switch (ec) {
+        case TRAP_EC_PREFETCH_ABORT_FROM_OTHER_MODE:
+        case TRAP_EC_DATA_ABORT_FROM_OTHER_MODE:
+            {
+                uint32_t esr_el1 = read_sr32(esr_el1);
+                uint64_t vttbr = read_sr64(vttbr_el2);
+                uint64_t far = read_sr64(far_el1);
+                uint64_t hpfar = read_sr64(hpfar_el2);
+                printH("esr_el1: %x\n", esr_el1);
+                printH("vttbr_el2 :");
+                uart_print_hex64(vttbr);
+                printH("\n");
+                printH("far_el1:");
+                uart_print_hex64(far);
+                printH("\n");
+                printH("hpfar_el2:");
+                uart_print_hex64(hpfar);
+                printH("\n");
+            }
+            break;
+        case TRAP_EC_PREFETCH_ABORT_FROM_HYP_MODE:
+        case TRAP_EC_DATA_ABORT_FROM_HYP_MODE:
+            {
+            uint64_t ttbr = read_sr64(ttbr0_el2);
+            printH("ttbr_el2 :");
+            uart_print_hex64(ttbr);
+            printH("\n");
+            }
+            break;
+    }
     _trap_dump_bregs();
     printH("ESR_EL2:%x\n", esr);
     printH("FAR_EL2:");
