@@ -163,8 +163,8 @@ void setup_interrupt()
      *  vimm-0, pirq-41, virq-41 = MCI - pl180
      *  vimm-0, pirq-42, virq-42 = MCI - pl180
      */
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 6, 6);
-    DECLARE_VIRQMAP(_guest_virqmap, 0, 3, 3);
+//    DECLARE_VIRQMAP(_guest_virqmap, 0, 6, 6);
+//    DECLARE_VIRQMAP(_guest_virqmap, 0, 3, 3);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 16, 16);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 17, 17);
