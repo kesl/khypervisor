@@ -11,6 +11,7 @@
 
 #define MIDR_MASK_PPN        (0x0FFF << 4)
 #define MIDR_PPN_CORTEXA15    (0xC0F << 4)
+#define MIDR_PPN_STORM       (0x000 << 4)
 
 
 #define GIC_INT_PRIORITY_DEFAULT_WORD    ((GIC_INT_PRIORITY_DEFAULT << 24) \
@@ -73,18 +74,21 @@ static void gic_test_vdev_access(void)
 static void gic_dump_registers(void)
 {
     uint32_t midr;
+    uint32_t ppn;
     HVMM_TRACE_ENTER();
     midr = read_midr();
+    ppn = midr & MIDR_MASK_PPN;
     uart_print("midr:");
     uart_print_hex32(midr);
     uart_print("\n\r");
-    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+    if (ppn == MIDR_PPN_CORTEXA15 ||
+        ppn == MIDR_PPN_STORM) {
         uint32_t value;
         uart_print("gic baseaddr:");
-        uart_print_hex32(_gic.baseaddr);
+        uart_print_hex64(_gic.baseaddr);
         uart_print("\n\r");
         uart_print("ba_gicd:");
-        uart_print_hex32((uint32_t)_gic.ba_gicd);
+        uart_print_hex64((uint64_t)_gic.ba_gicd);
         uart_print("\n\r");
         uart_print("GICD_TYPER:");
         uart_print_hex32(_gic.ba_gicd[GICD_TYPER]);
@@ -119,9 +123,11 @@ static void gic_dump_registers(void)
 static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 {
     uint32_t midr;
+    uint32_t ppn;
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     HVMM_TRACE_ENTER();
     midr = read_midr();
+    ppn = midr & MIDR_MASK_PPN;
     uart_print("midr:");
     uart_print_hex32(midr);
     uart_print("\n\r");
@@ -131,7 +137,8 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
      * Other architectures with GICv2 support will be further
      * listed and added for support later.
      */
-    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+    if ( ppn == MIDR_PPN_CORTEXA15||
+         ppn == MIDR_PPN_STORM) {
         _gic.baseaddr = (uint32_t) va_base;
         _gic.ba_gicd = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICD);
         _gic.ba_gicc = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICC);

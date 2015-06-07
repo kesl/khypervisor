@@ -15,7 +15,7 @@
 
 #define MIDR_MASK_PPN        (0x0FFF << 4)
 #define MIDR_PPN_CORTEXA15    (0xC0F << 4)
-#define MIDR_PPN_OTHERS     (0x000 << 4)
+#define MIDR_PPN_STORM        (0x000 << 4)
 
 
 #define GIC_INT_PRIORITY_DEFAULT_WORD    ((GIC_INT_PRIORITY_DEFAULT << 24) \
@@ -48,13 +48,16 @@ static struct gic _gic;
 static void gic_dump_registers(void)
 {
     uint32_t midr;
+    uint32_t ppn;
     HVMM_TRACE_ENTER();
 
     midr = read_midr();
+    ppn = midr & MIDR_MASK_PPN;
     uart_print("midr_el2:");
     uart_print_hex32(midr);
     uart_print("\n\r");
-    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_OTHERS) {
+    if ( (ppn == MIDR_PPN_STORM) ||
+         (ppn == MIDR_PPN_CORTEXA15)) {
         uint32_t value;
         uart_print("gic base address:");
         uart_print_hex64(_gic.baseaddr);
@@ -116,9 +119,11 @@ static void gic_dump_registers(void)
 static hvmm_status_t gic_init_baseaddr(uint64_t *va_base)
 {
     uint32_t midr;
+    uint32_t ppn;
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     HVMM_TRACE_ENTER();
     midr = read_midr();
+    ppn = midr & MIDR_MASK_PPN;
     uart_print("midr_el1:");
     uart_print_hex32(midr);
     uart_print("\n\r");
@@ -128,7 +133,8 @@ static hvmm_status_t gic_init_baseaddr(uint64_t *va_base)
      * Other architectures with GICv2 support will be further
      * listed and added for support later
      */
-    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_OTHERS) {
+    if (ppn == MIDR_PPN_STORM ||
+        ppn == MIDR_PPN_CORTEXA15) {
         _gic.baseaddr = (uint64_t) va_base;
         uart_print("gic base address:");
         uart_print_hex64(_gic.baseaddr);
@@ -375,9 +381,9 @@ uint32_t gic_get_irq_number(void)
     /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
-    uart_print("get irq number :");
-    uart_print_hex32(irq);
-    uart_print("\n\r");
+//    uart_print("get irq number :");
+//    uart_print_hex32(irq);
+//    uart_print("\n\r");
 
     return irq;
 }
