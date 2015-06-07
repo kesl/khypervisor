@@ -35,132 +35,95 @@ static struct guest_virqmap _guest_virqmap[NUM_GUESTS_STATIC];
  * @{
  */
 static struct memmap_desc guest_md_empty[] = {
-    {       0, 0, 0, 0,  0},
+    { 0, 0, 0, 0,  0},
 };
 /*  label, ipa, pa, size, attr */
-static struct memmap_desc guest0_device_md0[] = {
+static struct memmap_desc guest0_device_md[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
-    { 0, 0, 0, 0, 0 }
-};
-static struct memmap_desc guest0_device_md1[] = {
-    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
-            CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
-            MEMATTR_DM },
-    { 0, 0, 0, 0, 0 }
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
+        CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
+        MEMATTR_DM },
+   { 0, 0, 0, 0, 0 }
 };
 
-static struct memmap_desc guest1_device_md0[] = {
+static struct memmap_desc guest1_device_md[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
+       MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
-};
-static struct memmap_desc guest1_device_md1[] = {
-    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
-       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
-    {0, 0, 0, 0, 0}
 };
 
 #ifdef _SMP_
-static struct memmap_desc guest2_device_md0[] = {
+static struct memmap_desc guest2_device_md[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
+       MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
-};
-static struct memmap_desc guest2_device_md1[] = {
-    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
-       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
-    {0, 0, 0, 0, 0}
 };
 
-static struct memmap_desc guest3_device_md0[] = {
+static struct memmap_desc guest3_device_md[] = {
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
+       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
+       MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
-};
-static struct memmap_desc guest3_device_md1[] = {
-    { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC) - 0x40000000,
-       CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K, MEMATTR_DM },
-    {0, 0, 0, 0, 0}
 };
 #endif
 
 /**
  * @brief Memory map for guest 0.
  */
-static struct memmap_desc guest0_memory_md0[] = {
-    {"start", 0x00000000, 0, SZ_1G,
-     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-    },
+/*  label, ipa, pa, size, attr */
+static struct memmap_desc guest0_memory_md[] = {
+    {"start", CFG_MEMMAP_PHYS_START, 0, SZ_2G,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB},
     {0, 0, 0, 0,  0},
-};
-
-static struct memmap_desc guest0_memory_md1[] = {
-    {"start", 0x00000000, 0, SZ_1G,
-     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-    },
-    {0, 0, 0, 0,  0},
-};
+}; __attribute((__aligned__(16)));
 
 /**
  * @brief Memory map for guest 1.
  */
-static struct memmap_desc guest1_memory_md0[] = {
-    /* 256MB */
-    {"start", 0x00000000, 0, SZ_1G,
-     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-    },
+/*  label, ipa, pa, size, attr */
+static struct memmap_desc guest1_memory_md[] = {
+    {"start", CFG_MEMMAP_PHYS_START, 0, SZ_2G,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB},
     {0, 0, 0, 0,  0},
-};
-
-static struct memmap_desc guest1_memory_md1[] = {
-    {"start", 0x00000000, 0, SZ_1G,
-     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-    },
-    {0, 0, 0, 0,  0},
-};
-
+}; __attribute((__aligned__(16)));
 
 #ifdef _SMP_
 /**
  * @brief Memory map for guest 2.
  */
+/*  label, ipa, pa, size, attr */
 static struct memmap_desc guest2_memory_md[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, SZ_1G,
-     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-    },
+    {"start", CFG_MEMMAP_PHYS_START, 0, SZ_1G,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB},
     {0, 0, 0, 0,  0},
 };
 
 /**
  * @brief Memory map for guest 3.
  */
+/*  label, ipa, pa, size, attr */
 static struct memmap_desc guest3_memory_md[] = {
     /* 256MB */
-    {"start", 0x00000000, 0, SZ_1G,
-     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB
-    },
+    {"start", CFG_MEMMAP_PHYS_START, 0, SZ_1G,
+     MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB},
     {0, 0, 0, 0,  0},
 };
 #endif
 
 /* Memory Map for Guest 0 */
-static struct memmap_desc *guest0_mdlist[259] = {
-    0,
-};
-
+static struct memmap_desc guest0_mdlist[259];
 /* Memory Map for Guest 1 */
-static struct memmap_desc *guest1_mdlist[259] = {
-    0,
-};
-
+static struct memmap_desc guest1_mdlist[259];
 /* Memory Map for Guest 2 */
-static struct memmap_desc *guest2_mdlist[259] = {
-    0,
-};
-
+static struct memmap_desc guest2_mdlist[259];
 /* Memory Map for Guest 3 */
-static struct memmap_desc *guest3_mdlist[259] = {
-    0,
-};
-
+static struct memmap_desc guest3_mdlist[259];
 /** @}*/
 
 static uint32_t _timer_irq;
@@ -230,7 +193,7 @@ void setup_interrupt()
 
 void setup_memory()
 {
-    int i;
+    int i=0;
     /*
      * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
@@ -238,30 +201,33 @@ void setup_memory()
      */
     //guest0_memory_md[0].pa = (uint64_t)((uint64_t) &_guest0_bin_start);
     //guest1_memory_md[0].pa = (uint64_t)((uint64_t) &_guest1_bin_start);
-    guest0_mdlist[0] = guest0_device_md0;
-    guest1_mdlist[0] = guest1_device_md0;
-
-    guest0_mdlist[1] = guest0_device_md1;
-    guest1_mdlist[1] = guest1_device_md1;
-
-    for(i=2; i< 256; i++) {
-        guest0_mdlist[i] = guest_md_empty;
-        guest1_mdlist[i] = guest_md_empty;
+    while(guest0_device_md[i].label)
+    {
+        guest0_mdlist[i] = guest0_device_md[i];
+        i++;
     }
+    while(guest0_memory_md[i].label)
+    {
+        guest0_mdlist[i] = guest0_memory_md[i];
+        guest0_mdlist[i].pa = 0x4000000000ULL;
+        i++;
+    }
+    guest0_mdlist[i] = guest_md_empty[0];
 
-    guest0_mdlist[i] = guest0_memory_md0;
-    guest1_mdlist[i++] = guest1_memory_md0;
+    i=0;
+    while(guest1_device_md[i].label)
+    {
+        guest1_mdlist[i] = guest1_device_md[i];
+        i++;
+    }
+    while(guest1_memory_md[i].label)
+    {
+        guest1_mdlist[i] = guest0_memory_md[i]; // temporary treat
+        guest1_mdlist[i].pa = 0x4080000000ULL;
+        i++;
+    }
+    guest1_mdlist[i] = guest_md_empty[0];
 
-    guest0_mdlist[i] = guest0_memory_md1;
-    guest1_mdlist[i++] = guest1_memory_md1;
-
-    guest0_mdlist[i] = 0;
-    guest1_mdlist[i] = 0;
-
-    guest0_memory_md0[0].pa = 0x4000000000ULL;
-    guest0_memory_md1[0].pa = 0x4040000000ULL;
-    guest1_memory_md0[0].pa = 0x4080000000ULL;
-    guest1_memory_md1[0].pa = 0x40C0000000ULL;
 #if _SMP_
     guest2_memory_md[0].pa = (uint64_t)((uint64_t) &_guest2_bin_start);
     guest3_memory_md[0].pa = (uint64_t)((uint64_t) &_guest3_bin_start);
