@@ -178,7 +178,7 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
      * we save interrupt in _guest_virqs due to preventing loss of
      * the interrupt.
      */
-    if (vmid == 0/*guest_current_vmid()*/) {
+    if (vmid == guest_current_vmid()) {
         uint32_t slot;
         if (hw) {
             slot = vgic_inject_virq_hw(virq,
@@ -269,7 +269,7 @@ static uint32_t vgic_find_free_slot(void)
     }
     if (slot) {
         slot &= -(slot);
-        slot = (31 - asm_clz(slot));
+        slot = (63 - asm_clz(slot));
         slot += shift;
     } else {
         /* 64 slots are fully occupied */
