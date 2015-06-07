@@ -38,7 +38,7 @@
 #define GIC_BASEADDR_GUEST                (0x78000000)
 
 struct gic {
-    uint32_t baseaddr;
+    uint64_t baseaddr;
     volatile uint32_t *ba_gicd;
     volatile uint32_t *ba_gicc;
     uint32_t lines;
@@ -139,7 +139,7 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
      */
     if ( ppn == MIDR_PPN_CORTEXA15||
          ppn == MIDR_PPN_STORM) {
-        _gic.baseaddr = (uint32_t) va_base;
+        _gic.baseaddr = (uint64_t) va_base;
         _gic.ba_gicd = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICD);
         _gic.ba_gicc = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICC);
         result = HVMM_STATUS_SUCCESS;
@@ -183,6 +183,7 @@ hvmm_status_t gic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     int i;
+    int type;
     HVMM_TRACE_ENTER();
     for (i = 0; i < GIC_NUM_MAX_IRQS; i++)
         _gic.handlers[i] = 0;
@@ -195,7 +196,8 @@ hvmm_status_t gic_init(void)
     if (result == HVMM_STATUS_SUCCESS)
         gic_dump_registers();
 
-    _gic.lines = 1022;
+    type = _gic.ba_gicd[GICD_TYPER];
+    _gic.lines = 32 * ((type & 0x1F)+1);
     result = HVMM_STATUS_SUCCESS;
     if (result == HVMM_STATUS_SUCCESS)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
