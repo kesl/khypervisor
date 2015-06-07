@@ -17,7 +17,7 @@
  */
 
 #define irq_enable() asm volatile("msr daifclr, 0x2" : : : "memory")
-#define asm_clz(x)      ({ uint32_t rval; asm volatile(\
+#define asm_clz(x)      ({ uint64_t rval; asm volatile(\
                                 " clz %0, %1\n\t" \
                                 : "=r" (rval) : "r" (x) : ); rval; })
 

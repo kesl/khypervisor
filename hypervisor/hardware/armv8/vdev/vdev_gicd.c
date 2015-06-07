@@ -9,7 +9,7 @@
 /* return the bit position of the first bit set from msb
  * for example, firstbit32(0x7F = 111 1111) returns 7
  */
-#define firstbit32(word) (31 - asm_clz(word))
+#define firstbit32(word) (63 - asm_clz(word))
 
 /*
  1. High Priority Registers to be implemented first for test with linux
