@@ -178,7 +178,8 @@ enum hyp_hvc_result _hyp_sync_service(struct arch_regs *regs)
     case TRAP_EC_DATA_ABORT_FROM_HYP_MODE:
         level = VDEV_LEVEL_HIGH;
         break;
-    case TRAP_EC_HVC:
+    case TRAP_EC_HVC_FROM_AARCH32:
+    case TRAP_EC_HVC_FROM_AARCH64:
         level = VDEV_LEVEL_MIDDLE;
         break;
     case TRAP_EC_DATA_ABORT_FROM_OTHER_MODE:
