@@ -9,36 +9,17 @@
 .global common_guest_entry
 common_guest_entry:
 /* Stack pointer initialization for svc, irq, and system/user modes */
-/*
- * test print code
- * x10 - uart address
- * x11 - character
- */
-    ldr x10, =0x1c020000
-    ldr x11, =0x30
-    str x11, [x10]
     // sp for el1, spsr_el1
     ldr     x0, = guest_stacklimit_svc
     mov     sp, x0
-    mov     x0, #0x1C5
-    msr     spsr_el1, x0
-
-    ldr x11, =0x31
-    str x11, [x10]
 
     // sp for el0
     ldr     x0, = guest_stacklimit
     msr     sp_el0, x0
 
-    ldr x11, =0x32
-    str x11, [x10]
-
     // exception vector
     ldr     x0, = nonsecure_vector
     msr     vbar_el1, x0    //vbar_el1
-
-    ldr x11, =0x33
-    str x11, [x10]
 
     // And call the C entrypoint
     bl      nrm_loop
@@ -46,6 +27,7 @@ common_guest_entry:
     //
     // Function for C code to make semihosting calls:
     //
+
     .globl __semi_call
     __semi_call:
 #if defined(MACH_MPS)
