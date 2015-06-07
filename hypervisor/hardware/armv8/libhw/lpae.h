@@ -190,15 +190,16 @@
 /**
  * \defgroup LPAE_BLOCK_FEATURES
  *
- * This features are used to configure the bloack addres of 2MB size.
+ * This features are used to configure the bloack address of 2MB size.
  * @{
  */
+#define LPAE_BLOCK_L2_MASK 0x3FE00000
 #define LPAE_BLOCK_L2_SHIFT 21
 #define LPAE_BLOCK_L2_SIZE  (1<<LPAE_BLOCK_L2_SHIFT)
-#define LPAE_BLOCK_L2_MASK  (0x1FFFFF)
 /**
  * @}
  */
+#define LPAE_PAGE_L3_MASK  (0x1FF000)
 
 /**
  * \defgroup Attribute_Indexes

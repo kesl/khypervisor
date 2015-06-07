@@ -15,7 +15,7 @@
  * AttrIndx values in a Long descriptor format translation table entry for
  * stage-1 translations.
  *
- * - Only accessible from PL1 or higher.
+ * - Only accessible from EL1 or higher.
  * AttrIndx[2] selects the appropriate MAIR
  * - AttrIndx[2] to 0 selects MAIR0
  *               to 1 selects MAIR1
@@ -147,27 +147,32 @@
 #define TCR_EL2_T0SZ_SHIFT              0
 /** @} */
 
-/* PL2 Stage 1 Level 0 */
+/* EL2 Stage 1 Level 0 */
 #define HMM_L0_PTE_NUM  512
-/* PL2 Stage 1 Level 1 */
+/* EL2 Stage 1 Level 1 */
 #define HMM_L1_PTE_NUM  512
 
-/* PL2 Stage 1 Level 2 */
+/* EL2 Stage 1 Level 2 */
 #define HMM_L2_PTE_NUM  512
 
-/* PL2 Stage 1 Level 3 */
+/* EL2 Stage 1 Level 3 */
 #define HMM_L3_PTE_NUM  512
 
 #define HEAP_ADDR (CFG_MEMMAP_MON_OFFSET + 0x02000000)
 #define HEAP_SIZE 0x0D000000
 
-#define L1_ENTRY_MASK 0x1FF
+#define ENTRY_MASK 0x1FF
+#define L1_ENTRY_MASK (ENTRY_MASK << L1_SHIFT)
 #define L1_SHIFT 30
 
-#define L2_ENTRY_MASK 0x1FF
+#define L1_REMAIN_MASK  0x3FFFF000
+
+#define L2_ENTRY_MASK (ENTRY_MASK << L2_SHIFT) 
 #define L2_SHIFT 21
 
-#define L3_ENTRY_MASK 0x1FF
+#define L2_REMAIN_MASK  0x1FF000
+
+#define L3_ENTRY_MASK (ENTRY_MASK << L3_SHIFT)
 #define L3_SHIFT 12
 
 #define HEAP_END_ADDR (HEAP_ADDR + HEAP_SIZE)
@@ -278,18 +283,22 @@ _ttbl1_guest[NUM_GUESTS_STATIC][VMM_L1_PTE_NUM]\
                 __attribute((__aligned__(4096)));
 /* ttbl2 */
 union lpaed
-_ttbl2_guest_dev[NUM_GUESTS_STATIC][VMM_L2_PTE_NUM*2]\
-                __attribute((__aligned__(4096)));
+_ttbl2_guest_dev[NUM_GUESTS_STATIC][VMM_L2_PTE_NUM* \
+        (CFG_MEMMAP_DEV_AREA/SZ_2G)]\
+        __attribute((__aligned__(4096)));
 union lpaed
-_ttbl2_guest_mem[NUM_GUESTS_STATIC][VMM_L2_PTE_NUM*2]\
-                __attribute((__aligned__(4096)));
+_ttbl2_guest_mem[NUM_GUESTS_STATIC][VMM_L2_PTE_NUM* \
+        (CFG_MEMMAP_GUEST_SIZE/SZ_1G)]\
+        __attribute((__aligned__(4096)));
 /* ttbl3 */
 union lpaed
-_ttbl3_guest_dev[NUM_GUESTS_STATIC][VMM_L3_PTE_NUM*VMM_L2_PTE_NUM*2]\
-                __attribute((__aligned__(4096)));
+_ttbl3_guest_dev[NUM_GUESTS_STATIC][VMM_L3_PTE_NUM*VMM_L2_PTE_NUM* \
+        (CFG_MEMMAP_DEV_AREA/SZ_2G)]\
+        __attribute((__aligned__(4096)));
 union lpaed
-_ttbl3_guest_mem[NUM_GUESTS_STATIC][VMM_L3_PTE_NUM*VMM_L2_PTE_NUM*2]\
-                __attribute((__aligned__(4096)));
+_ttbl3_guest_mem[NUM_GUESTS_STATIC][VMM_L3_PTE_NUM*VMM_L2_PTE_NUM* \
+        (CFG_MEMMAP_GUEST_SIZE/SZ_1G)]\
+        __attribute((__aligned__(4096)));
 
 static union lpaed _hmm_pgtable/*[HMM_L0_PTE_NUM]*/ \
                 __attribute((__aligned__(4096)));
@@ -567,213 +576,33 @@ static void *host_memory_malloc(unsigned long size)
         }
     }
 }
+
 /**
- * @brief Maps physical address of the guest to level 3 descriptors.
+ * @brief Initialize delivered ttbl3 descriptors.
  *
- * Maps physical address to the target level 3 translation table descriptor.
- * Configure bits of the target descriptor whiche are initialized by initial
- * function. (lpaed_guest_stage2_map_page)
+ * Initialize ttbl3 descriptors and unmap the descriptors.
+ * Finally, map the ttbl3 descriptors by memory map descriptors.
  *
  * @param *ttbl3 Level 3 translation table descriptor.
- * @param offset Offset from the level 3 table descriptor.
- *        - 0 ~ (2MB - pages * 4KB), start contiguous virtual address within
- *          level 2 block (2MB).
- *        - It is aligned L3 descriptor lock size(4KB).
- * @param pages Number of pages.
- *        - 0 ~ 512
- * @param pa Physical address.
- * @param mattr Memory Attribute.
+ * @param *md Device memory map descriptor.
  * @return void
  */
-static void guest_memory_ttbl3_map(union lpaed *ttbl3, uint64_t offset,
-                uint32_t pages, uint64_t pa, enum memattr mattr)
+static void guest_memory_init_ttbl3(union lpaed *ttbl3,
+        struct memmap_desc md)
 {
-    int index_l3 = 0;
-    int index_l3_last = 0;
-    printh("%s[%d]: ttbl3:%x offset:%x pte:%x pages:%d, pa:%x\n",
-            __func__, __LINE__, (uint32_t) ttbl3, (uint32_t) offset,
-            &ttbl3[offset], pages, (uint32_t) pa);
-    /* Initialize the address spaces with 'invalid' state */
-    index_l3 = offset;
-    index_l3_last = index_l3 + pages;
-    for (; index_l3 < index_l3_last; index_l3++) {
-        lpaed_guest_stage2_map_page(&ttbl3[index_l3], pa, mattr);
-        pa += LPAE_PAGE_SIZE;
+    int l3_idx;
+
+    l3_idx = (md.va & L3_ENTRY_MASK) >> L3_SHIFT;
+    while(md.size)
+    {
+        lpaed_guest_stage2_map_page ( &ttbl3[l3_idx], md.pa, md.attr);
+        md.size -= SZ_4K;
+        md.pa += SZ_4K;
+        md.va += SZ_4K;
+        l3_idx++;
     }
 }
 
-/**
- * @brief Unmap level 3 descriptors.
- *
- * Unmap descriptors of ttbl3 which is in between offset and offset + pages and
- * makes valid bit zero.
- *
- * @param *ttbl3 Level 3 translation table descriptor.
- * @param offset Offset from the level 3 table descriptor.
- *        - 0 ~ (2MB - pages * 4KB), start contiguous virtual address within
- *          level 2 block (2MB).
- *        - It is aligned L3 descriptor lock size(4KB).
- * @param pages Number of pages.
- *        - 0 ~ 512
- * @return void
- */
-static void guest_memory_ttbl3_unmap(union lpaed *ttbl3, uint64_t offset,
-                uint32_t pages)
-{
-    int index_l3 = 0;
-    int index_l3_last = 0;
-    /* Initialize the address spaces with 'invalid' state */
-    index_l3 = offset >> LPAE_PAGE_SHIFT;
-    index_l3_last = index_l3 + pages;
-    for (; index_l3 < index_l3_last; index_l3++)
-        ttbl3[index_l3].pt.valid = 0;
-}
-
-/**
- * @brief Unmap ttbl2 and ttbl3 descriptors which is in target virtual
- *        address area.
- *
- * Unmap descriptors of ttbl2 and ttbl3 by making valid bit to zero.
- *
- * - First, make level 2 descriptors invalidate.
- * - Second, if lefts space which can't be covered by level 2 descriptor
- *   (to small), make level 3 descriptors invalidate.
- *
- * @param *ttbl2 Level 2 translation table descriptor.
- * @param va_offset Offset of the virtual address.
- *        - 0 ~ (1GB - size), start contiguous virtual address within level 1
- *          block (1GB).
- *        - It is aligned L2 descriptor lock size(2MB).
- * @param size
- *        - <= 1GB.
- *        - It is aligned page size.
- * @return void
- */
-static void guest_memory_ttbl2_unmap(union lpaed *ttbl2,
-        union lpaed *ttbl3, uint64_t va_offset,uint32_t size)
-{
-    int index_l2 = 0;
-    int index_l2_last = 0;
-    int num_blocks = 0;
-    /* Initialize the address spaces with 'invalid' state */
-    num_blocks = size >> LPAE_BLOCK_L2_SHIFT;
-    index_l2 = va_offset >> LPAE_BLOCK_L2_SHIFT;
-    index_l2_last = index_l2 + num_blocks;
-
-    for (; index_l2 < index_l2_last; index_l2++)
-        ttbl2[index_l2].pt.valid = 0;
-
-    size &= LPAE_BLOCK_L2_MASK;
-    if (size) {
-        /* last partial block */
-        guest_memory_ttbl3_unmap(ttbl3, 0x00000000, size >> LPAE_PAGE_SHIFT);
-    }
-}
-
-/**
- * @brief Map ttbl2 descriptors.
- *
- * Maps physical address to ttbl2 and ttbl3 descriptors and apply memory
- * attributes.
- *
- * - First, compute index of the target ttbl2 descriptor and block offset.
- * - Second, maps physical address to ttbl3 descriptors if head of block is
- *   not fits size of the ttbl2 descriptor.
- * - Third, maps left physical address to ttbl2 descriptors.
- * - Finally, if lefts the memory, maps it to ttbl3 descriptors.
- *
- * @param *ttbl2 Level 2 translation table descriptor.
- * @param va_offset
- *        - 0 ~ (1GB - size), start contiguous virtual address within level 1
- *          block (1GB).
- *        - It is aligned l2 descriptor lock size(2MB).
- * @param pa Physical address
- * @param size Size of target memory.
- *        - <= 1GB.
- *        - It is aligned page size.
- * @param Memory Attribute
- * @return void
- */
-static void guest_memory_ttbl2_map(union lpaed *ttbl2, union lpaed *ttbl3,
-        uint64_t va_offset, uint64_t pa, uint32_t size, enum memattr mattr)
-{
-    uint64_t block_offset;
-    uint32_t index_l2;
-    uint32_t index_l2_last;
-    uint32_t num_blocks;
-    uint32_t pages;
-    int i;
-    HVMM_TRACE_ENTER();
-
-    printh("ttbl2:%x va_offset:%x pa:%x size:%d\n",
-            (uint64_t) ttbl2, (uint64_t) va_offset, (uint64_t) pa, size);
-    index_l2 = va_offset >> LPAE_BLOCK_L2_SHIFT;
-    block_offset = va_offset & LPAE_BLOCK_L2_MASK;
-    printh("- index_l2:%d block_offset:%x\n",
-            index_l2, (uint64_t) block_offset);
-    /* head < BLOCK */
-    if (block_offset) {
-        uint64_t offset;
-        offset = block_offset >> LPAE_PAGE_SHIFT;
-        pages = size >> LPAE_PAGE_SHIFT;
-        if (pages > VMM_L3_PTE_NUM)
-            pages = VMM_L3_PTE_NUM;
-
-        guest_memory_ttbl3_map(ttbl3, offset, pages, pa, mattr);
-        lpaed_guest_stage2_enable_l2_table(&ttbl2[index_l2]);
-        va_offset |= ~LPAE_BLOCK_L2_MASK;
-        size -= pages * LPAE_PAGE_SIZE;
-        pa += pages * LPAE_PAGE_SIZE;
-        index_l2++;
-    }
-    /* body : n BLOCKS */
-    if (size > 0) {
-        num_blocks = size >> LPAE_BLOCK_L2_SHIFT;
-        index_l2_last = index_l2 + num_blocks;
-        printh("- index_l2_last:%d num_blocks:%d size:%d\n",
-                index_l2_last, (uint64_t) num_blocks, size);
-        for (i = index_l2; i < index_l2_last; i++) {
-            lpaed_guest_stage2_enable_l2_table(&ttbl2[i]);
-            guest_memory_ttbl3_map(&ttbl3[i], 0,
-                    VMM_L3_PTE_NUM, pa, mattr);
-            pa += LPAE_BLOCK_L2_SIZE;
-            size -= LPAE_BLOCK_L2_SIZE;
-        }
-    }
-    /* tail < BLOCK */
-    if (size > 0) {
-        pages = size >> LPAE_PAGE_SHIFT;
-        printh("- pages:%d size:%d\n", pages, size);
-        if (pages) {
-            guest_memory_ttbl3_map(ttbl3, 0, pages, pa, mattr);
-            lpaed_guest_stage2_enable_l2_table(&ttbl2[index_l2_last]);
-        }
-    }
-    HVMM_TRACE_EXIT();
-}
-
-/**
- * @brief Initialize ttbl2 entries.
- *
- * Configures ttbl2 descriptor by mapping address of ttbl3 descriptor.
- * And configure all valid bit of ttbl3 descriptors to zero.
- *
- * @param *ttbl2 Level 2 translation table descriptor.
- * @return void
- */
-static void guest_memory_ttbl2_init_entries(union lpaed *ttbl2, union lpaed *ttbl3)
-{
-    int i, j;
-    HVMM_TRACE_ENTER();
-    for (i = 0; i < VMM_L2_PTE_NUM; i++) {
-        printh("ttbl2[%d]:%x ttbl3[]:%x\n", i, &ttbl2[i], &ttbl3[i * 512]);
-        lpaed_guest_stage2_conf_l2_table(&ttbl2[i],
-                (uint64_t)((uint64_t) &ttbl3[i *512]), 0);
-        for (j = 0; j < VMM_L3_PTE_NUM; j++)
-            ttbl3[(i*512) + j].pt.valid = 0;
-    }
-    HVMM_TRACE_EXIT();
-}
 
 /**
  * @brief Initialize delivered ttbl2 descriptors.
@@ -786,35 +615,56 @@ static void guest_memory_ttbl2_init_entries(union lpaed *ttbl2, union lpaed *ttb
  * @return void
  */
 static void guest_memory_init_ttbl2(union lpaed *ttbl2,
-        struct memmap_desc *md, int gid)
+        struct memmap_desc md, int l1_idx,int gid)
 {
-    int i = 0;
-    int ttbl2_index = 0;
+    int l2_idx, l2_remain;
     union lpaed *ttbl3;
     HVMM_TRACE_ENTER();
+    if(gid)
     printh(" - ttbl2:%x\n", (uint64_t) ttbl2);
     if (((uint64_t)((uint64_t) ttbl2)) & 0x0FFFULL)
         printh(" - error: invalid ttbl2 address alignment\n");
+    l2_idx = (md.va & L2_ENTRY_MASK) >> L2_SHIFT;
+    printh("l2_idx:%d\n", l2_idx);
 
-    /* calculate ttbl2 index by physical address and determine dev, mem area */
-    if ( md[i].pa < CFG_MEMMAP_PHYS_START) // device area
-    {
-        ttbl2_index = md[i].pa / SZ_1G;
-        ttbl3 = &_ttbl3_guest_dev[gid][ttbl2_index * 512 * 512];
-    }
-    else // mem area
-    {
-        ttbl2_index = (md[i].pa - CFG_MEMMAP_GUEST_SIZE * gid) / SZ_1G;
-        ttbl3 = &_ttbl3_guest_mem[gid][(ttbl2_index -256) * 512 * 512];
-    }
+    if (md.va < CFG_MEMMAP_PHYS_START) // device area
+        ttbl3 = &_ttbl3_guest_dev[gid][l1_idx*512*512];
+    else // memory area
+        ttbl3 = &_ttbl3_guest_mem[gid][l1_idx*512*512];
 
-    /* construct l2-l3 table hirerachy with invalid pages */
-    guest_memory_ttbl2_init_entries(ttbl2, ttbl3);
-    //guest_memory_ttbl2_unmap(ttbl2, ttbl3, 0x00000000, 0x40000000);
-    while (md[i].label != 0) {
-        guest_memory_ttbl2_map(ttbl2, ttbl3, md[i].va, md[i].pa,
-                md[i].size, md[i].attr);
-        i++;
+    while (md.size) {
+        l2_remain = (md.va & ~L2_REMAIN_MASK) + SZ_2M - md.va;
+        if( md.size < l2_remain) {
+            lpaed_guest_stage2_conf_l2_table(&ttbl2[l2_idx],
+                    (uint64_t) ((uint64_t) &ttbl3[l2_idx *512]), 1);
+            guest_memory_init_ttbl3 (&ttbl3[l2_idx * 512],
+                    md);
+
+            md.size -= md.size;
+        } else if (l2_remain == SZ_2M)
+        { // fit on L2 block, l2_remain >= size
+            lpaed_guest_stage2_map_page (
+                    &ttbl2[l2_idx], md.pa, md.attr);
+            ttbl2[l2_idx].pt.table = 0; // l2 block
+
+            // sync descriptor
+            md.va += l2_remain;
+            md.pa += l2_remain;
+            md.size -= l2_remain;
+        } else { // bigger then L2 block
+            struct memmap_desc temp_md = md;
+            temp_md.size = l2_remain;
+            lpaed_guest_stage2_conf_l2_table(&ttbl2[l2_idx],
+                    (uint64_t)((uint64_t) &ttbl3[l2_idx*512]), 1);
+            guest_memory_init_ttbl3 (&ttbl3[l2_idx * 512],
+                    temp_md);
+
+            // sync descriptor
+            md.va += l2_remain;
+            md.pa += l2_remain;
+            md.size -= l2_remain;
+        }
+        l2_idx++;
     }
     HVMM_TRACE_EXIT();
 }
@@ -829,23 +679,101 @@ static void guest_memory_init_ttbl2(union lpaed *ttbl2,
  * @return void
  */
 static void guest_memory_init_ttbl1(union lpaed *ttbl1,
-            struct memmap_desc *mdlist[], int gid)
+            struct memmap_desc *mdlist, int gid)
 {
     int i = 0;
     HVMM_TRACE_ENTER();
-    while (mdlist[i]) {
-        struct memmap_desc *md = mdlist[i];
-        if (md[0].label == 0)
-            lpaed_guest_stage2_conf_l1_table(&ttbl1[i], 0, 0);
-        else {
-            if(i < 256) { //device area
-                lpaed_guest_stage2_conf_l1_table(&ttbl1[i],
-                    (uint64_t)((uint64_t) &_ttbl2_guest_dev[gid][i * 512]), 1);
-                guest_memory_init_ttbl2(&_ttbl2_guest_dev[gid][i * 512], md, gid);
-            } else { // memory area
-                lpaed_guest_stage2_conf_l1_table(&ttbl1[i],
-                    (uint64_t)((uint64_t) &_ttbl2_guest_mem[gid][(i-256) * 512]), 1);
-                guest_memory_init_ttbl2(&_ttbl2_guest_mem[gid][(i-256) * 512], md, gid);
+    while (mdlist[i].label) {
+        struct memmap_desc md = mdlist[i];
+        uint32_t l1_idx, l1_remain;
+        union lpaed *ttbl2;
+        //uint64_t size = md.size;
+
+        if (mdlist[i].label == 0) // end of md list
+            break;
+
+        l1_idx = (md.va & L1_ENTRY_MASK) >> L1_SHIFT;
+
+        printh("label:%s, l1_idx:%d, l1_blocks:%d\n",md.label, l1_idx, l1_blocks);
+        if (md.va < CFG_MEMMAP_PHYS_START) // device area
+        {
+            ttbl2 = &_ttbl2_guest_dev[gid];
+
+            while (md.size) {
+                l1_remain = (md.va & ~L1_REMAIN_MASK) + SZ_1G - md.va;
+                printh("l1_remain : %x, size: %x\n", l1_remain, md.size);
+                if (md.size < l1_remain ) {
+                    lpaed_guest_stage2_conf_l1_table(&ttbl1[l1_idx],
+                            (uint64_t) ((uint64_t) &ttbl2[l1_idx*512]), 1);
+                    guest_memory_init_ttbl2 (&ttbl2[l1_idx*512],
+                            md, l1_idx, gid);
+
+                    md.size -= md.size;
+                } else if ( l1_remain == SZ_1G)
+                {// fit on L1 block, l1_remain >= size
+                    lpaed_guest_stage2_map_page (
+                            &ttbl1[l1_idx], md.pa, md.attr);
+                    ttbl1[l1_idx].pt.table = 0; // l1 block
+
+                    // sync descriptor
+                    md.va += l1_remain;
+                    md.pa += l1_remain;
+                    md.size -= l1_remain;
+                } else { // bigger then L1 block
+                    struct memmap_desc temp_md = md;
+                    temp_md.size = l1_remain;
+                    lpaed_guest_stage2_conf_l1_table(&ttbl1[l1_idx],
+                            (uint64_t) ((uint64_t) &ttbl2[l1_idx*512]), 1);
+                    guest_memory_init_ttbl2 (&ttbl2[l1_idx*512],
+                            temp_md, l1_idx, gid);
+
+                    // sync descriptor
+                    md.va += l1_remain;
+                    md.pa += l1_remain;
+                    md.size -= l1_remain;
+                }
+                l1_idx++;
+            }
+        }
+        else {// memory area
+            ttbl2 = &_ttbl2_guest_mem[gid];
+            while (md.size) {
+                l1_remain = (md.va & ~L1_REMAIN_MASK) + SZ_1G - md.va;
+                printh("l1_remain : %x, size: %x\n", l1_remain, md.size);
+                if (md.size <l1_remain ) {
+                    lpaed_guest_stage2_conf_l1_table(&ttbl1[l1_idx],
+                            (uint64_t)((uint64_t) 
+                    &ttbl2[(l1_idx-(CFG_MEMMAP_PHYS_START/SZ_1G))*512]), 1);
+                    guest_memory_init_ttbl2
+                        (&ttbl2[(l1_idx-(CFG_MEMMAP_PHYS_START/SZ_1G))*512],
+                         md, (l1_idx-(CFG_MEMMAP_PHYS_START/SZ_1G)), gid);
+
+                    md.size -= md.size;
+                } else if ( l1_remain == SZ_1G) {// fit on L1 block
+                    lpaed_guest_stage2_map_page (
+                            &ttbl1[l1_idx], md.pa, md.attr);
+                    ttbl1[l1_idx].pt.table = 0; // l1 block
+
+                    // sync descriptor
+                    md.va += l1_remain;
+                    md.pa += l1_remain;
+                    md.size -= l1_remain;
+                } else { // bigger then L1 block
+                    struct memmap_desc temp_md = md;
+                    temp_md.size = l1_remain;
+                    lpaed_guest_stage2_conf_l1_table(&ttbl1[l1_idx],
+                            (uint64_t) ((uint64_t)
+                    &ttbl2[(l1_idx-(CFG_MEMMAP_PHYS_START/SZ_1G))*512]), 1);
+                    guest_memory_init_ttbl2
+                        (&ttbl2[(l1_idx-(CFG_MEMMAP_PHYS_START/SZ_1G))*512],
+                         temp_md, (l1_idx-(CFG_MEMMAP_PHYS_START/SZ_1G)), gid);
+
+                    // sync descriptor
+                    md.va += l1_remain;
+                    md.pa += l1_remain;
+                    md.size -= l1_remain;
+                }
+                l1_idx++;
             }
         }
         i++;
@@ -866,7 +794,7 @@ static void guest_memory_init_ttbl1(union lpaed *ttbl1,
  */
 
 static void guest_memory_init_ttbl(union lpaed *ttbl0,
-        struct memmap_desc *mdlist[], int gid)
+        struct memmap_desc mdlist[], int gid)
 {
     lpaed_guest_stage2_conf_l0_table(ttbl0,
             (uint64_t)(uint64_t)_ttbl1_guest[gid], 1);
@@ -887,8 +815,8 @@ static void guest_memory_init_ttbl(union lpaed *ttbl0,
  * @return void
  */
 struct vtcr_cfg {
-    uint32_t sl0;
-    uint32_t t0sz;
+    uint8_t sl0;
+    uint8_t t0sz;
 };
 
 /* ps */            /* PA Size bits, Size */
@@ -896,7 +824,7 @@ struct vtcr_cfg vtcr_info[] = {
 /* 0 */    {1, 32}, // 32, 4G
 /* 1 */    {1, 28}, // 36, 64G
 /* 2 */    {1, 24}, // 40, 1T
-/* 3 */    {1, 22}, // 42, 4T
+/* 3 */    {1, 25}, // 42, 4T
 /* 4 */    {2, 20}, // 44, 16T
 /* 5 */    {2, 16}, // 48, 256T
 };
@@ -913,6 +841,8 @@ static void guest_memory_init_mmu(void)
     uart_print("\n\r");
     vtcr_ps = id_aa64mmfr0_el1 & ID_AA64MMFR0_PARange;
     printH("ps: %d\n",vtcr_ps);
+
+    vtcr_el2 = VTCR_INITVAL;
     vtcr_el2 &= ~VTCR_ORGN0_MASK;
     vtcr_el2 |= (0x3 << VTCR_ORGN0_SHIFT) & VTCR_ORGN0_MASK;
     vtcr_el2 &= ~VTCR_IRGN0_MASK;
@@ -933,7 +863,7 @@ static void guest_memory_init_mmu(void)
     uart_print_hex32(vtcr_el2);
     uart_print("\n\r");
     {
-        uint64_t baddr_x = 1<<12;
+        uint64_t baddr_x = 1<<((64-vtcr_info[vtcr_ps].t0sz)-26);
         uart_print("vttbr.baddr.x:");
         uart_print_hex(baddr_x);
         uart_print("\n\r");
@@ -1057,7 +987,7 @@ static int memory_enable(void)
     uart_print("\n\r");
 
     /*
-     * TCR_EL2 Configuration
+     * TCR_EL2 (HTCR) Configuration
      * TBI : Top Byte used in the address calculation
      * PS : AArch64_Memory Management Featre Register0.PRange bits (b011)
      * TG0 : 4KB Granule (b00)
@@ -1101,35 +1031,6 @@ static int memory_enable(void)
     uart_print("hcr_el2:");
     uart_print_hex64(hcr_el2);
     uart_print("\n\r");
-
-    /* HTCR */
-    /*
-     * Shareability - SH0[13:12] = 0 - Not shared
-     * Outer Cacheability - ORGN0[11:10] = 11b -
-     *                          Write Back no Write Allocate Cacheable
-     * Inner Cacheability - IRGN0[9:8] = 11b - Same
-     * T0SZ[2:0] = 0 - 2^32 Input Address
-     */
-    /* Untested code commented */
-/*
-    htcr = read_htcr();
-    uart_print("htcr:");
-    uart_print_hex32(htcr);
-    uart_print("\n\r");
-    htcr &= ~HTCR_SH0_MASK;
-    htcr |= (0x0 << HTCR_SH0_SHIFT) & HTCR_SH0_MASK;
-    htcr &= ~HTCR_ORGN0_MASK;
-    htcr |= (0x3 << HTCR_ORGN0_SHIFT) & HTCR_ORGN0_MASK;
-    htcr &= ~VTCR_IRGN0_MASK;
-    htcr |= (0x3 << HTCR_IRGN0_SHIFT) & HTCR_IRGN0_MASK;
-    htcr &= ~VTCR_T0SZ_MASK;
-    htcr |= (0x0 << HTCR_T0SZ_SHIFT) & HTCR_T0SZ_MASK;
-    write_htcr(htcr);
-    htcr = read_htcr();
-    uart_print("htcr:");
-    uart_print_hex32(htcr);
-    uart_print("\n\r");
-*/
 
     /* TTBR0_EL2 = &__hmm_pgtable */
     ttbr0_el2 = read_httbr();
@@ -1185,7 +1086,7 @@ static int memory_enable(void)
  *
  * Initialize and setting the translation table descriptors of the Hyp mode.
  * - Target environment.
- *   - PL2, stage-1 translation table.
+ *   - EL2, stage-1 translation table.
  *   - Virtual address -> Physical address
  * - Generate configurations.
  *   - Translation table level1, level2, and level3.
@@ -1280,7 +1181,6 @@ static void host_memory_init(void)
  * @return void
  */
 static void guest_memory_init(struct memmap_desc **guest_map, int gid)
-        //struct memmap_desc **guest1_map)
 {
     /*
      * Initializes Translation Table for Stage2 Translation (IPA -> PA)
@@ -1292,7 +1192,7 @@ static void guest_memory_init(struct memmap_desc **guest_map, int gid)
     switch (sl0)
     {
         case 0 : // start level 2, unimplemented
-            printh("unimplemented\n");
+            printH("Unimplemented\n");
             break;
         case 1: // start level 1
             _vmid_ttbl[gid] = &_ttbl1_guest[gid];
@@ -1371,8 +1271,8 @@ void temp_check()
  *
  * @return HVMM_STATUS_SUCCESS, Always success.
  */
-static int memory_hw_init(struct memmap_desc **guest0,
-            struct memmap_desc **guest1)
+static int memory_hw_init(struct memmap_desc *guest0,
+            struct memmap_desc *guest1)
 {
     uint32_t cpu = smp_processor_id();
     uart_print("[memory] memory_init: enter\n\r");
