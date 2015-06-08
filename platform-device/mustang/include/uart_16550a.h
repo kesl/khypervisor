@@ -1,7 +1,7 @@
 #ifndef __UART_16550A__
 #define __UART_16550A__
 
-//#define 16550A_BASE UART_BASE
+#define UART_16550A_BASE UART_BASE
 /* UART_LCR.DLAB = 0 */
 #define UART_RBR 0x00   /* Receiver Buffer Register */
 #define UART_THR 0x00   /* Transmitter Holding Register */

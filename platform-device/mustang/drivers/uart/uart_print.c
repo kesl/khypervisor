@@ -1,6 +1,6 @@
 #include "arch_types.h"
 #include <k-hypervisor-config.h>
-#include <uart_16650a.h>
+#include <uart_16550a.h>
 
 
 #ifdef CFG_GENERIC_CA15
