@@ -13,7 +13,6 @@
 #define MIDR_PPN_CORTEXA15    (0xC0F << 4)
 #define MIDR_PPN_STORM       (0x000 << 4)
 
-
 #define GIC_INT_PRIORITY_DEFAULT_WORD    ((GIC_INT_PRIORITY_DEFAULT << 24) \
                                          |(GIC_INT_PRIORITY_DEFAULT << 16) \
                                          |(GIC_INT_PRIORITY_DEFAULT << 8) \
@@ -218,9 +217,7 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t iar;
     uint32_t irq;
     struct arch_regs *regs = pregs;
-/* #if _SMP_ */
     uint32_t cpu = smp_processor_id();
-/* #endif */
    /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;

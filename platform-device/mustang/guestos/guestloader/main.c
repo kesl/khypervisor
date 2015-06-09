@@ -17,18 +17,16 @@ volatile int autoboot;
 
 static void guestloader_init(void)
 {
-    /* Initializes serial */
-    uart_init();
     /* Initializes GIC */
     gic_init();
     /* Initializes monitoring */
-    monitoring_init();
+    //monitoring_init();
     /* Ready to accept irqs with GIC. Enable it now */
     irq_enable();
     /* Initializes timer */
-    timer_init();
+//    timer_init();
     /* Initializes autoboot flag */
-    autoboot = 0;
+    autoboot = 1;
 }
 
 void guestloader_flag_autoboot(int flag)
@@ -39,7 +37,7 @@ void guestloader_flag_autoboot(int flag)
 static void guestloader_autoboot(void)
 {
     /* Disable timer for guest os */
-    timer_disable();
+    //timer_disable();
     cli_exec_cmd(BOOTCMD);
 }
 
@@ -62,10 +60,12 @@ void main(int boot_status)
     while (1)
         ;
 #endif
+    /* Initializes serial */
+    uart_init();
     /*If Booting status is reboot, run this function. */
     uart_print("guest bootloader\n");
     if(boot_status){
-      reboot();
+      _reboot();
     }
     /* Initializes guestloder */
     guestloader_init();
@@ -80,4 +80,9 @@ void main(int boot_status)
         else if (uart_tst_fifo())
             guestloader_cliboot();
     }
+}
+int _reboot()
+{
+    unsigned int *reboot = (unsigned int *) 0x17000014;
+    *reboot = 0x1;
 }
