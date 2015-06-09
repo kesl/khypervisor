@@ -1,18 +1,17 @@
 #include "arch_types.h"
 #include <log/uart_print.h>
-#include "pl011.h"
+#include "uart_16550a.h"
 #include <log/print.h>
 
-#define UART_BASE  PL011_BASE
-#define UART_INCLK 24000000
-#define UART_BAUD  115200
+#define UART_BASE  UART_16550A_BASE
+#define UART_BAUD  baud_115200
 #define NULL    '\0'
 
 void uart_putc(const char c)
 {
     if (c == '\n')
-        pl011_putc('\r');
-    pl011_putc(c);
+        uart_16550a_putc('\r');
+    uart_16550a_putc(c);
 }
 
 void uart_print(const char *str)
@@ -21,9 +20,6 @@ void uart_print(const char *str)
         uart_putc(*str);
         str++;
     }
-    volatile char *pUART = (char *) UART_BASE;
-    while (*str)
-        *pUART = *str++;
 }
 
 #define UART_PRINT_BUF  12
@@ -47,29 +43,17 @@ void uart_print_dec(uint32_t v)
 
 void uart_print_hex32(uint32_t v)
 {
-    unsigned int mask8 = 0xF;
-    unsigned int c;
-    int i;
-    uart_print("0x");
-    for (i = 7; i >= 0; i--) {
-        c = ((v >> (i * 4)) & mask8);
-        if (c < 10)
-            c += '0';
-        else
-            c += 'A' - 10;
-        uart_putc((char) c);
-    }
+    uart_16550a_print_hex32(v);
 }
 
 void uart_print_hex64(uint64_t v)
 {
-    uart_print_hex32(v >> 32);
-    uart_print_hex32((uint32_t)(v & 0xFFFFFFFF));
+    uart_16550a_print_hex64(v);
 }
 
 int uart_tst_fifo(void)
 {
-    if (!pl011_tst_fifo(UART_BASE))
+    if (!uart_16550a_tst_fifo())
         return 0;
     else
         return 1;
@@ -77,7 +61,7 @@ int uart_tst_fifo(void)
 
 char uart_getc()
 {
-    char ch = pl011_getc(UART_BASE);
+    char ch = uart_16550a_getc();
     if (ch == '\r')
         ch = '\n';
     uart_putc(ch);
@@ -103,6 +87,6 @@ void uart_gets(char *str, int max_column)
 
 void uart_init(void)
 {
-    pl011_init(UART_BASE, UART_BAUD, UART_INCLK);
+    uart_16550a_init(UART_BASE, UART_BAUD);
     init_print();
 }

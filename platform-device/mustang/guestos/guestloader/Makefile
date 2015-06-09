@@ -7,7 +7,7 @@
 include config-default.mk
 COMMON_SOURCE_DIR=../../../../common
 COMMON_LOADER_DIR=$(COMMON_SOURCE_DIR)/guest/loader
-OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
+OBJS += boot.o main.o drivers/uart.o drivers/uart_16550a.o drivers/timer.o\
 	$(COMMON_SOURCE_DIR)/log/print.o \
 	$(COMMON_SOURCE_DIR)/log/format.o \
 	$(COMMON_SOURCE_DIR)/log/string.o \
@@ -22,10 +22,11 @@ OBJS += boot.o main.o drivers/uart.o drivers/pl011.o drivers/timer.o\
 GUESTLOADERIMG	= guestloader.axf
 GUESTLOADERBIN	= guestloader.bin
 LD_SCRIPT	= model.lds.S
-INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include \
+INCLUDES	= -I. -I$(COMMON_SOURCE_DIR) -I$(COMMON_SOURCE_DIR)/include/arm64 \
 			 -I$(COMMON_LOADER_DIR) -I$(COMMON_SOURCE_DIR)/guest \
 			 -I$(COMMON_SOURCE_DIR)/guest/core -I../../ \
-			 -I$(COMMON_LOADER_DIR)/monitor
+			 -I$(COMMON_LOADER_DIR)/monitor \
+             -I./drivers
 
 CPPFLAGS	+= $(INCLUDES)
 CC		= $(CROSS_COMPILE)gcc
