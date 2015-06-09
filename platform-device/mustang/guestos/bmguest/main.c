@@ -44,6 +44,11 @@ int main()
     WRITE_ACTLR(val);
 #endif
 
+    {
+        unsigned int *reset = (unsigned int *) 0x17000014;
+        *reset = 0x1;
+    }
+
     while (1)
         ;
     return 0;
