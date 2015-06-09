@@ -1,6 +1,14 @@
 #ifndef __UART_16550A__
 #define __UART_16550A__
 
+enum baud_rate {
+    baud_115200 =0,
+    baud_57600,
+    baud_38400,
+    baud_19200,
+    baud_9600,
+};
+
 #define UART_16550A_BASE UART_BASE
 /* UART_LCR.DLAB = 0 */
 #define UART_RBR 0x00   /* Receiver Buffer Register */
@@ -17,6 +25,10 @@
 #define UART_MSR 0x06   /* Modem Status Register */
 #define UART_SCR 0x07   /* Scratch Register */
 
+/* MCR */
+#define UART_MCR_DTR    0x01
+#define UART_MCR_RTS    0x02
+
 /* IER */
 #define UART_IER_RDA    (0x1 << 0)   /* Received Data Available */
 #define UART_IER_THRE   (0x1 << 1)  /* Transmitter Holding Register Empty */
@@ -26,6 +38,18 @@
 /* IIR */
 #define UART_IIR_NOINT (1 << 0) /* NO INTerrupt pendinfg */
 //#define UART_IIR
+
+/* FCR */
+#define UART_FCR_ENABLE     (0x1 << 0)
+#define UART_FCR_DISABLE    (0X0 << 0)
+#define UART_FCR_CLR_RX    (0x1 << 1)
+#define UART_FCR_CLR_TX    (0x1 << 2)
+#define UART_FCR_DMA_MODE_0 (0x1 << 3)
+#define UART_FCR_DMA_MODE_1 (0x1 << 3)
+#define UART_FCR_IRQ_TRG_LV_1   (0x0 << 6)
+#define UART_FCR_IRQ_TRG_LV_4   (0x1 << 6)
+#define UART_FCR_IRQ_TRG_LV_8   (0x2 << 6)
+#define UART_FCR_IRQ_TRG_LV_14  (0x3 << 6)
 
 /* LCR  Options */
 
@@ -65,13 +89,4 @@
 #define UART_LSR_THE (0x1 << 5) /* THR is Empty */
 #define UART_LSR_THEI (0x1 << 6) /* THR is Empty and line is Idle */
 #define UART_LSR_EDF (0x1 << 7) /* Errornous Data in Fifo */
-
-/* DLL & DLM Options */
-/* 115200 */
-#define UART_DLL_115200 0x01
-#define UART_DLM_115200 0x00
-
-/* 19200 */
-#define UART_DLL_19200 0x06
-#define UART_DLM_115200 0x00
 #endif
