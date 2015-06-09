@@ -43,6 +43,7 @@ static struct memmap_desc guest0_device_md[] = {
     { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
         CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
         MEMATTR_DM },
+    { "reset", 0x17000014, 0x17000014, SZ_4K, MEMATTR_DM},
    { 0, 0, 0, 0, 0 }
 };
 
@@ -51,6 +52,7 @@ static struct memmap_desc guest1_device_md[] = {
     { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
        CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
        MEMATTR_DM },
+    { "reset", 0x17000014, 0x17000014, SZ_4K, MEMATTR_DM},
     { 0, 0, 0, 0, 0 }
 };
 
@@ -193,7 +195,7 @@ void setup_interrupt()
 
 void setup_memory()
 {
-    int i=0;
+    int i, j;
     /*
      * VA: 0x00000000 ~ 0x3FFFFFFF,   1GB
      * PA: 0xA0000000 ~ 0xDFFFFFFF    guest_bin_start
@@ -201,31 +203,23 @@ void setup_memory()
      */
     //guest0_memory_md[0].pa = (uint64_t)((uint64_t) &_guest0_bin_start);
     //guest1_memory_md[0].pa = (uint64_t)((uint64_t) &_guest1_bin_start);
-    while(guest0_device_md[i].label)
-    {
+    guest0_memory_md[0].pa = 0x4000000000ULL;
+    guest1_memory_md[0].pa = 0x4080000000ULL;
+
+    for(i=0; guest0_device_md[i].label; i++)
         guest0_mdlist[i] = guest0_device_md[i];
-        i++;
-    }
-    while(guest0_memory_md[i].label)
-    {
-        guest0_mdlist[i] = guest0_memory_md[i];
-        guest0_mdlist[i].pa = 0x4000000000ULL;
-        i++;
-    }
+
+    for(j=0; guest0_memory_md[j].label; i++,j++)
+        guest0_mdlist[i] = guest0_memory_md[j];
+
     guest0_mdlist[i] = guest_md_empty[0];
 
-    i=0;
-    while(guest1_device_md[i].label)
-    {
+    for(i=0; guest1_device_md[i].label; i++)
         guest1_mdlist[i] = guest1_device_md[i];
-        i++;
-    }
-    while(guest1_memory_md[i].label)
-    {
-        guest1_mdlist[i] = guest0_memory_md[i]; // temporary treat
-        guest1_mdlist[i].pa = 0x4080000000ULL;
-        i++;
-    }
+
+    for(j=0; guest1_memory_md[j].label; i++,j++)
+        guest1_mdlist[i] = guest1_memory_md[j];
+
     guest1_mdlist[i] = guest_md_empty[0];
 
 #if _SMP_
