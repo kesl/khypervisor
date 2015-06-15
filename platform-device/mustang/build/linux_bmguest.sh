@@ -1,6 +1,6 @@
 #for bmguest + linux
 
-export TARGET_PRODUCT="cortex_a15x2_rtsm"
+export TARGET_PRODUCT="mustang"
 
 export GUEST_COUNT=2
 
@@ -14,28 +14,22 @@ export UBOOT=""
 export UBOOT_BUILD_SCRIPT=""
 export UBOOT_CLEAN_SCRIPT=""
 
-export ZIMAGE_BIN="zImage"
 export BMGUEST_BIN="bmguest.bin"
 export GUEST0_DIR="guestos/guestloader"
 export GUEST0_BIN="guestloader.bin"
-export GUEST0_BUILD_SCRIPT="cd ../linux && \
-make ARCH=arm vexpress_minhw_defconfig && \
-cp -a ../../patch/host-a15.dtb . && \
-make CROSS_COMPILE=arm-none-linux-gnueabi- ARCH=arm -j8 && \
-cp System.map ../../guestimages/ && \
-cat host-a15.dtb >> arch/arm/boot/zImage && \
-cp arch/arm/boot/zImage ../../guestimages/ && \
-cd ../../$GUEST0_DIR && \
+export GUEST0_BUILD_SCRIPT="cd ../../$GUEST0_DIR && \
 make clean && \
 make LINUX=y"
 export GUEST0_CLEAN_SCRIPT="make clean"
 
+export BM1_BIN="bmguest1.bin"
 export GUEST1_DIR="guestos/guestloader"
 export GUEST1_BIN="guestloader.bin"
 export GUEST1_BUILD_SCRIPT="cd ../bmguest/ && \
 make clean && \
 make GUEST_NUMBER=1 && \
 cp $BMGUEST_BIN ../../guestimages/ && \
+cp $BMGUEST_BIN ../../guestimages/$BM1_BIN && \
 cd ../../$GUEST1_DIR && \
 make clean && \
 make MONITOR=y"
