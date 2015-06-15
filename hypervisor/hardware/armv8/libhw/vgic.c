@@ -414,7 +414,7 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
         vmid_t vmid;
         vmid = 0;//guest_current_vmid();
         while (eisr) {
-            slot = (31 - asm_clz(eisr));
+            slot = (63 - asm_clz(eisr));
             eisr &= ~(1 << slot);
             _vgic.base[GICH_LR + slot] = 0;
             /* deactivate associated pirq at the slot */
@@ -430,7 +430,7 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
         }
         eisr = _vgic.base[GICH_EISR1];
         while (eisr) {
-            slot = (31 - asm_clz(eisr));
+            slot = (63 - asm_clz(eisr));
             eisr &= ~(1 << slot);
             _vgic.base[GICH_LR + slot + 32] = 0;
             /* deactivate associated pirq at the slot */
