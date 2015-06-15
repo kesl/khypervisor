@@ -138,6 +138,7 @@ struct vdev_module _vdev_hvc_vtimer_module = {
 hvmm_status_t vdev_vtimer_init()
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
+    write_cntvoff(VTIMER_BASE_ADDR);
 
     result = vdev_register(VDEV_LEVEL_LOW, &_vdev_hvc_vtimer_module);
     if (result == HVMM_STATUS_SUCCESS)
