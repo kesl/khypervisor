@@ -3,20 +3,28 @@
 #include <linuxloader.h>
 #include <guestloader_common.h>
 
-#define SET_MACHINE_TYPE_TO_X1() \
-    asm volatile ("mov x1, %0" : : "r" (MACHINE_TYPE) : "memory", "cc")
-#define SET_ATAGS_TO_X2() \
-    asm volatile \
-    ("mov x2, %0" : : "r" (linuxloader_get_atags_addr()) : "memory", "cc")
-/*#define ADD_PC_TO_OFFSET(addr) \
+/*
+ * ARMv8 Linux Primary Booting core registers
+ *
+ * X0 - Physical address of device tree blob (dtb)
+ * X1 - 0
+ * X2 - 0
+ * X3 - 0
+ *
+ */
+#define SET_AND_JUMP_TO_LINUX() \
     asm volatile ( \
-    "adr x10, goal;" \
-    "mov x12, 0x4;"\
-    "add %0, x10, %0;" \
-    "add %0, x12, %0" \
-    : : "r" (addr) : "memory", "cc")
-    */
-#define ADD_PC_TO_OFFSET(addr) ({ \
+    "mov x5, %0;" \
+    "mov x4, %1;" \
+    "mov x0, x5;" \
+    "mov x1, xzr;" \
+    "mov x2, xzr;" \
+    "mov x3, xzr;" \
+    "br x4" \
+    : : "r" (START_FDT_ADDR), "r" (START_ADDR) : "memory", "cc")
+
+#define ADD_PC_TO_OFFSET(addr) \
+    ({ \
     uint64_t rval; \
     asm volatile ( \
     "adr x10, goal;" \
@@ -28,6 +36,8 @@
     asm volatile ("mov x0, %0;" \
     "br x0;" \
     : : "r" (offset) : "memory", "cc")
+
+/* Set the jump goal */
 #define GOAL() \
     asm volatile ("goal:" :::)
 enum guest_image_type {
@@ -58,14 +68,14 @@ void loader_boot_guest(uint32_t guest_os_type)
     uint64_t offset;
     uint64_t pc;
 
+    asm volatile ("msr daifset, 0x2" : : : "memory");
+
     if (guest_os_type == GUEST_TYPE_LINUX) {
 
-        linuxloader_setup_atags(START_ADDR_LINUX);
-        /* r1 : machine type
-         * r2 : atags address
+        /*
+         * x0 : Physical address of device tree blob
          */
-        SET_MACHINE_TYPE_TO_X1();
-        SET_ATAGS_TO_X2();
+        SET_AND_JUMP_TO_LINUX();
     } else {
         uart_print("loader_start:");
         uart_print_hex64(&loader_start);
@@ -88,9 +98,9 @@ void loader_boot_guest(uint32_t guest_os_type)
         GOAL();
         /* Copies guest to start address */
         copy_image_to(&guest_start, &guest_end, (uint64_t *)START_ADDR);
+        /* Jump to start address of guest */
+        JUMP_TO_ADDRESS(START_ADDR);
     }
-    /* Jump to start address of guest */
-    JUMP_TO_ADDRESS(START_ADDR);
 
     /* The code must not reach here */
     uart_print("[loadbmguest] ERROR: CODE MUST NOT REACH HERE\n\r");
