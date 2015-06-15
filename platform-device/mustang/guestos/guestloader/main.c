@@ -24,9 +24,9 @@ static void guestloader_init(void)
     /* Ready to accept irqs with GIC. Enable it now */
     irq_enable();
     /* Initializes timer */
-//    timer_init();
+    timer_init();
     /* Initializes autoboot flag */
-    autoboot = 1;
+    autoboot = 0;
 }
 
 void guestloader_flag_autoboot(int flag)
@@ -37,7 +37,7 @@ void guestloader_flag_autoboot(int flag)
 static void guestloader_autoboot(void)
 {
     /* Disable timer for guest os */
-    //timer_disable();
+    timer_disable();
     cli_exec_cmd(BOOTCMD);
 }
 
