@@ -14,7 +14,7 @@ TARGET(binary)
 #ifdef LDS_PHYS_OFFSET
 PHYS_OFFSET = LDS_PHYS_OFFSET;
 #else
-PHYS_OFFSET = 0x80000000;
+PHYS_OFFSET = 0x4000000000;
 #endif
 
 /* NS.SVC mode code space

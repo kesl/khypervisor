@@ -33,11 +33,11 @@ CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
 OBJCOPY	= $(CROSS_COMPILE)objcopy
 GUESTLOADERCONFIGS = -DBM_GUEST
+GUESTBIN	= ../../guestimages/bmguest.bin
 ifeq ($(LINUX), y)
 GUESTLOADERCONFIGS = -DLINUX_GUEST
-GUESTBIN	= ../../guestimages/zImage
+GUESTBIN =
 else
-GUESTBIN	= ../../guestimages/bmguest.bin
 endif
 ifeq ($(MONITOR), y)
 GUESTLOADERCONFIGS += -DMONITOR_GUEST
@@ -58,7 +58,7 @@ $(GUESTLOADERBIN): $(GUESTLOADERIMG)
 	$(OBJCOPY) -O binary -S $< $@
 ifeq ($(LINUX), y)
 $(GUESTBIN):
-	@echo "ERROS: Copy $@ from guestos/linux/arch/arm/boot/ after building it"
+	@echo "ERROS: Copy $@ from guestos/linux/arch/arm64/boot/ after building it"
 else
 $(GUESTBIN):
 	@echo "ERROS: Copy $@ from guestos/bmguest/ after building it"
