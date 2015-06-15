@@ -236,7 +236,7 @@ void gic_interrupt(int fiq, void *pregs)
 
         /* Completion & Deactivation */
         _gic.ba_gicc[GICC_EOIR] = irq;
-        _gic.ba_gicc[GICC_DIR] = irq;
+        _gic.ba_gicc[GICC_DIR + (0x10000 / 4)] = irq;
     } else {
     /*TODO  Need to know why this part occurred*/
     #if 0
