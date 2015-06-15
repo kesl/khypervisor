@@ -14,8 +14,8 @@
 #include <log/print.h>
 #include <smp.h>
 
-static timer_callback_t _host_callback[2];
-static timer_callback_t _guest_callback[2];
+static timer_callback_t _host_callback[NUM_CPUS];
+static timer_callback_t _guest_callback[NUM_CPUS];
 
 static struct timer_ops *_ops;
 
@@ -124,6 +124,7 @@ hvmm_status_t timer_init(uint32_t irq)
 
     _ops = _timer_module.ops;
 
+    /* timer_hw_init() */
     if (_ops->init)
         _ops->init();
 

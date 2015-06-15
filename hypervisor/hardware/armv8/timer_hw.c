@@ -7,9 +7,9 @@
 #include <interrupt.h>
 
 enum generic_timer_type {
-    GENERIC_TIMER_HYP,      /* IRQ 15 */
-    GENERIC_TIMER_VIR,      /* IRQ 14 */
-    GENERIC_TIMER_NSP,      /* IRQ 13 */
+    GENERIC_TIMER_HYP,      /* IRQ 31 */
+    GENERIC_TIMER_VIR,      /* IRQ 30 */
+    GENERIC_TIMER_NSP,      /* IRQ 29 */
     GENERIC_TIMER_NUM_TYPES
 };
 
@@ -251,7 +251,10 @@ static hvmm_status_t timer_set_tval(uint64_t tval)
 {
     return generic_timer_set_tval(GENERIC_TIMER_HYP, tval);
 }
-
+static hvmm_status_t timer_hw_init(void)
+{
+    write_cntvoff(0); /* No guest specific offset */
+}
 
 /** @brief dump at time.
  *  @todo have to write dump with meaningful printing.
@@ -264,6 +267,7 @@ static hvmm_status_t timer_dump(void)
 }
 
 struct timer_ops _timer_ops = {
+    .init = timer_hw_init,
     .enable = timer_enable,
     .disable = timer_disable,
     .set_interval = timer_set_tval,
