@@ -26,6 +26,7 @@ go_el1:
 
 init_stack:
     /* Stack pointer initialization */
+    msr daifset, 0xf
     // sp for el1
     ldr     x0, = loader_stacklimit
     mov     sp, x0
@@ -102,25 +103,25 @@ init_stack:
 .align 11
 guestloader_vector:
     /* EL1t, SP_EL0 */
-    entry _unhandled /* el1t_sync */
-    entry _unhandled /* el1t_irq */
-    entry _unhandled /* el1t_fiq */
-    entry _unhandled /* el1t_serr */
+    entry except_svc /* el1t_sync */
+    entry except_irq /* el1t_irq */
+    entry except_fiq /* el1t_fiq */
+    entry except_ser /* el1t_serr */
     /* EL1h, SP_EL0 */
     entry except_svc /* el1h_sync */
     entry except_irq /* el1h_irq */
-    entry _unhandled /* el1h_fiq */
-    entry _unhandled /* el1h_serr */
+    entry except_fiq /* el1h_fiq */
+    entry except_ser /* el1h_serr */
     /* EL0t, SP_EL0, AArch64 */
-    entry _unhandled /* el0t_sync */
+    entry except_svc /* el0t_sync */
     entry except_irq /* el0t_irq */
-    entry _unhandled /* el0t_fiq */
-    entry _unhandled /* el0t_serr */
+    entry except_fiq /* el0t_fiq */
+    entry except_ser /* el0t_serr */
     /* EL0t, SP_EL0, AArch32 */
-    entry _unhandled /* el0h_sync */
+    entry except_svc /* el0h_sync */
     entry except_irq /* el0h_irq */
-    entry _unhandled /* el0h_fiq */
-    entry _unhandled /* el0h_serr */
+    entry except_fiq /* el0h_fiq */
+    entry except_ser /* el0h_serr */
 
 except_svc:
     push_registers spsr_el1 elr_el1
@@ -133,6 +134,20 @@ except_irq:
     push_registers spsr_el1 elr_el1
     mov x0, sp
     bl      _except_irq
+    pop_registers spsr_el1 elr_el1
+    eret
+
+except_fiq:
+    push_registers spsr_el1 elr_el1
+    mov x0, sp
+    bl      _except_fiq
+    pop_registers spsr_el1 elr_el1
+    eret
+
+except_ser:
+    push_registers spsr_el1 elr_el1
+    mov x0, sp
+    bl      _except_ser
     pop_registers spsr_el1 elr_el1
     eret
 
