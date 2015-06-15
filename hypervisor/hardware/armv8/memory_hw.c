@@ -595,6 +595,13 @@ static void guest_memory_init_ttbl3(union lpaed *ttbl3,
     l3_idx = (md.va & L3_ENTRY_MASK) >> L3_SHIFT;
     while(md.size)
     {
+        if(ttbl3[l3_idx].pt.valid) {
+            md.size -= SZ_4K;
+            md.pa += SZ_4K;
+            md.va += SZ_4K;
+            l3_idx++;
+            continue;
+        }
         lpaed_guest_stage2_map_page ( &ttbl3[l3_idx], md.pa, md.attr);
         md.size -= SZ_4K;
         md.pa += SZ_4K;
@@ -687,14 +694,20 @@ static void guest_memory_init_ttbl1(union lpaed *ttbl1,
         struct memmap_desc md = mdlist[i];
         uint32_t l1_idx, l1_remain;
         union lpaed *ttbl2;
-        //uint64_t size = md.size;
+
+        // fit to minimum size
+        if ( md.size < SZ_4K)
+            md.size = SZ_4K;
+        //set alignment
+        md.va &= ~ENTRY_MASK;
+        md.pa &= ~ENTRY_MASK;
 
         if (mdlist[i].label == 0) // end of md list
             break;
 
         l1_idx = (md.va & L1_ENTRY_MASK) >> L1_SHIFT;
 
-        printh("label:%s, l1_idx:%d, l1_blocks:%d\n",md.label, l1_idx, l1_blocks);
+        printh("label:%s, l1_idx:%d\n",md.label, l1_idx);
         if (md.va < CFG_MEMMAP_PHYS_START) // device area
         {
             ttbl2 = &_ttbl2_guest_dev[gid];
