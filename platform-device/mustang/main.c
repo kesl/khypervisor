@@ -39,11 +39,66 @@ static struct memmap_desc guest_md_empty[] = {
 };
 /*  label, ipa, pa, size, attr */
 static struct memmap_desc guest0_device_md[] = {
+    { "sata1", 0x1F21C000, 0x1F21C000, SZ_4K, MEMATTR_DM },
+    /* sata 2 */
+    { "sata2", 0x1A400000, 0x1A400000, SZ_4K, MEMATTR_DM },
+    { "sata2", 0x1F220000, 0x1F220000, SZ_4K, MEMATTR_DM },
+    { "sata2", 0x1F22A000, 0x1F22A000, SZ_4K, MEMATTR_DM },
+    { "sata2", 0x1F22C000, 0x1F22C000, SZ_4K, MEMATTR_DM },
+    { "sata2", 0x1F22D000, 0x1F22D000, SZ_4K, MEMATTR_DM },
+    { "sata2", 0x1F22E000, 0x1F22E000, SZ_4K, MEMATTR_DM },
+    { "sata2", 0x1F227000, 0x1F227000, SZ_4K, MEMATTR_DM },
+    /* sata 3 */
+    { "sata3", 0x1A800000, 0x1A800000, SZ_4K, MEMATTR_DM },
+    { "sata3", 0x1F230000, 0x1F230000, SZ_4K, MEMATTR_DM },
+    { "sata3", 0x1F23A000, 0x1F23A000, SZ_4K, MEMATTR_DM },
+    { "sata3", 0x1F23C000, 0x1F23C000, SZ_4K, MEMATTR_DM },
+    { "sata3", 0x1F23D000, 0x1F23D000, SZ_4K, MEMATTR_DM },
+    { "sata3", 0x1F23E000, 0x1F23E000, SZ_4K, MEMATTR_DM },
+    /* pcie */
+    { "pcie0", 0x1F2B0000, 0x1F2B0000, SZ_64K, MEMATTR_DM },
+    //{ "pcie", 0xE0D0000000, 0xE0D0000000, SZ_256K, MEMATTR_DM },
+    //{ "pcie0", 0x1F2B2000, 0x1F2B2000, SZ_4K, MEMATTR_DM },
+    //{ "pcie0", 0x1F2BC000, 0x1F2BC000, SZ_4K, MEMATTR_DM },
+    /* ethernet */
+    { "ethernet", 0x17020000, 0x17020000, 0xE000, MEMATTR_DM },
+    { "ethernet", 0x17030000, 0x17030000, SZ_4K, MEMATTR_DM },
+    { "ethernet", 0x10000000, 0x10000000, SZ_4K, MEMATTR_DM },
+    /* sdhc */
+    { "sdhc", 0x1C000000, 0x1C000000, SZ_4K, MEMATTR_DM },
+    { "sdhc", 0x1F2A0000, 0x1F2A0000, SZ_4K, MEMATTR_DM },
+    /* clk */
+    { "clk", 0x17000000, 0x17000000, SZ_8K, MEMATTR_DM },
+    { "clk", 0x1702C000, 0x1702C000, SZ_4K, MEMATTR_DM },
+    { "clk", 0x1703C000, 0x1703C000, SZ_4K, MEMATTR_DM },
+    /* eda */
+    { "eda", 0x78800000, 0x78800000, SZ_4K, MEMATTR_DM },
+    { "eda", 0x7E200000, 0x7E200000, SZ_4K, MEMATTR_DM },
+    { "eda", 0x7E700000, 0x7E700000, SZ_4K, MEMATTR_DM },
+    { "eda", 0x7E720000, 0x7E720000, SZ_4K, MEMATTR_DM },
+    /* edacmc */
+    { "edacmc0", 0x7E800000, 0x7E800000, SZ_4K, MEMATTR_DM },
+    { "edacmc1", 0x7E840000, 0x7E840000, SZ_4K, MEMATTR_DM },
+    { "edacmc2", 0x7E880000, 0x7E880000, SZ_4K, MEMATTR_DM },
+    { "edacmc3", 0x7E8C0000, 0x7E8C0000, SZ_4K, MEMATTR_DM },
+    /* edapmd */
+    { "edapmd", 0x1054A000, 0x1054A000, SZ_4K, MEMATTR_DM },
+    { "edapmd0", 0x7C000000, 0x7C000000, SZ_2M, MEMATTR_DM },
+    { "edapmd1", 0x7C200000, 0x7C200000, SZ_2M, MEMATTR_DM },
+    { "edapmd2", 0x7C400000, 0x7C400000, SZ_2M, MEMATTR_DM },
+    { "edapmd3", 0x7C600000, 0x7C600000, SZ_2M, MEMATTR_DM },
+    /* eda cl3,soc */
+    { "edacl3", 0x7E600000, 0x7E600000, SZ_4K, MEMATTR_DM },
+    { "edasoc", 0x7E930000, 0x7E930000, SZ_4K, MEMATTR_DM },
+
+    { "rtc", 0x10510000, 0x10510000, SZ_4K, MEMATTR_DM },
+    { "i2c", 0x10512000, 0x10512000, SZ_4K, MEMATTR_DM },
+    { "gpio", 0x1701C000, 0x1701C000, SZ_4K, MEMATTR_DM },
     { "ns16550", 0x1C020000, 0x1C020000, SZ_64K, MEMATTR_DM },
+    { "reset", 0x17000000, 0x17000000, SZ_4K, MEMATTR_DM },
     { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
         CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
         MEMATTR_DM },
-    { "reset", 0x17000014, 0x17000014, SZ_4K, MEMATTR_DM},
    { 0, 0, 0, 0, 0 }
 };
 
@@ -52,7 +107,7 @@ static struct memmap_desc guest1_device_md[] = {
     { "gicc", (CFG_GIC_BASE_PA | GIC_OFFSET_GICC),
        CFG_GIC_BASE_PA | GIC_OFFSET_GICV, SZ_128K,
        MEMATTR_DM },
-    { "reset", 0x17000014, 0x17000014, SZ_4K, MEMATTR_DM},
+    { "reset", 0x17000014, 0x17000014, SZ_4K, MEMATTR_DM },
     { 0, 0, 0, 0, 0 }
 };
 
@@ -165,6 +220,14 @@ void setup_interrupt()
      *  vimm-0, pirq-41, virq-41 = MCI - pl180
      *  vimm-0, pirq-42, virq-42 = MCI - pl180
      */
+    for(i=0; i< 24; i++)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+    for(i=26; i<29 ; i++)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+    for(i=32; i< 108; i++)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
+    for(i=109; i< 128; i++)
+        DECLARE_VIRQMAP(_guest_virqmap, 0, i, i);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 6, 6);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 3, 3);
 //    DECLARE_VIRQMAP(_guest_virqmap, 0, 1, 1);
@@ -234,9 +297,9 @@ void setup_memory()
  *  Each interrup source is identified by a unique ID.
  *
  *  DEVICE : armv8 IRQ number
- *  GENERIC_TIMER_NSP : 13
- *  GENERIC_TIMER_VIR : 14
- *  GENERIC_TIMER_HYP : 15
+ *  GENERIC_TIMER_NSP : 29
+ *  GENERIC_TIMER_VIR : 30
+ *  GENERIC_TIMER_HYP : 31
  *
  *  @note xgen-storm.dtsi, timer
  */
