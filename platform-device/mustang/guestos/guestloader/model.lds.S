@@ -11,7 +11,6 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 /*OUTPUT_ARCH(arm)*/
 TARGET(binary)
 #include "memmap.cfg"
-INPUT(GUEST_PATH)
 
 #ifdef USE_ANDROID_INITRD
 INPUT(INITRD_PATH)
@@ -21,17 +20,24 @@ INPUT(INITRD_PATH)
 #endif
 
 PHYS_STACK  = LDS_STACK;
+#ifdef LINUX_GUEST
+GUEST_START = LDS_ZIMAGE_START;
+#else
 GUEST_START = LDS_GUEST_START;
+#endif
 LOADER_PHYS_START = LDS_LOADER_PHYS_START;
 
 SECTIONS
 {
+#ifdef LINUX_GUEST
  . = GUEST_START;
- loader_end = .;
  guest_start = .;
- .guest : {GUEST_PATH}
- .= ALIGN(4);
- guest_end = .;
+ guest_end = . + 0xA00000;
+#else
+ . = GUEST_START;
+ guest_start = .;
+ guest_end = . + 0x200000;
+#endif
 
  #ifdef USE_ANDROID_INITRD
  . = 0x400D00000;
@@ -73,6 +79,7 @@ SECTIONS
  . = shared_memory_start;
  shared_memory_end = . + 0x400000;
 
+ loader_end = .;
  guestloader_end = .;
 
  . = PHYS_STACK;
