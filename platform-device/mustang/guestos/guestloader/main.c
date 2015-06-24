@@ -20,7 +20,7 @@ static void guestloader_init(void)
     /* Initializes GIC */
     gic_init();
     /* Initializes monitoring */
-    //monitoring_init();
+    monitoring_init();
     /* Ready to accept irqs with GIC. Enable it now */
     irq_enable();
     /* Initializes timer */
@@ -37,7 +37,7 @@ void guestloader_flag_autoboot(int flag)
 static void guestloader_autoboot(void)
 {
     /* Disable timer for guest os */
-    timer_disable();
+    //timer_disable();
     cli_exec_cmd(BOOTCMD);
 }
 
