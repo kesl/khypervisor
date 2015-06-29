@@ -20,6 +20,6 @@ ARCH		?= arm
 SYSTEM ?= mustang
 
 CPPFLAGS	+= -DSMP
-CPPFLAGS	+= -D_MON_
+CPPFLAGS	+= -D_MON_ -DARM64
 CPPFLAGS	+= #-mcpu=cortex-a15 -marm
 CPPFLAGS	+= -g
