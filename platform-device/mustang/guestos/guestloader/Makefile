@@ -14,7 +14,6 @@ OBJS += boot.o main.o drivers/uart.o drivers/uart_16550a.o drivers/timer.o\
 	$(COMMON_SOURCE_DIR)/guest/core/exception.o \
 	$(COMMON_SOURCE_DIR)/guest/core/gic.o \
 	$(COMMON_SOURCE_DIR)/guest/test/test_vtimer.o \
-	$(COMMON_LOADER_DIR)/linuxloader.o \
 	$(COMMON_LOADER_DIR)/guestloader_common.o \
 	$(COMMON_LOADER_DIR)/cli.o \
 	$(COMMON_LOADER_DIR)/monitor/monitor_cli.o \
