@@ -93,7 +93,7 @@ static void gic_dump_registers(void)
         uart_print_hex32(_gic.ba_gicd[GICD_TYPER]);
         uart_print("\n\r");
         uart_print("ba_gicc:");
-        uart_print_hex32((uint32_t)_gic.ba_gicc);
+        uart_print_hex64((uint64_t)_gic.ba_gicc);
         uart_print("\n\r");
         uart_print("GICC_CTLR:");
         uart_print_hex32(_gic.ba_gicc[GICC_CTLR]);
@@ -224,10 +224,10 @@ void gic_interrupt(int fiq, void *pregs)
     if (irq < _gic.lines) {
         if (irq == 0) {
             uart_print("ba_gicd:");
-            uart_print_hex32((uint32_t) _gic.ba_gicd);
+            uart_print_hex64((uint64_t) _gic.ba_gicd);
             uart_print("\n\r");
             uart_print("ba_gicc:");
-            uart_print_hex32((uint32_t) _gic.ba_gicc);
+            uart_print_hex64((uint64_t) _gic.ba_gicc);
             uart_print("\n\r");
         }
         /* ISR */

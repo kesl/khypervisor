@@ -137,7 +137,7 @@ static struct memmap_desc guest0_memory_md[] = {
     {"start", CFG_MEMMAP_PHYS_START, 0, SZ_2G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB},
     {0, 0, 0, 0,  0},
-}; __attribute((__aligned__(16)));
+};
 
 /**
  * @brief Memory map for guest 1.
@@ -147,7 +147,7 @@ static struct memmap_desc guest1_memory_md[] = {
     {"start", CFG_MEMMAP_PHYS_START, 0, SZ_2G,
      MEMATTR_NORMAL_OWB | MEMATTR_NORMAL_IWB},
     {0, 0, 0, 0,  0},
-}; __attribute((__aligned__(16)));
+};
 
 #ifdef _SMP_
 /**

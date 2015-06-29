@@ -22,7 +22,7 @@ struct _divisor dvisor[] ={
     {0x0c, 0x00}, // baud_9600
 };
 #define UART_LCR_DEFAULT (UART_LCR_DWL_8|UART_LCR_SB_1|UART_LCR_NP)
-void uart_16550a_init(unsigned int base, enum baud_rate baud)
+void uart_16550a_init(unsigned long long base, enum baud_rate baud)
 {
     pUART = (unsigned char *) base;
 

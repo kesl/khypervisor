@@ -9,7 +9,7 @@
 #define VTIMER_IRQ 30
 
 struct vdev_vtimer_regs {
-    uint32_t vtimer_mask;
+    uint64_t vtimer_mask;
 };
 
 static struct vdev_memory_map _vdev_timer_info = {
@@ -26,11 +26,11 @@ static void vtimer_changed_status(vmid_t vmid, uint32_t status)
 }
 
 static hvmm_status_t vdev_vtimer_access_handler(uint32_t write,
-        uint32_t offset, uint32_t *pvalue, enum vdev_access_size access_size)
+        uint32_t offset, uint64_t *pvalue, enum vdev_access_size access_size)
 {
     printH("%s: %s offset:%d value:%x\n", __func__,
             write ? "write" : "read",
-            offset, write ? *pvalue : (uint32_t) pvalue);
+            offset, write ? *pvalue : (uint64_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     unsigned int vmid = guest_current_vmid();
     if (!write) {

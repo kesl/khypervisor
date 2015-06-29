@@ -37,7 +37,7 @@ hvmm_status_t gic_completion_irq(uint32_t irq);
  * @brief Returns Virtual interface control register(GICH)'s base address.
  * @return Base address of GICH
  */
-volatile uint64_t *gic_vgic_baseaddr(void);
+volatile uint32_t *gic_vgic_baseaddr(void);
 
 /**
  * @brief           Configures for a given IRQ.

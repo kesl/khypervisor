@@ -91,7 +91,7 @@ enum baud_rate {
 
 int uart_16550a_tst_fifo();
 void uart_16550a_putc (const char);
-void uart_16550a_init (unsigned int, enum baud_rate);
+void uart_16550a_init (unsigned long long, enum baud_rate);
 char uart_16550a_getc ();
 void uart_16550a_print_hex(uint32_t);
 void uart_16550a_print_hex32(uint32_t);

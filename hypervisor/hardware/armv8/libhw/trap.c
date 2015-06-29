@@ -38,15 +38,18 @@ static const char *mode[] = {
  */
 hvmm_status_t _irq(struct arch_regs *regs, uint32_t el)
 {
+    uint32_t irq;
+#if 0
+    // for debug
     uint32_t cpsr = read_sr32(spsr_el1);
     uint32_t currentel = read_sr32(currentel);
-    uint32_t irq;
     uint32_t daif = read_sr32(daif);
 
     printh("[%s]IRQ\n\r", ext_level[el]);
     printh("cspr: %x\n", cpsr);
     printh("currentEL:%x\n", currentel);
     printh("daif:%x\n", daif);
+#endif
     irq = gic_get_irq_number();
     interrupt_service_routine(irq, (void *)regs, 0);
     guest_perform_switch(regs);
@@ -255,4 +258,6 @@ trap_error:
     uart_print_hex64(regs->pc);
     printH("\n");
     hyp_abort_infinite();
+
+    return HYP_RESULT_STAY;
 }

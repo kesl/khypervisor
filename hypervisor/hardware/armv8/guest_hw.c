@@ -246,6 +246,8 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
 hvmm_status_t guest_hw_move(struct guest_struct *dst, struct guest_struct *src)
 {
     context_copy_regs(&(dst->regs), &(src->regs));
+
+    return HVMM_STATUS_SUCCESS;
 }
 
 struct guest_ops _guest_ops = {

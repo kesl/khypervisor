@@ -95,7 +95,7 @@ void memory_free(void *ap);
 void *memory_alloc(unsigned long size);
 hvmm_status_t memory_save(void);
 hvmm_status_t memory_restore(vmid_t vmid);
-hvmm_status_t memory_init(struct memmap_desc **guest0,
-                    struct memmap_desc **guest1);
+hvmm_status_t memory_init(struct memmap_desc *guest0,
+                    struct memmap_desc *guest1);
 
 #endif

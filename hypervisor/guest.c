@@ -244,7 +244,6 @@ vmid_t sched_policy_determ_next(void)
 void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
-    uint32_t cpu = smp_processor_id();
     /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
@@ -256,7 +255,6 @@ void guest_schedule(void *pdata)
 
     /* Switch request, actually performed at trap exit */
     guest_switchto(sched_policy_determ_next(), 0);
-
 }
 
 hvmm_status_t guest_init()

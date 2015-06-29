@@ -254,6 +254,8 @@ static hvmm_status_t timer_set_tval(uint64_t tval)
 static hvmm_status_t timer_hw_init(void)
 {
     write_cntvoff(0); /* No guest specific offset */
+
+    return HVMM_STATUS_SUCCESS;
 }
 
 /** @brief dump at time.

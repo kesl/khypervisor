@@ -486,7 +486,7 @@ static int32_t vdev_gicd_read(struct arch_vdev_trigger_info *info,
 {
     uint32_t offset = info->fipa - _vdev_gicd_info.base;
 
-    return vdev_gicd_access_handler(0, offset, info->value, info->sas);
+    return vdev_gicd_access_handler(0, offset, (uint32_t *)info->value, info->sas);
 }
 
 static int32_t vdev_gicd_write(struct arch_vdev_trigger_info *info,
@@ -494,7 +494,7 @@ static int32_t vdev_gicd_write(struct arch_vdev_trigger_info *info,
 {
     uint32_t offset = info->fipa - _vdev_gicd_info.base;
 
-    return vdev_gicd_access_handler(1, offset, info->value, info->sas);
+    return vdev_gicd_access_handler(1, offset, (uint32_t *)info->value, info->sas);
 }
 
 static int32_t vdev_gicd_post(struct arch_vdev_trigger_info *info,
@@ -533,7 +533,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
          * due to current single-core support design
          */
         int j = 0;
-        uint32_t inc_address = 0x00000000;
+        uint64_t inc_address = 0x00000000;
 
         _regs[i].CTLR =
                 (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA

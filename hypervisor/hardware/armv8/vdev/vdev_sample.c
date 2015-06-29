@@ -5,9 +5,9 @@
 #define SAMPLE_BASE_ADDR 0x3FFFF000
 
 struct vdev_sample_regs {
-    uint32_t axis_x;
-    uint32_t axis_y;
-    uint32_t axis_z;
+    uint64_t axis_x;
+    uint64_t axis_y;
+    uint64_t axis_z;
 };
 
 static struct vdev_memory_map _vdev_sample_info = {
@@ -18,11 +18,11 @@ static struct vdev_memory_map _vdev_sample_info = {
 static struct vdev_sample_regs sample_regs[NUM_GUESTS_STATIC];
 
 static hvmm_status_t vdev_sample_access_handler(uint32_t write, uint32_t offset,
-        uint32_t *pvalue, enum vdev_access_size access_size)
+        uint64_t *pvalue, enum vdev_access_size access_size)
 {
     printh("%s: %s offset:%d value:%x\n", __func__,
             write ? "write" : "read", offset,
-            write ? *pvalue : (uint32_t) pvalue);
+            write ? *pvalue : (uint64_t) pvalue);
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     unsigned int vmid = guest_current_vmid();
     if (!write) {

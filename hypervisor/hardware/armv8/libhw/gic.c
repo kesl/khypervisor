@@ -280,7 +280,7 @@ hvmm_status_t gic_deactivate_irq(uint32_t irq)
     return HVMM_STATUS_SUCCESS;
 }
 
-volatile uint64_t *gic_vgic_baseaddr(void)
+volatile uint32_t *gic_vgic_baseaddr(void)
 {
     if (_gic.initialized != GIC_SIGNATURE_INITIALIZED) {
         HVMM_TRACE_ENTER();
