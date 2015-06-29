@@ -14,7 +14,7 @@
 ###########################################################################
 # Main options
 #
-CROSS_COMPILE	?= aarch64-apm-linux-gnu-
+CROSS_COMPILE	?= aarch64-linux-gnu-
 ARCH		?= arm
 
 SYSTEM ?= mustang
