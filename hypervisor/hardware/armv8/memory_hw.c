@@ -710,7 +710,7 @@ static void guest_memory_init_ttbl1(union lpaed *ttbl1,
         printh("label:%s, l1_idx:%d\n",md.label, l1_idx);
         if (md.va < CFG_MEMMAP_PHYS_START) // device area
         {
-            ttbl2 = &_ttbl2_guest_dev[gid];
+            ttbl2 = _ttbl2_guest_dev[gid];
 
             while (md.size) {
                 l1_remain = (md.va & ~L1_REMAIN_MASK) + SZ_1G - md.va;
@@ -749,7 +749,7 @@ static void guest_memory_init_ttbl1(union lpaed *ttbl1,
             }
         }
         else {// memory area
-            ttbl2 = &_ttbl2_guest_mem[gid];
+            ttbl2 = _ttbl2_guest_mem[gid];
             while (md.size) {
                 l1_remain = (md.va & ~L1_REMAIN_MASK) + SZ_1G - md.va;
                 printh("l1_remain : %x, size: %x\n", l1_remain, md.size);
@@ -1193,7 +1193,7 @@ static void host_memory_init(void)
  *
  * @return void
  */
-static void guest_memory_init(struct memmap_desc **guest_map, int gid)
+static void guest_memory_init(struct memmap_desc *guest_map, int gid)
 {
     /*
      * Initializes Translation Table for Stage2 Translation (IPA -> PA)
@@ -1208,12 +1208,12 @@ static void guest_memory_init(struct memmap_desc **guest_map, int gid)
             printH("Unimplemented\n");
             break;
         case 1: // start level 1
-            _vmid_ttbl[gid] = &_ttbl1_guest[gid];
-            guest_memory_init_ttbl1(&_ttbl1_guest[gid], guest_map, gid);
+            _vmid_ttbl[gid] = _ttbl1_guest[gid];
+            guest_memory_init_ttbl1(_ttbl1_guest[gid], guest_map, gid);
             break;
         case 2: // start level 0
-            _vmid_ttbl[gid] = &_ttbl0_guest[gid];
-            guest_memory_init_ttbl(&_ttbl0_guest[gid], guest_map, gid);
+            _vmid_ttbl[gid] = _ttbl0_guest[gid];
+            guest_memory_init_ttbl(_ttbl0_guest[gid], guest_map, gid);
             break;
         default:
             printh("Invalid start level\n");

@@ -40,7 +40,7 @@ struct memmap_desc {
 
 struct memory_ops {
     /** Initalize Memory state */
-    hvmm_status_t (*init)(struct memmap_desc **, struct memmap_desc **);
+    hvmm_status_t (*init)(struct memmap_desc *, struct memmap_desc *);
 
     /** Allocate heap memory */
     void * (*alloc)(unsigned long size);
