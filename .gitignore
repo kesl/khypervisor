@@ -14,5 +14,7 @@ tags
 modelsemi.lds
 TAGS
 cscope.out
+cscope.in.out
+cscope.po.out
 .cproject
 .project
