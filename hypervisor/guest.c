@@ -56,8 +56,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     guest_save(&guests[_current_guest_vmid[cpu]], regs);
     memory_save();
     interrupt_save(_current_guest_vmid[cpu]);
-    if (!cpu)
-        vdev_save(_current_guest_vmid[cpu]);
+    vdev_save(_current_guest_vmid[cpu]);
 
     /* The context of the next guest */
     guest = &guests[next_vmid];
@@ -68,8 +67,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
-    if (!cpu)
-        vdev_restore(_current_guest_vmid[cpu]);
+    vdev_restore(_current_guest_vmid[cpu]);
 
     interrupt_restore(_current_guest_vmid[cpu]);
     memory_restore(_current_guest_vmid[cpu]);
@@ -158,6 +156,7 @@ vmid_t guest_last_vmid(void)
 vmid_t guest_next_vmid(vmid_t ofvmid)
 {
     vmid_t next = VMID_INVALID;
+#if 0
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
@@ -165,6 +164,7 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
         return 2;
     else
         return 0;
+#endif
 #endif
 
     /* FIXME:Hardcoded */
