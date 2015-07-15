@@ -57,11 +57,6 @@ static void guestloader_cliboot(void)
 
 void main(int boot_status)
 {
-#if _SMP_
-    uart_print("guest bootloader\n");
-    while (1)
-        ;
-#endif
     /*If Booting status is reboot, run this function. */
     uart_print("guest bootloader\n");
     if(boot_status){

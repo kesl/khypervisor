@@ -60,10 +60,6 @@ static void guestloader_cliboot(void)
 
 void main(int boot_status)
 {
-#if _SMP_
-    while (1)
-        ;
-#endif
     /*If Booting status is reboot, run this function. */
     if (boot_status)
         reboot();
