@@ -159,6 +159,15 @@ void interrupt_service_routine(int irq, void *current_regs, void *pdata)
 
 
     if (irq < MAX_IRQS) {
+#ifdef _SMP_
+        if (irq < 16) { // sgi routine, temp
+            /* host_sgi() */
+            _host_ops->sgi(cpu, irq);
+
+            /* host_interrupt_end() */
+            _host_ops->end(irq);
+        } else
+#endif
         if (interrupt_check_guest_irq(irq) == GUEST_IRQ) {
 
 #ifdef _SMP_

@@ -683,3 +683,23 @@ hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
     return result;
 }
 
+hvmm_status_t vgic_sgi(uint32_t cpu, enum gic_sgi sgi)
+{
+    hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
+    vmid_t vmid;
+    vmid = guest_current_vmid();
+
+    if(cpu != vmid)
+        return result;
+
+    switch(sgi) {
+        case GIC_SGI_SLOT_CHECK:
+            result = vgic_flush_virqs(vmid);
+            break;
+        default:
+            printh("sgi: wrong sgi %d\n", sgi);
+            break;
+    }
+
+    return result;
+}

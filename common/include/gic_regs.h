@@ -21,6 +21,10 @@
 #define GICD_ITARGETSR    (0x800/4)
 #define GICD_ICFGR    (0xC00/4)
 
+#define GICD_SGIR   (0xF00/4)
+#define GICD_CPENDSGIR  (0xF10/4)
+#define GICD_SPENDSGIR  (0xF20/4)
+
 /* Distributor offset */
 #define GICD_OFFSET_CTLR   0x000
 #define GICD_OFFSET_TYPER  0x004
@@ -36,6 +40,9 @@
 #define GICD_OFFSET_ICFGR    0xC00
 #define GICD_OFFSET_CPENDGIR    0xF10
 
+#define GICD_OFFSET_SGIR    0xF00
+#define GICD_OFFSET_CPENDSGIR   0xF10
+#define GICD_OFFSET_SPENDSGIR   0xF20
 
 /* CPU Interface */
 #define GICC_CTLR    (0x0000/4)
@@ -62,6 +69,17 @@
 #define GICD_TYPE_LINES_MASK    0x01f
 #define GICD_TYPE_CPUS_MASK    0x0e0
 #define GICD_TYPE_CPUS_SHIFT    5
+
+/* Software Generated Interrupt Fields */
+#define GICD_SGIR_TARGET_LIST_FILTER_MASK   (0x3<<24)
+#define GICD_SGIR_TARGET_LIST   (0x0<<24)
+#define GICD_SGIR_TARGET_OTHER  (0x1<<24)
+#define GICD_SGIR_TARGET_SELF  (0x2<<24)
+
+#define GICD_SGIR_CPU_TARGET_LIST_OFFSET    16
+#define GICD_SGIR_CPU_TARGET_LIST_MASK  \
+    (0xFF<<GICD_SGIR_CPU_TARGET_LIST_OFFSET)
+#define GICD_SGIR_SGI_INT_ID_MASK   0xF
 
 /* CPU Interface Register Fields */
 #define GICC_CTL_ENABLE     0x1
