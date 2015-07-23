@@ -36,7 +36,7 @@
 #define irq_save(flags)    do { \
                     asm volatile ( \
                     "mrs     %0, daif\n\t" \
-                    "msr daifset 0x2\n\t" \
+                    "msr daifset, 0x2\n\t" \
                     : "=r" ((flags)) : : "memory", "cc"); \
                     } while (0)
 

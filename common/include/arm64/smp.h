@@ -71,7 +71,7 @@ static inline void spin_lock(spinlock_t *lock)
     unsigned long tmp;
 
     __asm__ __volatile__(
-"1: ldrex   %0, [%1]\n"
+"1: ldxr   %0, [%1]\n"
 "   teq %0, #0\n"
     WFE("ne")
 "   strexeq %0, %2, [%1]\n"
@@ -86,41 +86,34 @@ static inline void spin_lock(spinlock_t *lock)
 
 static inline int spin_trylock(spinlock_t *lock)
 {
-    unsigned long tmp;
+    unsigned int tmp;
 
-    __asm__ __volatile__(
-"   ldrex   %0, [%1]\n"
-"   teq %0, #0\n"
-"   strexeq %0, %2, [%1]"
-    : "=&r" (tmp)
-    : "r" (&lock->lock), "r" (1)
-    : "cc");
+    asm volatile(
+    "2:   ldaxr   %w0, %1\n"
+    "     cbnz    %w0, 1f\n"
+    "     stxr    %w0, %w2, %1\n"
+    "     cbnz    %w0, 2b\n"
+    "1:\n"
+    : "=&r" (tmp), "+Q" (lock->lock)
+    : "r" (1)
+    : "cc", "memory");
 
-    if (tmp == 0) {
-        smp_mb();
-        return 1;
-    } else {
-        return 0;
-    }
+    return !tmp;
 }
 
 static inline void spin_unlock(spinlock_t *lock)
 {
-    smp_mb();
-
-    __asm__ __volatile__(
-"   str %1, [%0]\n"
-    :
-    : "r" (&lock->lock), "r" (0)
-    : "cc");
-
-    dsb_sev();
+    asm volatile(
+"   str %1, %0\n"
+    : "=Q" (lock->lock)
+    : "r" (0)
+    : "memory");
 }
 
 #define smp_spin_lock(lock, flags)         \
     do {                                    \
         irq_save((flags));         \
-        spin_lock(lock);           \
+        spin_trylock(lock);           \
     } while (0)
 
 #define smp_spin_unlock(lock, flags)       \
