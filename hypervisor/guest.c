@@ -14,7 +14,7 @@
     (guest_first_vmid() <= vmid && guest_last_vmid() >= vmid)
 
 static struct guest_struct guests[NUM_GUESTS_STATIC];
-static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, VMID_INVALID};
+static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 static int _next_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 struct guest_struct *_current_guest[NUM_CPUS];
 /* further switch request will be ignored if set */
@@ -172,8 +172,8 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
         /* FIXME:Hardcoded */
         next = ofvmid + 1;
     }
-    //return next;
-    return 0;
+    return next;
+    //return 0;
 }
 
 vmid_t guest_current_vmid(void)

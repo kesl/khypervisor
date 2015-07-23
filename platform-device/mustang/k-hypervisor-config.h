@@ -9,7 +9,11 @@
 #define CFG_CNTFRQ          50000000
 #define CFG_UART0         0x1C020000
 
-#define CFG_NUMBER_OF_CPUS  2
+#ifdef _SMP_
+#define CFG_NUMBER_OF_CPUS 8
+#else
+#define CFG_NUMBER_OF_CPUS 1
+#endif
 
 #define MON_SIZE            0x0F000000
 #define MON_STACK_SIZE      0x00C00000
@@ -33,7 +37,11 @@
 #endif
 #define NUM_GUESTS_CPU0_STATIC       2
 #define NUM_GUESTS_CPU1_STATIC       2
+#ifdef _SMP_
 #define NUM_CPUS       8
+#else
+#define NUM_CPUS       1
+#endif
 #define COUNT_PER_USEC (CFG_CNTFRQ/USEC)
 #define GUEST_SCHED_TICK 1000
 #define MAX_IRQS 256
