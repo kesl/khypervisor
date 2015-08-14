@@ -21,39 +21,6 @@
 
 #define TTBL_L1_TABADDR_MASK    0x000000FFFFFFF000ULL
 #define TTBL_L2_TABADDR_MASK    0x000000FFFFFFF000ULL
-/**
- * @}
- */
-
-/*
- * Level 2 Block, 2MB, entry in LPAE Descriptor format
- * for the given physical address
- */
-union lpaed lpaed_host_l2_block(uint64_t pa,
-        enum memattr mattr)
-{
-    /* lpae.c */
-    union lpaed lpaed;
-    /* Valid Block Entry */
-    lpaed.pt.valid = 1;
-    lpaed.pt.table = 0;
-    lpaed.bits &= ~TTBL_L2_OUTADDR_MASK;
-    lpaed.bits |= pa & TTBL_L2_OUTADDR_MASK;
-    lpaed.p2m.sbz3 = 0;
-    /* Lower block attributes */
-    lpaed.p2m.mattr = mattr & 0x0F;
-    lpaed.p2m.read = 1;        /* Read/Write */
-    lpaed.p2m.write = 1;
-    lpaed.p2m.sh = 0;    /* Non-shareable */
-    lpaed.p2m.af = 1;    /* Access Flag set to 1?  */
-    lpaed.p2m.sbz4 = 0;
-    /* Upper block attributes */
-    lpaed.p2m.hint = 0;
-    lpaed.p2m.sbz2 = 0;
-    lpaed.p2m.xn = 0;    /* eXecute Never = 0 */
-    lpaed.p2m.sbz1 = 0;
-    return lpaed;
-}
 
 /*
  * Level 1 Block, 1GB, entry in LPAE Descriptor format
@@ -164,8 +131,8 @@ union lpaed lpaed_host_l3_table(uint64_t pa,
 void lpaed_guest_stage2_conf_l1_table(union lpaed *ttbl1,
         uint64_t baddr, uint8_t valid)
 {
-    ttbl1->pt.valid = valid ? 1 : 0;
-    ttbl1->pt.table = valid ? 1 : 0;
+    ttbl1->p2m.valid = valid ? 1 : 0;
+    ttbl1->p2m.table = valid ? 1 : 0;
     ttbl1->bits &= ~TTBL_L1_TABADDR_MASK;
     ttbl1->bits |= baddr & TTBL_L1_TABADDR_MASK;
 }
@@ -173,27 +140,27 @@ void lpaed_guest_stage2_conf_l1_table(union lpaed *ttbl1,
 void lpaed_guest_stage2_conf_l2_table(union lpaed *ttbl2,
         uint64_t baddr, uint8_t valid)
 {
-    ttbl2->pt.valid = valid ? 1 : 0;
-    ttbl2->pt.table = valid ? 1 : 0;
+    ttbl2->p2m.valid = valid ? 1 : 0;
+    ttbl2->p2m.table = valid ? 1 : 0;
     ttbl2->bits &= ~TTBL_L2_TABADDR_MASK;
     ttbl2->bits |= baddr & TTBL_L2_TABADDR_MASK;
 }
 
 void lpaed_guest_stage2_enable_l2_table(union lpaed *ttbl2)
 {
-    ttbl2->pt.valid = 1;
-    ttbl2->pt.table = 1;
+    ttbl2->p2m.valid = 1;
+    ttbl2->p2m.table = 1;
 }
 void lpaed_guest_stage2_disable_l2_table(union lpaed *ttbl2)
 {
-    ttbl2->pt.valid = 0;
+    ttbl2->p2m.valid = 0;
 }
 
 void lpaed_guest_stage2_map_page(union lpaed *pte, uint64_t pa,
         enum memattr mattr)
 {
-    pte->pt.valid = 1;
-    pte->pt.table = 1;
+    pte->p2m.valid = 1;
+    pte->p2m.table = 1;
     pte->bits &= ~TTBL_L3_OUTADDR_MASK;
     pte->bits |= pa & TTBL_L3_OUTADDR_MASK;
     pte->p2m.sbz3 = 0;

@@ -328,7 +328,7 @@ struct lpae_pt {
  *     - read - Read Access
  *     - write - Write Access
  *     - sh - Shareability
- *     - af - Access Flag
+ *      - af - Access Flag
  *
  *   - The base address must be appropriately aligned for Block entries.
  *     (Stage-2 Upper attributes)
@@ -429,26 +429,7 @@ union lpaed {
  * @return  Generated level1 block LPAE descriptor.
  */
 union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx);
-/**
- * @brief Level 2 block, 2MB, entry in LPAE Descriptor format
- * for the given physical address.
- *
- * Generates a new stage-2 level 2 block LPAE descriptor which has 2MB block.
- * It returns the descriptor after generating.
- *
- * - Initial configuration
- *   - Valid and block.
- *   - Memory attribute is configured by parameter 'mattr'.
- *   - read / write are allowed, non-shareable, executable.
- *   - Access flag is enabled.
- *   - physical address = pa
- *
- * @param pa Physical address of the block.
- * @param mattr Memory attribute index.
- * @return Generated level 2 block LPAE descriptor.
- */
-union lpaed lpaed_host_l2_block(uint64_t pa,
-                enum memattr mattr);
+
 /**
  * @brief Level 1, 1GB, each entry refer level2 page table
  *
