@@ -74,7 +74,7 @@ static struct memmap_desc guest1_device_md[] = {
 
 #if _SMP_
 static struct memmap_desc guest2_device_md[] = {
-    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
+    { "uart", 0x1C090000, 0x1C0C0000, SZ_4K, MEMATTR_DM },
     { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
     { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },
@@ -82,7 +82,7 @@ static struct memmap_desc guest2_device_md[] = {
 };
 
 static struct memmap_desc guest3_device_md[] = {
-    { "uart", 0x1C090000, 0x1C0B0000, SZ_4K, MEMATTR_DM },
+    { "uart", 0x1C090000, 0x1C0C0000, SZ_4K, MEMATTR_DM },
     { "sp804", 0x1C110000, 0x1C120000, SZ_4K, MEMATTR_DM },
     { "gicc", 0x2C000000 | GIC_OFFSET_GICC,
        CFG_GIC_BASE_PA | GIC_OFFSET_GICVI, SZ_8K, MEMATTR_DM },

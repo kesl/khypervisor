@@ -182,7 +182,7 @@ enter_smp_pen:
     str	r1, [r0, #0x30]
 
     /*
-     * Initialize UART1 and UART2 for access from guests, as a workaround,
+     * Initialize UART1, UART2 and UART3 for access from guests, as a workaround,
      * since initialization sequence in C, in guest, is not clear a the moment
      */
     ldr	r0, =0x1c0a0000			@ UART base (Versatile Express)
@@ -198,6 +198,14 @@ enter_smp_pen:
     mov	r1, #0xc300
     orr	r1, #0x0001			@ cr
     str	r1, [r0, #0x30]
+
+    ldr	r0, =0x1c0c0000			@ UART base (Versatile Express)
+    mov	r1, #0x10			@ ibrd
+    str	r1, [r0, #0x24]
+    mov	r1, #0xc300
+    orr	r1, #0x0001			@ cr
+    str	r1, [r0, #0x30]
+
     /* Initialize bss section */
     ldr  r2, =begin_bss
     ldr  r3, =end_bss
