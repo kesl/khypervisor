@@ -121,14 +121,8 @@ void guest_sched_start(void)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
     /* Context Switch with current context == none */
 
-    if (cpu) {
-        guest_switchto(2, 0);
-
-        guest_perform_switch(&guest->regs);
-    } else {
-        guest_switchto(0, 0);
-        guest_perform_switch(&guest->regs);
-    }
+    guest_switchto(guest->vmid, 0);
+    guest_perform_switch(&guest->regs);
 }
 
 vmid_t guest_first_vmid(void)
@@ -136,10 +130,14 @@ vmid_t guest_first_vmid(void)
     uint32_t cpu = smp_processor_id();
 
     /* FIXME:Hardcoded for now */
+#if _SMP_
     if (cpu)
         return 2;
     else
         return 0;
+#endif
+
+    return cpu;
 }
 
 vmid_t guest_last_vmid(void)
@@ -147,10 +145,14 @@ vmid_t guest_last_vmid(void)
     uint32_t cpu = smp_processor_id();
 
     /* FIXME:Hardcoded for now */
+#if _SMP_
     if (cpu)
         return 3;
     else
         return 1;
+#endif
+
+    return cpu;
 }
 
 vmid_t guest_next_vmid(vmid_t ofvmid)
@@ -271,7 +273,7 @@ hvmm_status_t guest_init()
     int start_vmid = 0;
     uint32_t cpu = smp_processor_id();
     printh("[hyp] init_guests: enter\n");
-    /* Initializes 2 guests */
+    /* Initializes guests */
     guest_count = num_of_guest(cpu);
 
 

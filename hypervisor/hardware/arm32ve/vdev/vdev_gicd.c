@@ -445,6 +445,7 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write,
     uint32_t *preg;
     vmid = guest_current_vmid();
     regs = &_regs[vmid];
+    regs_banked = &_regs_banked[vmid];
     if (((offset >> 2) - GICD_ITARGETSR) < VGICD_BANKED_NUM_ITARGETSR)
         preg = &(regs_banked->ITARGETSR[(offset >> 2) - GICD_ITARGETSR]);
     else
