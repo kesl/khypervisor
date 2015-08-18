@@ -136,7 +136,6 @@ vmid_t guest_first_vmid(void)
     else
         return 0;
 #endif
-
     return cpu;
 }
 
@@ -151,7 +150,6 @@ vmid_t guest_last_vmid(void)
     else
         return 1;
 #endif
-
     return cpu;
 }
 

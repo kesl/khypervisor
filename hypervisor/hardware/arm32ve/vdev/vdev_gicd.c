@@ -190,14 +190,14 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
         break;
     default: { /* RW GICD_IGROUPR */
         int igroup = woffset - GICD_IGROUPR;
-        if (igroup == 0 && igroup < VGICD_NUM_IGROUPR) {
+        if ((igroup == 0) && (igroup < VGICD_NUM_IGROUPR)) {
             if (write)
                 regs_banked->IGROUPR = *pvalue;
             else
                 *pvalue = regs_banked->IGROUPR;
 
             result = HVMM_STATUS_SUCCESS;
-        } else if (igroup > 0 && igroup < VGICD_NUM_IGROUPR) {
+        } else if ((igroup > 0) && (igroup < VGICD_NUM_IGROUPR)) {
             if (write)
                 regs->IGROUPR[igroup] = *pvalue;
             else
@@ -686,8 +686,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
         printH("vdev init:'%s' vmid:%d, gicd IIDR:%x\n", __func__, i,
                 _regs[i].IIDR);
         for (j = 0; j < VGICD_NUM_IGROUPR; j++) {
-            if (!j)
-            {
+            if (!j) {
                 _regs_banked[vmid].IGROUPR =
                     (uint32_t) (*((volatile unsigned int*) (CFG_GIC_BASE_PA
                             + GIC_OFFSET_GICD + inc_address)));

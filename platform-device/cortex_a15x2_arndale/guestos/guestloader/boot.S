@@ -35,7 +35,7 @@ guestloader_start:
 	blo 2b
 
 #ifdef _SMP_
-    @Check CPU nr
+    @Check CPU ID
     mrc p15, 0, r0, c0, c0, 5   @MPIDR (ARMv7 only)
     bfc r0, #24, #8     @ CPU Number, taking multicluster into account
     cmp r0, #0

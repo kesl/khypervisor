@@ -296,12 +296,11 @@ static hvmm_status_t guest_hw_init(struct guest_struct *guest,
     vmpidr = read_vmpidr();
     vmpidr &= 0xFFFFFFFC;
     /* have to fix it
-     * vmpidr is be the virtual cpus's core index.
+     * vmpidr is to be the virtual cpus's core id.
      * so this value have to determined by situation.
      * ex) linux guest's secondary vcpu, bm guest vcpu .. etc.
      */
     vmpidr |= 0;
-    //vmpidr |= guest->vmid;  // vmid will be changed to vcpu number
     guest->vmpidr = vmpidr;
 
     regs->pc = CFG_GUEST_START_ADDRESS;

@@ -189,7 +189,7 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
         } else {
             slot = vgic_inject_virq_sw(virq,
                     VIRQ_STATE_PENDING, 0,
-                    vmid /*smp_processor_id()*/, 1);
+                    vmid, 1);
         }
         if (slot == VGIC_SLOT_NOTFOUND)
             return result;
@@ -217,7 +217,7 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
             printh("virq: rejected queueing duplicated virq %d pirq %d to "
                     "vmid %d %s\n", virq, pirq, vmid);
         }
-        if ( (result == HVMM_STATUS_SUCCESS) && (virq < 16) ) {
+        if ((result == HVMM_STATUS_SUCCESS) && (virq < 16) ) {
             gic_set_sgi(1<<vmid, GIC_SGI_SLOT_CHECK);
         }
     }
