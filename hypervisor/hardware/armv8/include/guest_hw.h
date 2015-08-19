@@ -27,7 +27,7 @@ struct arch_regs {
     uint32_t cpsr; /* CPSR, SPSR_EL1 */
     uint64_t pc; /* Program Counter */
     uint64_t gpr[ARCH_REGS_NUM_GPR]; /* X0 - X29 */
-}; //__attribute((packed));
+};
 
 /* Defines the architecture specific information, except general regsiters */
 struct arch_context {

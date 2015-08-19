@@ -71,10 +71,10 @@ union lpaed lpaed_host_l1_block(uint64_t pa, uint8_t attr_idx)
     union lpaed lpaed;
     printh("[mm] hvmm_mm_lpaed_l1_block:\n\r");
     printh(" pa:");
-    //uart_print_hex64(pa);
+    uart_print_hex64(pa);
     printh("\n\r");
     printh(" attr_idx:");
-    //uart_print_hex32((uint32_t) attr_idx);
+    uart_print_hex32((uint32_t) attr_idx);
     printh("\n\r");
     /* Valid Block Entry */
     lpaed.pt.valid = 1;

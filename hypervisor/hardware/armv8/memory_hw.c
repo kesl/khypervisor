@@ -1134,16 +1134,12 @@ static void host_memory_init(void)
 
     /* _hmm_pgtable_l1 empty area blocks, invalid */
     for ( ; i <(CFG_MEMMAP_PHYS_START/SZ_1G) ; i++) {
-        //_hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
         _hmm_pgtable_l1[i].pt.valid = 0;
-        //pa += SZ_1G;
     }
        
     pa = CFG_MEMMAP_PHYS_START;
     /* _hmm_pgtable_l1 mem refers Lv2 page table address. */
     for (; i <((CFG_MEMMAP_PHYS_START + CFG_MEMMAP_PHYS_SIZE)/SZ_1G); i++) {
-//        _hmm_pgtable_l1[i] = lpaed_host_l1_block(pa, ATTR_IDX_WRITEALLOC);
-//        pa += SZ_1G;
         _hmm_pgtable_l1[i] = \
                  lpaed_host_l1_table((uint64_t) _hmm_pgtable_l2[i-256]);
         uart_print("&_hmm_pgtable_l1[");

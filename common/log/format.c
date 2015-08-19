@@ -56,7 +56,7 @@ int format_print(const char *format, __builtin_va_list ap)
 {
     const char *p;
 #ifdef _SMP_
-    unsigned long flags;
+    unsigned int flags;
     smp_spin_lock(&format_lock, flags);
 #endif
     for (p = format; *p != '\0'; p++) {

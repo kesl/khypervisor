@@ -29,7 +29,6 @@ COMMON_OBJS = $(COMMON_SOURCE_DIR)/guest/core/c_start.o \
 OBJS = boot.o main.o $(COMMON_OBJS)
 
 OBJS += drivers/uart.o
-#drivers/sp804_timer.o
 
 GUESTIMG 	= bmguest.axf
 GUESTBIN	= bmguest.bin

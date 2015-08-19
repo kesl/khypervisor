@@ -8,7 +8,6 @@
  */
 
 OUTPUT_FORMAT("elf64-littleaarch64")
-/*OUTPUT_ARCH(arm)*/
 TARGET(binary)
 #include "memmap.cfg"
 

@@ -150,7 +150,7 @@ vmid_t guest_last_vmid(void)
     if (cpu)
         return 3;
     else
-        return 0;//1;
+        return 1;
 }
 
 vmid_t guest_next_vmid(vmid_t ofvmid)
@@ -173,7 +173,6 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
         next = ofvmid + 1;
     }
     return next;
-    //return 0;
 }
 
 vmid_t guest_current_vmid(void)

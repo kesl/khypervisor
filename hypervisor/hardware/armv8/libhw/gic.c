@@ -91,26 +91,6 @@ static void gic_dump_registers(void)
 }
 
 /**
- * @brief Return base address of GIC.
- *
- * When 40 bit address supports, This function wil use.
- */
-//static uint64_t gic_periphbase_pa(void)
-//{
-//    /* CBAR:   4,  c0,   0 */
-//    /*
-//     * MRC p15, 4, <Rt>, c15, c0, 0; Read Configuration Base
-//     * Address Register
-//     */
-//    uint64_t periphbase = (uint64_t) read_cbar();
-//    uint64_t pbmsb = periphbase & ((uint64_t)CBAR_PERIPHBASE_MSB_MASK);
-//    if (pbmsb) {
-//        periphbase &= ~((uint64_t)CBAR_PERIPHBASE_MSB_MASK);
-//        periphbase |= (pbmsb << 32);
-//    }
-//    return periphbase;
-//}
-/**
  * @brief   Return address of GIC memory map to _gic.baseaddr.
  * @param   va_base Base address(Physical) of GIC.
  * @return  If target architecture is ARMv8 then return success,
@@ -381,9 +361,6 @@ uint32_t gic_get_irq_number(void)
     /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
-//    uart_print("get irq number :");
-//    uart_print_hex32(irq);
-//    uart_print("\n\r");
 
     return irq;
 }
