@@ -1,4 +1,4 @@
-# Hypervisor for ARMv7 Virtualization Extensions
+# Hypervisor for ARMv7 and ARMv8 Virtualization Extensions
 
 ## Basic directory structure
 - hypervisor    Contains the real time hypervisor source code.
@@ -21,6 +21,13 @@
         - guestbl   Contains the guest bootloader.
         - guestimages   Contains the guest images.
         - guestos   Contains the guest os source code.
+    -  mustang  based on ARMv8 mustang board code.
+        - config    Contains the plaform specific configuration files.
+        - drivers   Contains the plaform specific drivers for hypervisor.
+        - guestbl   Contains the guest bootloader.
+        - guestimages   Contains the guest images.
+        - guestos   Contains the guest os source code.
+
 
 The easiest way to use k-hypervisor is to start with one of the pre-configured 
 platform-device projects (locate in the platform-device/<device_name> directory).  
@@ -28,4 +35,5 @@ platform-device projects (locate in the platform-device/<device_name> directory)
 See also -
 arndale port : https://github.com/kesl/khypervisor/tree/v1/platform-device/cortex_a15x2_arndale
 rtsm    port : https://github.com/kesl/khypervisor/tree/v1/platform-device/cortex_a15x2_rtsm
+mustang port : https://github.com/kesl/khypervisor/tree/v1-dev-mustang/platform-device/mustang
 
