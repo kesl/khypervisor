@@ -8,9 +8,9 @@
                               " mrs %0, "#name \
                                 : "=r" (rval) : : "memory", "cc"); rval; })
 
-#define write_sr64(name)      asm volatile (\
+#define write_sr64(val, name)      asm volatile (\
                               " mrs "#name", %0\n\t" \
-                                : : "=r" (rval) : "memory", "cc")
+                                : : "=r" (val) : "memory", "cc")
 
 #define write_sr32(val, name) asm volatile(\
                               "msr "#name", %0\n\t" \
