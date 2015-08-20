@@ -28,6 +28,8 @@
 #define HVMM_TRACE_HEX32(label, value)
 #endif
 
-#define hyp_abort_infinite() { while (1) ; }
+#define hyp_abort_infinite()\
+{ uint32_t *reset=(uint32_t *)0x17000014; \
+    *reset = 0x1; }
 
 #endif

@@ -1,20 +1,21 @@
 /*
  * timer.c
  * --------------------------------------
- * Implementation of ARMv7 Generic Timer
+ * Implementation of ARMv8 Generic Timer
  * Responsible: Inkyu Han
  */
 
 #include <arch_types.h>
 #include <k-hypervisor-config.h>
 #include <hvmm_trace.h>
+#include <armv8_processor.h>
 #include <timer.h>
 #include <interrupt.h>
 #include <log/print.h>
 #include <smp.h>
 
-static timer_callback_t _host_callback[2];
-static timer_callback_t _guest_callback[2];
+static timer_callback_t _host_callback[NUM_CPUS];
+static timer_callback_t _guest_callback[NUM_CPUS];
 
 static struct timer_ops *_ops;
 
@@ -119,10 +120,11 @@ hvmm_status_t timer_set(struct timer_val *timer, uint32_t host)
 
 hvmm_status_t timer_init(uint32_t irq)
 {
-    uint32_t cpu = smp_processor_id();
+    //uint32_t cpu = smp_processor_id();
 
     _ops = _timer_module.ops;
 
+    /* timer_hw_init() */
     if (_ops->init)
         _ops->init();
 

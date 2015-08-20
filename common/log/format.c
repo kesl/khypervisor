@@ -55,8 +55,8 @@ static void format_printi(uint32_t v, enum numerical numerical, char base)
 int format_print(const char *format, __builtin_va_list ap)
 {
     const char *p;
-    unsigned long flags;
 #ifdef _SMP_
+    unsigned int flags;
     smp_spin_lock(&format_lock, flags);
 #endif
     for (p = format; *p != '\0'; p++) {

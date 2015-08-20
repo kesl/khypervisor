@@ -31,7 +31,11 @@ struct arch_vdev_trigger_info {
     /** Instruction Length */
     uint32_t il;
     enum vdev_access_size sas;
+#ifdef ARM64
+    uint64_t *value;
+#else
     uint32_t *value;
+#endif
 };
 
 typedef hvmm_status_t (*vdev_callback_t)(uint32_t wnr, uint32_t offset,

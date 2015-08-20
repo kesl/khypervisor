@@ -14,7 +14,7 @@
     (guest_first_vmid() <= vmid && guest_last_vmid() >= vmid)
 
 static struct guest_struct guests[NUM_GUESTS_STATIC];
-static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, VMID_INVALID};
+static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 static int _next_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 struct guest_struct *_current_guest[NUM_CPUS];
 /* further switch request will be ignored if set */
@@ -36,8 +36,6 @@ static hvmm_status_t guest_restore(struct guest_struct *guest,
     /* guest_hw_restore : The next becomes the current */
     if (_guest_module.ops->restore)
         return  _guest_module.ops->restore(guest, regs);
-
-
 
      return HVMM_STATUS_UNKNOWN_ERROR;
 }
@@ -245,7 +243,6 @@ vmid_t sched_policy_determ_next(void)
 void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
-    uint32_t cpu = smp_processor_id();
     /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
@@ -257,7 +254,6 @@ void guest_schedule(void *pdata)
 
     /* Switch request, actually performed at trap exit */
     guest_switchto(sched_policy_determ_next(), 0);
-
 }
 
 hvmm_status_t guest_init()
@@ -273,7 +269,6 @@ hvmm_status_t guest_init()
     printh("[hyp] init_guests: enter\n");
     /* Initializes 2 guests */
     guest_count = num_of_guest(cpu);
-
 
     if (cpu)
         start_vmid = num_of_guest(cpu - 1);
@@ -316,7 +311,7 @@ void guest_copy(struct guest_struct *dst, vmid_t vmid_src)
     _guest_module.ops->move(dst, &(guests[vmid_src]));
 }
 
-void reboot_guest(vmid_t vmid, uint32_t pc,
+void reboot_guest(vmid_t vmid, uint64_t pc,
         struct arch_regs **regs)
 {
     _guest_module.ops->init(&guests[vmid], &(guests[vmid].regs));

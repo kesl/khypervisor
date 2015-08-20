@@ -88,9 +88,9 @@ struct guest_struct {
     uint8_t vmid;
 };
 
-extern uint32_t shared_memory_start;
-extern uint32_t shared_memory_end;
-extern uint32_t system_map_start;
+extern uint64_t shared_memory_start;
+extern uint64_t shared_memory_end;
+extern uint64_t system_map_start;
 void show_symbol(uint32_t va);
 void sysmbol_parser_init(void);
 int symbol_getter_from_va(uint32_t va, char *symbol);
@@ -101,13 +101,13 @@ void set_recovery(int cnt);
 void allset(void);
 void get_general_reg(struct arch_regs *regs, uint32_t *sp);
 
-extern uint32_t loader_start;
-extern uint32_t restore_start;
-extern uint32_t restore_end;
-extern uint32_t guestloader_end;
-extern uint32_t restore_guest_start;
-extern uint32_t restore_guest_end;
-extern uint32_t guest_start;
+extern uint64_t loader_start;
+extern uint64_t restore_start;
+extern uint64_t restore_end;
+extern uint64_t guestloader_end;
+extern uint64_t restore_guest_start;
+extern uint64_t restore_guest_end;
+extern uint64_t guest_start;
 int get_guest_mode(void);
 void set_guest_mode(int mode);
 #endif

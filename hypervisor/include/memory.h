@@ -34,13 +34,13 @@ struct memmap_desc {
     char *label;
     uint64_t va;
     uint64_t pa;
-    uint32_t size;
+    uint64_t size;
     enum memattr attr;
 };
 
 struct memory_ops {
     /** Initalize Memory state */
-    hvmm_status_t (*init)(struct memmap_desc **, struct memmap_desc **);
+    hvmm_status_t (*init)(struct memmap_desc *, struct memmap_desc *);
 
     /** Allocate heap memory */
     void * (*alloc)(unsigned long size);
@@ -87,15 +87,15 @@ struct memory_module {
 };
 
 extern struct memory_module _memory_module;
-extern uint32_t _guest_bin_start;
-extern uint32_t _guest2_bin_start;
+extern uint64_t _guest0_bin_start;
+extern uint64_t _guest1_bin_start;
 extern uint32_t _guest_secondary_bin_start;
 
 void memory_free(void *ap);
 void *memory_alloc(unsigned long size);
 hvmm_status_t memory_save(void);
 hvmm_status_t memory_restore(vmid_t vmid);
-hvmm_status_t memory_init(struct memmap_desc **guest0,
-                    struct memmap_desc **guest1);
+hvmm_status_t memory_init(struct memmap_desc *guest0,
+                    struct memmap_desc *guest1);
 
 #endif

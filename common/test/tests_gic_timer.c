@@ -2,7 +2,7 @@
 #include <vgic.h>
 #include "guest.h"
 #include "hvmm_trace.h"
-#include "armv7_p15.h"
+#include "armv8_processor.h"
 #include "timer.h"
 #include "guest.h"
 #if defined(CFG_BOARD_ARNDALE)

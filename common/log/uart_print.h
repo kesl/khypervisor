@@ -11,6 +11,10 @@ void uart_putc(const char c);
  *  @param v Strints for print.
  */
 void uart_print(const char *str);
+/** @brief Prints hex number(32bit)
+ *  @param v Number for print.
+ */
+void uart_print_hex(uint32_t v);
 
 /** @brief Prints hex number(32bit).
  *  @param v Number for print.

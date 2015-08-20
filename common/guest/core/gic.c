@@ -2,18 +2,16 @@
 #include "gic_regs.h"
 #include <log/uart_print.h>
 #include <hvmm_trace.h>
-#include <armv7_p15.h>
+#include <armv8_processor.h>
 /* #ifdef _SMP_ */
 #include <smp.h>
 /* #endif */
 
 #define CBAR_PERIPHBASE_MSB_MASK    0x000000FF
 
-#define ARM_CPUID_CORTEXA15   0x412fc0f1
-
 #define MIDR_MASK_PPN        (0x0FFF << 4)
 #define MIDR_PPN_CORTEXA15    (0xC0F << 4)
-
+#define MIDR_PPN_STORM       (0x000 << 4)
 
 #define GIC_INT_PRIORITY_DEFAULT_WORD    ((GIC_INT_PRIORITY_DEFAULT << 24) \
                                          |(GIC_INT_PRIORITY_DEFAULT << 16) \
@@ -36,14 +34,10 @@
  */
 
 /* Determined by Hypervisor's Stage2 Address Translation Table */
-#ifdef ARNDALE
-#define GIC_BASEADDR_GUEST                (0x10480000)
-#else
-#define GIC_BASEADDR_GUEST                (0x2C000000)
-#endif
+#define GIC_BASEADDR_GUEST                (0x78000000)
 
 struct gic {
-    uint32_t baseaddr;
+    uint64_t baseaddr;
     volatile uint32_t *ba_gicd;
     volatile uint32_t *ba_gicc;
     uint32_t lines;
@@ -79,24 +73,27 @@ static void gic_test_vdev_access(void)
 static void gic_dump_registers(void)
 {
     uint32_t midr;
+    uint32_t ppn;
     HVMM_TRACE_ENTER();
     midr = read_midr();
+    ppn = midr & MIDR_MASK_PPN;
     uart_print("midr:");
     uart_print_hex32(midr);
     uart_print("\n\r");
-    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
+    if (ppn == MIDR_PPN_CORTEXA15 ||
+        ppn == MIDR_PPN_STORM) {
         uint32_t value;
         uart_print("gic baseaddr:");
-        uart_print_hex32(_gic.baseaddr);
+        uart_print_hex64(_gic.baseaddr);
         uart_print("\n\r");
         uart_print("ba_gicd:");
-        uart_print_hex32((uint32_t)_gic.ba_gicd);
+        uart_print_hex64((uint64_t)_gic.ba_gicd);
         uart_print("\n\r");
         uart_print("GICD_TYPER:");
         uart_print_hex32(_gic.ba_gicd[GICD_TYPER]);
         uart_print("\n\r");
         uart_print("ba_gicc:");
-        uart_print_hex32((uint32_t)_gic.ba_gicc);
+        uart_print_hex64((uint64_t)_gic.ba_gicc);
         uart_print("\n\r");
         uart_print("GICC_CTLR:");
         uart_print_hex32(_gic.ba_gicc[GICC_CTLR]);
@@ -125,9 +122,11 @@ static void gic_dump_registers(void)
 static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
 {
     uint32_t midr;
+    uint32_t ppn;
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     HVMM_TRACE_ENTER();
     midr = read_midr();
+    ppn = midr & MIDR_MASK_PPN;
     uart_print("midr:");
     uart_print_hex32(midr);
     uart_print("\n\r");
@@ -137,8 +136,9 @@ static hvmm_status_t gic_init_baseaddr(uint32_t *va_base)
      * Other architectures with GICv2 support will be further
      * listed and added for support later.
      */
-    if ((midr & MIDR_MASK_PPN) == MIDR_PPN_CORTEXA15) {
-        _gic.baseaddr = (uint32_t) va_base;
+    if ( ppn == MIDR_PPN_CORTEXA15||
+         ppn == MIDR_PPN_STORM) {
+        _gic.baseaddr = (uint64_t) va_base;
         _gic.ba_gicd = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICD);
         _gic.ba_gicc = (uint32_t *)(_gic.baseaddr + GIC_OFFSET_GICC);
         result = HVMM_STATUS_SUCCESS;
@@ -182,6 +182,7 @@ hvmm_status_t gic_init(void)
 {
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
     int i;
+    int type;
     HVMM_TRACE_ENTER();
     for (i = 0; i < GIC_NUM_MAX_IRQS; i++)
         _gic.handlers[i] = 0;
@@ -194,7 +195,8 @@ hvmm_status_t gic_init(void)
     if (result == HVMM_STATUS_SUCCESS)
         gic_dump_registers();
 
-    _gic.lines = 1022;
+    type = _gic.ba_gicd[GICD_TYPER];
+    _gic.lines = 32 * ((type & 0x1F)+1);
     result = HVMM_STATUS_SUCCESS;
     if (result == HVMM_STATUS_SUCCESS)
         _gic.initialized = GIC_SIGNATURE_INITIALIZED;
@@ -215,19 +217,17 @@ void gic_interrupt(int fiq, void *pregs)
     uint32_t iar;
     uint32_t irq;
     struct arch_regs *regs = pregs;
-/* #if _SMP_ */
     uint32_t cpu = smp_processor_id();
-/* #endif */
    /* ACK */
     iar = _gic.ba_gicc[GICC_IAR];
     irq = iar & GICC_IAR_INTID_MASK;
     if (irq < _gic.lines) {
         if (irq == 0) {
             uart_print("ba_gicd:");
-            uart_print_hex32((uint32_t) _gic.ba_gicd);
+            uart_print_hex64((uint64_t) _gic.ba_gicd);
             uart_print("\n\r");
             uart_print("ba_gicc:");
-            uart_print_hex32((uint32_t) _gic.ba_gicc);
+            uart_print_hex64((uint64_t) _gic.ba_gicc);
             uart_print("\n\r");
         }
         /* ISR */
@@ -236,7 +236,7 @@ void gic_interrupt(int fiq, void *pregs)
 
         /* Completion & Deactivation */
         _gic.ba_gicc[GICC_EOIR] = irq;
-        _gic.ba_gicc[GICC_DIR] = irq;
+        _gic.ba_gicc[GICC_DIR + (0x10000 / 4)] = irq;
     } else {
     /*TODO  Need to know why this part occurred*/
     #if 0

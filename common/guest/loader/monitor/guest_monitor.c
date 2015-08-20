@@ -312,7 +312,7 @@ void get_general_reg(struct arch_regs *regs, uint32_t *sp)
     int i;
     monitoring_register();
     isb();
-    dsb();
+    dsb(sy);
     regs->cpsr = target_regs.cpsr;
     regs->pc = target_regs.pc;
     regs->lr = target_regs.lr;

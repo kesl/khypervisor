@@ -64,6 +64,7 @@ void nrm_loop(void)
     uart_init();
     uart_print(GUEST_LABEL);
     uart_print_hex32(GUEST_NUMBER);
+    uart_print("\n");
 
     uart_print("=== Starting commom start up\n\r");
 

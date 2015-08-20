@@ -2,7 +2,7 @@
 #include "hvmm_trace.h"
 #include "lpae.h"
 #include "memory.h"
-#include "armv7_p15.h"
+#include "armv8_processor.h"
 
 #include <k-hypervisor-config.h>
 #include <log/print.h>

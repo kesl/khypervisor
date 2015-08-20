@@ -64,8 +64,8 @@ hvmm_status_t memory_restore(vmid_t vmid)
     return ret;
 }
 
-hvmm_status_t memory_init(struct memmap_desc **guest0,
-                struct memmap_desc **guest1)
+hvmm_status_t memory_init(struct memmap_desc *guest0,
+                struct memmap_desc *guest1)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
     _memory_ops = _memory_module.ops;
