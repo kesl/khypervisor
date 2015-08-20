@@ -72,7 +72,7 @@ void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq);
 uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq);
 void vgic_slotvirq_clear(vmid_t vmid, uint32_t slot);
 /**
- * @breif       Returns pirq mapped to virq for vm.
+ * @brief       Returns pirq mapped to virq for vm.
  * @param vmid  Guest vm id
  * @param virq  Virtual interrupt number.
  * @return      physical interrupt number.

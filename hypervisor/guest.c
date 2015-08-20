@@ -56,8 +56,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     guest_save(&guests[_current_guest_vmid[cpu]], regs);
     memory_save();
     interrupt_save(_current_guest_vmid[cpu]);
-    if (!cpu)
-        vdev_save(_current_guest_vmid[cpu]);
+    vdev_save(_current_guest_vmid[cpu]);
 
     /* The context of the next guest */
     guest = &guests[next_vmid];
@@ -68,8 +67,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &guest->regs);
 
-    if (!cpu)
-        vdev_restore(_current_guest_vmid[cpu]);
+    vdev_restore(_current_guest_vmid[cpu]);
 
     interrupt_restore(_current_guest_vmid[cpu]);
     memory_restore(_current_guest_vmid[cpu]);
@@ -123,14 +121,8 @@ void guest_sched_start(void)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
     /* Context Switch with current context == none */
 
-    if (cpu) {
-        guest_switchto(2, 0);
-
-        guest_perform_switch(&guest->regs);
-    } else {
-        guest_switchto(0, 0);
-        guest_perform_switch(&guest->regs);
-    }
+    guest_switchto(guest->vmid, 0);
+    guest_perform_switch(&guest->regs);
 }
 
 vmid_t guest_first_vmid(void)
@@ -138,10 +130,13 @@ vmid_t guest_first_vmid(void)
     uint32_t cpu = smp_processor_id();
 
     /* FIXME:Hardcoded for now */
+#if _SMP_
     if (cpu)
         return 2;
     else
         return 0;
+#endif
+    return cpu;
 }
 
 vmid_t guest_last_vmid(void)
@@ -149,15 +144,19 @@ vmid_t guest_last_vmid(void)
     uint32_t cpu = smp_processor_id();
 
     /* FIXME:Hardcoded for now */
+#if _SMP_
     if (cpu)
         return 3;
     else
         return 1;
+#endif
+    return cpu;
 }
 
 vmid_t guest_next_vmid(vmid_t ofvmid)
 {
     vmid_t next = VMID_INVALID;
+#if 0
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
 
@@ -165,6 +164,7 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
         return 2;
     else
         return 0;
+#endif
 #endif
 
     /* FIXME:Hardcoded */
@@ -271,7 +271,7 @@ hvmm_status_t guest_init()
     int start_vmid = 0;
     uint32_t cpu = smp_processor_id();
     printh("[hyp] init_guests: enter\n");
-    /* Initializes 2 guests */
+    /* Initializes guests */
     guest_count = num_of_guest(cpu);
 
 

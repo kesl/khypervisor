@@ -18,7 +18,36 @@ guestloader_start:
     ldr     r0, = guestloader_vector
     mcr     p15, 0, r0, c12, c0, 0  @ VBAR
 
+#ifdef _SMP_
+    @Check CPU ID
+    mrc p15, 0, r0, c0, c0, 5   @MPIDR (ARMv7 only)
+    bfc r0, #24, #8     @ CPU Number, taking multicluster into account
+    cmp r0, #0
+    beq 2f
+
+    @ Secondary CPUs (for SMP booting in Linux Guest)
+    cmp r0, #1
+    bne 2f      @ Will delete after Vcpu currectly work
+
+    ldr r1, =guestloader_stacktop_svc - 0x100 /* not exactly complete */
+    adr r2, 1f
+    ldmia r2, {r3 - r7}
+    stmia r1, {r3 - r7}
+    ldr r0, =0x1c010030
+    mov pc, r1
+
+1:
+    wfe
+    ldr r1, [r0]
+    cmp r1, #0
+    beq 1b
+    mov pc, r1
+
+2:
+#endif
+
     mov     r0, r10
+
     @ Call the C entrypoint
     b   main
     .type guestloader_start, %function

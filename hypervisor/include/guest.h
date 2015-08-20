@@ -23,9 +23,12 @@ enum hyp_hvc_result {
 #define GUEST_VERBOSE_LEVEL_6   0x40
 #define GUEST_VERBOSE_LEVEL_7   0x80
 
+// guest_struct's features will be vcpu's and change guest_struct
+// this time, guest_struct is vcpu.
 struct guest_struct {
     struct arch_regs regs;
     struct arch_context context;
+    uint32_t vmpidr;
     vmid_t vmid;
 };
 
@@ -119,10 +122,19 @@ void clean_manually_select_vmid(void);
 
 static inline unsigned long num_of_guest(int cpu)
 {
-    if (cpu == 0)
-        return NUM_GUESTS_CPU0_STATIC;
-    else
-        return NUM_GUESTS_CPU1_STATIC;
+    switch(cpu)
+    {
+        case 0:
+            return NUM_GUESTS_CPU0_STATIC;
+        case 1:
+            return NUM_GUESTS_CPU1_STATIC;
+            /*
+        case 2:
+            return NUM_GUESTS_CPU2_STATIC;
+        case 3:
+            return NUM_GUESTS_CPU3_STATIC;
+            */
+    }
 }
 
 #endif

@@ -50,6 +50,9 @@ struct interrupt_ops {
     /** Inject to guest */
     hvmm_status_t (*inject)(vmid_t, uint32_t, uint32_t, uint8_t);
 
+    /** Control SGI */
+    hvmm_status_t (*sgi)(uint32_t/*cpumask*/, uint32_t);
+
     /** Save inetrrupt state */
     hvmm_status_t (*save)(vmid_t vmid);
 
