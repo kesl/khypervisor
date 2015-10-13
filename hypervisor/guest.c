@@ -13,7 +13,7 @@
 #define _valid_vmid(vmid) \
     (guest_first_vmid() <= vmid && guest_last_vmid() >= vmid)
 
-static struct guest_struct guests[NUM_GUESTS_STATIC];
+//static struct guest_struct guests[NUM_GUESTS_STATIC];
 static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, VMID_INVALID};
 static int _next_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
 struct guest_struct *_current_guest[NUM_CPUS];
@@ -53,13 +53,13 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
-    guest_save(&guests[_current_guest_vmid[cpu]], regs);
+    guest_save(&guest_arr[_current_guest_vmid[cpu]], regs);
     memory_save();
     interrupt_save(_current_guest_vmid[cpu]);
     vdev_save(_current_guest_vmid[cpu]);
 
     /* The context of the next guest */
-    guest = &guests[next_vmid];
+    guest = &guest_arr[next_vmid];
     _current_guest[cpu] = guest;
     _current_guest_vmid[cpu] = next_vmid;
 
@@ -113,9 +113,9 @@ void guest_sched_start(void)
     /* Select the first guest context to switch to. */
     _current_guest_vmid[cpu] = VMID_INVALID;
     if (cpu)
-        guest = &guests[num_of_guest(cpu - 1) + 0];
+        guest = &guest_arr[num_of_guest(cpu - 1) + 0];
     else
-        guest = &guests[0];
+        guest = &guest_arr[0];
     /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
@@ -285,7 +285,7 @@ hvmm_status_t guest_init()
 
     for (i = start_vmid; i < guest_count; i++) {
         /* Guest i @guest_bin_start */
-        guest = &guests[i];
+        guest = &guest_arr[i];
         regs = &guest->regs;
         guest->vmid = i;
         /* guest_hw_init */
@@ -309,21 +309,21 @@ hvmm_status_t guest_init()
 
 struct guest_struct get_guest(uint32_t guest_num)
 {
-   return guests[guest_num];
+   return guest_arr[guest_num];
 }
 
 void guest_copy(struct guest_struct *dst, vmid_t vmid_src)
 {
-    _guest_module.ops->move(dst, &(guests[vmid_src]));
+    _guest_module.ops->move(dst, &(guest_arr[vmid_src]));
 }
 
 void reboot_guest(vmid_t vmid, uint32_t pc,
         struct arch_regs **regs)
 {
-    _guest_module.ops->init(&guests[vmid], &(guests[vmid].regs));
-    guests[vmid].regs.pc = pc;
-    guests[vmid].regs.gpr[10] = 1;
+    _guest_module.ops->init(&guest_arr[vmid], &(guest_arr[vmid].regs));
+    guest_arr[vmid].regs.pc = pc;
+    guest_arr[vmid].regs.gpr[10] = 1;
     if (regs != 0)
-        _guest_module.ops->restore(&guests[vmid], *regs);
+        _guest_module.ops->restore(&guest_arr[vmid], *regs);
 }
 
