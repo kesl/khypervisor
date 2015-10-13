@@ -150,7 +150,8 @@ vmid_t guest_last_vmid(void)
     else
         return 1;
 #endif
-    return cpu;
+    //return cpu;
+    return NUM_GUESTS_STATIC - 1;
 }
 
 vmid_t guest_next_vmid(vmid_t ofvmid)
