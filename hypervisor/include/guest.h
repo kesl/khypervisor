@@ -7,11 +7,38 @@
 #include <hvmm_types.h>
 #include <vgic.h>
 #include <guest_hw.h>
+#include <lpae.h>
 
 enum hyp_hvc_result {
     HYP_RESULT_ERET = 0,
     HYP_RESULT_STAY = 1
 };
+
+/* Stage 2 Level 1 */
+#define VMM_L1_PTE_NUM          4
+#define VMM_L1_PADDING_PTE_NUM   (512 - VMM_L1_PTE_NUM)
+/* Stage 2 Level 2 */
+#define VMM_L2_PTE_NUM          512
+#define VMM_L3_PTE_NUM          512
+/**
+ * @brief Gets total number of level 2 and level 3 page table entry.
+ *
+ * <pre>
+ * VMM_L2_PTE_NUM * VMM_L3_PTE_NUM = /
+ * Total Number Of Level 3 Page Table Entry
+ * + VMM_L2_PTE_NUM = Total Number Of Level 2 Page Table Entry
+ * </pre>
+ *
+ * @return Total number of l2, l3 table entry.
+ */
+#define VMM_L2L3_PTE_NUM_TOTAL  (VMM_L2_PTE_NUM \
+        * VMM_L3_PTE_NUM + VMM_L2_PTE_NUM)
+/**
+ * @brief Gets total number of all page table entries.
+ */
+#define VMM_PTE_NUM_TOTAL  (VMM_L1_PTE_NUM                  \
+        + VMM_L1_PADDING_PTE_NUM + VMM_L2L3_PTE_NUM_TOTAL   \
+        * VMM_L1_PTE_NUM)
 
 #define MAX_NUM_GUESTS  10
 
@@ -32,6 +59,8 @@ struct guest_struct {
     struct arch_context context;
     uint32_t vmpidr;
     vmid_t vmid;
+
+    union lpaed vttbr[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
 
     struct memmap_desc **memmap_desc;
 };
