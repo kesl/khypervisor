@@ -6,6 +6,7 @@
 #include <log/uart_print.h>
 #include <hvmm_types.h>
 #include <vgic.h>
+#include <interrupt.h>
 #include <guest_hw.h>
 #include <lpae.h>
 
@@ -61,6 +62,7 @@ struct guest_struct {
     vmid_t vmid;
 
     union lpaed vttbr[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
+    struct vgic_status status;
 
     struct memmap_desc **memmap_desc;
 };

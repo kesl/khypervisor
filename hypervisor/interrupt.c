@@ -235,7 +235,7 @@ hvmm_status_t interrupt_init(struct guest_virqmap *virqmap)
     if (!cpu) {
         _host_ops = _interrupt_module.host_ops;
         _guest_ops = _interrupt_module.guest_ops;
-
+        
         _guest_virqmap = virqmap;
     }
 
