@@ -1254,7 +1254,10 @@ static int memory_hw_init(struct memmap_desc **guest0,
     uint32_t cpu = smp_processor_id();
     uart_print("[memory] memory_init: enter\n\r");
 
-    guest_memory_init(guest0, guest1);
+    guest_arr[0].memmap_desc = guest0;
+    guest_arr[1].memmap_desc = guest1;
+
+    guest_memory_init(guest_arr[0].memmap_desc, guest_arr[1].memmap_desc);
 
     guest_memory_init_mmu();
 

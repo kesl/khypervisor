@@ -13,6 +13,8 @@ enum hyp_hvc_result {
     HYP_RESULT_STAY = 1
 };
 
+#define MAX_NUM_GUESTS  10
+
 #define GUEST_VERBOSE_ALL       0xFF
 #define GUEST_VERBOSE_LEVEL_0   0x01
 #define GUEST_VERBOSE_LEVEL_1   0x02
@@ -30,7 +32,11 @@ struct guest_struct {
     struct arch_context context;
     uint32_t vmpidr;
     vmid_t vmid;
+
+    struct memmap_desc **memmap_desc;
 };
+
+struct guest_struct guest_arr[MAX_NUM_GUESTS];
 
 struct guest_ops {
     /** Initalize guest state */
