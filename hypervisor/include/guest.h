@@ -53,9 +53,9 @@ enum hyp_hvc_result {
 #define GUEST_VERBOSE_LEVEL_6   0x40
 #define GUEST_VERBOSE_LEVEL_7   0x80
 
-// guest_struct's features will be vcpu's and change guest_struct
-// this time, guest_struct is vcpu.
-struct guest_struct {
+// vcpu's features will be vcpu's and change vcpu
+// this time, vcpu is vcpu.
+struct vcpu {
     struct arch_regs regs;
     struct arch_context context;
     uint32_t vmpidr;
@@ -67,23 +67,23 @@ struct guest_struct {
     struct memmap_desc **memmap_desc;
 };
 
-struct guest_struct guest_arr[MAX_NUM_GUESTS];
+struct vcpu guest_arr[MAX_NUM_GUESTS];
 
 struct guest_ops {
     /** Initalize guest state */
-    hvmm_status_t (*init)(struct guest_struct *, struct arch_regs *);
+    hvmm_status_t (*init)(struct vcpu *, struct arch_regs *);
 
     /** Save registers for context switch */
-    hvmm_status_t (*save)(struct guest_struct *, struct arch_regs *);
+    hvmm_status_t (*save)(struct vcpu *, struct arch_regs *);
 
     /** Restore registers for context switch */
-    hvmm_status_t (*restore)(struct guest_struct *, struct arch_regs *);
+    hvmm_status_t (*restore)(struct vcpu *, struct arch_regs *);
 
     /** Dump state of the guest */
     hvmm_status_t (*dump)(uint8_t, struct arch_regs *regs);
 
     /** Move Guest's info from src to dst */
-    hvmm_status_t (*move)(struct guest_struct *, struct guest_struct *);
+    hvmm_status_t (*move)(struct vcpu *, struct vcpu *);
 };
 
 struct guest_module {
@@ -125,7 +125,7 @@ extern uint32_t _guest3_bin_start;
 extern uint32_t _guest3_bin_end;
 #endif
 extern struct guest_module _guest_module;
-extern struct guest_struct *_current_guest[NUM_CPUS];
+extern struct vcpu *_current_guest[NUM_CPUS];
 
 /**
  * sched_policy_determ_next() should be used to determine next virtual
@@ -141,7 +141,7 @@ vmid_t sched_policy_determ_next(void);
  */
 hvmm_status_t guest_perform_switch(struct arch_regs *regs);
 
-void guest_copy(struct guest_struct *dst, vmid_t vmid_src);
+void guest_copy(struct vcpu *dst, vmid_t vmid_src);
 void guest_dump_regs(struct arch_regs *regs);
 void guest_sched_start(void);
 vmid_t guest_first_vmid(void);
@@ -152,7 +152,7 @@ vmid_t guest_waiting_vmid(void);
 hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
-struct guest_struct get_guest(uint32_t guest_num);
+struct vcpu get_guest(uint32_t guest_num);
 void reboot_guest(vmid_t vmid, uint32_t pc, struct arch_regs **regs);
 void set_manually_select_vmid(vmid_t vmid);
 void clean_manually_select_vmid(void);

@@ -190,7 +190,7 @@ struct monitoring_data {
     uint32_t memory_range;
     uint32_t start_memory;
     uint8_t monitor_cnt;
-    struct guest_struct guest;
+    struct vcpu guest;
 };
 
 void send_monitoring_data(uint32_t range, uint32_t src)

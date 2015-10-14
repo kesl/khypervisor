@@ -64,7 +64,7 @@ struct monitoring_data {
     uint32_t memory_range;
     uint32_t start_memory;
     uint8_t monitor_cnt;
-    struct guest_struct guest_info;
+    struct vcpu guest_info;
 };
 
 struct monitor_vmid {

@@ -13,14 +13,14 @@
 #define _valid_vmid(vmid) \
     (guest_first_vmid() <= vmid && guest_last_vmid() >= vmid)
 
-//static struct guest_struct guests[NUM_GUESTS_STATIC];
+//static struct vcpu guests[NUM_GUESTS_STATIC];
 static int _current_guest_vmid[NUM_CPUS] = {VMID_INVALID, VMID_INVALID};
 static int _next_guest_vmid[NUM_CPUS] = {VMID_INVALID, };
-struct guest_struct *_current_guest[NUM_CPUS];
+struct vcpu *_current_guest[NUM_CPUS];
 /* further switch request will be ignored if set */
 static uint8_t _switch_locked[NUM_CPUS];
 
-static hvmm_status_t guest_save(struct guest_struct *guest,
+static hvmm_status_t guest_save(struct vcpu *guest,
                         struct arch_regs *regs)
 {
     /* guest_hw_save : save the current guest's context*/
@@ -30,7 +30,7 @@ static hvmm_status_t guest_save(struct guest_struct *guest,
     return HVMM_STATUS_UNKNOWN_ERROR;
 }
 
-static hvmm_status_t guest_restore(struct guest_struct *guest,
+static hvmm_status_t guest_restore(struct vcpu *guest,
                         struct arch_regs *regs)
 {
     /* guest_hw_restore : The next becomes the current */
@@ -48,7 +48,7 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     /* _curreng_guest_vmid -> next_vmid */
 
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-    struct guest_struct *guest = 0;
+    struct vcpu *guest = 0;
     uint32_t cpu = smp_processor_id();
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
@@ -106,7 +106,7 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
 /* Switch to the first guest */
 void guest_sched_start(void)
 {
-    struct guest_struct *guest = 0;
+    struct vcpu *guest = 0;
     uint32_t cpu = smp_processor_id();
 
     printh("[hyp] switch_to_initial_guest:\n");
@@ -265,7 +265,7 @@ hvmm_status_t guest_init()
 {
     struct timer_val timer;
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
-    struct guest_struct *guest;
+    struct vcpu *guest;
     struct arch_regs *regs = 0;
     int i;
     int guest_count;
@@ -307,12 +307,12 @@ hvmm_status_t guest_init()
     return result;
 }
 
-struct guest_struct get_guest(uint32_t guest_num)
+struct vcpu get_guest(uint32_t guest_num)
 {
    return guest_arr[guest_num];
 }
 
-void guest_copy(struct guest_struct *dst, vmid_t vmid_src)
+void guest_copy(struct vcpu *dst, vmid_t vmid_src)
 {
     _guest_module.ops->move(dst, &(guest_arr[vmid_src]));
 }

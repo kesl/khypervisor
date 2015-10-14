@@ -239,7 +239,7 @@ static char *_modename(uint8_t mode)
 }
 #endif
 
-static hvmm_status_t guest_hw_save(struct guest_struct *guest,
+static hvmm_status_t guest_hw_save(struct vcpu *guest,
                 struct arch_regs *current_regs)
 {
     struct arch_regs *regs = &guest->regs;
@@ -262,7 +262,7 @@ static hvmm_status_t guest_hw_save(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
+static hvmm_status_t guest_hw_restore(struct vcpu *guest,
                 struct arch_regs *current_regs)
 {
     struct arch_context *context = &guest->context;
@@ -287,7 +287,7 @@ static hvmm_status_t guest_hw_restore(struct guest_struct *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_init(struct guest_struct *guest,
+static hvmm_status_t guest_hw_init(struct vcpu *guest,
                 struct arch_regs *regs)
 {
     struct arch_context *context = &guest->context;
@@ -361,7 +361,7 @@ static hvmm_status_t guest_hw_dump(uint8_t verbose, struct arch_regs *regs)
 }
 
 //hvmm_status_t guest_hw_move(struct arch_regs *dst, struct arch_regs *src)
-hvmm_status_t guest_hw_move(struct guest_struct *dst, struct guest_struct *src)
+hvmm_status_t guest_hw_move(struct vcpu *dst, struct vcpu *src)
 {
     context_copy_regs(&(dst->regs), &(src->regs));
     context_copy_banked(&(dst->context.regs_banked),

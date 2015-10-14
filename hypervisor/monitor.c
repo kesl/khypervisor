@@ -493,7 +493,7 @@ hvmm_status_t monitor_check_status(struct monitor_vmid *mvmid, uint32_t va)
 {
     hvmm_status_t ret = HVMM_STATUS_SUCCESS;
     uint32_t lr, sp;
-    struct guest_struct target = get_guest(0);
+    struct vcpu target = get_guest(0);
     printH("start!!\n");
     printH("show sp's %x \n", target.context.regs_banked.sp_usr);
     printH("show sp's %x \n", target.context.regs_banked.sp_abt);

@@ -82,7 +82,7 @@ struct arch_regs {
 } __attribute((packed));
 
 
-struct guest_struct {
+struct vcpu {
     struct arch_regs regs;
     struct arch_context context;
     uint8_t vmid;

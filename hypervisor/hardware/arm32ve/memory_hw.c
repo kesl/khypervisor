@@ -1200,7 +1200,7 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
      */
     int i;
     uint32_t cpu = smp_processor_id();
-    struct guest_struct *guest = 0;
+    struct vcpu *guest = 0;
     HVMM_TRACE_ENTER();
 
     if (!cpu) {
@@ -1311,7 +1311,7 @@ static hvmm_status_t memory_hw_restore(vmid_t vmid)
      * Restore Translation Table for the next guest and
      * Enable Stage 2 Translation
      */
-    struct guest_struct *guest = 0;
+    struct vcpu *guest = 0;
     guest = &guest_arr[vmid];
     guest_memory_set_vmid_ttbl(vmid, guest->vttbr);
 
