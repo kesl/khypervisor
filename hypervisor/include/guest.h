@@ -67,7 +67,7 @@ struct vcpu {
     struct memmap_desc **memmap_desc;
 };
 
-struct vcpu guest_arr[MAX_NUM_GUESTS];
+struct vcpu vcpu_arr[MAX_NUM_GUESTS];
 
 struct guest_ops {
     /** Initalize guest state */

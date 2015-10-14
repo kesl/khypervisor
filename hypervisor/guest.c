@@ -53,13 +53,13 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
-    guest_save(&guest_arr[_current_guest_vmid[cpu]], regs);
+    guest_save(&vcpu_arr[_current_guest_vmid[cpu]], regs);
     memory_save();
     interrupt_save(_current_guest_vmid[cpu]);
     vdev_save(_current_guest_vmid[cpu]);
 
     /* The context of the next guest */
-    guest = &guest_arr[next_vmid];
+    guest = &vcpu_arr[next_vmid];
     _current_guest[cpu] = guest;
     _current_guest_vmid[cpu] = next_vmid;
 
@@ -113,9 +113,9 @@ void guest_sched_start(void)
     /* Select the first guest context to switch to. */
     _current_guest_vmid[cpu] = VMID_INVALID;
     if (cpu)
-        guest = &guest_arr[num_of_guest(cpu - 1) + 0];
+        guest = &vcpu_arr[num_of_guest(cpu - 1) + 0];
     else
-        guest = &guest_arr[0];
+        guest = &vcpu_arr[0];
     /* guest_hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &guest->regs);
@@ -285,7 +285,7 @@ hvmm_status_t guest_init()
 
     for (i = start_vmid; i < guest_count; i++) {
         /* Guest i @guest_bin_start */
-        guest = &guest_arr[i];
+        guest = &vcpu_arr[i];
         regs = &guest->regs;
         guest->vmid = i;
         /* guest_hw_init */
@@ -309,21 +309,21 @@ hvmm_status_t guest_init()
 
 struct vcpu get_guest(uint32_t guest_num)
 {
-   return guest_arr[guest_num];
+   return vcpu_arr[guest_num];
 }
 
 void guest_copy(struct vcpu *dst, vmid_t vmid_src)
 {
-    _guest_module.ops->move(dst, &(guest_arr[vmid_src]));
+    _guest_module.ops->move(dst, &(vcpu_arr[vmid_src]));
 }
 
 void reboot_guest(vmid_t vmid, uint32_t pc,
         struct arch_regs **regs)
 {
-    _guest_module.ops->init(&guest_arr[vmid], &(guest_arr[vmid].regs));
-    guest_arr[vmid].regs.pc = pc;
-    guest_arr[vmid].regs.gpr[10] = 1;
+    _guest_module.ops->init(&vcpu_arr[vmid], &(vcpu_arr[vmid].regs));
+    vcpu_arr[vmid].regs.pc = pc;
+    vcpu_arr[vmid].regs.gpr[10] = 1;
     if (regs != 0)
-        _guest_module.ops->restore(&guest_arr[vmid], *regs);
+        _guest_module.ops->restore(&vcpu_arr[vmid], *regs);
 }
 

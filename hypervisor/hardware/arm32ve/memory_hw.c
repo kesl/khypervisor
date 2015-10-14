@@ -1205,7 +1205,7 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
 
     if (!cpu) {
         for (i = 0; i < NUM_GUESTS_STATIC; i++){
-            guest = &guest_arr[i];
+            guest = &vcpu_arr[i];
             guest_memory_init_ttbl(&guest->vttbr[0], guest->memmap_desc);
         }
     } 
@@ -1247,10 +1247,10 @@ static int memory_hw_init(struct memmap_desc **guest0,
     uint32_t cpu = smp_processor_id();
     uart_print("[memory] memory_init: enter\n\r");
 
-    guest_arr[0].memmap_desc = guest0;
-    guest_arr[1].memmap_desc = guest1;
+    vcpu_arr[0].memmap_desc = guest0;
+    vcpu_arr[1].memmap_desc = guest1;
 
-    guest_memory_init(guest_arr[0].memmap_desc, guest_arr[1].memmap_desc);
+    guest_memory_init(vcpu_arr[0].memmap_desc, vcpu_arr[1].memmap_desc);
 
     guest_memory_init_mmu();
 
@@ -1312,7 +1312,7 @@ static hvmm_status_t memory_hw_restore(vmid_t vmid)
      * Enable Stage 2 Translation
      */
     struct vcpu *guest = 0;
-    guest = &guest_arr[vmid];
+    guest = &vcpu_arr[vmid];
     guest_memory_set_vmid_ttbl(vmid, guest->vttbr);
 
     guest_memory_stage2_enable(1);

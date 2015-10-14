@@ -89,12 +89,12 @@ static hvmm_status_t guest_interrupt_inject(vmid_t vmid, uint32_t virq,
 
 static hvmm_status_t guest_interrupt_save(vmid_t vmid)
 {
-    return vgic_save_status(&(guest_arr[vmid].status));
+    return vgic_save_status(&(vcpu_arr[vmid].status));
 }
 
 static hvmm_status_t guest_interrupt_restore(vmid_t vmid)
 {
-    return vgic_restore_status(&(guest_arr[vmid].status), vmid);
+    return vgic_restore_status(&(vcpu_arr[vmid].status), vmid);
 }
 
 static hvmm_status_t guest_interrupt_dump(void)
