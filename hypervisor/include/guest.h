@@ -68,6 +68,7 @@ struct vcpu {
 };
 
 struct vcpu vcpu_arr[MAX_NUM_GUESTS];
+void save_and_restore(vcpuid_t from, vcpuid_t to, struct arch_regs *regs);
 
 struct guest_ops {
     /** Initalize guest state */

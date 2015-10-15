@@ -48,30 +48,12 @@ static hvmm_status_t perform_switch(struct arch_regs *regs, vcpuid_t next_vmid)
     /* _curreng_guest_vmid -> next_vmid */
 
     hvmm_status_t result = HVMM_STATUS_UNKNOWN_ERROR;
-    struct vcpu *vcpu = 0;
     uint32_t cpu = smp_processor_id();
+
     if (_current_guest_vmid[cpu] == next_vmid)
         return HVMM_STATUS_IGNORED; /* the same guest? */
 
-    guest_save(&vcpu_arr[_current_guest_vmid[cpu]], regs);
-    memory_save();
-    interrupt_save(_current_guest_vmid[cpu]);
-    vdev_save(_current_guest_vmid[cpu]);
-
-    /* The context of the next guest */
-    vcpu = &vcpu_arr[next_vmid];
-    _current_guest[cpu] = vcpu;
-    _current_guest_vmid[cpu] = next_vmid;
-
-    /* guest_hw_dump */
-    if (_guest_module.ops->dump)
-        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &vcpu->regs);
-
-    vdev_restore(_current_guest_vmid[cpu]);
-
-    interrupt_restore(_current_guest_vmid[cpu]);
-    memory_restore(_current_guest_vmid[cpu]);
-    guest_restore(vcpu, regs);
+    save_and_restore(_current_guest_vmid[cpu], next_vmid, regs);
 
     return result;
 }
@@ -325,5 +307,30 @@ void reboot_guest(vcpuid_t vmid, uint32_t pc,
     vcpu_arr[vmid].regs.gpr[10] = 1;
     if (regs != 0)
         _guest_module.ops->restore(&vcpu_arr[vmid], *regs);
+}
+
+void save_and_restore(vcpuid_t from, vcpuid_t to, struct arch_regs *regs){
+
+    struct vcpu *vcpu = 0;
+    uint32_t cpu = smp_processor_id();
+
+    guest_save(&vcpu_arr[from], regs);
+    memory_save();
+    interrupt_save(from);
+    vdev_save(from);
+
+    /* The context of the next guest */
+    vcpu = &vcpu_arr[to];
+    _current_guest[cpu] = vcpu;
+    _current_guest_vmid[cpu] = to;
+
+    /* guest_hw_dump */
+    if (_guest_module.ops->dump)
+        _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &vcpu->regs);
+
+    vdev_restore(to);
+    interrupt_restore(to);
+    memory_restore(to);
+    guest_restore(vcpu, regs);
 }
 
