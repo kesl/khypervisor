@@ -338,7 +338,9 @@ void vcpu_init(){
     struct vcpu *vcpu = 0;
     for(i = 0 ; i < NUM_GUESTS_STATIC ; i++){
         vcpu = &vcpu_arr[i];
-        vcpu->tick = 5;
+
+        //FIXME: Hardcoded - tick
+        vcpu->tick_reset_val = 5;
     }
 }
 void vcpu_change_state(vcpuid_t vcpu_id, vcpu_state_t state){
