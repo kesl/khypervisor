@@ -351,6 +351,14 @@ uint32_t vcpu_get_tick(vcpuid_t vcpu_id){
     return vcpu_arr[vcpu_id].tick;
 }
 
+void vcpu_reset_tick(vcpuid_t vcpu_id)
+{
+    struct vcpu *vcpu = 0;
+    vcpu = &vcpu_arr[vcpu_id];
+
+    vcpu->tick = vcpu->tick_reset_val;
+}
+
 void vcpu_tick_plus_one(vcpuid_t vcpu_id){
     struct vcpu *vcpu = 0;
     vcpu = &vcpu_arr[vcpu_id];
