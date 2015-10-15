@@ -72,9 +72,11 @@ struct vcpu {
 
     uint32_t period;
     uint32_t deadline;
-
+    
+    //FIXME: should be placed in runqueue entry in future
     //For Round-Robin Scheduler
-    uint32_t tick;  
+    uint32_t tick;
+    uint32_t tick_reset_val;
 
     uint64_t running_time;
     uint64_t actual_running_time;
@@ -87,6 +89,7 @@ void vcpu_init();
 
 void vcpu_change_state(vcpuid_t vcpu_id, vcpu_state_t state);
 uint32_t vcpu_get_tick(vcpuid_t vcpu_id);
+void vcpu_reset_tick(vcpuid_t vcpu_id);
 void vcpu_tick_plus_one(vcpuid_t vcpu_id);
 void vcpu_running_time_plus_one(vcpuid_t vcpu_id);
 void vcpu_actual_running_time_plus_one(vcpuid_t vcpu_id);
