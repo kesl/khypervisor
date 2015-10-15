@@ -239,16 +239,16 @@ static char *_modename(uint8_t mode)
 }
 #endif
 
-static hvmm_status_t guest_hw_save(struct vcpu *guest,
+static hvmm_status_t guest_hw_save(struct vcpu *vcpu,
                 struct arch_regs *current_regs)
 {
-    struct arch_regs *regs = &guest->regs;
-    struct arch_context *context = &guest->context;
+    struct arch_regs *regs = &vcpu->regs;
+    struct arch_context *context = &vcpu->context;
 
     if (!current_regs)
         return HVMM_STATUS_SUCCESS;
 
-    guest-> vmpidr = read_vmpidr();
+    vcpu-> vmpidr = read_vmpidr();
 
     context_copy_regs(regs, current_regs);
     context_save_cops(&context->regs_cop);
@@ -262,12 +262,12 @@ static hvmm_status_t guest_hw_save(struct vcpu *guest,
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_restore(struct vcpu *guest,
+static hvmm_status_t guest_hw_restore(struct vcpu *vcpu,
                 struct arch_regs *current_regs)
 {
-    struct arch_context *context = &guest->context;
+    struct arch_context *context = &vcpu->context;
 
-    write_vmpidr(guest->vmpidr);
+    write_vmpidr(vcpu->vmpidr);
 
     if (!current_regs) {
         /* init -> hyp mode -> guest */
@@ -275,22 +275,22 @@ static hvmm_status_t guest_hw_restore(struct vcpu *guest,
          * The actual context switching (Hyp to Normal mode)
          * handled in the asm code
          */
-        __mon_switch_to_guest_context(&guest->regs);
+        __mon_switch_to_guest_context(&vcpu->regs);
         return HVMM_STATUS_SUCCESS;
     }
 
     /* guest -> hyp -> guest */
-    context_copy_regs(current_regs, &guest->regs);
+    context_copy_regs(current_regs, &vcpu->regs);
     context_restore_cops(&context->regs_cop);
     context_restore_banked(&context->regs_banked);
 
     return HVMM_STATUS_SUCCESS;
 }
 
-static hvmm_status_t guest_hw_init(struct vcpu *guest,
+static hvmm_status_t guest_hw_init(struct vcpu *vcpu,
                 struct arch_regs *regs)
 {
-    struct arch_context *context = &guest->context;
+    struct arch_context *context = &vcpu->context;
     uint32_t vmpidr;
 
     vmpidr = read_vmpidr();
@@ -301,7 +301,7 @@ static hvmm_status_t guest_hw_init(struct vcpu *guest,
      * ex) linux guest's secondary vcpu, bm guest vcpu .. etc.
      */
     vmpidr |= 0;
-    guest->vmpidr = vmpidr;
+    vcpu->vmpidr = vmpidr;
 
     regs->pc = CFG_GUEST_START_ADDRESS;
     /* Initialize loader status for reboot */

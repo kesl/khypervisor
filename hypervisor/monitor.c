@@ -493,12 +493,12 @@ hvmm_status_t monitor_check_status(struct monitor_vmid *mvmid, uint32_t va)
 {
     hvmm_status_t ret = HVMM_STATUS_SUCCESS;
     uint32_t lr, sp;
-    struct vcpu target = get_guest(0);
+    struct vcpu vcpu = get_guest(0);
     printH("start!!\n");
-    printH("show sp's %x \n", target.context.regs_banked.sp_usr);
-    printH("show sp's %x \n", target.context.regs_banked.sp_abt);
-    printH("show sp's %x \n", target.context.regs_banked.sp_und);
-    printH("show sp's %x \n", target.context.regs_banked.sp_irq);
+    printH("show sp's %x \n", vcpu.context.regs_banked.sp_usr);
+    printH("show sp's %x \n", vcpu.context.regs_banked.sp_abt);
+    printH("show sp's %x \n", vcpu.context.regs_banked.sp_und);
+    printH("show sp's %x \n", vcpu.context.regs_banked.sp_irq);
 
     asm volatile(" mrs     %0, sp_svc\n\t" : "=r"(sp) : : "memory", "cc");
     printH("show sp's %x \n", sp);
