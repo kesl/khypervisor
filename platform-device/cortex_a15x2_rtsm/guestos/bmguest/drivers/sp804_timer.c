@@ -97,7 +97,7 @@ void interrupt_sp804_timer(int irq, void *pregs, void *pdata)
 {
     uint32_t ctl;
     uint32_t val;
-    vmid_t vmid;
+    vcpuid_t vmid;
     uart_print("=======================================\n\r");
     HVMM_TRACE_ENTER();
     val = sp804_read(SP804_BASE);

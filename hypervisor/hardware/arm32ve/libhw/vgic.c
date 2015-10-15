@@ -110,7 +110,7 @@ void vgic_slotpirq_init(void)
     }
 }
 
-void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq)
+void vgic_slotpirq_set(vcpuid_t vmid, uint32_t slot, uint32_t pirq)
 {
     if (vmid < NUM_GUESTS_STATIC) {
         printh("vgic: setting vmid:%d slot:%d pirq:%d\n", vmid, slot, pirq);
@@ -118,7 +118,7 @@ void vgic_slotpirq_set(vmid_t vmid, uint32_t slot, uint32_t pirq)
     }
 }
 
-uint32_t vgic_slotpirq_get(vmid_t vmid, uint32_t slot)
+uint32_t vgic_slotpirq_get(vcpuid_t vmid, uint32_t slot)
 {
     uint32_t pirq = PIRQ_INVALID;
     if (vmid < NUM_GUESTS_STATIC) {
@@ -128,12 +128,12 @@ uint32_t vgic_slotpirq_get(vmid_t vmid, uint32_t slot)
     return pirq;
 }
 
-void vgic_slotpirq_clear(vmid_t vmid, uint32_t slot)
+void vgic_slotpirq_clear(vcpuid_t vmid, uint32_t slot)
 {
     vgic_slotpirq_set(vmid, slot, PIRQ_INVALID);
 }
 
-void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq)
+void vgic_slotvirq_set(vcpuid_t vmid, uint32_t slot, uint32_t virq)
 {
     if (vmid < NUM_GUESTS_STATIC) {
         printh("vgic: setting vmid:%d slot:%d virq:%d\n", vmid, slot, virq);
@@ -144,7 +144,7 @@ void vgic_slotvirq_set(vmid_t vmid, uint32_t slot, uint32_t virq)
     }
 }
 
-uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq)
+uint32_t vgic_slotvirq_getslot(vcpuid_t vmid, uint32_t virq)
 {
     uint32_t slot = SLOT_INVALID;
     int i;
@@ -161,12 +161,12 @@ uint32_t vgic_slotvirq_getslot(vmid_t vmid, uint32_t virq)
     return slot;
 }
 
-void vgic_slotvirq_clear(vmid_t vmid, uint32_t slot)
+void vgic_slotvirq_clear(vcpuid_t vmid, uint32_t slot)
 {
     vgic_slotvirq_set(vmid, slot, VIRQ_INVALID);
 }
 
-hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
+hvmm_status_t virq_inject(vcpuid_t vmid, uint32_t virq,
                 uint32_t pirq, uint8_t hw)
 {
     hvmm_status_t result = HVMM_STATUS_BUSY;
@@ -223,7 +223,7 @@ hvmm_status_t virq_inject(vmid_t vmid, uint32_t virq,
     }
     return result;
 }
-hvmm_status_t vgic_flush_virqs(vmid_t vmid)
+hvmm_status_t vgic_flush_virqs(vcpuid_t vmid)
 {
     /* Actual injection of queued VIRQs takes place here */
     int i;
@@ -415,7 +415,7 @@ static void _vgic_isr_maintenance_irq(int irq, void *pregs, void *pdata)
         uint32_t eisr = _vgic.base[GICH_EISR0];
         uint32_t slot;
         uint32_t pirq;
-        vmid_t vmid;
+        vcpuid_t vmid;
         vmid = guest_current_vmid();
         while (eisr) {
             slot = (31 - asm_clz(eisr));
@@ -637,7 +637,7 @@ hvmm_status_t vgic_init(void)
     return result;
 }
 
-hvmm_status_t vgic_init_status(struct vgic_status *status, vmid_t vmid)
+hvmm_status_t vgic_init_status(struct vgic_status *status, vcpuid_t vmid)
 {
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     int i;
@@ -664,7 +664,7 @@ hvmm_status_t vgic_save_status(struct vgic_status *status)
     return result;
 }
 
-hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
+hvmm_status_t vgic_restore_status(struct vgic_status *status, vcpuid_t vmid)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
     int i;
@@ -690,7 +690,7 @@ hvmm_status_t vgic_restore_status(struct vgic_status *status, vmid_t vmid)
 hvmm_status_t vgic_sgi(uint32_t cpu, enum gic_sgi sgi)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid;
+    vcpuid_t vmid;
     vmid = guest_current_vmid();
 
     if(cpu != vmid)

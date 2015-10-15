@@ -13,7 +13,7 @@
 #define HVC_TRAP 0xe14fff7c
 
 uint32_t trapped_va, trapped_pa;
-void monitor_hvc_pre_handler(vmid_t vmid, struct arch_regs **regs)
+void monitor_hvc_pre_handler(vcpuid_t vmid, struct arch_regs **regs)
 {
     uint32_t restore_inst;
 
@@ -27,19 +27,19 @@ void monitor_hvc_pre_handler(vmid_t vmid, struct arch_regs **regs)
     }
 }
 
-void monitor_hvc_post_handler(vmid_t vmid, struct arch_regs **regs,
+void monitor_hvc_post_handler(vcpuid_t vmid, struct arch_regs **regs,
                                 uint32_t type)
 {
     (*regs)->pc -= 4;
     invalidate_icache_all();
 }
 
-void monitor_hvc_break_handler(vmid_t vmid, struct arch_regs **regs)
+void monitor_hvc_break_handler(vcpuid_t vmid, struct arch_regs **regs)
 {
     monitor_break_guest(vmid);
 }
 
-void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
+void monitor_hvc_trace_handler(vcpuid_t vmid, struct arch_regs **regs)
 {
     int i;
     uint32_t lr, sp, cur_va;
@@ -76,7 +76,7 @@ void monitor_hvc_trace_handler(vmid_t vmid, struct arch_regs **regs)
      */
 }
 
-void monitor_hvc_retrap_handler(vmid_t vmid, struct arch_regs **regs)
+void monitor_hvc_retrap_handler(vcpuid_t vmid, struct arch_regs **regs)
 {
     /* Clean break point at retrap point. It do not need keep break point */
     monitor_clean_inst(vmid, trapped_va, MONITOR_RETRAP);
@@ -87,7 +87,7 @@ void monitor_hvc_retrap_handler(vmid_t vmid, struct arch_regs **regs)
 static int32_t vdev_hvc_monitor_write(struct arch_vdev_trigger_info *info,
                         struct arch_regs *regs)
 {
-    vmid_t vmid = guest_current_vmid();
+    vcpuid_t vmid = guest_current_vmid();
 
     switch (monitor_inst_type(vmid, regs->pc - 4)) {
     case MONITOR_BREAK_TRAP:

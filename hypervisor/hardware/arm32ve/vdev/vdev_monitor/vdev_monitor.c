@@ -108,7 +108,7 @@ static hvmm_status_t vdev_monitor_reset(void)
     struct monitor_vmid *mvmid = (struct monitor_vmid *)(SHARED_VMID);
 
     mvmid->vmid_monitor = MONITOR_GUEST_VMID;
-    mvmid->vmid_target = MONITOR_TARGET_VMID;
+    mvmid->vcpuid_target = MONITOR_TARGET_VMID;
 
     return HVMM_STATUS_SUCCESS;
 }

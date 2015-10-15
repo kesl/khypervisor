@@ -59,7 +59,7 @@ struct vcpu {
     struct arch_regs regs;
     struct arch_context context;
     uint32_t vmpidr;
-    vmid_t vmid;
+    vcpuid_t vmid;
 
     union lpaed vttbr[VMM_PTE_NUM_TOTAL] __attribute((__aligned__(4096)));
     struct vgic_status status;
@@ -132,7 +132,7 @@ extern struct vcpu *_current_guest[NUM_CPUS];
  * machin. Currently, K-Hypervisor scheduler is a round robin, so
  * it has been implemented very simply by increasing the vmid number.
  */
-vmid_t sched_policy_determ_next(void);
+vcpuid_t sched_policy_determ_next(void);
 
 /**
  * guest_perform_switch() perform the exchange of register from old virtual
@@ -141,20 +141,20 @@ vmid_t sched_policy_determ_next(void);
  */
 hvmm_status_t guest_perform_switch(struct arch_regs *regs);
 
-void guest_copy(struct vcpu *dst, vmid_t vmid_src);
+void guest_copy(struct vcpu *dst, vcpuid_t vmid_src);
 void guest_dump_regs(struct arch_regs *regs);
 void guest_sched_start(void);
-vmid_t guest_first_vmid(void);
-vmid_t guest_last_vmid(void);
-vmid_t guest_next_vmid(vmid_t ofvmid);
-vmid_t guest_current_vmid(void);
-vmid_t guest_waiting_vmid(void);
-hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked);
+vcpuid_t guest_first_vmid(void);
+vcpuid_t guest_last_vmid(void);
+vcpuid_t guest_next_vmid(vcpuid_t ofvmid);
+vcpuid_t guest_current_vmid(void);
+vcpuid_t guest_waiting_vmid(void);
+hvmm_status_t guest_switchto(vcpuid_t vmid, uint8_t locked);
 extern void __mon_switch_to_guest_context(struct arch_regs *regs);
 hvmm_status_t guest_init();
 struct vcpu get_guest(uint32_t guest_num);
-void reboot_guest(vmid_t vmid, uint32_t pc, struct arch_regs **regs);
-void set_manually_select_vmid(vmid_t vmid);
+void reboot_guest(vcpuid_t vmid, uint32_t pc, struct arch_regs **regs);
+void set_manually_select_vmid(vcpuid_t vmid);
 void clean_manually_select_vmid(void);
 
 static inline unsigned long num_of_guest(int cpu)

@@ -913,7 +913,7 @@ static void guest_memory_stage2_enable(int enable)
  * @param ttbl Level 1 translation table of the guest.
  * @return HVMM_STATUS_SUCCESS only.
  */
-static hvmm_status_t guest_memory_set_vmid_ttbl(vmid_t vmid, union lpaed *ttbl)
+static hvmm_status_t guest_memory_set_vcpuid_ttbl(vcpuid_t vmid, union lpaed *ttbl)
 {
     uint64_t vttbr;
     /*
@@ -1305,7 +1305,7 @@ static hvmm_status_t memory_hw_save(void)
  *
  * @param guest Context of the next guest.
  */
-static hvmm_status_t memory_hw_restore(vmid_t vmid)
+static hvmm_status_t memory_hw_restore(vcpuid_t vmid)
 {
     /*
      * Restore Translation Table for the next guest and
@@ -1313,7 +1313,7 @@ static hvmm_status_t memory_hw_restore(vmid_t vmid)
      */
     struct vcpu *vcpu = 0;
     vcpu = &vcpu_arr[vmid];
-    guest_memory_set_vmid_ttbl(vmid, vcpu->vttbr);
+    guest_memory_set_vcpuid_ttbl(vmid, vcpu->vttbr);
 
     guest_memory_stage2_enable(1);
 

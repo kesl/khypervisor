@@ -164,7 +164,7 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
     /* IIDR;              RO*/
     /* IGROUPR[32];       0x080 ~ 0x0FF */
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid = guest_current_vmid();
+    vcpuid_t vmid = guest_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
     struct gicd_regs_banked *regs_banked = &_regs_banked[vmid];
     uint32_t woffset = offset / 4;
@@ -215,7 +215,7 @@ static hvmm_status_t handler_000(uint32_t write, uint32_t offset,
     return result;
 }
 
-static void vgicd_changed_istatus(vmid_t vmid, uint32_t istatus,
+static void vgicd_changed_istatus(vcpuid_t vmid, uint32_t istatus,
         uint8_t word_offset)
 {
     uint32_t cstatus; /* changed bits only */
@@ -257,7 +257,7 @@ static hvmm_status_t handler_ISCENABLER(uint32_t write,
         enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid = guest_current_vmid();
+    vcpuid_t vmid = guest_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
     struct gicd_regs_banked *regs_banked = &_regs_banked[vmid];
     uint32_t *preg_s;
@@ -359,7 +359,7 @@ static hvmm_status_t handler_ISCPENDR(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid = guest_current_vmid();
+    vcpuid_t vmid = guest_current_vmid();
     struct gicd_regs *regs = &_regs[vmid];
     struct gicd_regs_banked *regs_banked = &_regs_banked[vmid];
     uint32_t *preg_s;
@@ -411,7 +411,7 @@ static hvmm_status_t handler_IPRIORITYR(uint32_t write,
         enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid;
+    vcpuid_t vmid;
     struct gicd_regs *regs;
     struct gicd_regs_banked *regs_banked;
     uint32_t *preg;
@@ -439,7 +439,7 @@ static hvmm_status_t handler_ITARGETSR(uint32_t write,
         enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid;
+    vcpuid_t vmid;
     struct gicd_regs *regs;
     struct gicd_regs_banked *regs_banked;
     uint32_t *preg;
@@ -486,7 +486,7 @@ static hvmm_status_t handler_ICFGR(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid;
+    vcpuid_t vmid;
     struct gicd_regs *regs;
     struct gicd_regs_banked *regs_banked;
     uint32_t *preg;
@@ -529,7 +529,7 @@ static hvmm_status_t handler_F00(uint32_t write, uint32_t offset,
         uint32_t *pvalue, enum vdev_access_size access_size)
 {
     hvmm_status_t result = HVMM_STATUS_BAD_ACCESS;
-    vmid_t vmid;
+    vcpuid_t vmid;
     struct gicd_regs_banked *regs_banked;
     uint32_t target = 0;
     uint32_t sgi_id = *pvalue & GICD_SGIR_SGI_INT_ID_MASK;
@@ -659,7 +659,7 @@ static hvmm_status_t vdev_gicd_reset_values(void)
     hvmm_status_t result = HVMM_STATUS_SUCCESS;
     //FIXME : mpidr must be changed to vcpu number
     uint32_t mpidr = read_mpidr();
-    vmid_t vmid = mpidr & 0x0f;
+    vcpuid_t vmid = mpidr & 0x0f;
     int i;
 
     printh("vdev init:'%s'\n", __func__);

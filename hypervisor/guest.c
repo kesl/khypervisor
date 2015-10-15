@@ -43,7 +43,7 @@ static hvmm_status_t guest_restore(struct vcpu *vcpu,
 }
 
 
-static hvmm_status_t perform_switch(struct arch_regs *regs, vmid_t next_vmid)
+static hvmm_status_t perform_switch(struct arch_regs *regs, vcpuid_t next_vmid)
 {
     /* _curreng_guest_vmid -> next_vmid */
 
@@ -125,7 +125,7 @@ void guest_sched_start(void)
     guest_perform_switch(&vcpu->regs);
 }
 
-vmid_t guest_first_vmid(void)
+vcpuid_t guest_first_vmid(void)
 {
     uint32_t cpu = smp_processor_id();
 
@@ -139,7 +139,7 @@ vmid_t guest_first_vmid(void)
     return cpu;
 }
 
-vmid_t guest_last_vmid(void)
+vcpuid_t guest_last_vmid(void)
 {
     uint32_t cpu = smp_processor_id();
 
@@ -154,9 +154,9 @@ vmid_t guest_last_vmid(void)
     return NUM_GUESTS_STATIC - 1;
 }
 
-vmid_t guest_next_vmid(vmid_t ofvmid)
+vcpuid_t guest_next_vmid(vcpuid_t ofvmid)
 {
-    vmid_t next = VMID_INVALID;
+    vcpuid_t next = VMID_INVALID;
 #if 0
 #ifdef _SMP_
     uint32_t cpu = smp_processor_id();
@@ -178,13 +178,13 @@ vmid_t guest_next_vmid(vmid_t ofvmid)
     return next;
 }
 
-vmid_t guest_current_vmid(void)
+vcpuid_t guest_current_vmid(void)
 {
     uint32_t cpu = smp_processor_id();
     return _current_guest_vmid[cpu];
 }
 
-vmid_t guest_waiting_vmid(void)
+vcpuid_t guest_waiting_vmid(void)
 {
     uint32_t cpu = smp_processor_id();
     return _next_guest_vmid[cpu];
@@ -196,7 +196,7 @@ void guest_dump_regs(struct arch_regs *regs)
     _guest_module.ops->dump(GUEST_VERBOSE_ALL, regs);
 }
 
-hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
+hvmm_status_t guest_switchto(vcpuid_t vmid, uint8_t locked)
 {
     hvmm_status_t result = HVMM_STATUS_IGNORED;
     uint32_t cpu = smp_processor_id();
@@ -216,8 +216,8 @@ hvmm_status_t guest_switchto(vmid_t vmid, uint8_t locked)
 }
 
 static int manually_next_vmid;
-vmid_t selected_manually_next_vmid;
-void set_manually_select_vmid(vmid_t vmid)
+vcpuid_t selected_manually_next_vmid;
+void set_manually_select_vmid(vcpuid_t vmid)
 {
     manually_next_vmid = 1;
     selected_manually_next_vmid = vmid;
@@ -226,13 +226,13 @@ void clean_manually_select_vmid(void){
     manually_next_vmid = 0;
 }
 
-vmid_t sched_policy_determ_next(void)
+vcpuid_t sched_policy_determ_next(void)
 {
 #if 1
     if (manually_next_vmid)
         return selected_manually_next_vmid;
 
-    vmid_t next = guest_next_vmid(guest_current_vmid());
+    vcpuid_t next = guest_next_vmid(guest_current_vmid());
 
     /* FIXME:Hardcoded */
     if (next == VMID_INVALID)
@@ -312,12 +312,12 @@ struct vcpu get_guest(uint32_t guest_num)
    return vcpu_arr[guest_num];
 }
 
-void guest_copy(struct vcpu *dst, vmid_t vmid_src)
+void guest_copy(struct vcpu *dst, vcpuid_t vmid_src)
 {
     _guest_module.ops->move(dst, &(vcpu_arr[vmid_src]));
 }
 
-void reboot_guest(vmid_t vmid, uint32_t pc,
+void reboot_guest(vcpuid_t vmid, uint32_t pc,
         struct arch_regs **regs)
 {
     _guest_module.ops->init(&vcpu_arr[vmid], &(vcpu_arr[vmid].regs));

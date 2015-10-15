@@ -147,7 +147,7 @@ hvmm_status_t vdev_post(int level, int num, struct arch_vdev_trigger_info *info,
     return result;
 }
 
-hvmm_status_t vdev_save(vmid_t vmid)
+hvmm_status_t vdev_save(vcpuid_t vmid)
 {
     int i, j;
     struct vdev_module *vdev;
@@ -171,7 +171,7 @@ hvmm_status_t vdev_save(vmid_t vmid)
     return result;
 }
 
-hvmm_status_t vdev_restore(vmid_t vmid)
+hvmm_status_t vdev_restore(vcpuid_t vmid)
 {
     int i, j;
     struct vdev_module *vdev;

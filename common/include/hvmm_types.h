@@ -16,7 +16,8 @@ typedef enum hvmm_status {
     HVMM_STATUS_IGNORED = -6,
 } hvmm_status_t;
 
-typedef uint8_t vmid_t;
+typedef uint8_t vmcbid_t;
+typedef uint8_t vcpuid_t;
 
 #endif
 

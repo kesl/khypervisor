@@ -20,7 +20,7 @@ static uint32_t inst[NUM_GUESTS_STATIC][NUM_DI][NUM_INST];
 /*
  * Monitoring point Manager : store_inst, load_inst, clean_inst
  */
-uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, enum breakpoint_type type)
+uint32_t monitor_store_inst(vcpuid_t vmid, uint32_t va, enum breakpoint_type type)
 {
     int i;
     uint32_t pa;
@@ -47,7 +47,7 @@ uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, enum breakpoint_type type)
     return NOTFOUND;
 }
 
-enum breakpoint_type monitor_inst_type(vmid_t vmid, uint32_t va)
+enum breakpoint_type monitor_inst_type(vcpuid_t vmid, uint32_t va)
 {
     int i;
 
@@ -58,7 +58,7 @@ enum breakpoint_type monitor_inst_type(vmid_t vmid, uint32_t va)
     return NOTFOUND;
 }
 
-uint32_t monitor_clean_inst(vmid_t vmid, uint32_t va, enum breakpoint_type type)
+uint32_t monitor_clean_inst(vcpuid_t vmid, uint32_t va, enum breakpoint_type type)
 {
     int i;
     for (i = 0; i < NUM_DI; i++) {
@@ -76,7 +76,7 @@ uint32_t monitor_clean_inst(vmid_t vmid, uint32_t va, enum breakpoint_type type)
     return NOTFOUND;
 }
 
-uint32_t monitor_load_inst(vmid_t vmid, uint32_t va)
+uint32_t monitor_load_inst(vcpuid_t vmid, uint32_t va)
 {
     int i, ori_inst;
 
@@ -95,8 +95,8 @@ uint32_t monitor_load_inst(vmid_t vmid, uint32_t va)
 
 hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va)
 {
-    vmid_t vmid = mvmid->vmid_target;
-    vmid_t vmid_monitor = mvmid->vmid_monitor;
+    vcpuid_t vmid = mvmid->vcpuid_target;
+    vcpuid_t vmid_monitor = mvmid->vmid_monitor;
     struct monitoring_data *data;
     uint32_t *dump_base = (uint32_t *)SHARED_DUMP_ADDRESS;
     int i, monitor_cnt = 0;
@@ -121,7 +121,7 @@ hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va)
     return HVMM_STATUS_SUCCESS;
 }
 
-hvmm_status_t monitor_break_guest(vmid_t vmid)
+hvmm_status_t monitor_break_guest(vcpuid_t vmid)
 {
     struct monitoring_data *data;
     //uint32_t sp;
@@ -152,7 +152,7 @@ hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid, uint32_t va)
 hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
                                                 uint32_t va)
 {
-    vmid_t vmid = mvmid->vmid_target;
+    vcpuid_t vmid = mvmid->vcpuid_target;
 
     if (NOTFOUND != monitor_store_inst(vmid, va, MONITOR_BREAK_TRAP)) {
         /* TODO : This code will move to hardware interface */
@@ -166,7 +166,7 @@ hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
 hvmm_status_t monitor_insert_trace_to_guest(struct monitor_vmid *mvmid,
                                                 uint32_t va)
 {
-    vmid_t vmid = mvmid->vmid_target;
+    vcpuid_t vmid = mvmid->vcpuid_target;
     if (monitor_store_inst(vmid, va, MONITOR_TRACE_TRAP)) {
         /* TODO : This code will move to hardware interface */
         writel(HVC_TRAP, (uint32_t)va_to_pa(vmid, va, TTBR0));
@@ -181,7 +181,7 @@ hvmm_status_t monitor_clean_guest(struct monitor_vmid *mvmid, uint32_t va,
                                     uint32_t type)
 {
     uint32_t inst;
-    vmid_t vmid = mvmid->vmid_target;
+    vcpuid_t vmid = mvmid->vcpuid_target;
     inst = monitor_load_inst(vmid, va);
     if (inst != NOTFOUND && monitor_clean_inst(vmid, va, type)) {
         /* TODO : This code will move to hardware interface */
@@ -223,7 +223,7 @@ hvmm_status_t monitor_clean_trace_guest(struct monitor_vmid *mvmid, uint32_t va)
 hvmm_status_t monitor_clean_all_guest(struct monitor_vmid *mvmid, uint32_t va)
 {
     int i;
-    vmid_t vmid = mvmid->vmid_target;
+    vcpuid_t vmid = mvmid->vcpuid_target;
     printH("[Monitor device] : monitor_clean_all_guest\n");
     for (i = 0; i < NUM_DI; i++) {
         if (inst[vmid][i][INST] != EMPTY) {
@@ -244,7 +244,7 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
     //volatile uint32_t *dump_base;
     volatile uint8_t *dump_base_byte;
     volatile struct monitoring_data *data;
-    vmid_t vmid, vmid_monitor;
+    vcpuid_t vmid, vmid_monitor;
     int i, j;
     int cnt = 0;
     uint32_t temp_byte = 0;
@@ -252,7 +252,7 @@ hvmm_status_t monitor_dump_guest_memory(struct monitor_vmid *mvmid, uint32_t va)
 
     flush_cache((unsigned long)SHARED_ADDRESS, sizeof(struct monitoring_data));
 
-    vmid = mvmid->vmid_target;
+    vmid = mvmid->vcpuid_target;
     vmid_monitor = mvmid->vmid_monitor;
     data =  (struct monitoring_data *)(SHARED_ADDRESS);
 
@@ -318,8 +318,8 @@ hvmm_status_t monitor_stop(struct monitor_vmid *mvmid, uint32_t va)
 hvmm_status_t monitor_register(struct monitor_vmid *mvmid, uint32_t va)
 {
     hvmm_status_t ret = HVMM_STATUS_SUCCESS;
-    vmid_t vmid, vmid_monitor;
-    vmid = mvmid->vmid_target;
+    vcpuid_t vmid, vmid_monitor;
+    vmid = mvmid->vcpuid_target;
     vmid_monitor = mvmid->vmid_monitor;
     struct monitoring_data *data;
     data = (struct monitoring_data *)(SHARED_ADDRESS);
@@ -338,7 +338,7 @@ hvmm_status_t monitor_reboot_guest(struct monitor_vmid *mvmid)
 
     /* TODO there is dependency target board problem*/
     /* reboot_guest(mvmid, 0xB0000000, 0); */
-    reboot_guest(mvmid->vmid_target, 0x70000000, 0);
+    reboot_guest(mvmid->vcpuid_target, 0x70000000, 0);
 
     return ret;
 }
@@ -378,12 +378,12 @@ hvmm_status_t monitor_write_memory(struct monitor_vmid *mvmid, uint32_t va)
     uint32_t range, base_memory;
     uint8_t *dump_base;
     struct monitoring_data *data;
-    vmid_t vmid, vmid_monitor;
+    vcpuid_t vmid, vmid_monitor;
     int i;
 
     flush_cache((unsigned long)SHARED_ADDRESS, sizeof(struct monitoring_data));
 
-    vmid = mvmid->vmid_target;
+    vmid = mvmid->vcpuid_target;
     vmid_monitor = mvmid->vmid_monitor;
 
     data =  (struct monitoring_data *)(SHARED_ADDRESS);
@@ -459,7 +459,7 @@ hvmm_status_t monitor_request(int irq, struct monitor_vmid *mvmid, int address)
     return ret;
 }
 
-hvmm_status_t monitor_notify_guest(vmid_t vmid)
+hvmm_status_t monitor_notify_guest(vcpuid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 

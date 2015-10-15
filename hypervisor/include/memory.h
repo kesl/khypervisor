@@ -52,7 +52,7 @@ struct memory_ops {
     hvmm_status_t (*save)(void);
 
     /** Restore guest memory structure */
-    hvmm_status_t (*restore)(vmid_t);
+    hvmm_status_t (*restore)(vcpuid_t);
 
     /** Dump state of the memory */
     hvmm_status_t (*dump)(void);
@@ -94,7 +94,7 @@ extern uint32_t _guest_secondary_bin_start;
 void memory_free(void *ap);
 void *memory_alloc(unsigned long size);
 hvmm_status_t memory_save(void);
-hvmm_status_t memory_restore(vmid_t vmid);
+hvmm_status_t memory_restore(vcpuid_t vmid);
 hvmm_status_t memory_init(struct memmap_desc **guest0,
                     struct memmap_desc **guest1);
 

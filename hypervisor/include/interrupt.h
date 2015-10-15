@@ -25,7 +25,7 @@ struct virqmap_entry {
 };
 
 struct guest_virqmap {
-    vmid_t vmid;
+    vcpuid_t vmid;
     struct virqmap_entry map[MAX_IRQS];
 };
 
@@ -48,16 +48,16 @@ struct interrupt_ops {
     hvmm_status_t (*end)(uint32_t);
 
     /** Inject to guest */
-    hvmm_status_t (*inject)(vmid_t, uint32_t, uint32_t, uint8_t);
+    hvmm_status_t (*inject)(vcpuid_t, uint32_t, uint32_t, uint8_t);
 
     /** Control SGI */
     hvmm_status_t (*sgi)(uint32_t/*cpumask*/, uint32_t);
 
     /** Save inetrrupt state */
-    hvmm_status_t (*save)(vmid_t vmid);
+    hvmm_status_t (*save)(vcpuid_t vmid);
 
     /** Restore interrupt state */
-    hvmm_status_t (*restore)(vmid_t vmid);
+    hvmm_status_t (*restore)(vcpuid_t vmid);
 
     /** Dump state of the interrupt */
     hvmm_status_t (*dump)(void);
@@ -113,16 +113,16 @@ hvmm_status_t interrupt_request(uint32_t irq, interrupt_handler_t handler);
 hvmm_status_t interrupt_host_enable(uint32_t irq);
 hvmm_status_t interrupt_host_disable(uint32_t irq);
 hvmm_status_t interrupt_host_configure(uint32_t irq);
-hvmm_status_t interrupt_guest_inject(vmid_t vmid, uint32_t virq, uint32_t pirq,
+hvmm_status_t interrupt_guest_inject(vcpuid_t vmid, uint32_t virq, uint32_t pirq,
                 uint8_t hw);
-hvmm_status_t interrupt_guest_enable(vmid_t vmid, uint32_t irq);
-hvmm_status_t interrupt_guest_disable(vmid_t vmid, uint32_t irq);
-hvmm_status_t interrupt_save(vmid_t vmid);
-hvmm_status_t interrupt_restore(vmid_t vmid);
+hvmm_status_t interrupt_guest_enable(vcpuid_t vmid, uint32_t irq);
+hvmm_status_t interrupt_guest_disable(vcpuid_t vmid, uint32_t irq);
+hvmm_status_t interrupt_save(vcpuid_t vmid);
+hvmm_status_t interrupt_restore(vcpuid_t vmid);
 void interrupt_service_routine(int irq, void *current_regs, void *pdata);
 const int32_t interrupt_check_guest_irq(uint32_t pirq);
-const uint32_t interrupt_pirq_to_virq(vmid_t vmid, uint32_t pirq);
-const uint32_t interrupt_virq_to_pirq(vmid_t vmid, uint32_t virq);
-const uint32_t interrupt_pirq_to_enabled_virq(vmid_t vmid, uint32_t pirq);
+const uint32_t interrupt_pirq_to_virq(vcpuid_t vmid, uint32_t pirq);
+const uint32_t interrupt_virq_to_pirq(vcpuid_t vmid, uint32_t virq);
+const uint32_t interrupt_pirq_to_enabled_virq(vcpuid_t vmid, uint32_t pirq);
 
 #endif
