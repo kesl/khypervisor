@@ -16,6 +16,13 @@ typedef enum hvmm_status {
     HVMM_STATUS_IGNORED = -6,
 } hvmm_status_t;
 
+typedef enum vcpu_state_t {
+    VCPU_RUNNING    = 1,
+    VCPU_WAIT       = 2,
+    VCPU_BLOCKED    = 3
+} vcpu_state_t;
+
+
 typedef uint8_t vmcbid_t;
 typedef uint8_t vcpuid_t;
 

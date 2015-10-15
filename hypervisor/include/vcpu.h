@@ -65,10 +65,25 @@ struct vcpu {
     struct vgic_status status;
 
     struct memmap_desc **memmap_desc;
+
+    vmcbid_t vmcb_id;
+
+    vcpu_state_t vcpu_state;
+
+    uint32_t period;
+    uint32_t deadline;
+
+    //For Round-Robin Scheduler
+    uint32_t tick;  
+
+    uint64_t running_time;
+    uint64_t actual_running_time;
+
 };
 
 struct vcpu vcpu_arr[MAX_NUM_GUESTS];
 void save_and_restore(vcpuid_t from, vcpuid_t to, struct arch_regs *regs);
+void vcpu_init();
 
 struct guest_ops {
     /** Initalize guest state */

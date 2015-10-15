@@ -333,4 +333,12 @@ void save_and_restore(vcpuid_t from, vcpuid_t to, struct arch_regs *regs){
     memory_restore(to);
     guest_restore(vcpu, regs);
 }
+void vcpu_init(){
+    int i = 0;
+    struct vcpu *vcpu = 0;
+    for(i = 0 ; i < NUM_GUESTS_STATIC ; i++){
+        vcpu = &vcpu_arr[i];
+        vcpu->tick = 5;
+    }
+}
 
