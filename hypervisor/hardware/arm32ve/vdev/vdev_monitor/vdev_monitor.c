@@ -7,7 +7,7 @@
 #include <log/print.h>
 #include <monitor.h>
 #include <asm_io.h>
-#include <guest.h>
+#include <vcpu.h>
 
 #define MONITOR_BASE_ADDR 0x3FFFD000
 

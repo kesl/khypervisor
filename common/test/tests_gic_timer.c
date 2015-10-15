@@ -1,10 +1,10 @@
 #include <gic.h>
 #include <vgic.h>
-#include "guest.h"
+#include "vcpu.h"
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
-#include "guest.h"
+#include "vcpu.h"
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif

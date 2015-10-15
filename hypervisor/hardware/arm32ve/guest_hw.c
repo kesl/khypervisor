@@ -1,7 +1,7 @@
 #include <k-hypervisor-config.h>
 #include <log/print.h>
 #include <hvmm_trace.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <guest_hw.h>
 
 #define CPSR_MODE_USER  0x10

@@ -27,7 +27,7 @@ OBJS 		= boot.o	\
 	main.o				\
 	$(HYPERVISOR_SOURCE_DIR)/memory.o				\
 	$(HYPERVISOR_SOURCE_DIR)/timer.o				\
-	$(HYPERVISOR_SOURCE_DIR)/guest.o				\
+	$(HYPERVISOR_SOURCE_DIR)/vcpu.o					\
 	$(HYPERVISOR_SOURCE_DIR)/vdev.o					\
 	$(HYPERVISOR_SOURCE_DIR)/monitor.o				\
 	$(HYPERVISOR_SOURCE_DIR)/interrupt.o			\

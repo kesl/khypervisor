@@ -8,7 +8,7 @@
 #include <asm-arm_inline.h>
 #include <monitor.h>
 #include <asm_io.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <timer.h>
 #define HVC_TRAP 0xe14fff7c
 

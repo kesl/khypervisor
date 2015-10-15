@@ -3,7 +3,7 @@
 #include <armv7_p15.h>
 #include <gic.h>
 #include <gic_regs.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <k-hypervisor-config.h>
 #include <asm-arm_inline.h>
 

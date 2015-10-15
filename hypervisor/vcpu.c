@@ -1,5 +1,5 @@
 #include <k-hypervisor-config.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <timer.h>
 #include <interrupt.h>
 #include <memory.h>
@@ -23,7 +23,7 @@ static uint8_t _switch_locked[NUM_CPUS];
 static hvmm_status_t guest_save(struct vcpu *vcpu,
                         struct arch_regs *regs)
 {
-    /* guest_hw_save : save the current guest's context*/
+    /* vcpu.hw_save : save the current guest's context*/
     if (_guest_module.ops->save)
         return  _guest_module.ops->save(vcpu, regs);
 
@@ -33,7 +33,7 @@ static hvmm_status_t guest_save(struct vcpu *vcpu,
 static hvmm_status_t guest_restore(struct vcpu *vcpu,
                         struct arch_regs *regs)
 {
-    /* guest_hw_restore : The next becomes the current */
+    /* vcpu.hw_restore : The next becomes the current */
     if (_guest_module.ops->restore)
         return  _guest_module.ops->restore(vcpu, regs);
 
@@ -98,7 +98,7 @@ void guest_sched_start(void)
         vcpu = &vcpu_arr[num_of_guest(cpu - 1) + 0];
     else
         vcpu = &vcpu_arr[0];
-    /* guest_hw_dump */
+    /* vcpu.hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_0, &vcpu->regs);
     /* Context Switch with current context == none */
@@ -174,7 +174,7 @@ vcpuid_t guest_waiting_vmid(void)
 
 void guest_dump_regs(struct arch_regs *regs)
 {
-    /* guest_hw_dump */
+    /* vcpu.hw_dump */
     _guest_module.ops->dump(GUEST_VERBOSE_ALL, regs);
 }
 
@@ -229,7 +229,7 @@ void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
     uint32_t cpu = smp_processor_id();
-    /* guest_hw_dump */
+    /* vcpu.hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
     /*
@@ -270,7 +270,7 @@ hvmm_status_t guest_init()
         vcpu = &vcpu_arr[i];
         regs = &vcpu->regs;
         vcpu->vmid = i;
-        /* guest_hw_init */
+        /* vcpu.hw_init */
         if (_guest_module.ops->init)
             _guest_module.ops->init(vcpu, regs);
     }
@@ -324,7 +324,7 @@ void save_and_restore(vcpuid_t from, vcpuid_t to, struct arch_regs *regs){
     _current_guest[cpu] = vcpu;
     _current_guest_vmid[cpu] = to;
 
-    /* guest_hw_dump */
+    /* vcpu.hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, &vcpu->regs);
 

@@ -2,7 +2,7 @@
 #include <interrupt.h>
 #include <asm_io.h>
 #include <asm-arm_inline.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <log/print.h>
 #include <memory.h>
 #include <log/string.h>

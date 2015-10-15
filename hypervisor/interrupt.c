@@ -1,6 +1,6 @@
 #define DEBUG
 #include <hvmm_types.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <hvmm_trace.h>
 #include <log/uart_print.h>
 #include <interrupt.h>

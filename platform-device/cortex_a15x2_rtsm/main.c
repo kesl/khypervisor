@@ -1,5 +1,5 @@
 #include <k-hypervisor-config.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <interrupt.h>
 #include <timer.h>
 #include <vdev.h>

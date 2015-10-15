@@ -2,7 +2,7 @@
 #include <armv7_p15.h>
 #include <gic.h>
 #include <trap.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <vdev.h>
 #include <smp.h>
 

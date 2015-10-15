@@ -10,7 +10,7 @@
 #include <log/uart_print.h>
 #include <asm_io.h>
 #include <armv7_p15.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <asm-arm_inline.h>
 
 #define DEMO

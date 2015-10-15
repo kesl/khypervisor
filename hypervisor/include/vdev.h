@@ -2,7 +2,7 @@
 #define __VDEV_H_
 
 #include <hvmm_types.h>
-#include <guest.h>
+#include <vcpu.h>
 
 enum vdev_access_size {
     VDEV_ACCESS_BYTE = 0,
