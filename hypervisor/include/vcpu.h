@@ -85,6 +85,12 @@ struct vcpu vcpu_arr[MAX_NUM_GUESTS];
 void save_and_restore(vcpuid_t from, vcpuid_t to, struct arch_regs *regs);
 void vcpu_init();
 
+void vcpu_change_state(vcpuid_t vcpu_id, vcpu_state_t state);
+uint32_t vcpu_get_tick(vcpuid_t vcpu_id);
+void vcpu_tick_plus_one(vcpuid_t vcpu_id);
+void vcpu_running_time_plus_one(vcpuid_t vcpu_id);
+void vcpu_actual_running_time_plus_one(vcpuid_t vcpu_id);
+
 struct guest_ops {
     /** Initalize guest state */
     hvmm_status_t (*init)(struct vcpu *, struct arch_regs *);

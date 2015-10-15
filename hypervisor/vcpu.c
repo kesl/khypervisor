@@ -341,4 +341,26 @@ void vcpu_init(){
         vcpu->tick = 5;
     }
 }
+void vcpu_change_state(vcpuid_t vcpu_id, vcpu_state_t state){
+    vcpu_arr[vcpu_id].vcpu_state = state;
+}
+
+uint32_t vcpu_get_tick(vcpuid_t vcpu_id){
+    return vcpu_arr[vcpu_id].tick;
+}
+
+void vcpu_tick_plus_one(vcpuid_t vcpu_id){
+    struct vcpu *vcpu = 0;
+    vcpu = &vcpu_arr[vcpu_id];
+
+    vcpu->tick--;
+}
+
+void vcpu_running_time_plus_one(vcpuid_t vcpu_id){
+    vcpu_arr[vcpu_id].running_time++;
+}
+
+void vcpu_actual_running_time_plus_one(vcpuid_t vcpu_id){
+    vcpu_arr[vcpu_id].actual_running_time++;
+}
 
