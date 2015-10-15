@@ -53,7 +53,7 @@ hvmm_status_t memory_save(void)
     return ret;
 }
 
-hvmm_status_t memory_restore(vmid_t vmid)
+hvmm_status_t memory_restore(vcpuid_t vmid)
 {
     hvmm_status_t ret = HVMM_STATUS_UNKNOWN_ERROR;
 

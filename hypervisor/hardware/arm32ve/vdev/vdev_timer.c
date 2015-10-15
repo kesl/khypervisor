@@ -20,7 +20,7 @@ static struct vdev_memory_map _vdev_timer_info = {
 static struct vdev_vtimer_regs vtimer_regs[NUM_GUESTS_STATIC];
 static int _timer_status[NUM_GUESTS_STATIC] = {0, };
 
-static void vtimer_changed_status(vmid_t vmid, uint32_t status)
+static void vtimer_changed_status(vcpuid_t vmid, uint32_t status)
 {
     _timer_status[vmid] = status;
 }
@@ -96,7 +96,7 @@ static int32_t vdev_vtimer_check(struct arch_vdev_trigger_info *info,
 
 void callback_timer(void *pdata)
 {
-    vmid_t vmid = guest_current_vmid();
+    vcpuid_t vmid = guest_current_vmid();
 
     if (_timer_status[vmid] == 0)
         interrupt_guest_inject(vmid, VTIMER_IRQ, 0, INJECT_SW);

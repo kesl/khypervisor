@@ -1,10 +1,10 @@
 #include <gic.h>
 #include <vgic.h>
-#include "guest.h"
+#include "vcpu.h"
 #include "hvmm_trace.h"
 #include "armv7_p15.h"
 #include "timer.h"
-#include "guest.h"
+#include "vcpu.h"
 #if defined(CFG_BOARD_ARNDALE)
 #include "pwm.h"
 #endif
@@ -103,7 +103,7 @@ hvmm_status_t hvmm_tests_gic_timer(void)
 
 void callback_test_timer(void *pdata)
 {
-    vmid_t vmid;
+    vcpuid_t vmid;
     HVMM_TRACE_ENTER();
     vmid = guest_current_vmid();
     printh("Injecting IRQ 30 to Guest:%d\n", vmid);

@@ -122,7 +122,7 @@ static enum cmd_status check_vaild_va(char **argv, int argc, uint32_t *va)
 
 struct monitor_vmid {
     unsigned char vmid_monitor;
-    unsigned char vmid_target;
+    unsigned char vcpuid_target;
 };
 
 struct monitor_vmid vmids = {1, 0};
@@ -262,7 +262,7 @@ int monitoring_cmd(void)
     struct monitor_vmid *vmids = (struct monitor_vmid *)
         &shared_memory_start + (0xB0/4);
     vmids->vmid_monitor = 1;
-    vmids->vmid_target = 0;
+    vmids->vcpuid_target = 0;
 
     while (1) {
         uart_print("monitoring# ");

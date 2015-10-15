@@ -1,5 +1,5 @@
 #include <k-hypervisor-config.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <interrupt.h>
 #include <timer.h>
 #include <vdev.h>
@@ -277,6 +277,9 @@ int main_cpu_init()
 {
     init_print();
     printH("[%s : %d] Starting...Main CPU\n", __func__, __LINE__);
+
+    //vcpu init
+    vcpu_init();
 
     /* Initialize Memory Management */
     setup_memory();

@@ -2,7 +2,7 @@
 #define __TRAP_H__
 
 #include <hvmm_types.h>
-#include <guest.h>
+#include <vcpu.h>
 
 /* HSR Exception Class. */
 #define TRAP_EC_ZERO_UNKNOWN        0x00

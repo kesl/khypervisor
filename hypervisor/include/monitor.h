@@ -4,7 +4,7 @@
 #include <log/uart_print.h>
 #include <hvmm_types.h>
 #include <arch_types.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <guest_hw.h>
 
 #define NUM_BREAK_POINT 50
@@ -64,26 +64,26 @@ struct monitoring_data {
     uint32_t memory_range;
     uint32_t start_memory;
     uint8_t monitor_cnt;
-    struct guest_struct guest_info;
+    struct vcpu guest_info;
 };
 
 struct monitor_vmid {
-    vmid_t vmid_monitor;
-    vmid_t vmid_target;
+    vcpuid_t vmid_monitor;
+    vcpuid_t vcpuid_target;
 };
 
-uint64_t va_to_pa(vmid_t vmid, uint32_t va, uint32_t ttbr_num);
+uint64_t va_to_pa(vcpuid_t vmid, uint32_t va, uint32_t ttbr_num);
 void invalidate_icache_all(void);
 void invalidate_dcache_all(void);
 void flush_dcache_all(void);
 void flush_cache(unsigned long start, unsigned long size);
-uint32_t monitor_load_inst(vmid_t vmid, uint32_t va);
-uint32_t monitor_inst_type(vmid_t vmid, uint32_t va);
-uint32_t monitor_store_inst(vmid_t vmid, uint32_t va, uint32_t type);
-uint32_t monitor_clean_inst(vmid_t vmid, uint32_t va, uint32_t type);
+uint32_t monitor_load_inst(vcpuid_t vmid, uint32_t va);
+uint32_t monitor_inst_type(vcpuid_t vmid, uint32_t va);
+uint32_t monitor_store_inst(vcpuid_t vmid, uint32_t va, uint32_t type);
+uint32_t monitor_clean_inst(vcpuid_t vmid, uint32_t va, uint32_t type);
 
 hvmm_status_t monitor_run_guest(struct monitor_vmid *mvmid, uint32_t va);
-hvmm_status_t monitor_break_guest(vmid_t vmid);
+hvmm_status_t monitor_break_guest(vcpuid_t vmid);
 hvmm_status_t monitor_insert_break_to_guest(struct monitor_vmid *mvmid,
                                                 uint32_t va);
 hvmm_status_t monitor_insert_trace_to_guest(struct monitor_vmid *mvmid,
@@ -103,7 +103,7 @@ hvmm_status_t monitor_stop(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_write_memory(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_recovery_guest(struct monitor_vmid *mvmid);
 hvmm_status_t monitor_request(int irq, struct monitor_vmid *mvmid, int address);
-hvmm_status_t monitor_notify_guest(vmid_t vmid);
+hvmm_status_t monitor_notify_guest(vcpuid_t vmid);
 hvmm_status_t monitor_list(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_reboot(struct monitor_vmid *mvmid, uint32_t va);
 hvmm_status_t monitor_init(void);

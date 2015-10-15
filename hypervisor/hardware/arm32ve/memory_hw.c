@@ -6,7 +6,7 @@
 #include <memory.h>
 #include <log/print.h>
 #include <log/uart_print.h>
-#include <guest.h>
+#include <vcpu.h>
 #include <smp.h>
 
 /**
@@ -268,14 +268,10 @@
  * Statically allocated for now
  */
 
-static union lpaed *_vmid_ttbl[NUM_GUESTS_STATIC];
 /*
  * TODO: if you change the static variable, you will meet the system fault.
  * We don't konw about this issue, so we will checking this later time.
  */
-union lpaed
-_ttbl_guest[NUM_GUESTS_STATIC][VMM_PTE_NUM_TOTAL] \
-                __attribute((__aligned__(4096)));
 
 /**
  * @brief Obtains TTBL_L3 entry.
@@ -917,7 +913,7 @@ static void guest_memory_stage2_enable(int enable)
  * @param ttbl Level 1 translation table of the guest.
  * @return HVMM_STATUS_SUCCESS only.
  */
-static hvmm_status_t guest_memory_set_vmid_ttbl(vmid_t vmid, union lpaed *ttbl)
+static hvmm_status_t guest_memory_set_vcpuid_ttbl(vcpuid_t vmid, union lpaed *ttbl)
 {
     uint64_t vttbr;
     /*
@@ -1204,18 +1200,15 @@ static void guest_memory_init(struct memmap_desc **guest0_map,
      */
     int i;
     uint32_t cpu = smp_processor_id();
-
+    struct vcpu *vcpu = 0;
     HVMM_TRACE_ENTER();
 
     if (!cpu) {
-        for (i = 0; i < NUM_GUESTS_STATIC; i++)
-            _vmid_ttbl[i] = &_ttbl_guest[i][0];
-        guest_memory_init_ttbl(&_ttbl_guest[0][0], guest0_map);
-        guest_memory_init_ttbl(&_ttbl_guest[1][0], guest1_map);
-    } else {
-        guest_memory_init_ttbl(&_ttbl_guest[2][0], guest0_map);
-        guest_memory_init_ttbl(&_ttbl_guest[3][0], guest1_map);
-    }
+        for (i = 0; i < NUM_GUESTS_STATIC; i++){
+            vcpu = &vcpu_arr[i];
+            guest_memory_init_ttbl(&vcpu->vttbr[0], vcpu->memmap_desc);
+        }
+    } 
 
     HVMM_TRACE_EXIT();
 }
@@ -1254,7 +1247,10 @@ static int memory_hw_init(struct memmap_desc **guest0,
     uint32_t cpu = smp_processor_id();
     uart_print("[memory] memory_init: enter\n\r");
 
-    guest_memory_init(guest0, guest1);
+    vcpu_arr[0].memmap_desc = guest0;
+    vcpu_arr[1].memmap_desc = guest1;
+
+    guest_memory_init(vcpu_arr[0].memmap_desc, vcpu_arr[1].memmap_desc);
 
     guest_memory_init_mmu();
 
@@ -1309,13 +1305,15 @@ static hvmm_status_t memory_hw_save(void)
  *
  * @param guest Context of the next guest.
  */
-static hvmm_status_t memory_hw_restore(vmid_t vmid)
+static hvmm_status_t memory_hw_restore(vcpuid_t vmid)
 {
     /*
      * Restore Translation Table for the next guest and
      * Enable Stage 2 Translation
      */
-    guest_memory_set_vmid_ttbl(vmid, _vmid_ttbl[vmid]);
+    struct vcpu *vcpu = 0;
+    vcpu = &vcpu_arr[vmid];
+    guest_memory_set_vcpuid_ttbl(vmid, vcpu->vttbr);
 
     guest_memory_stage2_enable(1);
 

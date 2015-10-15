@@ -3,8 +3,7 @@
 #include <vgic.h>
 #include <log/print.h>
 #include <log/uart_print.h>
-
-static struct vgic_status _vgic_status[NUM_GUESTS_STATIC];
+#include <vcpu.h>
 
 static hvmm_status_t host_interrupt_init(void)
 {
@@ -81,21 +80,21 @@ static hvmm_status_t guest_interrupt_end(uint32_t irq)
     return gic_completion_irq(irq);
 }
 
-static hvmm_status_t guest_interrupt_inject(vmid_t vmid, uint32_t virq,
+static hvmm_status_t guest_interrupt_inject(vcpuid_t vmid, uint32_t virq,
                         uint32_t pirq, uint8_t hw)
 {
     /* TODO : checking the injected bitmap */
     return virq_inject(vmid, virq, pirq, hw);
 }
 
-static hvmm_status_t guest_interrupt_save(vmid_t vmid)
+static hvmm_status_t guest_interrupt_save(vcpuid_t vmid)
 {
-    return vgic_save_status(&_vgic_status[vmid]);
+    return vgic_save_status(&(vcpu_arr[vmid].status));
 }
 
-static hvmm_status_t guest_interrupt_restore(vmid_t vmid)
+static hvmm_status_t guest_interrupt_restore(vcpuid_t vmid)
 {
-    return vgic_restore_status(&_vgic_status[vmid], vmid);
+    return vgic_restore_status(&(vcpu_arr[vmid].status), vmid);
 }
 
 static hvmm_status_t guest_interrupt_dump(void)
