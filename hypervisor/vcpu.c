@@ -70,16 +70,30 @@ hvmm_status_t guest_perform_switch(struct arch_regs *regs)
          */
         printh("context: launching the first guest\n");
 
+        /* TODO: (igkang) to be modified
+         * mananging it by setting timer event
+         */
+        /* Round-robin code */
+        vcpu_reset_tick(_next_guest_vmid[cpu]);
+
         result = perform_switch(0, _next_guest_vmid[cpu]);
         /* DOES NOT COME BACK HERE */
     } else if (_next_guest_vmid[cpu] != VMID_INVALID &&
                 _current_guest_vmid[cpu] != _next_guest_vmid[cpu]) {
         printh("curr: %x\n", _current_guest_vmid[cpu]);
         printh("next: %x\n", _next_guest_vmid[cpu]);
+
+        /* Round-robin code */
+        vcpu_reset_tick(_next_guest_vmid[cpu]);
+        
         /* Only if not from Hyp */
         result = perform_switch(regs, _next_guest_vmid[cpu]);
         _next_guest_vmid[cpu] = VMID_INVALID;
     }
+
+    /* TODO:(igkang) record start time - for calculating running time
+    *   It would be better to place code in a separate function
+    */
 
     _switch_locked[cpu] = 0;
     return result;
@@ -151,12 +165,26 @@ vcpuid_t guest_next_vmid(vcpuid_t ofvmid)
 #endif
 
     /* FIXME:Hardcoded */
-    if (ofvmid == VMID_INVALID)
+    if (ofvmid == VMID_INVALID) {
         next = guest_first_vmid();
-    else if (ofvmid < guest_last_vmid()) {
-        /* FIXME:Hardcoded */
-        next = ofvmid + 1;
+        return next;
     }
+    
+
+    /* FIXME: rename vcpu_tick_plus_one --> vcpu_dec_tick */
+    /* Round-robin code */
+    vcpu_tick_plus_one(ofvmid);
+    if (!vcpu_get_tick(ofvmid)) {
+        if (ofvmid < guest_last_vmid()) {
+            /* FIXME:Hardcoded */
+            next = ofvmid + 1;
+        } else {
+            next = guest_first_vmid();
+        }
+    } else {
+        next = ofvmid;
+    }
+
     return next;
 }
 
@@ -185,6 +213,9 @@ hvmm_status_t guest_switchto(vcpuid_t vmid, uint8_t locked)
 
     /* valid and not current vmid, switch */
     if (_switch_locked[cpu] == 0) {
+        
+        /* TODO: (igkang) calculate&add ran time of current vcpu */
+
         _next_guest_vmid[cpu] = vmid;
         result = HVMM_STATUS_SUCCESS;
         printh("switching to vmid: %x\n", (uint32_t)vmid);
@@ -197,23 +228,32 @@ hvmm_status_t guest_switchto(vcpuid_t vmid, uint8_t locked)
     return result;
 }
 
+/* these global var. and functions are for monitor
+ * (to fix running guest in scheduler code)
+ */
 static int manually_next_vmid;
 vcpuid_t selected_manually_next_vmid;
+
 void set_manually_select_vmid(vcpuid_t vmid)
 {
     manually_next_vmid = 1;
     selected_manually_next_vmid = vmid;
 }
+
 void clean_manually_select_vmid(void){
     manually_next_vmid = 0;
 }
 
+// (igkang) to be moved into schedalgo-specific file
 vcpuid_t sched_policy_determ_next(void)
 {
 #if 1
     if (manually_next_vmid)
         return selected_manually_next_vmid;
-
+   
+   /* TODO: (igkang) to be modified into runqueue style
+    * using en/dequeue of certain scheduling algorithm
+    */
     vcpuid_t next = guest_next_vmid(guest_current_vmid());
 
     /* FIXME:Hardcoded */
@@ -229,6 +269,8 @@ void guest_schedule(void *pdata)
 {
     struct arch_regs *regs = pdata;
     uint32_t cpu = smp_processor_id();
+    vcpuid_t next_vcpuid = guest_current_vmid();
+
     /* vcpu.hw_dump */
     if (_guest_module.ops->dump)
         _guest_module.ops->dump(GUEST_VERBOSE_LEVEL_3, regs);
@@ -238,8 +280,10 @@ void guest_schedule(void *pdata)
      * guest_perform_switch() takes care of it
      */
 
+    next_vcpuid = sched_policy_determ_next();
+    
     /* Switch request, actually performed at trap exit */
-    guest_switchto(sched_policy_determ_next(), 0);
+    guest_switchto(next_vcpuid, 0);
 
 }
 
@@ -339,7 +383,8 @@ void vcpu_init(){
     for(i = 0 ; i < NUM_GUESTS_STATIC ; i++){
         vcpu = &vcpu_arr[i];
 
-        //FIXME: Hardcoded - tick
+        /* FIXME: Hardcoded - tick */
+        /* Round-robin code */
         vcpu->tick_reset_val = 5;
     }
 }
