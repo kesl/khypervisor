@@ -13,6 +13,7 @@
     (pirq >= VIRQ_MIN_VALID_PIRQ && pirq < VIRQ_NUM_MAX_PIRQS)
 
 
+
 static struct interrupt_ops *_guest_ops;
 static struct interrupt_ops *_host_ops;
 
