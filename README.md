@@ -10,14 +10,14 @@
 - platform-device   Contains the device starting point.
     - common    common interface source code.
     - cortex_a15x2_arndale  based on arndale board code.
-        - config    Contains the plaform specific configuration files.
-        - drivers   Contains the plaform specific driver for hypervisor.
+        - config    Contains the platform specific configuration files.
+        - drivers   Contains the platform specific driver for hypervisor.
         - guestbl   Contains the guest bootloader.
         - guestimages   Contains the guest images.
         - guestos   Contains the guest os source code.
     - cortex_a15x2_rtsm  based on rtsm fastmodels code.
-        - config    Contains the plaform specific configuration files.
-        - drivers   Contains the plaform specific drivers for hypervisor.
+        - config    Contains the platform specific configuration files.
+        - drivers   Contains the platform specific drivers for hypervisor.
         - guestbl   Contains the guest bootloader.
         - guestimages   Contains the guest images.
         - guestos   Contains the guest os source code.
